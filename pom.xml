@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+<!--
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+-->
+  <groupId>dk.netarkivet</groupId>
+  <artifactId>webdanica</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+
+  <packaging>pom</packaging>
+
+  <name>Web Danica project</name>
+  <description>Web Danica project</description>
+  <url>http://www.netarkivet.dk/</url>
+
+  <inceptionYear>2015</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+<!--
+  <scm>
+    <connection>scm:hg:http://bitbucket.org/nclarkekb/jwat</connection>
+    <developerConnection>scm:hg:https://bitbucket.org/nclarkekb/jwat</developerConnection>
+    <url>http://bitbucket.org/nclarkekb/jwat</url>
+  </scm>
+
+  <issueManagement>
+    <system>jira</system> 
+    <url>https://sbforge.org/jira/browse/JWAT</url> 
+  </issueManagement>
+
+  <ciManagement>
+    <system>jenkins</system>
+    <url>https://sbforge.org/jenkins/view/JWAT/</url>
+  </ciManagement>
+-->
+  <developers>
+    <developer>
+      <name>Søren Vejrup Carlsen</name>
+      <roles>
+        <role>developer</role>
+        <role>reviewer</role>
+      </roles>
+      <email>svc@kb.dk</email>
+      <organization>Det Kongelige Bibliotek/Royal Danish Library</organization>
+      <organizationUrl>http://www.kb.dk</organizationUrl>
+    </developer>
+    <developer>
+      <name>Nicholas Clarke</name>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <email>nicl@kb.dk</email>
+      <organization>Det Kongelige Bibliotek/Royal Danish Library</organization>
+      <organizationUrl>http://www.kb.dk</organizationUrl>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <license.skip>false</license.skip>
+    <jwat.version>1.0.4</jwat.version>
+    <jwat-tools.version>0.6.1-SNAPSHOT</jwat-tools.version>
+    <tika.version>1.6</tika.version>
+    <slf4j.version>1.7.7</slf4j.version>
+    <sysout-over-slf4j.version>1.0.2</sysout-over-slf4j.version>
+    <logback.version>1.0.13</logback.version>
+  </properties>
+
+  <modules>
+    <module>webdanica-core</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>uk.org.lidalia</groupId>
+        <artifactId>sysout-over-slf4j</artifactId>
+        <version>${sysout-over-slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-common</artifactId>
+        <version>${jwat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-gzip</artifactId>
+        <version>${jwat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-arc</artifactId>
+        <version>${jwat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-warc</artifactId>
+        <version>${jwat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-archive</artifactId>
+        <version>${jwat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jwat</groupId>
+        <artifactId>jwat-tools</artifactId>
+        <version>${jwat-tools.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.antiaction</groupId>
+        <artifactId>common-json</artifactId>
+        <version>0.7.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-parsers</artifactId>
+        <version>${tika.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>1.3</version> 
+        <scope>test</scope>
+      </dependency>
+
+      <!-- needs extra dependencies: objenesis & hamcrest -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>  
+        <version>1.9.0</version> 
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <!-- enable JGit plugin -->
+      <plugin>
+        <groupId>ru.concerteza.buildnumber</groupId>
+        <artifactId>maven-jgit-buildnumber-plugin</artifactId>
+        <version>1.2.9</version>
+        <executions>
+          <execution>
+            <id>git-buildnumber</id>
+            <goals>
+              <goal>extract-buildnumber</goal>
+            </goals>
+            <phase>prepare-package</phase>
+          </execution>
+        </executions>
+      </plugin> 
+
+      <!-- specify manifest fields -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Specification-Title>${project.name}</Specification-Title>
+              <Specification-Version>${project.version}</Specification-Version>
+              <!--Specification-Vendor>${project.specification_vendor}</Specification-Vendor-->
+              <Implementation-Title>${project.groupId}.${project.artifactId}</Implementation-Title>
+              <Implementation-Version>${git.revision}</Implementation-Version>
+              <!--Implementation-Vendor>${project.implementation_vendor}</Implementation-Vendor-->
+              <X-Git-Branch>${git.branch}</X-Git-Branch>
+              <X-Git-Tag>${git.tag}</X-Git-Tag>
+              <X-Git-Commits-Count>${git.commitsCount}</X-Git-Commits-Count>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <autoversionsubmodules>true</autoversionsubmodules>
+          <!-- Needed by multi-module projects, see http://jira.codehaus.org/browse/MJAVADOC-276 -->
+          <preparationGoals>clean verify install</preparationGoals>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <generateBundle>true</generateBundle>
+          <licenseName>apache_v2</licenseName>
+          <failIfWarning>true</failIfWarning>
+          <useMissingFile>true</useMissingFile>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>
