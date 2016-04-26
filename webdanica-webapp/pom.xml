@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>dk.netarkivet</groupId>
+    <artifactId>webdanica</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webdanica-webapp</artifactId>
+
+  <packaging>jar</packaging>
+
+  <name>Web Danica WebApp .WAR</name>
+  <description>Web Danica WebApp .WAR</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.lidalia</groupId>
+      <artifactId>sysout-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-gzip</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-arc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-warc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jwat</groupId>
+      <artifactId>jwat-archive</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.antiaction</groupId>
+      <artifactId>common</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <!--systemPath>C:\Data\[Java-work]\workspace\common\dist\lib\antiaction-commons.jar</systemPath-->
+      <systemPath>${basedir}/lib/antiaction-commons.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.antiaction</groupId>
+      <artifactId>common-servlet</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <!--systemPath>C:\Data\[Java-work]\workspace\common-servlet\target\common-servlet-0.1.0-SNAPSHOT.jar</systemPath-->
+      <systemPath>${basedir}/lib/common-servlet-0.1.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.antiaction</groupId>
+      <artifactId>common-html</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <!--systemPath>C:\Data\[Java-work]\workspace\common-html\target\common-html-0.1.0-SNAPSHOT.jar</systemPath-->
+      <systemPath>${basedir}/lib/common-html-0.1.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.antiaction</groupId>
+      <artifactId>common-template-engine</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <!--systemPath>C:\Data\[Java-work]\workspace\common-template-engine\target\common-template-engine-0.1.0-SNAPSHOT.jar</systemPath-->
+      <systemPath>${basedir}/lib/common-template-engine-0.2.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.antiaction</groupId>
+      <artifactId>common-json</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>javax.mail-api</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- needs extra dependencies: objenesis & hamcrest -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>  
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludeScope>provided</excludeScope>
+              <!--excludeTransitive>true</excludeTransitive-->
+              <!--includeGroupIds>com.antiaction</includeGroupIds-->
+              <excludeGroupIds>junit,org.hamcrest</excludeGroupIds>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

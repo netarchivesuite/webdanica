@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>dk.netarkivet</groupId>
+    <artifactId>webdanica</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webdanica-webapp-war</artifactId>
+
+  <packaging>war</packaging>
+
+  <name>Web Danica WebApp .WAR</name>
+  <description>Web Danica WebApp .WAR</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>dk.netarkivet</groupId>
+      <artifactId>webdanica-webapp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <executions>
+          <execution>
+            <id>default-war</id>
+            <phase>none</phase>
+          </execution>
+        </executions>                    
+      </plugin>
+
+      <!-- package the jar, artifacts and bin scripts into zip and tar files for release -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>distro-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <attach>true</attach>
+              <appendAssemblyId>false</appendAssemblyId>
+              <classifier>prod</classifier>
+              <finalName>${project.artifactId}-${project.version}</finalName>
+              <descriptors>
+                <descriptor>src/main/assembly/release.xml</descriptor>
+              </descriptors>
+              <tarLongFileMode>gnu</tarLongFileMode>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Maven Tomcat Plugin -->
+<!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <configuration>
+-->
+          <!--warFile>Probe.war</warFile-->
+          <!--url>http://kb-test-dab-01.kb.dk/manager</url-->
+          <!--url>http://localhost:9080/manager</url-->
+          <!--server>TomcatServer-REST</server-->
+<!--
+          <url>http://kb-test-dab-01.kb.dk:9080/manager</url>
+          <server>TomcatServer</server>
+          <path>/</path>
+        </configuration>
+      </plugin>
+-->
+    </plugins>
+  </build>
+</project>

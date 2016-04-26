@@ -29,23 +29,23 @@
       <comments>A business-friendly OSS license</comments>
     </license>
   </licenses>
-<!--
+
   <scm>
-    <connection>scm:hg:http://bitbucket.org/nclarkekb/jwat</connection>
-    <developerConnection>scm:hg:https://bitbucket.org/nclarkekb/jwat</developerConnection>
-    <url>http://bitbucket.org/nclarkekb/jwat</url>
+    <connection>scm:git:https://github.com/netarchivesuite/webdanica.git</connection>
+    <developerConnection>scm:git:https://github.com/netarchivesuite/webdanica.git</developerConnection>
+    <url>https://github.com/netarchivesuite/webdanica</url>
   </scm>
 
   <issueManagement>
     <system>jira</system> 
-    <url>https://sbforge.org/jira/browse/JWAT</url> 
+    <url>https://sbforge.org/jira/browse/WEBDAN</url> 
   </issueManagement>
 
   <ciManagement>
     <system>jenkins</system>
-    <url>https://sbforge.org/jenkins/view/JWAT/</url>
+    <url>https://sbforge.org/jenkins/view/WEBDANICA/</url>
   </ciManagement>
--->
+
   <developers>
     <developer>
       <name>Søren Vejrup Carlsen</name>
@@ -81,6 +81,8 @@
 
   <modules>
     <module>webdanica-core</module>
+    <module>webdanica-webapp</module>
+    <module>webdanica-webapp-war</module>
   </modules>
 
   <dependencyManagement>
