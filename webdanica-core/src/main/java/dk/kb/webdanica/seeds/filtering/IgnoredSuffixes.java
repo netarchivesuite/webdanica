@@ -5,7 +5,7 @@ package dk.kb.webdanica.seeds.filtering;
 public class IgnoredSuffixes {
 
 	 private static String[] ignoredExts = new String[]{
-             ".jpg", ".avi", ".waw", ".gif",
+             ".jpg", ".avi", ".waw", ".gif", ".ico",
              ".bmp", ".doc", ".docx", ".dot", 
              ".eps", ".exe", ".jp2", ".jpe",".jpeg",
              ".mdb", ".mov", ".mp3", ".mp4", ".mpeg",
