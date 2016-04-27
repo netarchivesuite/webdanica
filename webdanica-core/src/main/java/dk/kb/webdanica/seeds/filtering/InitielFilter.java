@@ -27,17 +27,28 @@ public class InitielFilter {
 		String line = null;
 		int rejects = 0;
 		int accepted = 0;
+		int redirects = 0;
 		while ((line = br.readLine()) != null)  {
 			//System.out.println(line);
 			if (reject(line)) {
 				rejects++;
 			} else {
 				accepted++;
+				String redirected = ResolveRedirects.getNewLocation(line, 1);
+				if (redirected != null && isProperUrl(redirected)) {
+					redirects++;
+				}
+				
 			}
 		}
 		System.out.println("rejects: " + rejects);
 		System.out.println("accepted: " + accepted);
+		System.out.println("redirects: " + redirects);
 	}
+	private static boolean isProperUrl(String redirected) {
+		return !reject(redirected);
+	   
+    }
 	public static boolean reject(String seed) {
 		
 		try {
