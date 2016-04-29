@@ -77,6 +77,7 @@
     <slf4j.version>1.7.7</slf4j.version>
     <sysout-over-slf4j.version>1.0.2</sysout-over-slf4j.version>
     <logback.version>1.0.13</logback.version>
+    <derby.version>10.12.1.1</derby.version>
   </properties>
 
   <modules>

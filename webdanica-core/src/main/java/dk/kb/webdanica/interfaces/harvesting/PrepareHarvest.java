@@ -29,6 +29,14 @@ import dk.netarkivet.harvester.webinterface.HarvestStatusQuery;
  */
 public class PrepareHarvest {
 	
+	public static void main (String[] args) {
+		//-Ddk.netarkivet.settings.file=/home/test/WEBDANICA/conf/settings_GUIApplication.xml 
+		//-Ddk.netarkivet.settings.file=/home/svc/devel/webdanica/webdanica-core/src/resources/settings_Webdanica.xml
+		PrepareHarvest ph = new PrepareHarvest("http://www.familien-carlsen.dk", "test-" + System.currentTimeMillis(), "Once");
+	}
+	
+	
+	
 	final String seed;
 	private String evName;
 	
@@ -48,7 +56,7 @@ public class PrepareHarvest {
 		 seedSet.add(seed);
 		 long maxBytes = 10000L; // What to write here, if we want to disable quotaenforcing
 		 int maxObjects = 10000; // What to write here, if we want to disable quotaenforcing
-		 String specialTemplateName =  "orderTemplate";
+		 String specialTemplateName =  "webdanica_order";
 	     eventHarvest.addSeeds(seedSet, specialTemplateName, maxBytes, maxObjects, attributeValues);
 		 
 		 eventHarvest.setActive(true);
