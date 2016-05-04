@@ -4,7 +4,8 @@
       <applicationInstanceId/>
       <remoteFile>
         <class>dk.netarkivet.common.distribute.HTTPRemoteFile</class>
-      <port>8040</port></remoteFile>
+      <!-- The port 8049 should not be used by other processes in netarchivesuite --> 
+      <port>8049</port></remoteFile>
       <jms>
         <class>dk.netarkivet.common.distribute.JMSConnectionSunMQ</class>
         <broker>localhost</broker>

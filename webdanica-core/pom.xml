@@ -29,6 +29,13 @@
       <version>5.1</version>
     </dependency>
 
+   <dependency>
+      <groupId>org.netarchivesuite</groupId>
+      <artifactId>archive-core</artifactId>
+      <version>5.1</version>
+    </dependency>
+
+
     <dependency>
       <groupId>org.apache.pig</groupId>
       <artifactId>pig</artifactId>
