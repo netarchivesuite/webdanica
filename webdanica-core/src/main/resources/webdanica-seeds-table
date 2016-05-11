@@ -1,0 +1,29 @@
+CREATE TABLE seeds (
+url text, 
+redirected_url text, 
+status int,  // klar-til-høstning, høstet, høstning-fejlet, klar-til-kriterie-analyse
+hostname text, 
+status_reason text, // begrundelse for denne tilstand
+tld text, 
+danica int, // ja, nej, ved ikke, ??
+inserted_time timetamp,
+C1 text,
+C2 text,
+C20 text,
+exported boolean,
+PRIMARY KEY (url));
+
+CREATE TABLE domains (
+tld text,
+blacklisted boolean
+blacklisted_date timestamp,
+PRIMARY KEY (tld));
+
+// Replication  set here to 3; is not possible with only one node
+
+CREATE KEYSPACE webdanica
+    WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 }
+    AND DURABLE_WRITES = false;
+
+
+
