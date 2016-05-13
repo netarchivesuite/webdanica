@@ -26,13 +26,15 @@ public class CassandraTester {
 		String hostname = "127.0.0.1";
 		String keyspace = "webdanica";
 		Cluster cluster = Cluster.builder().addContactPoint(hostname).build();
+		
 		Session session = null;
 		try {
-			session = cluster.connect(keyspace);	
+			session = cluster.connect(keyspace);
 		} catch (InvalidQueryException e) {
 			System.err.println("Unable to connect to Cassandra keyspace '" + keyspace 
 					+ "' at " + hostname + ": " + e);
 		}
+		
 		
 		// Insert one record into the users table
 		//session.execute("INSERT INTO users (lastname, age, city, email, firstname) VALUES ('Jones', 35, 'Austin', 'bob@example.com', 'Bob')");

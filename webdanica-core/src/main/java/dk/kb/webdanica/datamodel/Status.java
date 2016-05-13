@@ -1,0 +1,12 @@
+package dk.kb.webdanica.datamodel;
+
+public enum Status {
+	NEW,
+	READY_FOR_HARVESTING,
+	HARVESTING_IN_PROGRESS,
+	HARVESTING_FINISHED,
+	READY_FOR_ANALYSIS,
+	ANALYSIS_COMPLETED,
+	BLACKLISTED
+}
+

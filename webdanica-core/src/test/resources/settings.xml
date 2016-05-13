@@ -34,6 +34,11 @@
 		<suffix>.tiff</suffix>             
 		<suffix>.wps</suffix>
 		<suffix>.xls</suffix>
-	</ignoredSuffixes>	             
+	</ignoredSuffixes>
+        <ignoredProtocols>
+        <protocol>mailto</protocol>
+        <protocol>vimeo</protocol>
+        <protocol>data</data>
+	</ignoredProtocols>	             
 </seeds>
 </settings>
