@@ -26,6 +26,7 @@ import dk.kb.webdanica.utils.UrlUtils;
  *  TODO Program is called with -Dwebdanica.settings.file=/full/path/to/webdanica_settings_file
  *  
  *  TESTED with webdanica-core/src/main/resources/outlink-reportfile-final-1460549754730.txt
+ *  TESTED with webdanica-core/src/main/resources/outlinksWithAnnotations.txt
  */
 public class LoadSeeds {
 
@@ -67,6 +68,8 @@ public class LoadSeeds {
         	fr = new BufferedReader(new FileReader(seedsfile));
 	        while ((line = fr.readLine()) != null) {
 	            trimmedLine = line.trim();
+	            trimmedLine = removeAnnotationsIfNecessary(trimmedLine);
+	         
 	            linecount++;
 	            URL_REJECT_REASON rejectreason = UrlUtils.isRejectableURL(trimmedLine);
 	            if (rejectreason == URL_REJECT_REASON.NONE) {
@@ -86,6 +89,7 @@ public class LoadSeeds {
 	            
 	        }
 	        // Add a logfile entry here
+	        // TODO The statistics should be part of logIngest entry 
 	        logentries.add("INGEST-STATISTICS: lines processed=" + linecount + ", inserted=" 
 	        + insertedcount + ", rejected=" + rejectedcount + " of which duplicates=" +  duplicatecount);
         } catch (IOException e) {
@@ -98,6 +102,15 @@ public class LoadSeeds {
 	    logIngestStats(logentries); 
 	    return logentries;
 	}
+
+	private String removeAnnotationsIfNecessary(String trimmedLine) {
+	    String[] trimmedParts = trimmedLine.split(" ");
+	    if (trimmedParts.length > 1) {
+	    	return trimmedParts[0];
+	    } else {
+	    	return trimmedLine;
+	    }
+    }
 
 	private void logIngestStats(List<String> logentries) {
 			IngestLogDAO dao = IngestLogDAO.getInstance();
