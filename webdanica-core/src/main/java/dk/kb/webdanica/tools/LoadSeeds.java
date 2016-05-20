@@ -27,6 +27,7 @@ import dk.kb.webdanica.utils.UrlUtils;
  *  
  *  TESTED with webdanica-core/src/main/resources/outlink-reportfile-final-1460549754730.txt
  *  TESTED with webdanica-core/src/main/resources/outlinksWithAnnotations.txt
+ *  TESTED with webdanica-core/src/main/resources/webdanica-seeds.table
  */
 public class LoadSeeds {
 
@@ -44,14 +45,15 @@ public class LoadSeeds {
 		}
 		File seedsfile = new File(args[0]);
 		if (!seedsfile.isFile()){
-			System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "'");
+			System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
 			System.exit(1);
 		}
 		LoadSeeds loadseeds = new LoadSeeds(seedsfile);
 		List<String> logentries = loadseeds.processSeeds();
+		/*
 		for (String f: logentries) {
 			System.out.println(f);
-		}
+		}*/
 	}
 	
 	public List<String> processSeeds() {
@@ -68,6 +70,7 @@ public class LoadSeeds {
         	fr = new BufferedReader(new FileReader(seedsfile));
 	        while ((line = fr.readLine()) != null) {
 	            trimmedLine = line.trim();
+	            
 	            trimmedLine = removeAnnotationsIfNecessary(trimmedLine);
 	         
 	            linecount++;
@@ -96,10 +99,10 @@ public class LoadSeeds {
 	        e.printStackTrace();
         } finally {
         	IOUtils.closeQuietly(fr);
+        	dao.close();
         }
-		
-	    dao.close();
-	    logIngestStats(logentries); 
+	
+	    logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount); 
 	    return logentries;
 	}
 
@@ -112,9 +115,9 @@ public class LoadSeeds {
 	    }
     }
 
-	private void logIngestStats(List<String> logentries) {
+	private void logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
 			IngestLogDAO dao = IngestLogDAO.getInstance();
-			IngestLog log = new IngestLog(logentries, seedsfile.getName());
+			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
 			dao.close();
 		}

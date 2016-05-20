@@ -11,16 +11,28 @@ public class IngestLog {
 	private Date insertedDate;
 	private String filename;
 	private List<String> logEntries;
+	private long linecount;
+	private long insertedcount;
+	private long rejectedcount;
+	private long duplicatecount;
 	
-	public IngestLog(List<String> entries, String filename) {
+	public IngestLog(List<String> entries, String filename, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
 		this.logEntries = entries;
 		this.filename = filename;
+		this.linecount= linecount;
+		this.insertedcount = insertedcount;
+		this.rejectedcount = rejectedcount;
+		this.duplicatecount= duplicatecount;
 	}
 	
-	public IngestLog(List<String> entries, String filename, Date insertedDate) {
+	public IngestLog(List<String> entries, String filename, Date insertedDate, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
 		this.filename = filename;
 		this.logEntries = entries;
 		this.insertedDate = insertedDate;
+		this.linecount= linecount;
+		this.insertedcount = insertedcount;
+		this.rejectedcount = rejectedcount;
+		this.duplicatecount= duplicatecount;
 	}
 	
 	public String getFilename() {
@@ -34,6 +46,24 @@ public class IngestLog {
 	public List<String> getLogEntries() {
 		return logEntries;
 	}
+
+	public long getLinecount() {
+	    return linecount;
+    }
+
+		public long getInsertedcount() {
+	    return insertedcount;
+    }
+
+	public long getRejectedcount() {
+	    return rejectedcount;
+    }
+
+	
+	public long getDuplicatecount() {
+	    return duplicatecount;
+    }
+
 	
 /*
 	

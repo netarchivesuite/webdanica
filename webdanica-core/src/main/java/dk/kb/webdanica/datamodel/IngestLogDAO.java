@@ -16,7 +16,7 @@ import com.datastax.driver.core.Session;
   CREATE table ingestLog (
    logLines list<text>,
    filename text,
-   inserted_date timestamp,
+   inserted_date long, //millis since epoch
    PRIMARY KEY (inserted_date));  
  * 
  */
@@ -27,9 +27,20 @@ public class IngestLogDAO implements Database {
 		List<String> entries = new ArrayList<String>();
 		entries.add("Line one in sample loglist");
 		entries.add("Line two in sample loglist");
-		IngestLog log = new IngestLog(entries,"unknown");
-		dao.insertLog(log);
-		dao.close();
+		long linecount=2;
+		long rejectedcount=2;
+		long insertedcount=0;
+		long duplicatecount=2;
+		try {
+			IngestLog log = new IngestLog(entries,"unknown",  linecount, insertedcount, rejectedcount, duplicatecount) ;
+			dao.insertLog(log);
+			for (Long date: dao.getIngestDates()) {
+				System.out.println(new Date(date));
+			}
+			
+		} finally {
+			dao.close();
+		}
 	}
 
 	static IngestLogDAO instance;
@@ -53,11 +64,12 @@ public class IngestLogDAO implements Database {
 	
 	public void insertLog(IngestLog log){
 		init();
-		Date insertedDate = log.getDate();
-		if (insertedDate ==  null) {
-			insertedDate = new Date();
+		Long insertedDate = System.currentTimeMillis();
+		if (log.getDate() != null) {
+			insertedDate = log.getDate().getTime();
 		}
-		BoundStatement bound = preparedInsert.bind(log.getLogEntries(), log.getFilename(), insertedDate);
+		
+		BoundStatement bound = preparedInsert.bind(log.getLogEntries(), log.getFilename(), insertedDate, log.getLinecount(), log.getInsertedcount(), log.getRejectedcount(), log.getDuplicatecount());
 		ResultSet results = session.execute(bound); 
 		// TODO can we check, if the insert was successful?
 		// Possible solution: http://stackoverflow.com/questions/21147871/cassandara-java-driver-how-are-insert-update-and-delete-results-reported
@@ -68,14 +80,15 @@ public class IngestLogDAO implements Database {
 		}
 	}
 	
-	/*
-	public List<Date> getIngestDates() {
+	public List<Long> getIngestDates() { // as represented as millis from epoch
 		init();
-		ResultSet results = session.execute("SELECT inserted_date from ingestLog");	
-	}*/
-	
-	
-	
+		ResultSet results = session.execute("SELECT inserted_date from ingestLog");
+		List<Long> ingestDates = new ArrayList<Long>();
+		for (Row row: results.all()) {
+				ingestDates.add(row.getLong("inserted_date"));
+		}
+		return ingestDates;
+	}
 	
 	/** Initialize session and preparedStatement if necessary */
 	private void init() {
@@ -83,7 +96,7 @@ public class IngestLogDAO implements Database {
 			session = db.getSession();
 		}
 		if (preparedInsert == null) {
-			preparedInsert = session.prepare("INSERT INTO ingestLog (logLines, filename, inserted_date) VALUES (?,?, ?) IF NOT EXISTS");
+			preparedInsert = session.prepare("INSERT INTO ingestLog (logLines, filename, inserted_date, linecount, insertedcount, rejectedcount, duplicatecount) VALUES (?, ?, ?, ?, ?, ?, ?) IF NOT EXISTS");
 		}
 	}
 

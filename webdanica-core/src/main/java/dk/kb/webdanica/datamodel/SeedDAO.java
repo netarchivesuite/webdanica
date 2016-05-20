@@ -30,17 +30,18 @@ public class SeedDAO {
 	
 	/*
 	public List<Seed> getSeeds(Status status) {
+		
 		db.getSession().execute()
-	}
-	*/
+	}*/
+	
 	
 	public boolean insertSeed(Seed singleSeed) {
 		init();	
 		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getState().ordinal());
-		ResultSet rs = session.execute(bound); // TODO can we check, if the insert was successful?
+		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		boolean insertFailed = row.getColumnDefinitions().contains("url");
-		return !insertFailed; 
+		return !insertFailed; // Was the insert successful?
 	}
 
 	private void init() {
@@ -48,7 +49,7 @@ public class SeedDAO {
 			session = db.getSession();
 		}
 		if (preparedInsert == null) {
-			preparedInsert = session.prepare("INSERT INTO seeds (url, status) VALUES (?,?) IF NOT EXISTS");
+			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?) IF NOT EXISTS");
 		}
     }
 

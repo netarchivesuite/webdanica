@@ -21,7 +21,7 @@ public class UrlUtils {
 			URI url = new URI(seed);
 			String scheme = url.getScheme();
 			if (!isValidScheme(scheme)) {
-				return URL_REJECT_REASON.BAD_SCHEME;
+				return URL_REJECT_REASON.BAD_SCHEME; // wrong scheme and scheme == null
 			}
 			String host = url.getHost();
 			String domainName = DomainUtils.domainNameFromHostname(host);
@@ -30,7 +30,7 @@ public class UrlUtils {
 			}
 		} catch (URISyntaxException e) {
 			//LOG.
-			e.printStackTrace();
+			//e.printStackTrace();
 			return URL_REJECT_REASON.BAD_URL; // Bad URL
 		}
 		return URL_REJECT_REASON.NONE;
@@ -48,6 +48,6 @@ public class UrlUtils {
 	    validSchemesSet.add("https");
 	    validSchemesSet.add("http");
 	    validSchemesSet.add("ftp");
-	    return validSchemesSet.contains(scheme.toLowerCase());  
+	    return scheme != null && validSchemesSet.contains(scheme.toLowerCase());  
     }
 }
