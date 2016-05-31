@@ -5,12 +5,14 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.workflow;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import dk.kb.webdanica.webapp.Environment;
 
 public abstract class WorkThreadAbstract implements Runnable {
 

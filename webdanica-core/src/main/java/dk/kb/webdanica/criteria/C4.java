@@ -23,7 +23,10 @@ public class C4 extends EvalFunc<String> {
             }
             String result;
             String text = (String) input.get(0);
-            String language = new LanguageIdentifier(text).getLanguage();
+            //String language = new LanguageIdentifier(text).getLanguage();
+            LanguageIdentifier li = new LanguageIdentifier(text);
+            String language = li.getLanguage();
+            boolean certain = li.isReasonablyCertain();
             result = "C4: " + language;
             if (language.equalsIgnoreCase("da") || language.equalsIgnoreCase("no")) {
                 result += ", " + C5a.computeC5a(text);

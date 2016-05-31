@@ -90,11 +90,11 @@ public class IndexResource implements ResourceAbstract {
                 resp.getCharacterEncoding());
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("Webdanica").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("Webdanica " + environment.version).toString());
         }
 
         if (navbarPlace != null) {

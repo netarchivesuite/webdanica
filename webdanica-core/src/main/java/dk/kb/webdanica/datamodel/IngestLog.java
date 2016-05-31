@@ -1,10 +1,11 @@
 package dk.kb.webdanica.datamodel;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
+
+
 //https://datastax.github.io/java-driver/manual/#cql-to-java-type-mapping
+//TODO have altered inserted_date from timestamp to bigint, because conversion from timestamp via LocalDate to Date could be a problem
 
 public class IngestLog {
 
@@ -64,17 +65,17 @@ public class IngestLog {
 	    return duplicatecount;
     }
 
-	
-/*
-	
-	public ByteBuffer getBlob {
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(logEntry);
-		ByteBuffer bb = ByteBuffer.allocate(sb.capacity());
-		
-		bb.put(sb.toString().getBytes(Charset.forName("UTF8")));
-	    return bb;
-    }
-	
-	*/
+		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " entries\n");
+		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
+		sb.append("loglines: \n");
+		int count=0;
+		for (String logline: logEntries) {
+			count++;
+			sb.append("logline #" + count + ": " + logline + "\n");  
+		}
+				
+		return sb.toString();
+	}
 }

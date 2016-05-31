@@ -49,14 +49,13 @@ public class LoadSeeds {
 			System.exit(1);
 		}
 		LoadSeeds loadseeds = new LoadSeeds(seedsfile);
-		List<String> logentries = loadseeds.processSeeds();
-		/*
-		for (String f: logentries) {
-			System.out.println(f);
-		}*/
+		IngestLog res = loadseeds.processSeeds();
+		System.out.println(res);
 	}
-	
-	public List<String> processSeeds() {
+	/**
+	 * @return the ingestLog for the file just processed
+	 */
+	public IngestLog processSeeds() {
 		SeedDAO dao = SeedDAO.getInstance();
 		String line;
         long linecount=0L;
@@ -91,10 +90,6 @@ public class LoadSeeds {
 	            }
 	            
 	        }
-	        // Add a logfile entry here
-	        // TODO The statistics should be part of logIngest entry 
-	        logentries.add("INGEST-STATISTICS: lines processed=" + linecount + ", inserted=" 
-	        + insertedcount + ", rejected=" + rejectedcount + " of which duplicates=" +  duplicatecount);
         } catch (IOException e) {
 	        e.printStackTrace();
         } finally {
@@ -102,8 +97,8 @@ public class LoadSeeds {
         	dao.close();
         }
 	
-	    logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount); 
-	    return logentries;
+	    IngestLog logresult = logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount); 
+	    return logresult;
 	}
 
 	private String removeAnnotationsIfNecessary(String trimmedLine) {
@@ -115,10 +110,11 @@ public class LoadSeeds {
 	    }
     }
 
-	private void logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
+	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
 			IngestLogDAO dao = IngestLogDAO.getInstance();
 			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
 			dao.close();
+			return log;
 		}
 }

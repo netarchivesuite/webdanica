@@ -1,6 +1,6 @@
 package dk.kb.webdanica.datamodel;
 
-import java.util.List;
+import java.util.Date;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -8,6 +8,11 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
+/**
+ * DAO class for the seeds table.
+ * @author svc
+ *
+ */
 public class SeedDAO {
 		
 	static SeedDAO instance;
@@ -37,7 +42,8 @@ public class SeedDAO {
 	
 	public boolean insertSeed(Seed singleSeed) {
 		init();	
-		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getState().ordinal());
+		Date insertedDate = new Date();
+		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getState().ordinal(), insertedDate);
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		boolean insertFailed = row.getColumnDefinitions().contains("url");
@@ -49,13 +55,11 @@ public class SeedDAO {
 			session = db.getSession();
 		}
 		if (preparedInsert == null) {
-			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?) IF NOT EXISTS");
+			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?,?) IF NOT EXISTS");
 		}
     }
 
 	public void close() {
 	    db.close();
     }
-	
-	
 }

@@ -43,6 +43,9 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
+import dk.kb.webdanica.webapp.workflow.WorkProgress;
+import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
+
 public class StatusResource implements ResourceAbstract {
 
     private static final Logger logger = Logger.getLogger(StatusResource.class.getName());

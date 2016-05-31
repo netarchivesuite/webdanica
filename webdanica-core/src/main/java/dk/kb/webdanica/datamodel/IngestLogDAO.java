@@ -14,7 +14,7 @@ import com.datastax.driver.core.Session;
  * DAO for logging skipped entries during ingest in a single entry.
   
   CREATE table ingestLog (
-   logLines list<text>,
+   loglines list<text>,
    filename text,
    inserted_date long, //millis since epoch
    PRIMARY KEY (inserted_date));  
@@ -36,6 +36,8 @@ public class IngestLogDAO implements Database {
 			dao.insertLog(log);
 			for (Long date: dao.getIngestDates()) {
 				System.out.println(new Date(date));
+				IngestLog readLog = dao.readIngestLog(date);
+				System.out.println(readLog);
 			}
 			
 		} finally {
@@ -74,7 +76,7 @@ public class IngestLogDAO implements Database {
 		// TODO can we check, if the insert was successful?
 		// Possible solution: http://stackoverflow.com/questions/21147871/cassandara-java-driver-how-are-insert-update-and-delete-results-reported
 		Row row = results.one();
-		boolean insertFailed = row.getColumnDefinitions().contains("logLines");
+		boolean insertFailed = row.getColumnDefinitions().contains("loglines");
 		if (insertFailed){
 			System.out.println("Insert failed");
 		}
@@ -88,6 +90,20 @@ public class IngestLogDAO implements Database {
 				ingestDates.add(row.getLong("inserted_date"));
 		}
 		return ingestDates;
+	}
+	
+	public IngestLog readIngestLog(Long timestamp) {
+		PreparedStatement statement = getSession().prepare("SELECT * FROM ingestLog WHERE inserted_date=?");
+		BoundStatement bStatement = statement.bind(timestamp);
+		ResultSet results = session.execute(bStatement);
+		Row singleRow = results.one();
+		IngestLog retrievedLog = new IngestLog(singleRow.getList("logLines", String.class), 
+				singleRow.getString("filename"), new Date(singleRow.getLong("inserted_date")), 
+				singleRow.getLong("linecount"), 
+				singleRow.getLong("insertedcount"),
+				singleRow.getLong("rejectedcount"),
+				singleRow.getLong("duplicatecount"));
+		return retrievedLog;
 	}
 	
 	/** Initialize session and preparedStatement if necessary */
