@@ -10,6 +10,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
+import dk.kb.webdanica.exceptions.WebdanicaException;
+
 /**
  * DAO for logging skipped entries during ingest in a single entry.
   

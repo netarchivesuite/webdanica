@@ -240,7 +240,7 @@ public class Settings {
 			return new String[] {val};
 		}
 		if (fileSettingsXmlList.isEmpty()) {
-			System.out.print("The list of loaded data settings is empty. Is this OK?");
+			System.out.print("The list of loaded webdanica settings is empty. Is this OK?");
 		}
 		// Key not in System.properties try loaded data instead
 		synchronized (fileSettingsXmlList) {

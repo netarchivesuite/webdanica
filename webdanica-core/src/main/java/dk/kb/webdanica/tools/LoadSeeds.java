@@ -3,7 +3,6 @@ package dk.kb.webdanica.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +47,11 @@ public class LoadSeeds {
 			System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
 			System.exit(1);
 		}
+		
+		System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'"); 
+		System.out.println();
 		LoadSeeds loadseeds = new LoadSeeds(seedsfile);
+		
 		IngestLog res = loadseeds.processSeeds();
 		System.out.println(res);
 	}
