@@ -90,7 +90,7 @@ public class LoadSeeds {
 	            }
 	            
 	        }
-        } catch (IOException e) {
+        } catch (Throwable e) {
 	        e.printStackTrace();
         } finally {
         	IOUtils.closeQuietly(fr);
