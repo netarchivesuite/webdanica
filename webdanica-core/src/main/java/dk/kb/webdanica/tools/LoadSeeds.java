@@ -111,10 +111,14 @@ public class LoadSeeds {
     }
 
 	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
-			IngestLogDAO dao = IngestLogDAO.getInstance();
+		IngestLogDAO dao = null;
+		try {
+			dao = IngestLogDAO.getInstance();
 			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
-			dao.close();
 			return log;
+		} finally {
+			dao.close();
 		}
+	}
 }
