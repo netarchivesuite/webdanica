@@ -179,6 +179,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     @Override
     public User validateUserCredentials(String id, String password) {
         User current_user = null;
+/*        
         Connection conn = null;
         try {
             conn = environment.dataSource.getConnection();
@@ -202,6 +203,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
         } else {
             logger.info("No known user '" + id + "' with the given credentials");
         }
+        
+ */       
+        
         return current_user;
     }
 

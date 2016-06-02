@@ -1,0 +1,60 @@
+<@master file="positive_master.html">
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+function select_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = true;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = true;
+    }
+  }
+}
+
+function deselect_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = false;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = false;
+    }
+  }
+}
+    </script>
+</place>
+
+<place placeholder="content">
+<!--
+<a href="#" class="btn" onClick="select_all(document.myform.domain_check_list); return false;">Vælg alle</a>
+<a href="#" class="btn" onClick="deselect_all(document.myform.domain_check_list); return false;">Fravælg alle</a>
+<button type="submit" name="submit" value="accept" class="btn btn-success"><i class="icon-white icon-thumbs-up"></i> Godkend</button>
+<button type="submit" name="submit" value="reject" class="btn btn-inverse"><i class="icon-white icon-thumbs-down"></i> Afvis</button>
+<button type="submit" name="submit" value="delete" class="btn btn-danger"><i class="icon-white icon-trash"></i> Slet</button>
+-->
+
+<form class="form-horizontal" action="?" id="myform" name="myform" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<placeholder id="action_buttons" />
+<placeholder id="pagination" />
+<placeholder id="domains" />
+<placeholder id="pagination2" />
+</form>
+
+<!--
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>id</th>
+        <th>domain</th>
+        <th>status</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+-->
+
+</place>

@@ -78,4 +78,12 @@ public class IngestLog {
 				
 		return sb.toString();
 	}
+	
+	public String getStatistics() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " entries\n");
+		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
+		return sb.toString();
+	}
+	
 }

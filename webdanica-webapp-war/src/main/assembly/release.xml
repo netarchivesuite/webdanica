@@ -9,9 +9,11 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/../webdanica-webapp/src/main/webapp/</directory>
+<!--
       <excludes>
         <exclude>/**/web.xml</exclude>
       </excludes>
+-->
       <outputDirectory>/</outputDirectory>
     </fileSet>
     <fileSet>

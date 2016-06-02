@@ -1,0 +1,58 @@
+<@master file="urls_master.html">
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+var current_state = 1;
+function switchToState(state) {
+	if (state != current_state) {
+		$("#state_"+current_state).attr("class", "");
+		current_state = state;
+		$("#state_"+current_state).attr("class", "active");
+
+		//window.location.href = "url?status=" + state;
+	}
+}
+    </script>
+</place>
+
+<place placeholder="content">
+
+    <div class="container-fluid">
+      <form class="form-horizontal" action="?" name="insert_form" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+      <div class="row-fluid">
+        <div class="span8">
+
+<placeholder id="alert" />
+
+          <div class="row-fluid">
+            <div class="span2 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="nosys">Sysno</label>
+                <div class="controls">
+                  <input type="text" disabled="1" id="sysno" name="sysno" value="" placeholder="Sysno">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span12 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">URL</label>
+                <div class="controls">
+                  <input type="text" id="url" name="url" value="" placeholder="Indtast URL">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+<placeholder id="buttons" />
+
+        </div><!--/span-->
+      </div><!--/row-->
+      </form>
+    </div><!--/.fluid-container-->
+
+<placeholder id="content" />
+
+</place>

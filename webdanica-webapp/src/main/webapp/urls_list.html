@@ -1,0 +1,63 @@
+<@master file="urls_master.html">
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+<!--
+function select_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = true;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = true;
+    }
+  }
+}
+
+function deselect_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = false;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = false;
+    }
+  }
+}
+
+function submitForm(formId) {
+	document.forms["myform"].submit();
+	document.myform.submit();
+    var oForm = document.getElementById(formId);
+    if (oForm) {
+        oForm.submit();
+    }
+    else {
+        alert("DEBUG - could not find element " + formId);
+    }
+}
+-->
+    </script>
+</place>
+
+<place placeholder="state_menu">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Tilstande</li>
+                <placeholder id="state_menu" />
+            </ul>
+          </div><!--/.well -->
+<place>
+
+<place placeholder="content">
+            <h3><placeholder id="heading" /></h3>
+<form class="form-horizontal" action="?" id="myform" name="myform" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<placeholder id="action_buttons" />
+<placeholder id="alert" />
+<placeholder id="pagination" />
+<placeholder id="status" />
+<placeholder id="dump" />
+<placeholder id="pagination2" />
+</form>
+
+</place>

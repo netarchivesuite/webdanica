@@ -13,15 +13,16 @@
 
   <packaging>jar</packaging>
 
-  <name>Web Danica WebApp .WAR</name>
-  <description>Web Danica WebApp .WAR</description>
+  <name>Web Danica WebApp</name>
+  <description>Web Danica WebApp</description>
 
   <dependencies>
     <dependency>
       <groupId>dk.netarkivet</groupId>
-      <artifactId>webdanica-webapp</artifactId>
+      <artifactId>webdanica-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>

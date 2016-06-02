@@ -1,0 +1,81 @@
+<@master file="users_master.html">
+
+<place placeholder="content">
+    <div class="container-fluid">
+      <form class="form-horizontal" action="?" name="insert_form" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+      <div class="row-fluid">
+        <div class="span8">
+
+<placeholder id="alert" />
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Brugernavn</label>
+                <div class="controls">
+                  <input type="text" id="username" name="username" placeholder="Indtast brugernavn">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Navn</label>
+                <div class="controls">
+                  <input type="text" id="name" name="name" placeholder="Indtast navn">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Email</label>
+                <div class="controls">
+                  <input type="text" id="email" name="email" placeholder="Indtast email">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Organisation</label>
+                <div class="controls">
+                  <placeholder id="organizations_input"/>
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label">Aktiv</label>
+                  <div class="controls">
+                    <input type="checkbox" name="active" value="active">
+                  </div>
+                </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <div class="controls">
+                  <button type="submit" name="submit" value="add" class="btn btn-primary">Gem ændringer</button>
+                  <button type="reset" class="btn">Nulstil</button>
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+        </div><!--/span-->
+      </div><!--/row-->
+      </form>
+    </div><!--/.fluid-container-->
+</place>

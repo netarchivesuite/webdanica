@@ -1,0 +1,103 @@
+<@master file="urls_master.html">
+
+<place placeholder="styles">
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+.sidebar-nav {
+  padding: 9px 0;
+}
+
+@media (max-width: 980px) {
+  /* Enable use of floated navbar text */
+  .navbar-text.pull-right {
+	float: none;
+	padding-left: 5px;
+	padding-right: 5px;
+  }
+}
+
+
+
+.custom-form input[class*="span"] {
+    width: 146px;
+}
+
+.center {
+    text-align:center;
+}
+
+@media (max-width: 767px) {
+    .custom-form input[class*="span"], select[class*="span"] {
+        margin-bottom:10px;
+        width:100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    .custom-form.span8 {
+        width:548px;
+    }
+}
+</place>
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+    </script>
+</place>
+
+<place placeholder="state_menu">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Tilstande</li>
+                <placeholder id="state_menu" />
+            </ul>
+          </div><!--/.well -->
+<place>
+
+<place placeholder="content">
+    <div class="container-fluid">
+      <form class="form-horizontal" action="?" name="insert_form" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+      <div class="row-fluid">
+        <div class="span8">
+
+<placeholder id="alert" />
+
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Sysno</label>
+                <div class="controls">
+                  <input type="text" id="sysno" name="sysno" placeholder="Indtast sysno">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">URL</label>
+                <div class="controls">
+                  <input type="text" id="url" name="url" placeholder="Indtast URL">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <div class="controls">
+                  <button type="submit" name="submit" value="add" class="btn btn-primary">Opret</button>
+                  <button type="reset" class="btn">Nulstil</button>
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+        </div><!--/span-->
+      </div><!--/row-->
+      </form>
+    </div><!--/.fluid-container-->
+</place>

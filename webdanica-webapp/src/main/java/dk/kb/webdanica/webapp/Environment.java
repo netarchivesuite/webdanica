@@ -33,6 +33,12 @@ import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 import com.antiaction.multithreading.datasource.DataSourceReference;
 
+import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.utils.Settings;
+import dk.netarkivet.common.CommonSettings;
+import dk.netarkivet.common.utils.StringUtils;
+
+
 public class Environment {
 
     /** Logging mechanism. */
@@ -78,7 +84,7 @@ public class Environment {
      */
 
     /** Database <code>DataSource</code> object. */
-    public DataSource dataSource = null;
+    //public DataSource dataSource = null;
 
     /*
      * WorkThreads.
@@ -136,7 +142,7 @@ public class Environment {
          * Version.
          */
 
-        Package pkg = Package.getPackage("dk.netarkivet.dab.webadmin");
+        Package pkg = Package.getPackage("dk.kb.webdanica.webapp");
 		if (pkg != null) {
 			version = pkg.getSpecificationVersion();
 		}
@@ -193,6 +199,68 @@ public class Environment {
         	env = env.toUpperCase();
         }
 
+        String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME");
+        if (webdanicaHomeEnv == null) {
+        	throw new ServletException("'WEBDANICA_HOME' must be defined in the environment!");
+        }
+        File webdanicaHomeDir = new File(webdanicaHomeEnv);
+        if (!webdanicaHomeDir.isDirectory()) {
+        	throw new ServletException("The path set by 'WEBDANICA_HOME' does not represent a directory: " 
+        			+ webdanicaHomeDir.getAbsolutePath());
+        }
+        // relative paths in web.xml will be prefixed by this path + /
+
+        String netarchiveSuiteSettings = servletConfig.getInitParameter("netarchivesuite-settings");
+        String webdanicaSettings = servletConfig.getInitParameter("webdanica-settings");
+        
+        if (!netarchiveSuiteSettings.startsWith("/")) {
+        	netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
+        }
+        File netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
+        
+        
+        if (netarchiveSuiteSettingsFile.isFile()) {
+        	System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
+        } else {
+        	logger.warning("The parameter 'netarchivesuite-settings' refers to non-existing file: " 
+        			+ netarchiveSuiteSettingsFile.getAbsolutePath());
+        }
+        
+        
+        if (!webdanicaSettings.startsWith("/")) {
+        	webdanicaSettings = webdanicaHomeDir.getAbsolutePath() + "/" + webdanicaSettings;
+        }
+        File webdanicaSettingsFile = new File(webdanicaSettings);
+        if (webdanicaSettingsFile.isFile()) {
+        	System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
+        } else {
+        	logger.warning("The parameter 'webdanica-settings' refers to non-existing file: " 
+        			+ webdanicaSettingsFile.getAbsolutePath());
+        }
+        
+        // Code to check, that it works.
+        try {
+        	for (File f: dk.netarkivet.common.utils.Settings.getSettingsFiles()) {
+        		logger.info("using NetarchiveSuite settingsfile: " +  f.getAbsolutePath());
+        	}
+        	logger.info("Connected to NetarchiveSuite system with environmentname: " + 
+        			dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
+        
+        	logger.info("Connected to NetarchiveSuite system with environmentname: " + 
+        			dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
+        
+        	for (File f: Settings.getSettingsFiles()) {
+        		logger.info("using Webdanica settingsfile: " +  f.getAbsolutePath());
+        	}
+        	
+        	String[] ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
+        	logger.info("Following suffixes are currently ignored:" + StringUtils.conjoin(",", 
+        			ignoredSuffixes));
+        } catch (Throwable e){
+        	e.printStackTrace();
+        	logger.severe(e.getLocalizedMessage());
+        }
+        
         /*
          * DataSource.
          */
@@ -200,7 +268,9 @@ public class Environment {
         String db_url = servletConfig.getInitParameter("db-url");
         String db_username = servletConfig.getInitParameter("db-username");
         String db_password = servletConfig.getInitParameter("db-password");
-
+        
+        
+/*
         if (db_url == null) {
             throw new ServletException("'db-url' must be configured!");
         }
@@ -210,7 +280,7 @@ public class Environment {
         if (db_password == null) {
             throw new ServletException("'db-password' must be configured!");
         }
-
+*/
         /*
          * Templates.
          */
@@ -227,6 +297,10 @@ public class Environment {
          * Read SMTP settings (smtp-host, smtp-port).
          */
         String smtp_host = servletConfig.getInitParameter("smtp-host");
+        if (smtp_host == null) {
+        	logger.warning("smtp-host not defined, using 'localhost' instead");
+        	smtp_host = "localhost";
+        }
         final int default_smtp_port = 25;
         int smtp_port = getIntegerInitParameter("smtp-port", default_smtp_port);
 
@@ -308,7 +382,7 @@ public class Environment {
         attribs.put("connection-url", db_url);
         attribs.put("user-name", db_username);
         attribs.put("password", db_password);
-        dataSource = DataSourceReference.getDataSource(attribs, props);
+        //dataSource = DataSourceReference.getDataSource(attribs, props);
 
         /*
          * Initialize template master.
@@ -320,8 +394,8 @@ public class Environment {
         loginHandler = new LoginTemplateHandler<User>();
         loginHandler.templateMaster = templateMaster;
         loginHandler.templateName = login_template_name;
-        loginHandler.title = "DAB - Login";
-        loginHandler.adminPath = "/dab/";
+        loginHandler.title = "Webdanica - Login";
+        loginHandler.adminPath = "/webdanica/";
 
         /*
          * Start thread workers.
@@ -345,7 +419,7 @@ public class Environment {
         wayback.start();
         archive.start();
 */
-		String subject = "[DAB-"  + env + "] started";
+		String subject = "[Webdanica-"  + env + "] started";
 		sendAdminEmail(subject, "");
     }
 
@@ -368,7 +442,7 @@ public class Environment {
      * Do some cleanup. This waits for the different workflow threads to stop running.
      */
     public void cleanup() {
-		String subject = "[DAB-"  + env + "] stopping";
+		String subject = "[Webdanica-"  + env + "] stopping";
 		sendAdminEmail(subject, "");
 		/*
     	if (wayback != null) {
@@ -417,12 +491,13 @@ public class Environment {
         emailer = null;
         loginHandler = null;
         templateMaster = null;
-        dataSource = null;
+        //dataSource = null;
         servletConfig = null;
     }
 
     public void sendAdminEmail(String subject, String body) {
-		emailer.send("nicl@kb.dk", subject, body);
+    	//TODO replace with call to settings-file.
+		emailer.send("svc@kb.dk", subject, body);
     }
 
 }

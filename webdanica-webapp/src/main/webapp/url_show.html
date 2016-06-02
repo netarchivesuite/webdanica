@@ -1,0 +1,50 @@
+<@master file="urls_master.html">
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+<!--
+var current_state = 1;
+function switchToState(state) {
+	if (state != current_state) {
+		$("#state_"+current_state).attr("class", "");
+		current_state = state;
+		$("#state_"+current_state).attr("class", "active");
+
+		//window.location.href = "url?status=" + state;
+	}
+}
+
+function select_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = true;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = true;
+    }
+  }
+}
+
+function deselect_all(chk) {
+  if (chk.type && chk instanceof HTMLInputElement && chk.getAttribute('type') == 'checkbox') {
+    chk.checked = false;
+  }
+  else {
+    for (i = 0; i < chk.length; i++) {
+      chk[i].checked = false;
+    }
+  }
+}
+-->
+    </script>
+</place>
+
+<place placeholder="content">
+
+<placeholder id="alert" />
+
+<form class="form-horizontal" action="?" name="insert_form" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<placeholder id="content" />
+</form>
+
+</place>

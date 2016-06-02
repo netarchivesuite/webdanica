@@ -1,0 +1,43 @@
+<@master file="positive_master.html">
+
+<place placeholder="content">
+    <div class="container-fluid">
+      <form class="form-horizontal" action="?" name="insert_form" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+      <div class="row-fluid">
+        <div class="span8">
+<!--
+          <div class="row-fluid">
+            <div class="span12 bgcolor">
+              <div class="alert alert-error">
+              <a href="#" class="close" data-dismiss="alert">x</a>
+                Error Messages.
+              </div>
+            </div>
+          </div>
+-->
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="url">Godkendt domæne</label>
+                <div class="controls">
+                  <input type="text" id="domain" name="domain" placeholder="Indtast godkendt domæne">
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+          <div class="row-fluid">
+            <div class="span6 bgcolor">
+              <div class="control-group">
+                <div class="controls">
+                  <button type="submit" name="submit" value="add" class="btn btn-primary">Opret</button>
+                  <button type="reset" class="btn">Nulstil</button>
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+        </div><!--/span-->
+      </div><!--/row-->
+      </form>
+    </div><!--/.fluid-container-->
+</place>

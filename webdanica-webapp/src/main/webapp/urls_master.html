@@ -1,0 +1,49 @@
+<@master file="master.html">
+
+<place placeholder="headers">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="vs_defaultClientScript" content="JavaScript" />
+  <meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" />
+</place>
+
+<place placeholder="styles">
+<placeholder id="styles" />
+</place>
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+var current_state = 1;
+function switchToState(state) {
+	if (state != current_state) {
+		$("#state_"+current_state).attr("class", "");
+		current_state = state;
+		$("#state_"+current_state).attr("class", "active");
+
+		//window.location.href = "url?status=" + state;
+	}
+}
+    </script>
+<placeholder id="scripts" />
+</place>
+
+<place placeholder="content">
+        <div class="span2">
+
+<placeholder id="menu" />
+
+<placeholder id="state_menu" />
+
+        </div><!--/span-->
+
+        <div class="span10">
+          <div class="row-fluid">
+
+<placeholder id="back" />
+
+            <h3><placeholder id="heading" /></h3>
+
+<placeholder id="content" />
+
+          </div>
+        </div><!--/span-->
+</place>

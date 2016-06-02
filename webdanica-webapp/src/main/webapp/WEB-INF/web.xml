@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                         "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+	<display-name>Admin</display-name>
+	<description>Webdanica</description>
+   	<listener>
+		<listener-class>
+             	dk.kb.webdanica.webapp.WebdanicaServletContextListener  
+        	</listener-class>
+   	</listener>
+	<filter>
+		<filter-name>CacheControlFilter</filter-name>
+		<display-name>Cache Control Filter</display-name>
+		<filter-class>com.antiaction.common.filter.CacheControlFilter</filter-class>
+		<init-param>
+			<param-name>cache.ext</param-name>
+			<param-value>gif,png,jpg,jpe,jpeg,bmp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>nocache.ext</param-name>
+			<param-value>js,css,shtml,jsp</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>MultipartFormFilter</filter-name>
+		<display-name>File Upload Control Filter</display-name>
+		<filter-class>com.antiaction.common.filter.fileupload.MultipartFormFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>CacheControlFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>MultipartFormFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>WebdanicaServlet</servlet-name>
+		<display-name>WebdanicaServlet</display-name>
+		<servlet-class>dk.kb.webdanica.webapp.Servlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+                <!-- should it be hardwired? -->
+		<init-param>
+			<param-name>netarchivesuite-settings</param-name>
+                        <param-value>settings_NAS_Webdanica.xml</param-value>
+		</init-param>
+                <!-- should it be hardwired? -->
+		<init-param>
+                        <param-name>webdanica-settings</param-name>
+                        <param-value>webdanica_settings.xml</param-value>
+                </init-param>
+<!--
+		<init-param>
+			<param-name>db-url</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>db-username</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>db-password</param-name>
+			<param-value></param-value>
+		</init-param>
+-->		
+		<init-param>
+			<param-name>login-template</param-name>
+			<param-value>login.html</param-value>
+		</init-param>
+<!---		
+		<init-param>
+			<param-name>smtp-host</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>smtp-port</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>ssh-host</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>ssh-port</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>ssh-username</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>ssh-password</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>ssh-channel-port</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>rest-base-url</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>extract-limit</param-name>
+			<param-value>2</param-value>
+		</init-param>
+		<init-param>
+			<param-name>extract-tempdir</param-name>
+			<param-value>/home/nicl/archive-tempdir</param-value>
+		</init-param>
+		<init-param>
+			<param-name>archive-dir</param-name>
+			<param-value>/home/nicl/archive</param-value>
+		</init-param>
+		<init-param>
+			<param-name>wayback-prefix</param-name>
+                        <param-value>http://kb-test-dab-01.kb.dk</param-value>
+		</init-param>
+-->
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>WebdanicaServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+<!--
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/servlet/Servlet404</location>
+	</error-page>
+-->
+
+<!--
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>My Application</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<description>Client SSL key</description>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Antiaction</realm-name>
+	</login-config>
+-->
+
+</web-app>

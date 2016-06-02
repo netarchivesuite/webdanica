@@ -827,7 +827,9 @@ public class StatusResource implements ResourceAbstract {
         placeHolders.add(resultPlace);
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-
+        
+        StringBuilder sb = new StringBuilder();
+/*
         Connection conn = null;
         try {
             conn = environment.dataSource.getConnection();
@@ -835,6 +837,7 @@ public class StatusResource implements ResourceAbstract {
             throw new IOException(e);
         }
 
+        
         StringBuilder sb = new StringBuilder();
 
         String sqlStr = req.getParameter("sql");
@@ -894,8 +897,8 @@ public class StatusResource implements ResourceAbstract {
             	}
         	}
         }
-
-        if (titlePlace != null) {
+*/
+        if (titlePlace != null) {        	
             titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
         }
 
@@ -906,10 +909,11 @@ public class StatusResource implements ResourceAbstract {
         if (navbarPlace != null) {
             navbarPlace.setText(StatusBar.getStatusbar(StatusBar.N_LOG));
         }
-
+        /*
         if (sqlPlace != null && sqlStr != null) {
         	sqlPlace.setText( sqlStr );
         }
+        */
 
         if (resultPlace != null) {
         	resultPlace.setText( sb.toString() );
@@ -923,7 +927,7 @@ public class StatusResource implements ResourceAbstract {
             out.close();
         } catch (IOException e) {
         }
-
+/*
         try {
             if (conn != null && !conn.isClosed()) {
                 conn.close();
@@ -931,6 +935,8 @@ public class StatusResource implements ResourceAbstract {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.toString(), e);
         }
+        */
     }
+    
 
 }

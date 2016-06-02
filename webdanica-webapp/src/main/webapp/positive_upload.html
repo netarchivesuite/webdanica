@@ -1,0 +1,73 @@
+<@master file="positive_master.html">
+
+<place placeholder="scripts">
+    <script type="text/javascript" charset="utf-8">
+
+<!--
+$(document).ready(function() {
+
+  $('#fileselectbutton').click(function(e) {
+    $('#filedata').show().trigger('click').hide();
+  });
+
+  $('#filedata').change(function(e) {
+    var val = $(this).val();
+    var file = val.split(/[\\/]/);
+    $('#filename').val(file[file.length-1]);
+  });
+
+});
+-->
+
+    </script>
+</place>
+
+<place placeholder="content">
+    <div class="container-fluid">
+      <form class="form-horizontal" action="?" name="upload_form" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+      <div class="row-fluid">
+        <div class="span8">
+<!--
+          <div class="row-fluid">
+            <div class="span12 bgcolor">
+              <div class="alert alert-error">
+              <a href="#" class="close" data-dismiss="alert">x</a>
+                Error Messages.
+              </div>
+            </div>
+          </div>
+-->
+          <div class="row-fluid">
+            <div class="span12 bgcolor">
+              <div class="control-group">
+                <label class="control-label" for="urls">Godkendt domæne liste</label>
+                <div class="controls">
+
+      <input type="file" name="filedata" id="filedata" multiple="multiple" />
+<!--
+      <div class="dummyfile">
+      <input id="filename" type="text" class="input disabled" name="filename" readonly/>
+      <a id="fileselectbutton" class="btn">Choose...</a>
+      </div>
+-->
+
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+          <div class="row-fluid">
+            <div class="span12 bgcolor">
+              <div class="control-group">
+                <div class="controls">
+                  <button type="submit" name="submit" value="upload" class="btn btn-primary">Upload</button>
+                  <button type="reset" class="btn">Nulstil</button>
+                </div>
+              </div>
+            </div><!--/span-->
+          </div><!--/row-->
+
+        </div><!--/span-->
+      </div><!--/row-->
+      </form>
+    </div><!--/.fluid-container-->
+</place>

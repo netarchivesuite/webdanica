@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.netarkivet.common.exceptions.ArgumentNotValid;
-import dk.netarkivet.common.exceptions.IOFailure;
 import dk.netarkivet.common.exceptions.UnknownID;
+import dk.netarkivet.common.exceptions.IOFailure;
 import dk.netarkivet.common.utils.SimpleXml;
 import dk.netarkivet.common.utils.StringTree;
 import dk.netarkivet.common.utils.StringUtils;
@@ -124,7 +124,7 @@ public class Settings {
 				}
 			}
 		}
-
+/*
 		// Key not in file based settings, try classpath settings instead
 		synchronized (defaultClasspathSettingsXmlList) {
 			for (SimpleXml settingsXml : defaultClasspathSettingsXmlList) {
@@ -133,6 +133,7 @@ public class Settings {
 				}
 			}
 		}
+ */
 		throw new UnknownID("No match for key '" + key + "' in settings");
 	}
 

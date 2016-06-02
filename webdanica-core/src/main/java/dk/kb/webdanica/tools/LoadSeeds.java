@@ -1,9 +1,13 @@
 package dk.kb.webdanica.tools;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -22,7 +26,9 @@ import dk.kb.webdanica.utils.UrlUtils;
  *  - seeds that are not proper URLs are not loaded into the database
  *  - seeds that have extensions matching any of the suffixes in our ignored suffixes are also skipped
  *  
- *  TODO Program is called with -Dwebdanica.settings.file=/full/path/to/webdanica_settings_file
+ *  Remember to call program with -Dwebdanica.settings.file=$LOADSEEDS_HOME/webdanica_settings_file
+ *  and -Ddk.netarkivet.settings.file=$LOADSEEDS_HOME/settings_NAS_Webdanica.xml
+ *  and -Dlogback.configurationFile=$LOADSEEDS_HOME/silent_logback.xml 
  *  
  *  TESTED with webdanica-core/src/main/resources/outlink-reportfile-final-1460549754730.txt
  *  TESTED with webdanica-core/src/main/resources/outlinksWithAnnotations.txt
@@ -31,7 +37,12 @@ import dk.kb.webdanica.utils.UrlUtils;
 public class LoadSeeds {
 
 	private File seedsfile;
-
+    private boolean writeAcceptLog = false;
+    private boolean writeRejectLog = false;
+	private File rejectLog = null;
+	private File acceptLog = null;
+	private List<String> acceptedList = new ArrayList<String>();
+	
 	public LoadSeeds(File seedsfile) {
 	   this.seedsfile = seedsfile;
     }
@@ -48,12 +59,18 @@ public class LoadSeeds {
 			System.exit(1);
 		}
 		
-		System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'"); 
+		System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+		
 		System.out.println();
 		LoadSeeds loadseeds = new LoadSeeds(seedsfile);
+		loadseeds.writeAcceptLog = true;
+		loadseeds.writeRejectLog = true;
 		
 		IngestLog res = loadseeds.processSeeds();
-		System.out.println(res);
+		System.out.println(res.getStatistics());
+		System.out.println("Acceptlog in file: " + loadseeds.getAcceptLog());
+		System.out.println("Rejectlog in file: " + loadseeds.getRejectLog());
+		
 	}
 	/**
 	 * @return the ingestLog for the file just processed
@@ -85,6 +102,7 @@ public class LoadSeeds {
 	            		duplicatecount++;
 	            	} else {
 	            		insertedcount++;
+	            		acceptedList.add(trimmedLine);
 	            	}
 	            }
 	            if (rejectreason != URL_REJECT_REASON.NONE) {
@@ -93,13 +111,63 @@ public class LoadSeeds {
 	            }
 	            
 	        }
+	        
+	        // write accept-log
+	        if (writeAcceptLog) {
+	        	acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".accepted.txt");
+	        	int count=0;
+	        	while (acceptLog.exists()) {
+	        		acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".accepted.txt" + "." + count);
+	        		count++;
+	        	} 
+	        	PrintWriter acceptWriter = new PrintWriter(new BufferedWriter(new FileWriter(acceptLog)));
+	        	String acceptHeader = "Acceptlog for file '" + seedsfile.getAbsolutePath() + "' ingested at '" 
+	        			+ new Date() + "'";
+	        	String stats = "total lines: " + linecount + ", accepted = " + insertedcount + ", rejected=" + rejectedcount 
+	        			+ " (of which " + duplicatecount + " duplicates";
+	        	acceptWriter.println(acceptHeader);
+	        	acceptWriter.println(stats);
+	        	if (!acceptedList.isEmpty()) {
+	        		acceptWriter.println("The " + insertedcount + " accepted :");
+	        		for (String acc: acceptedList) {
+	        			acceptWriter.println(acc);
+	        		} 
+	        	} else {
+	        		acceptWriter.println("None were accepted!");
+	        	}
+	        	
+	        	acceptWriter.close();
+	        }
+	        
+	        // write reject-log
+	        if (writeRejectLog) {
+	        	rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejected.txt");
+	        	int count=0;
+	        	while (rejectLog.exists()) {
+	        		rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejected.txt" + "." + count);
+	        		count++;
+	        	}
+	        	PrintWriter rejectWriter = new PrintWriter(new BufferedWriter(new FileWriter(rejectLog)));
+	        	String rejectHeader = "Rejectlog for file '" + seedsfile.getAbsolutePath() + "' ingested at '" 
+	        			+ new Date() + "'";
+	        	String stats = "total lines: " + linecount + ", accepted = " + insertedcount + ", rejected=" + rejectedcount 
+	        			+ " (of which " + duplicatecount + " duplicates";
+	        	rejectWriter.println(rejectHeader);
+	        	rejectWriter.println(stats);
+	        	rejectWriter.println("Rejected seeds:");
+	        	for (String rej: logentries) {
+	        		rejectWriter.println(rej);
+	        	}
+	        	rejectWriter.close();
+	        }
+	        
         } catch (Throwable e) {
 	        e.printStackTrace();
         } finally {
         	IOUtils.closeQuietly(fr);
         	dao.close();
         }
-	
+        
 	    IngestLog logresult = logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount); 
 	    return logresult;
 	}
@@ -123,5 +191,13 @@ public class LoadSeeds {
 		} finally {
 			dao.close();
 		}
+	}
+	
+	File getRejectLog() {
+		return this.rejectLog;
+	}
+	
+	File getAcceptLog() {
+		return this.acceptLog;
 	}
 }
