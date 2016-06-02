@@ -237,33 +237,25 @@ public class Environment {
         		throw new ServletException("The parameter 'webdanica-settings' refers to settingsfile containing invalid contents: " 
             			+ webdanicaSettingsFile.getAbsolutePath());
         	}
+        	
         	System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
+        	Settings.reload();
         } else {
         	logger.warning("The parameter 'webdanica-settings' refers to non-existing file: " 
         			+ webdanicaSettingsFile.getAbsolutePath());
         }
-        // Code to check, that it works.
-        try {
-        	for (File f: dk.netarkivet.common.utils.Settings.getSettingsFiles()) {
-        		logger.info("using NetarchiveSuite settingsfile: " +  f.getAbsolutePath());
-        	}
-        	logger.info("Connected to NetarchiveSuite system with environmentname: " + 
-        			dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
         
-        	logger.info("Connected to NetarchiveSuite system with environmentname: " + 
-        			dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
+        // Code primarily to check, that our settings works.
+
+        logger.info("Connected to NetarchiveSuite system with environmentname: " + 
+        		dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
+        String[] ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
+        String[] ignoredProtocols = Settings.getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
+        logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
+        		ignoredSuffixes));
         
-        	for (File f: Settings.getSettingsFiles()) {
-        		logger.info("using Webdanica settingsfile: " +  f.getAbsolutePath());
-        	}
-        	
-        	String[] ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
-        	logger.info("Following suffixes are currently ignored:" + StringUtils.conjoin(",", 
-        			ignoredSuffixes));
-        } catch (Throwable e){
-        	e.printStackTrace();
-        	logger.severe(e.getLocalizedMessage());
-        }
+        logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
+        		ignoredProtocols));
         
         /*
          * DataSource.
