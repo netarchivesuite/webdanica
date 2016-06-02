@@ -368,4 +368,15 @@ public class Settings {
 		throw new UnknownID("No match for key '" + path + "' in settings");
 	}
 
+	public static boolean isValidSettingsfile(File settingsFile) {
+		try {
+			new SimpleXml(settingsFile);
+		} catch(Throwable e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	
 }

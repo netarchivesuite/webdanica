@@ -232,12 +232,16 @@ public class Environment {
         }
         File webdanicaSettingsFile = new File(webdanicaSettings);
         if (webdanicaSettingsFile.isFile()) {
+        	
+        	if (!Settings.isValidSettingsfile(webdanicaSettingsFile)) {
+        		throw new ServletException("The parameter 'webdanica-settings' refers to settingsfile containing invalid contents: " 
+            			+ webdanicaSettingsFile.getAbsolutePath());
+        	}
         	System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
         } else {
         	logger.warning("The parameter 'webdanica-settings' refers to non-existing file: " 
         			+ webdanicaSettingsFile.getAbsolutePath());
         }
-        
         // Code to check, that it works.
         try {
         	for (File f: dk.netarkivet.common.utils.Settings.getSettingsFiles()) {

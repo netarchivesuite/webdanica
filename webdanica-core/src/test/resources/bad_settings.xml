@@ -38,7 +38,7 @@
         <ignoredProtocols>
         <protocol>mailto</protocol>
         <protocol>vimeo</protocol>
-        <protocol>data</protocol>
+        <protocol>data</data>
 	</ignoredProtocols>	             
 </seeds>
 </settings>
