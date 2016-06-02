@@ -138,11 +138,11 @@ public class StatusResource implements ResourceAbstract {
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -222,11 +222,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</pre>\r\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -305,11 +305,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</table>\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -402,11 +402,11 @@ public class StatusResource implements ResourceAbstract {
     	sb.append("</pre>\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -684,11 +684,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</pre>\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -899,11 +899,11 @@ public class StatusResource implements ResourceAbstract {
         }
 */
         if (titlePlace != null) {        	
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
