@@ -62,7 +62,7 @@ public class Emailer {
     public void send(String recipient, String subject, String body) {
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("nicl@kb.dk"));
+            message.setFrom(new InternetAddress("svc@kb.dk")); // TODO: read from settings
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(recipient));
             message.setSubject(subject);
