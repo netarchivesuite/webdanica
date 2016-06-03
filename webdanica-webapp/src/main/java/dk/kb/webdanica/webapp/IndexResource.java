@@ -36,7 +36,7 @@ public class IndexResource implements ResourceAbstract {
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        R_INDEX = resourceManager.resource_add(this, "/", true);
+        R_INDEX = resourceManager.resource_add(this, "/", false);
     }
 
     //private String servicePath;
@@ -70,8 +70,7 @@ public class IndexResource implements ResourceAbstract {
         // System.out.println( pathInfo );
         // System.out.println( req.getQueryString() );
 
-        Template template = environment.templateMaster
-                .getTemplate("index.html");
+        Template template = environment.templateMaster.getTemplate("index.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -86,8 +85,7 @@ public class IndexResource implements ResourceAbstract {
         placeHolders.add(userPlace);
         placeHolders.add(contentPlace);
 
-        TemplateParts templateParts = template.filterTemplate(placeHolders,
-                resp.getCharacterEncoding());
+        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         if (titlePlace != null) {
             titlePlace.setText(HtmlEntity.encodeHtmlEntities("Webdanica").toString());

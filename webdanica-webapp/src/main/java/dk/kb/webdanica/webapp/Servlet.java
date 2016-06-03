@@ -36,21 +36,29 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
+    	try {
+            super.init(servletConfig);
 
-        environment = new Environment(getServletContext(), servletConfig);
+            environment = new Environment(getServletContext(), servletConfig);
 
-        pathMap = new PathMap<Resource>();
+            pathMap = new PathMap<Resource>();
 
-        StatusResource statusResource = new StatusResource();
-        statusResource.resources_init(environment);
-        statusResource.resources_add(this);
+            StaticResource staticResource = new StaticResource();
+            staticResource.resources_init(environment);
+            staticResource.resources_add(this);
 
-        IndexResource indexResource = new IndexResource();
-        indexResource.resources_init(environment);
-        indexResource.resources_add(this);
+            StatusResource statusResource = new StatusResource();
+            statusResource.resources_init(environment);
+            statusResource.resources_add(this);
 
-        logger.log(Level.INFO, this.getClass().getName() + " initialized.");
+            IndexResource indexResource = new IndexResource();
+            indexResource.resources_init(environment);
+            indexResource.resources_add(this);
+
+            logger.log(Level.INFO, this.getClass().getName() + " initialized.");
+    	} catch (Throwable t) {
+            logger.log(Level.SEVERE, this.getClass().getName() + " failed to initialize properly.", t);
+    	}
     }
 
     protected AutoIncrement resourceAutoInc = new AutoIncrement();
