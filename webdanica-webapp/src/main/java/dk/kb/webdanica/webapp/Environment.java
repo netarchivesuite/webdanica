@@ -34,7 +34,9 @@ import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 import com.antiaction.multithreading.datasource.DataSourceReference;
 
 import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.utils.Settings;
+import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.utils.StringUtils;
 
@@ -90,10 +92,10 @@ public class Environment {
      * WorkThreads.
      */
 
-/*
-    public MonitoringWorkThread monitoring;
-
     public WorkflowWorkThread workflow;
+
+    /*
+    public MonitoringWorkThread monitoring;
 
     public LookupWorkThread lookup;
     
@@ -135,6 +137,15 @@ public class Environment {
 
     public List<LogRecord> logRecords = new LinkedList<LogRecord>();
 
+	private Cassandra db;
+
+	private String mail_admin;
+
+    /**
+     * @param servletContext
+     * @param theServletConfig
+     * @throws ServletException
+     */
     public Environment(ServletContext servletContext, ServletConfig theServletConfig) throws ServletException {
         this.servletConfig = theServletConfig;
 
@@ -188,17 +199,6 @@ public class Environment {
 			}
         });
 
-        /*
-         * Env. (TEST/STAGING/PROD)
-         */
-
-        env = servletConfig.getInitParameter("env");
-        if (env == null || env.length() == 0) {
-        	env = "UNKNOWN";
-        } else {
-        	env = env.toUpperCase();
-        }
-
         String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME");
         if (webdanicaHomeEnv == null) {
         	throw new ServletException("'WEBDANICA_HOME' must be defined in the environment!");
@@ -220,9 +220,19 @@ public class Environment {
         
         
         if (netarchiveSuiteSettingsFile.isFile()) {
+        	
+        	/* TODO validate netarchiveSuite settings file (evt. workaround for the missing isValidSettingsfile
+        	if (!dk.netarkivet.common.utils.Settings.isValidSettingsfile(netarchiveSuiteSettingsFile)) {
+        		throw new ServletException("The parameter 'webdanica-settings' refers to settingsfile containing invalid contents: " 
+            			+ webdanicaSettingsFile.getAbsolutePath());
+        	}
+        	
+        	System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
+        	dk.netarkivet.common.utils.Settings.reload();
+        	*/
         	System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
         } else {
-        	logger.warning("The parameter 'netarchivesuite-settings' refers to non-existing file: " 
+        	throw new ServletException("The parameter 'netarchivesuite-settings' refers to non-existing file: " 
         			+ netarchiveSuiteSettingsFile.getAbsolutePath());
         }
         
@@ -241,12 +251,53 @@ public class Environment {
         	System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
         	Settings.reload();
         } else {
-        	logger.warning("The parameter 'webdanica-settings' refers to non-existing file: " 
+        	throw new ServletException("The parameter 'webdanica-settings' refers to non-existing file: " 
         			+ webdanicaSettingsFile.getAbsolutePath());
         }
-        
-        // Code primarily to check, that our settings works.
 
+        /*
+         * Env. (TEST/STAGING/PROD)
+         */
+        env = "UNKNOWN";
+        if (Settings.hasKey(WebdanicaSettings.ENVIRONMENT)) {
+        	String envString = Settings.get(WebdanicaSettings.ENVIRONMENT);
+        	if (!envString.isEmpty()) {
+        		env = envString.toUpperCase();
+        	}
+        }
+        
+        /*
+         * Read SMTP settings (smtp-host, smtp-port).
+         */
+        String smtp_host;
+        if (Settings.hasKey(WebdanicaSettings.MAIL_SERVER) 
+        		&& !Settings.get(WebdanicaSettings.MAIL_SERVER).isEmpty()) {
+        	smtp_host = Settings.get(WebdanicaSettings.MAIL_SERVER);
+        } else {
+        	logger.warning("smtp-host not defined, using 'localhost' instead");
+        	smtp_host = "localhost";
+        }
+        
+        int smtp_port = 25;
+        /*
+        if (Settings.hasKey(WebdanicaSettings.MAIL_PORT) 
+        		&& !Settings.getInt(WebdanicaSettings.MAIL_SERVER)) {
+        	smtp_host = Settings.get(WebdanicaSettings.MAIL_SERVER);
+        } else {
+        	logger.warning("smtp-host not defined, using 'localhost' instead");
+        	smtp_host = "localhost";
+        }
+        int smtp_port = getIntegerInitParameter("smtp-port", default_smtp_port);
+        */
+        
+        if (Settings.hasKey(WebdanicaSettings.MAIL_ADMIN) 
+        		&& !Settings.get(WebdanicaSettings.MAIL_ADMIN).isEmpty()) {
+        	mail_admin = Settings.get(WebdanicaSettings.MAIL_ADMIN);
+        } else {
+        	logger.warning("mail-admin not defined, using 'svc@kb.dk' instead");
+        	mail_admin = "svc@kb.dk";
+        }
+        
         logger.info("Connected to NetarchiveSuite system with environmentname: " + 
         		dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
         String[] ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
@@ -263,20 +314,8 @@ public class Environment {
 
         String db_url = servletConfig.getInitParameter("db-url");
         String db_username = servletConfig.getInitParameter("db-username");
-        String db_password = servletConfig.getInitParameter("db-password");
+        String db_password = servletConfig.getInitParameter("db-password");        
         
-        
-/*
-        if (db_url == null) {
-            throw new ServletException("'db-url' must be configured!");
-        }
-        if (db_username == null) {
-            throw new ServletException("'db-username' must be configured!");
-        }
-        if (db_password == null) {
-            throw new ServletException("'db-password' must be configured!");
-        }
-*/
         /*
          * Templates.
          */
@@ -289,16 +328,7 @@ public class Environment {
             throw new ServletException("'login_template_name' must be configured!");
         }
 
-        /*
-         * Read SMTP settings (smtp-host, smtp-port).
-         */
-        String smtp_host = servletConfig.getInitParameter("smtp-host");
-        if (smtp_host == null) {
-        	logger.warning("smtp-host not defined, using 'localhost' instead");
-        	smtp_host = "localhost";
-        }
-        final int default_smtp_port = 25;
-        int smtp_port = getIntegerInitParameter("smtp-port", default_smtp_port);
+       
 
         /*
          * Crontabs.
@@ -361,6 +391,8 @@ public class Environment {
         archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
         emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
 
+        db = new Cassandra();
+        
         /*
          * Initialize emailer
          */
@@ -391,11 +423,13 @@ public class Environment {
         loginHandler.templateMaster = templateMaster;
         loginHandler.templateName = login_template_name;
         loginHandler.title = "Webdanica - Login";
-        loginHandler.adminPath = "/webdanica/";
+        loginHandler.adminPath = "/";
 
         /*
          * Start thread workers.
          */
+        workflow = new WorkflowWorkThread(this, "Workflow");
+        workflow.start();
 /*
         monitoring = new MonitoringWorkThread(this, "Monitoring");
         workflow = new WorkflowWorkThread(this, "Workflow");
@@ -433,7 +467,7 @@ public class Environment {
         }
     	return value;
 	}
-
+    
 	/**
      * Do some cleanup. This waits for the different workflow threads to stop running.
      */
@@ -489,11 +523,12 @@ public class Environment {
         templateMaster = null;
         //dataSource = null;
         servletConfig = null;
+        db.close();
+        
     }
 
     public void sendAdminEmail(String subject, String body) {
-    	//TODO replace with call to settings-file.
-		emailer.send("svc@kb.dk", subject, body);
+		emailer.send(mail_admin, subject, body);
     }
 
 }

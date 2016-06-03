@@ -26,6 +26,23 @@ inserted_time timetamp,
 		this.setUrl(url);
 		this.setState(Status.NEW);
 	}
+	/*
+	url text PRIMARY KEY,
+    danica int,
+    exported boolean,
+    hostname text,
+    inserted_time timestamp,
+    redirected_url text,
+    status int,
+    status_reason text,
+    tld text
+*/
+	
+	
+	/*
+	public Seed(String url, Status state, String redirectedUrl, String hostname, DanicaStatus danicastate,  )
+	*/
+	
 
 	public String getUrl() {
 	    return url;

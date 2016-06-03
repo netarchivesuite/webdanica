@@ -2,6 +2,7 @@ package dk.kb.webdanica;
 
 public class WebdanicaSettings {
 
+	public static String ENVIRONMENT = "settings.env";
 	public static String MAIL_SERVER = "settings.mail.host";
 	public static String MAIL_PORT = "settings.mail.port";
 	public static String MAIL_ADMIN = "settings.mail.admin";

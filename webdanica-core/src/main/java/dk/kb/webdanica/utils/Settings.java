@@ -379,4 +379,12 @@ public class Settings {
 	}
 	
 	
+	public static boolean hasKey(String key) {
+		try {
+			get(key);
+		} catch (UnknownID e) {
+			return false;
+		}
+		return true;
+	}
 }
