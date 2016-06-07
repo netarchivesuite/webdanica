@@ -8,7 +8,14 @@
 package dk.kb.webdanica.webapp;
 
 public interface ResourceManagerAbstract {
-
+	
+	/**
+	 * FIXME complete javadoc
+	 * @param resources
+	 * @param path
+	 * @param bSecured
+	 * @return
+	 */
     public int resource_add(ResourceAbstract resources, String path, boolean bSecured);
 
 }

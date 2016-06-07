@@ -15,11 +15,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface ResourceAbstract {
-
+	/**
+	 * 
+	 * @param environment
+	 */
     public void resources_init(Environment environment);
-
+    /**
+     * 
+     * @param resourceManager
+     */
     public void resources_add(ResourceManagerAbstract resourceManager);
-
+   
+    /**
+     * 
+     * @param servletContext
+     * @param dab_user
+     * @param req
+     * @param resp
+     * @param resource_id
+     * @param numerics
+     * @param pathInfo
+     * @throws IOException
+     */
     public void resource_service(ServletContext servletContext, User dab_user, HttpServletRequest req, HttpServletResponse resp, int resource_id, List<Integer> numerics, String pathInfo) throws IOException;
 
 }

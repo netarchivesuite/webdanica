@@ -1,10 +1,11 @@
 package dk.kb.webdanica.seeds.filtering;
 
-/** TODO: Read the list of ignored suffixes from settings
- * instead of hardwired.  */
-public class IgnoredSuffixes {
+import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.utils.Settings;
 
-	 private static String[] ignoredExts = new String[]{
+public class IgnoredSuffixes {
+	/*
+	private static String[] ignoredExts = new String[]{
              ".jpg", ".avi", ".waw", ".gif", ".ico",
              ".bmp", ".doc", ".docx", ".dot", 
              ".eps", ".exe", ".jp2", ".jpe",".jpeg",
@@ -18,15 +19,17 @@ public class IgnoredSuffixes {
              ".tif",
              ".tiff",
              ".wps", ".xls" };
-	 
-	public static boolean hasIgnoredExtension(String name) {
+	*/
+	private static String[] ignoredExts = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
+	
+	public static String matchesIgnoredExtension(String name) {
 		String low = name.toLowerCase();
 		for (String ign: ignoredExts) {
 			if (low.endsWith(ign)) {
-				return true;
+				return ign;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 }

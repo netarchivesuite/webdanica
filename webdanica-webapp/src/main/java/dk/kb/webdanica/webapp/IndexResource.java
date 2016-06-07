@@ -58,7 +58,7 @@ public class IndexResource implements ResourceAbstract {
         }
     }
 
-    public void index_show(User dab_user, HttpServletRequest req,
+    private void index_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/html; charset=utf-8");
@@ -100,11 +100,11 @@ public class IndexResource implements ResourceAbstract {
         }
 
         if (userPlace != null) {
-            userPlace.setText(Navbar.getUser(dab_user));
+            userPlace.setText(Navbar.getUserHref(dab_user));
         }
 
         if (contentPlace != null) {
-            // contentPlace.setText( sb.toString() );
+            //contentPlace.setText( sb.toString() );
         }
 
         try {

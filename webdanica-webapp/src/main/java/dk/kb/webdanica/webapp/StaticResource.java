@@ -58,6 +58,7 @@ public class StaticResource implements ResourceAbstract {
             out.flush();
             out.close();
         } catch (IOException e) {
+        	e.printStackTrace();
         }
     }
 

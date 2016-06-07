@@ -35,7 +35,9 @@ import com.antiaction.multithreading.datasource.DataSourceReference;
 
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.Cassandra;
+import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.utils.Settings;
+import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.utils.StringUtils;
@@ -71,6 +73,9 @@ public class Environment {
 
     public String contextPath;
 
+    public String seedsPath;
+	public String seedPath;
+    
     /*
      * Templates.
      */
@@ -94,6 +99,7 @@ public class Environment {
 
     public WorkflowWorkThread workflow;
 
+    public FilterWorkThread filterThread;
     /*
     public MonitoringWorkThread monitoring;
 
@@ -140,6 +146,12 @@ public class Environment {
 	private Cassandra db;
 
 	private String mail_admin;
+
+	public int defaultItemsPerPage = 25; // create settings
+
+	public SeedDAO seedDao;
+
+	
 
     /**
      * @param servletContext
@@ -391,13 +403,15 @@ public class Environment {
         archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
         emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
 
-        db = new Cassandra();
+        db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
+        
+        seedDao = SeedDAO.getInstance(); 
         
         /*
          * Initialize emailer
          */
         
-        emailer = Emailer.getInstance(smtp_host, smtp_port, null, null);
+        emailer = Emailer.getInstance(smtp_host, smtp_port, null, null, mail_admin);
 
         /*
          * Initialize database configuration (dataSource)
@@ -430,6 +444,8 @@ public class Environment {
          */
         workflow = new WorkflowWorkThread(this, "Workflow");
         workflow.start();
+        filterThread = new FilterWorkThread(this, "Seeds filtering");
+        filterThread.start();
 /*
         monitoring = new MonitoringWorkThread(this, "Monitoring");
         workflow = new WorkflowWorkThread(this, "Workflow");

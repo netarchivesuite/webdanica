@@ -42,18 +42,23 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             environment = new Environment(getServletContext(), servletConfig);
 
             pathMap = new PathMap<Resource>();
-
+            
+            // takes care that the js, img, and css are loaded by tomcat 
             StaticResource staticResource = new StaticResource();
             staticResource.resources_init(environment);
             staticResource.resources_add(this);
-
+            // takes care of /status/ path pages
             StatusResource statusResource = new StatusResource();
             statusResource.resources_init(environment);
             statusResource.resources_add(this);
-
+            // takes care of the index page (the root page)
             IndexResource indexResource = new IndexResource();
             indexResource.resources_init(environment);
             indexResource.resources_add(this);
+            // takes care of /seeds/ path pages
+            SeedsResource seedsResource = new SeedsResource();
+            seedsResource.resources_init(environment);
+            seedsResource.resources_add(this);
 
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
     	} catch (Throwable t) {
@@ -125,7 +130,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
             // Look for cookies in case of no current user in session.
             if (current_user == null && session != null && session.isNew()) {
+            	// Note 'this' == LoginTemplateCallback<User>
                 current_user = environment.loginHandler.loginFromCookie(req, resp, session, this);
+                logger.info("current_user:" + current_user);
             }
 
             String action = req.getParameter("action");
@@ -144,6 +151,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
                 if (resource != null) {
                     if (resource.bSecured && current_user == null) {
+                    	// Note 'this' == LoginTemplateCallback<User>
                         environment.loginHandler.loginFromForm(req, resp, session, this);
                     } else if (!resource.bSecured) {
                         resource.resources.resource_service(this.getServletContext(), current_user, req, resp, resource.resource_id, numerics, pathInfo);
@@ -178,6 +186,10 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             //resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, sb.toString());
         }
     }
+    
+    /////////////////////////////////////////////////////////////////////////
+    // The methods that implement the LoginTemplateCallback<User> interface
+    /////////////////////////////////////////////////////////////////////////
 
     @Override
     public User validateUserCookie(String token) {
@@ -187,6 +199,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     @Override
     public User validateUserCredentials(String id, String password) {
         User current_user = null;
+        // FIXME: Temporary hack 
+        current_user = User.getAdminByCredentials(id, password);
+        logger.info("returned a User for id=" + id);
 /*        
         Connection conn = null;
         try {

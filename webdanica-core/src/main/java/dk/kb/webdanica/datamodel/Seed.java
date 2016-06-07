@@ -19,31 +19,22 @@ inserted_time timetamp,
 	private String redirectedUrl;
 	private String hostname;
 	private String statusReason;
-	private BlackListReason blacklistedreason;
+	private RejectReason rejectedreason;
 	private DanicaStatus danicaStatus;
 	
 	public Seed(String url) {
 		this.setUrl(url);
 		this.setState(Status.NEW);
 	}
-	/*
-	url text PRIMARY KEY,
-    danica int,
-    exported boolean,
-    hostname text,
-    inserted_time timestamp,
-    redirected_url text,
-    status int,
-    status_reason text,
-    tld text
-*/
 	
-	
-	/*
-	public Seed(String url, Status state, String redirectedUrl, String hostname, DanicaStatus danicastate,  )
-	*/
-	
-
+	public Seed(String url, String redirectedUrl, Status state, String stateReason, String hostname, String tld, DanicaStatus danicastate, long insertedTime, boolean exported) {
+		setUrl(url);
+		setRedirectedUrl(redirectedUrl);
+		setState(state);
+		setStatusReason(stateReason);
+		setDanicaStatus(danicastate);
+		// Ignored insertedTime and exported
+	}
 	public String getUrl() {
 	    return url;
     }
@@ -91,7 +82,8 @@ inserted_time timetamp,
 	public void setDanicaStatus(DanicaStatus danicaStatus) {
 	    this.danicaStatus = danicaStatus;
     }
-
+	// TODO are these necessary? or is it enough with StatusReason??
+/*
 	public BlackListReason getBlacklistedreason() {
 	    return blacklistedreason;
     }
@@ -99,5 +91,10 @@ inserted_time timetamp,
 	public void setBlacklistedreason(BlackListReason blacklistedreason) {
 	    this.blacklistedreason = blacklistedreason;
     }
+	*/
+	
+	public String toString() {
+		return "Seed '" + url + "' with status " +  state;
+	}
 	
 }

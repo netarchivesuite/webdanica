@@ -14,13 +14,20 @@ public class User implements LoginTemplateUser {
 
 	public boolean active = false;
 
-	public static User getAdminByCredentials(Connection conn, String id, String password) {
-		return null;
+	public static User getAdminByCredentials(String id, String password) {	
+		return getDefaultUser();
 	}
 
 	@Override
 	public String get_cookie_token(HttpServletRequest req) {
-		return null;
+		return null; // Not needed to further implement at the moment
 	}
-
+	
+	public static User getDefaultUser() {
+		User u = new User();
+		u.active=true;
+		u.id = "svc@kb.dk";
+		u.username="admin";
+		return u;
+	}		
 }

@@ -39,7 +39,7 @@ public class Navbar {
     static {
     	items = new String[][] {
     			//{ DABServlet.environment.contextPath + "/insert/", "Opret" },
-                { Servlet.environment.contextPath + "/urls/", "Url'er" },
+                { Servlet.environment.contextPath + "/seeds/", "Seeds" },
                 // { DABServlet.environment.contextPath + "/search/", "Søg" },
                 { Servlet.environment.contextPath + "/domains/", "Domæner" },
                 { Servlet.environment.contextPath + "/users/", "Brugere" },
@@ -70,14 +70,14 @@ public class Navbar {
         return str;
     }
 
-    public static String getUser(User dab_user) {
+    public static String getUserHref(User user) {
         StringBuilder sb = new StringBuilder();
         sb.append("<a href=\"");
         sb.append(Servlet.environment.contextPath);
         sb.append("/user/");
-        sb.append(dab_user.id);
+        sb.append(user== null?"NO-ID":user.id); //FIXME a hack to avoid a NPE
         sb.append("/\" class=\"navbar-link\">");
-        sb.append(dab_user.username);
+        sb.append(user== null?"NO-NAME":user.username);//FIXME a hack to avoid a NPE
         sb.append("</a>");
         return sb.toString();
     }

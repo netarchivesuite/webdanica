@@ -26,17 +26,19 @@ public class Emailer {
 
     private static Emailer emailer;
 
-    private Properties props = new Properties();
+    final private Properties props = new Properties();
 
-    private Session session;
+    final private Session session;
+    
+    final private String fromMail;
 
     private Emailer(String smtp_host, int smtp_port, final String username,
-            final String password) {
+            final String password, String mailAdmin) {
         props.put("mail.smtp.auth", "false");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", smtp_host);
         props.put("mail.smtp.port", smtp_port);
-
+        fromMail = mailAdmin;
         if (username != null && username.length() > 0 && password != null
                 && password.length() > 0) {
             session = Session.getInstance(props,
@@ -52,9 +54,9 @@ public class Emailer {
     }
 
     public static synchronized Emailer getInstance(String smtp_host,
-            int smtp_port, String username, String password) {
+            int smtp_port, String username, String password, String mail_admin) {
         if (emailer == null) {
-            emailer = new Emailer(smtp_host, smtp_port, username, password);
+            emailer = new Emailer(smtp_host, smtp_port, username, password, mail_admin);
         }
         return emailer;
     }
@@ -62,7 +64,7 @@ public class Emailer {
     public void send(String recipient, String subject, String body) {
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("svc@kb.dk")); // TODO: read from settings
+            message.setFrom(new InternetAddress(fromMail)); 
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(recipient));
             message.setSubject(subject);
