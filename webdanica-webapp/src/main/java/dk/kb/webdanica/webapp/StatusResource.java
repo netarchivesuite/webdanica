@@ -899,11 +899,11 @@ public class StatusResource implements ResourceAbstract {
         }
 */
         if (titlePlace != null) {        	
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + " " + environment.version).toString());
         }
 
         if (navbarPlace != null) {

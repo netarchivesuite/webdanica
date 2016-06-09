@@ -12,7 +12,6 @@ public class DomainCheck {
         System.out.println(isDomainAlive("kb.dk"));
         System.out.println(isDomainAlive("familien-carlsen.dk"));
         System.out.println(isDomainAlive("novasol.co.uk"));
-       
     }
     
     public static boolean isDomainAlive(String domain) {

@@ -20,11 +20,9 @@ import com.antiaction.common.filter.Caching;
 
 public class StaticResource implements ResourceAbstract {
 
-    private Environment environment;
-
     @Override
     public void resources_init(Environment environment) {
-        this.environment = environment;
+        // argument ignored
     }
 
     @Override

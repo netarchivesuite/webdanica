@@ -241,7 +241,8 @@ public class Settings {
 			return new String[] {val};
 		}
 		if (fileSettingsXmlList.isEmpty()) {
-			System.out.print("The list of loaded webdanica settings is empty. Is this OK?");
+			log.warn("The list of loaded webdanica settings is empty. It probably means that you forgot to set the property '"
+					+ SETTINGS_FILE_PROPERTY + "' to a valid settingsfile");
 		}
 		// Key not in System.properties try loaded data instead
 		synchronized (fileSettingsXmlList) {
@@ -367,17 +368,6 @@ public class Settings {
 		}
 		throw new UnknownID("No match for key '" + path + "' in settings");
 	}
-
-	public static boolean isValidSettingsfile(File settingsFile) {
-		try {
-			new SimpleXml(settingsFile);
-		} catch(Throwable e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
 	
 	public static boolean hasKey(String key) {
 		try {

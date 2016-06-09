@@ -37,7 +37,8 @@ import dk.netarkivet.dab.webadmin.workflow.PIDWorkThread;
 */
 public class SeedsResource implements ResourceAbstract {
 
-    private static final Logger logger = Logger.getLogger(SeedsResource.class.getName());
+    private static final String WEBAPP_NAME = "DAB";
+	private static final Logger logger = Logger.getLogger(SeedsResource.class.getName());
 /*
     protected static final int[] URL_ADD_PERMISSION = {Permission.P_URL_ADD};
 
@@ -931,11 +932,11 @@ public class SeedsResource implements ResourceAbstract {
          */
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(WEBAPP_NAME + " " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
@@ -1111,8 +1112,8 @@ public class SeedsResource implements ResourceAbstract {
                 },
                 {
                     6,
-                    "Findes i Netarkivet",
-                    "Findes i Netarkivet. Afventer arkivering til DAB arkivet",
+                    "Afvist",
+                    "Afvist af systemet pga blacklistning",
                     true,
                     0
                 },

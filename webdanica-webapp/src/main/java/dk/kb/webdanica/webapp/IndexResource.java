@@ -88,11 +88,11 @@ public class IndexResource implements ResourceAbstract {
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("Webdanica").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("Webdanica " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + " " + environment.version).toString());
         }
 
         if (navbarPlace != null) {
