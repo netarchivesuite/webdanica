@@ -149,12 +149,12 @@ public class Environment {
 	private Cassandra db;
 
 	private String mail_admin;
+	private int smtp_port;
+	private String smtp_host;
 
 	public int defaultItemsPerPage = 25; // create settings
 
 	public SeedDAO seedDao;
-
-	
 
     /**
      * @param servletContext
@@ -284,9 +284,9 @@ public class Environment {
 		final String default_smtp_host = "localhost";// TODO move to constants class
 		final String defaultMailAdmin = "svc@kb.dk"; // TODO move to constants class
 	
-		int smtp_port = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
-		String smtp_host = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
-		String mail_admin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
+		smtp_port = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
+		smtp_host = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
+		mail_admin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
 
 		logger.info("Connected to NetarchiveSuite system with environmentname: " + 
 				dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));

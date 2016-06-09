@@ -62,6 +62,7 @@ public class Emailer {
     }
 
     public void send(String recipient, String subject, String body) {
+    	logger.info("Sending mail to '" + recipient + "' with subject '" + subject + "'"); 
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromMail)); 
