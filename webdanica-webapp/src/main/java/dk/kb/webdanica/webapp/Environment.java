@@ -38,11 +38,12 @@ import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.utils.Settings;
-import dk.kb.webdanica.utils.SettingsEvaluator;
+import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.utils.StringUtils;
+import dk.netarkivet.common.utils.SystemUtils;
 
 
 public class Environment {
@@ -233,7 +234,7 @@ public class Environment {
 		File netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
 
 		if (netarchiveSuiteSettingsFile.isFile()) {	  	
-			if (!SettingsEvaluator.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
+			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
 				throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
 						+ netarchiveSuiteSettingsFile.getAbsolutePath());
 			}
@@ -253,7 +254,7 @@ public class Environment {
 		File webdanicaSettingsFile = new File(webdanicaSettings);
 		if (webdanicaSettingsFile.isFile()) {
 
-			if (!SettingsEvaluator.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
+			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
 				throw new ServletException("The parameter 'webdanica-settings' refers to a settingsfile containing invalid contents: " 
 						+ webdanicaSettingsFile.getAbsolutePath());
 			}
@@ -281,11 +282,11 @@ public class Environment {
 		 */
 		final int default_smtp_port = 25;// TODO move to constants class
 		final String default_smtp_host = "localhost";// TODO move to constants class
-		final String defaultMailAdmin = "svc@kb.dk"; // move to constants class
+		final String defaultMailAdmin = "svc@kb.dk"; // TODO move to constants class
 	
-		int smtp_port = getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
-		String smtp_host = getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
-		String mail_admin = getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
+		int smtp_port = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
+		String smtp_host = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
+		String mail_admin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
 
 		logger.info("Connected to NetarchiveSuite system with environmentname: " + 
 				dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
@@ -447,28 +448,6 @@ public class Environment {
 
 		sendAdminEmail(subject, getStartMailContents(subject));
 	}
-
-    private String getStringSetting(String settingsName, String default_string_value) {
-    	String returnValue = default_string_value;
-	    if (Settings.hasKey(settingsName)) {
-	    	String settingsValue = Settings.get(settingsName);  
-	    	if (settingsValue == null || settingsValue.isEmpty()) {
-	    		logger.warning("Using default value '" + default_string_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
-	    	} else {
-	    		returnValue = settingsValue;
-	    	}
-	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_string_value);
-	    }
-	    return returnValue;
-    }
-    
-
-	private int getIntegerSetting(String settingsName, int default_int_value) {
-	    // TODO Auto-generated method stub
-	    return 0;
-    }
-
 	private String getStartMailContents(String subject) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(subject);
@@ -478,11 +457,8 @@ public class Environment {
 	    return sb.toString();
     }
     
-    
-    
     private String getServer() {
-	    // TODO Auto-generated method stub
-	    return null;
+	    return SystemUtils.getLocalHostName(); // TODO maybe replace with something better (my code in the kbpillar project
     }
 
 	private String getStopMailContents(String subject) {
