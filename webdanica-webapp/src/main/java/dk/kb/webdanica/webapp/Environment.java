@@ -173,10 +173,10 @@ public class Environment {
 
 		Package pkg = Package.getPackage("dk.kb.webdanica.webapp");
 		if (pkg != null) {
-			setVersion(pkg.getSpecificationVersion());
+			version = pkg.getSpecificationVersion();
 		}
-		if (getVersion() == null) {
-			setVersion("N/A");
+		if (version == null) {
+			version = "N/A";
 		}
 
 		/*
@@ -406,15 +406,15 @@ public class Environment {
 		 * Initialize template master.
 		 */
 
-		setTemplateMaster(TemplateMaster.getInstance("default"));
-		getTemplateMaster().addTemplateStorage(
+		templateMaster = TemplateMaster.getInstance("default");
+		templateMaster.addTemplateStorage(
 				TemplateFileStorageManager.getInstance(servletContext.getRealPath("/"), "UTF-8"));
 
-		setLoginHandler(new LoginTemplateHandler<User>());
-		getLoginHandler().templateMaster = getTemplateMaster();
-		getLoginHandler().templateName = login_template_name;
-		getLoginHandler().title = "Webdanica - Login";
-		getLoginHandler().adminPath = "/";
+		loginHandler = new LoginTemplateHandler<User>();
+		loginHandler.templateMaster = getTemplateMaster();
+		loginHandler.templateName = login_template_name;
+		loginHandler.title = "Webdanica - Login";
+		loginHandler.adminPath = "/";
 
 		/*
 		 * Start thread workers.
@@ -552,8 +552,8 @@ public class Environment {
 		filterThread = null;
 		workflow = null;
         emailer = null;
-        setLoginHandler(null);
-        setTemplateMaster(null);
+        loginHandler = null;
+        templateMaster=null;
         setServletConfig(null);
         db.close();
     }
@@ -579,11 +579,6 @@ public class Environment {
 
 	public String getVersion() {
 	    return version;
-    }
-
-
-	public void setVersion(String version) {
-	    this.version = version;
     }
 
 
@@ -620,18 +615,8 @@ public class Environment {
 	    return loginHandler;
     }
 
-
-	public void setLoginHandler(LoginTemplateHandler<User> loginHandler) {
-	    this.loginHandler = loginHandler;
-    }
-
-
 	public TemplateMaster getTemplateMaster() {
 	    return templateMaster;
     }
-
-
-	public void setTemplateMaster(TemplateMaster templateMaster) {
-	    this.templateMaster = templateMaster;
-    }
+	
 }
