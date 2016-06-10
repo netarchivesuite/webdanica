@@ -1,10 +1,3 @@
-/*
- * Created on 18/06/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 package dk.kb.webdanica.webapp;
 
 import java.io.File;
@@ -25,13 +18,14 @@ import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.sql.DataSource;
 
 import com.antiaction.common.cron.CrontabSchedule;
 import com.antiaction.common.cron.ScheduleAbstract;
 import com.antiaction.common.templateengine.TemplateMaster;
 import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
+
+import javax.sql.DataSource;
 import com.antiaction.multithreading.datasource.DataSourceReference;
 
 import dk.kb.webdanica.WebdanicaSettings;
@@ -40,12 +34,16 @@ import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
+import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.utils.StringUtils;
 import dk.netarkivet.common.utils.SystemUtils;
 
-
+/**
+ *  Setup the environment for the Webdanica webapplication running on 8080 as a ROOT.war
+ *  Initialization of the Environment instance requires the WEBDANICA_HOME to be set in the environment.
+ */
 public class Environment {
 
     /** Logging mechanism. */
@@ -62,32 +60,32 @@ public class Environment {
 	public static final String DEFAULT_EMAIL_CRONTAB = "0 0 * * *";
 
     /** servletConfig. */
-    public ServletConfig servletConfig = null;
+    private ServletConfig servletConfig = null;
 
-	public String version = null;
+	private String version = null;
 
-    public String env;
+    private String env;
 
-    //public File webInfFile;
-
+    private WorkThreadAbstract[] workthreads;
+    
     /*
      * Paths.
      */
 
-    public String contextPath;
+    private String contextPath;
 
-    public String seedsPath;
-	public String seedPath;
+    private String seedsPath; // Maybe not fields here
+	private String seedPath;  // Maybe not fields here
     
     /*
      * Templates.
      */
 
-    public TemplateMaster templateMaster = null;
+    private TemplateMaster templateMaster = null;
 
     private String login_template_name = null;
 
-    public LoginTemplateHandler<User> loginHandler = null;
+    private LoginTemplateHandler<User> loginHandler = null;
 
     /*
      * Misc.
@@ -96,13 +94,15 @@ public class Environment {
     /** Database <code>DataSource</code> object. */
     //public DataSource dataSource = null;
 
+    
     /*
      * WorkThreads.
      */
 
-    public WorkflowWorkThread workflow;
+    private WorkflowWorkThread workflow;
 
-    public FilterWorkThread filterThread;
+    private FilterWorkThread filterThread;
+    
     /*
     public MonitoringWorkThread monitoring;
 
@@ -152,17 +152,20 @@ public class Environment {
 	private int smtp_port;
 	private String smtp_host;
 
-	public int defaultItemsPerPage = 25; // create settings
+	private int defaultItemsPerPage = 25; // create settings
 
 	public SeedDAO seedDao;
+
+	private ServletContext servletContext;
 
     /**
      * @param servletContext
      * @param theServletConfig
      * @throws ServletException
      */
-	public Environment(ServletContext servletContext, ServletConfig theServletConfig) throws ServletException {
-		this.servletConfig = theServletConfig;
+	public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
+		this.setServletConfig(theServletConfig);
+ 		this.servletContext = theServletContext;
 
 		/*
 		 * Version.
@@ -170,10 +173,10 @@ public class Environment {
 
 		Package pkg = Package.getPackage("dk.kb.webdanica.webapp");
 		if (pkg != null) {
-			version = pkg.getSpecificationVersion();
+			setVersion(pkg.getSpecificationVersion());
 		}
-		if (version == null) {
-			version = "N/A";
+		if (getVersion() == null) {
+			setVersion("N/A");
 		}
 
 		/*
@@ -214,7 +217,7 @@ public class Environment {
 			}
 		});
 
-		String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME");
+		String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME"); 
 		if (webdanicaHomeEnv == null) {
 			throw new ServletException("'WEBDANICA_HOME' must be defined in the environment!");
 		}
@@ -225,29 +228,24 @@ public class Environment {
 		}
 		// relative paths in web.xml will be prefixed by this path + /
 
-		String netarchiveSuiteSettings = servletConfig.getInitParameter("netarchivesuite-settings");
-		String webdanicaSettings = servletConfig.getInitParameter("webdanica-settings");
-
+		String netarchiveSuiteSettings = getServletConfig().getInitParameter("netarchivesuite-settings");
 		if (!netarchiveSuiteSettings.startsWith("/")) {
 			netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
 		}
 		File netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
-
 		if (netarchiveSuiteSettingsFile.isFile()) {	  	
 			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
 				throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
 						+ netarchiveSuiteSettingsFile.getAbsolutePath());
 			}
-
 			System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
 			dk.netarkivet.common.utils.Settings.reload(); // Strictly not necessary
-
 		} else {
 			throw new ServletException("The parameter 'netarchivesuite-settings' refers to a non-existing file: " 
 					+ netarchiveSuiteSettingsFile.getAbsolutePath());
 		}
 
-
+		String webdanicaSettings = getServletConfig().getInitParameter("webdanica-settings");
 		if (!webdanicaSettings.startsWith("/")) {
 			webdanicaSettings = webdanicaHomeDir.getAbsolutePath() + "/" + webdanicaSettings;
 		}
@@ -258,7 +256,6 @@ public class Environment {
 				throw new ServletException("The parameter 'webdanica-settings' refers to a settingsfile containing invalid contents: " 
 						+ webdanicaSettingsFile.getAbsolutePath());
 			}
-
 			System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
 			Settings.reload();
 		} else {
@@ -303,20 +300,20 @@ public class Environment {
 		 * DataSource.
 		 */
 
-		String db_url = servletConfig.getInitParameter("db-url");
-		String db_username = servletConfig.getInitParameter("db-username");
-		String db_password = servletConfig.getInitParameter("db-password");        
+		String db_url = getServletConfig().getInitParameter("db-url");
+		String db_username = getServletConfig().getInitParameter("db-username");
+		String db_password = getServletConfig().getInitParameter("db-password");        
 
 		/*
 		 * Templates.
 		 */
 
-		login_template_name = servletConfig.getInitParameter("login-template");
+		login_template_name = getServletConfig().getInitParameter("login-template");
 
 		if (login_template_name != null && login_template_name.length() > 0) {
 			logger.info("Using '" +  login_template_name + "' as login template.");
 		} else {
-			throw new ServletException("'login_template_name' must be configured!");
+			throw new ServletException("'The property 'login-template' must be configured in the web.xml");
 		}
 
 
@@ -325,13 +322,13 @@ public class Environment {
 		 * Crontabs.
 		 */
 
-		String lookupCrontab = servletConfig.getInitParameter("lookup-crontab");
-		String pidCrontab = servletConfig.getInitParameter("pid-crontab");
-		String aliveCheckCrontab = servletConfig.getInitParameter("alive-crontab");
-		String fetchCrontab = servletConfig.getInitParameter("fetch-crontab");
-		String waybackCheckCrontab = servletConfig.getInitParameter("check-crontab");
-		String archiveCheckCrontab = servletConfig.getInitParameter("archive-crontab");
-		String emailCrontab = servletConfig.getInitParameter("email-crontab");
+		String lookupCrontab = getServletConfig().getInitParameter("lookup-crontab");
+		String pidCrontab = getServletConfig().getInitParameter("pid-crontab");
+		String aliveCheckCrontab = getServletConfig().getInitParameter("alive-crontab");
+		String fetchCrontab = getServletConfig().getInitParameter("fetch-crontab");
+		String waybackCheckCrontab = getServletConfig().getInitParameter("check-crontab");
+		String archiveCheckCrontab = getServletConfig().getInitParameter("archive-crontab");
+		String emailCrontab = getServletConfig().getInitParameter("email-crontab");
 		if (lookupCrontab == null || lookupCrontab.length() == 0) {
 			lookupCrontab = DEFAULT_LOOKUP_CRONTAB;
 			logger.info("Using default 'lookup-crontab' value of '" + lookupCrontab + "'.");
@@ -409,14 +406,15 @@ public class Environment {
 		 * Initialize template master.
 		 */
 
-		templateMaster = TemplateMaster.getInstance("default");
-		templateMaster.addTemplateStorage(TemplateFileStorageManager.getInstance(servletContext.getRealPath("/"), "UTF-8"));
+		setTemplateMaster(TemplateMaster.getInstance("default"));
+		getTemplateMaster().addTemplateStorage(
+				TemplateFileStorageManager.getInstance(servletContext.getRealPath("/"), "UTF-8"));
 
-		loginHandler = new LoginTemplateHandler<User>();
-		loginHandler.templateMaster = templateMaster;
-		loginHandler.templateName = login_template_name;
-		loginHandler.title = "Webdanica - Login";
-		loginHandler.adminPath = "/";
+		setLoginHandler(new LoginTemplateHandler<User>());
+		getLoginHandler().templateMaster = getTemplateMaster();
+		getLoginHandler().templateName = login_template_name;
+		getLoginHandler().title = "Webdanica - Login";
+		getLoginHandler().adminPath = "/";
 
 		/*
 		 * Start thread workers.
@@ -425,6 +423,8 @@ public class Environment {
 		workflow.start();
 		filterThread = new FilterWorkThread(this, "Seeds filtering");
 		filterThread.start();
+		workthreads = new WorkThreadAbstract[]{workflow,filterThread};
+		
 		/*
         monitoring = new MonitoringWorkThread(this, "Monitoring");
         workflow = new WorkflowWorkThread(this, "Workflow");
@@ -444,15 +444,17 @@ public class Environment {
         wayback.start();
         archive.start();
 		 */
+		/** Send a mail to the mailAdmin that the system has started */
 		String subject = "[Webdanica-"  + env + "] started";
-
-		sendAdminEmail(subject, getStartMailContents(subject));
+		emailer.sendAdminEmail(subject, getStartMailContents(subject));
 	}
+	
+	
 	private String getStartMailContents(String subject) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(subject);
 	    sb.append(System.lineSeparator());
-	    sb.append("WEBDANICA WEBAPP (version  " + version + ") started on server " + getServer() + " at '" + new Date() + "'");
+	    sb.append("Webdanica Webapp (version  " + getVersion() + ") started on server " + getServer() + " at '" + new Date() + "'");
 	    
 	    return sb.toString();
     }
@@ -465,31 +467,16 @@ public class Environment {
     	StringBuilder sb = new StringBuilder();
    	    sb.append(subject);
    	    sb.append(System.lineSeparator());
-   	    sb.append("WEBDANICA WEBAPP (version  " + version + ") stopped on server " + getServer() + " at '" + new Date() + "'");
+   	    sb.append("Webdanica Webapp (version  " + getVersion() + ") stopped on server " + getServer() + " at '" + new Date() + "'");
    	    return sb.toString();
     }
-/*
-	private int getIntegerInitParameter(String parameter, int defaultValue) throws ServletException {
-    	String valueStr = servletConfig.getInitParameter(parameter);
-    	int value = defaultValue;
-    	if (valueStr != null && valueStr.length() > 0) {
-            try {
-            	value = Integer.parseInt(valueStr);
-            } catch (NumberFormatException e) {
-                throw new ServletException("'" + parameter + "' must be a valid integer > 0! " + "Unable to extract valid integer from string '" + valueStr + "'.");
-            }
-        } else {
-            logger.warning("'" + parameter + "' set to default value '" + defaultValue + "' instead of read from web.xml");
-        }
-    	return value;
-	}
-  */  
+
 	/**
      * Do some cleanup. This waits for the different workflow threads to stop running.
      */
     public void cleanup() {
 		String subject = "[Webdanica-"  + env + "] stopping";
-		sendAdminEmail(subject, getStopMailContents(subject));
+		emailer.sendAdminEmail(subject, getStopMailContents(subject));
 		if (filterThread != null) {
 			filterThread.stop();
 		}
@@ -565,16 +552,86 @@ public class Environment {
 		filterThread = null;
 		workflow = null;
         emailer = null;
-        loginHandler = null;
-        templateMaster = null;
-        servletConfig = null;
+        setLoginHandler(null);
+        setTemplateMaster(null);
+        setServletConfig(null);
         db.close();
     }
 
-    
-
-	public void sendAdminEmail(String subject, String body) {
-		emailer.send(this.mail_admin, subject, body);
+    public int getDefaultItemsPerPage() {
+	    return defaultItemsPerPage;
+    }
+	
+	private void setDefaultItemsPerPage(int defaultItemsPerPage) {
+	    this.defaultItemsPerPage = defaultItemsPerPage;
     }
 
+
+	public String getContextPath() {
+	    return contextPath;
+    }
+
+
+	public void setContextPath(String contextPath) {
+	    this.contextPath = contextPath;
+    }
+
+
+	public String getVersion() {
+	    return version;
+    }
+
+
+	public void setVersion(String version) {
+	    this.version = version;
+    }
+
+
+	public ServletConfig getServletConfig() {
+	    return servletConfig;
+    }
+
+	public void setServletConfig(ServletConfig servletConfig) {
+	    this.servletConfig = servletConfig;
+    }
+
+	public String getSeedsPath() {
+	    return seedsPath;
+    }
+
+	public void setSeedsPath(String seedsPath) {
+	    this.seedsPath = seedsPath;
+    }
+
+	public String getSeedPath() {
+	    return seedPath;
+    }
+
+	public void setSeedPath(String seedPath) {
+	    this.seedPath = seedPath;
+    }
+	
+	public WorkThreadAbstract[] getWorkThreads() {
+		return this.workthreads;
+    }
+
+
+	public LoginTemplateHandler<User> getLoginHandler() {
+	    return loginHandler;
+    }
+
+
+	public void setLoginHandler(LoginTemplateHandler<User> loginHandler) {
+	    this.loginHandler = loginHandler;
+    }
+
+
+	public TemplateMaster getTemplateMaster() {
+	    return templateMaster;
+    }
+
+
+	public void setTemplateMaster(TemplateMaster templateMaster) {
+	    this.templateMaster = templateMaster;
+    }
 }

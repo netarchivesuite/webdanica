@@ -1,0 +1,44 @@
+<settings>
+<seeds>
+	<ignoredSuffixes>
+		<suffix>.jpg</suffix>
+		<suffix>.avi</suffix>
+		<suffix>.waw</suffix>
+		<suffix>.gif</suffix>
+		<suffix>.ico</suffix>
+		<suffix>.bmp</suffix>			
+		<suffix>.doc</suffix>
+		<suffix>.docx</suffix>
+		<suffix>.dot</suffix>
+		<suffix>.eps</suffix>
+		<suffix>.exe</suffix>
+		<suffix>.jp2</suffix>		
+		<suffix>.jpe</suffix>		
+		<suffix>.jpeg</suffix>
+		<suffix>.mdb</suffix>		
+		<suffix>.mov</suffix>				
+		<suffix>.mp3</suffix>	
+		<suffix>.mp4</suffix>		
+		<suffix>.mpeg</suffix>					
+		<suffix>.odt</suffix>
+		<suffix>.pdd</suffix>
+		<suffix>.pdf</suffix>
+		<suffix>.pict</suffix>
+		<suffix>.png</suffix>
+		<suffix>.psd</suffix>
+		<suffix>.rar</suffix>
+		<suffix>.raw</suffix>
+		<suffix>.rtf</suffix> <!-- ???? -->
+		<suffix>.swf</suffix>
+		<suffix>.tif</suffix>
+		<suffix>.tiff</suffix>             
+		<suffix>.wps</suffix>
+		<suffix>.xls</suffix>
+	</ignoredSuffixes>
+        <ignoredProtocols>
+        <protocol>mailto</protocol>
+        <protocol>vimeo</protocol>
+        <protocol>data</protocol>
+	</ignoredProtocols>	             
+</seeds>
+</settings>

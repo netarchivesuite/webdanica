@@ -39,11 +39,11 @@ public class Navbar {
     static {
     	items = new String[][] {
     			//{ DABServlet.environment.contextPath + "/insert/", "Opret" },
-                { Servlet.environment.contextPath + "/seeds/", "Seeds" },
+                { Servlet.environment.getContextPath() + "/seeds/", "Seeds" },
                 // { DABServlet.environment.contextPath + "/search/", "Søg" },
-                { Servlet.environment.contextPath + "/domains/", "Domæner" },
-                { Servlet.environment.contextPath + "/users/", "Brugere" },
-                { Servlet.environment.contextPath + "/status/", "Status" }
+                { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
+                { Servlet.environment.getContextPath() + "/users/", "Brugere" },
+                { Servlet.environment.getContextPath() + "/status/", "Status" }
     	};
     }
 
@@ -73,7 +73,7 @@ public class Navbar {
     public static String getUserHref(User user) {
         StringBuilder sb = new StringBuilder();
         sb.append("<a href=\"");
-        sb.append(Servlet.environment.contextPath);
+        sb.append(Servlet.environment.getContextPath());
         sb.append("/user/");
         sb.append(user== null?"NO-ID":user.id); //FIXME a hack to avoid a NPE
         sb.append("/\" class=\"navbar-link\">");

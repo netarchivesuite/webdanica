@@ -26,12 +26,12 @@ public class StatusBar {
     public static synchronized String getStatusbar(int menu) {
     	if (items == null) {
         	items = new String[][] {
-        			{ Servlet.environment.contextPath + "/status/props/", "Properties" },
-                    { Servlet.environment.contextPath + "/status/dep/", "Dependencies" },
-                    { Servlet.environment.contextPath + "/status/threads/", "Threads" },
-                    { Servlet.environment.contextPath + "/status/progress/", "Progress" },
-                    { Servlet.environment.contextPath + "/status/log/", "Log" },
-                    { Servlet.environment.contextPath + "/status/pids/", "Pids" }
+        			{ Servlet.environment.getContextPath() + "/status/props/", "Properties" },
+                    { Servlet.environment.getContextPath() + "/status/dep/", "Dependencies" },
+                    { Servlet.environment.getContextPath() + "/status/threads/", "Threads" },
+                    { Servlet.environment.getContextPath() + "/status/progress/", "Progress" },
+                    { Servlet.environment.getContextPath() + "/status/log/", "Log" },
+                    { Servlet.environment.getContextPath() + "/status/pids/", "Pids" }
                     // "/status/sysno/pid/<numeric>/"
                     // "/status/pids/*"
         	};

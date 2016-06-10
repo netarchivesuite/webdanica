@@ -37,7 +37,6 @@ import dk.netarkivet.dab.webadmin.workflow.PIDWorkThread;
 */
 public class SeedsResource implements ResourceAbstract {
 
-    private static final String WEBAPP_NAME = "DAB";
 	private static final Logger logger = Logger.getLogger(SeedsResource.class.getName());
 /*
     protected static final int[] URL_ADD_PERMISSION = {Permission.P_URL_ADD};
@@ -81,20 +80,22 @@ public class SeedsResource implements ResourceAbstract {
     public void resource_service(ServletContext servletContext, User dab_user,
     		HttpServletRequest req, HttpServletResponse resp,
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-        if (Servlet.environment.contextPath == null) {
-        	Servlet.environment.contextPath = req.getContextPath();
+        if (Servlet.environment.getContextPath() == null) {
+        	Servlet.environment.setContextPath(req.getContextPath());
         }
         /*
         if (servicePath == null) {
             servicePath = req.getContextPath() + req.getServletPath();
         }
         */
-        if (Servlet.environment.seedsPath == null) {
-        	Servlet.environment.seedsPath = Servlet.environment.contextPath + "/seeds/";
+        if (Servlet.environment.getSeedsPath() == null) {
+        	Servlet.environment.setSeedsPath(Servlet.environment.getContextPath() + "/seeds/");
         }
-        if (Servlet.environment.seedPath == null) {
-        	Servlet.environment.seedPath = Servlet.environment.contextPath + "/seed/";
+        if (Servlet.environment.getSeedPath() == null) {
+        	Servlet.environment.setSeedPath(Servlet.environment.getContextPath() + "/seed/");
         }
+        
+        
         if (resource_id == R_STATUS_LIST || resource_id == R_STATUS_LIST_ID) {
             urls_list(dab_user, req, resp, numerics);
         } else if (resource_id == R_STATUS_LIST_ID_DUMP) {
@@ -507,7 +508,7 @@ public class SeedsResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("urls_list.html");
+        Template template = environment.getTemplateMaster().getTemplate("urls_list.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -706,7 +707,7 @@ public class SeedsResource implements ResourceAbstract {
             
         }
         if (itemsPerPage < 1) {
-            itemsPerPage = environment.defaultItemsPerPage;
+            itemsPerPage = environment.getDefaultItemsPerPage();
         }
         int items = urlRecordsFiltered.size();
         int pages = Pagination.getPages(items, itemsPerPage);
@@ -755,7 +756,7 @@ public class SeedsResource implements ResourceAbstract {
             */
             urlListSb.append("<td>");
             urlListSb.append("<a href=\"");
-            urlListSb.append(Servlet.environment.seedsPath);
+            urlListSb.append(Servlet.environment.getSeedsPath());
     /*        
             urlListSb.append(urlRecord.id);
             urlListSb.append("/\">");
@@ -932,11 +933,11 @@ public class SeedsResource implements ResourceAbstract {
          */
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities(WEBAPP_NAME).toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(WEBAPP_NAME + " " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -1215,7 +1216,7 @@ public class SeedsResource implements ResourceAbstract {
                 statemenuSb.append(" class=\"active\"");
             }
             statemenuSb.append("><a href=\"");
-            statemenuSb.append(Servlet.environment.seedsPath);
+            statemenuSb.append(Servlet.environment.getSeedsPath());
             statemenuSb.append((Integer) menuStatesArr[i][0]);
             statemenuSb.append("/\">");
             statemenuSb.append((String) menuStatesArr[i][1]);

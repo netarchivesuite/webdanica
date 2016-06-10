@@ -31,6 +31,8 @@ public class Emailer {
     final private Session session;
     
     final private String fromMail;
+    
+    final private String mailAdmin;
 
     private Emailer(String smtp_host, int smtp_port, final String username,
             final String password, String mailAdmin) {
@@ -38,7 +40,8 @@ public class Emailer {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", smtp_host);
         props.put("mail.smtp.port", smtp_port);
-        fromMail = mailAdmin;
+        this.fromMail = mailAdmin;
+        this.mailAdmin = mailAdmin;
         if (username != null && username.length() > 0 && password != null
                 && password.length() > 0) {
             session = Session.getInstance(props,
@@ -52,7 +55,15 @@ public class Emailer {
             session = Session.getInstance(props);
         }
     }
-
+    /**
+     * 
+     * @param smtp_host
+     * @param smtp_port
+     * @param username
+     * @param password
+     * @param mail_admin
+     * @return
+     */
     public static synchronized Emailer getInstance(String smtp_host,
             int smtp_port, String username, String password, String mail_admin) {
         if (emailer == null) {
@@ -76,5 +87,9 @@ public class Emailer {
             logger.log(Level.SEVERE, e.toString(), e);
         }
     }
-
+    
+    public void sendAdminEmail(String subject, String body) {
+		emailer.send(this.mailAdmin, subject, body);
+    }
+    
 }

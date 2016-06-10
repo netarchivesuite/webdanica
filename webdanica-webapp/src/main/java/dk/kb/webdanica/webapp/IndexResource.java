@@ -39,20 +39,15 @@ public class IndexResource implements ResourceAbstract {
         R_INDEX = resourceManager.resource_add(this, "/", false);
     }
 
-    //private String servicePath;
-
     @Override
     public void resource_service(ServletContext servletContext, User dab_user,
     		HttpServletRequest req, HttpServletResponse resp,
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-        if (Servlet.environment.contextPath == null) {
-        	Servlet.environment.contextPath = req.getContextPath();
+    	// Update the contextPath if it is not yet set
+        if (Servlet.environment.getContextPath() == null) {
+        	Servlet.environment.setContextPath(req.getContextPath());
         }
-        /*
-        if (servicePath == null) {
-            servicePath = req.getContextPath() + req.getServletPath();
-        }
-        */
+   
         if (resource_id == R_INDEX) {
             index_show(dab_user, req, resp);
         }
@@ -70,7 +65,7 @@ public class IndexResource implements ResourceAbstract {
         // System.out.println( pathInfo );
         // System.out.println( req.getQueryString() );
 
-        Template template = environment.templateMaster.getTemplate("index.html");
+        Template template = environment.getTemplateMaster().getTemplate("index.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -92,7 +87,7 @@ public class IndexResource implements ResourceAbstract {
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + " " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + " " + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {

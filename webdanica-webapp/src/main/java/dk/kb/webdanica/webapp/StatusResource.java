@@ -48,7 +48,7 @@ import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 
 public class StatusResource implements ResourceAbstract {
 
-    private static final Logger logger = Logger.getLogger(StatusResource.class.getName());
+    //private static final Logger logger = Logger.getLogger(StatusResource.class.getName());
 
     private Environment environment;
 
@@ -89,8 +89,8 @@ public class StatusResource implements ResourceAbstract {
 
     @Override
     public void resource_service(ServletContext servletContext, User dab_user, HttpServletRequest req, HttpServletResponse resp, int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-        if (Servlet.environment.contextPath == null) {
-        	Servlet.environment.contextPath = req.getContextPath();
+        if (Servlet.environment.getContextPath() == null) {
+        	Servlet.environment.setContextPath(req.getContextPath());
         }
         /*
         if (servicePath == null) {
@@ -122,7 +122,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -138,11 +138,11 @@ public class StatusResource implements ResourceAbstract {
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -169,7 +169,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -206,7 +206,7 @@ public class StatusResource implements ResourceAbstract {
         sb.append("\r\n");
         sb.append("\r\n");
 
-        ServletConfig servletConfig = Servlet.environment.servletConfig;
+        ServletConfig servletConfig = Servlet.environment.getServletConfig();
         @SuppressWarnings("rawtypes")
 		Enumeration enumeration = servletConfig.getInitParameterNames();
         while (enumeration.hasMoreElements()) {
@@ -222,11 +222,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</pre>\r\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -253,7 +253,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -305,11 +305,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</table>\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -344,7 +344,7 @@ public class StatusResource implements ResourceAbstract {
         }
         */
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -365,16 +365,8 @@ public class StatusResource implements ResourceAbstract {
         dateFormat.setLenient(false);
         dateFormat.setTimeZone(TimeZone.getDefault());
 
-        WorkThreadAbstract[] workThreads = new WorkThreadAbstract[] {
-        		//environment.monitoring,
-        		//environment.workflow,
-        		//environment.lookup,
-        		//environment.pid,
-        		//environment.alive,
-        		//environment.fetch,
-        		//environment.wayback,
-        		//environment.archive
-        };
+        WorkThreadAbstract[] workThreads = environment.getWorkThreads();
+       
 
         sb.append("<table style=\"border: 1px solid black; width: 100%;\">\n");
         sb.append("<tr>\n");
@@ -402,11 +394,11 @@ public class StatusResource implements ResourceAbstract {
     	sb.append("</pre>\n");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -589,7 +581,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -611,17 +603,7 @@ public class StatusResource implements ResourceAbstract {
         dateFormat.setLenient(false);
         dateFormat.setTimeZone(TimeZone.getDefault());
 
-        WorkThreadAbstract[] workThreads = new WorkThreadAbstract[] {
-        		//environment.monitoring,
-        		//environment.workflow,
-        		//environment.lookup,
-        		//environment.pid,
-        		//environment.alive,
-        		//environment.fetch,
-        		//environment.wayback,
-        		//environment.archive
-        };
-
+        WorkThreadAbstract[] workThreads = environment.getWorkThreads();
         List<WorkProgress> progressHistory = new ArrayList<WorkProgress>();
 
         WorkProgress progress;
@@ -688,7 +670,7 @@ public class StatusResource implements ResourceAbstract {
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("WEBDANICA " + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -715,7 +697,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_master.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_master.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -755,11 +737,11 @@ public class StatusResource implements ResourceAbstract {
         sb.append("</pre>");
 
         if (titlePlace != null) {
-            titlePlace.setText(HtmlEntity.encodeHtmlEntities("DAB").toString());
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities("DAB " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {
@@ -811,7 +793,7 @@ public class StatusResource implements ResourceAbstract {
 
         Caching.caching_disable_headers(resp);
 
-        Template template = environment.templateMaster.getTemplate("status_sqlquery.html");
+        Template template = environment.getTemplateMaster().getTemplate("status_sqlquery.html");
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -903,7 +885,7 @@ public class StatusResource implements ResourceAbstract {
         }
 
         if (appnamePlace != null) {
-            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + " " + environment.version).toString());
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE + environment.getVersion()).toString());
         }
 
         if (navbarPlace != null) {

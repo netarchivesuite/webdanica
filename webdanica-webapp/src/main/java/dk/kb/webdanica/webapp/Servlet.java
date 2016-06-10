@@ -131,7 +131,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             // Look for cookies in case of no current user in session.
             if (current_user == null && session != null && session.isNew()) {
             	// Note 'this' == LoginTemplateCallback<User>
-                current_user = environment.loginHandler.loginFromCookie(req, resp, session, this);
+                current_user = environment.getLoginHandler().loginFromCookie(req, resp, session, this);
                 logger.info("current_user:" + current_user);
             }
 
@@ -139,7 +139,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
             // Logout, login or administration.
             if (action != null && "logout".compareToIgnoreCase(action) == 0) {
-                environment.loginHandler.logoff(req, resp, session);
+                environment.getLoginHandler().logoff(req, resp, session);
             } else {
                 String pathInfo = req.getPathInfo();
                 if (pathInfo == null || pathInfo.length() == 0) {
@@ -152,7 +152,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (resource != null) {
                     if (resource.bSecured && current_user == null) {
                     	// Note 'this' == LoginTemplateCallback<User>
-                        environment.loginHandler.loginFromForm(req, resp, session, this);
+                        environment.getLoginHandler().loginFromForm(req, resp, session, this);
                     } else if (!resource.bSecured) {
                         resource.resources.resource_service(this.getServletContext(), current_user, req, resp, resource.resource_id, numerics, pathInfo);
                     } else {
