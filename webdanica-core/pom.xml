@@ -206,6 +206,9 @@
               <value>${dab.password}</value>
             </property>
           </systemProperties>
+          <includes> 
+          <include>**/*Tester.java</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>
