@@ -15,14 +15,18 @@ import dk.netarkivet.common.utils.DomainUtils;
 public class InitielFilter {
 
 	public static void main(String[] args) throws IOException {
-		/*
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("outlink-reportfile-final-1460549754730.txt");
-		classloader.g
-		*/
-		File input = new File("/home/svc/devel/webdanica/webdanica-core/src/resources/outlink-reportfile-final-1460549754730.txt");
-				
-				
+
+		// refers to webdanica-core/src/main/resources/outlink-reportfile-final-1460549754730.txt
+		File input = new File("src/main/resources/outlink-reportfile-final-1460549754730.txt"); 
+
+		System.out.println(input.getCanonicalPath());
+		String WGET_PATH = "/usr/bin/wget"; // TODO read from settings
+		File tmpFolder = new File("/tmp"); // TODO read from settings
+		File wgetPath = new File(WGET_PATH);
+		int delayInSecs=3;
+		int tries = 3;
+		ResolveRedirects rr = new ResolveRedirects(wgetPath, delayInSecs, tries, tmpFolder);
+
 		BufferedReader br = new BufferedReader(new FileReader(input));
 		String line = null;
 		int rejects = 0;
@@ -34,20 +38,20 @@ public class InitielFilter {
 				rejects++;
 			} else {
 				accepted++;
-				String redirected = ResolveRedirects.getNewLocation(line, 1);
+				String redirected = rr.resolveRedirectedUrl(line);
 				if (redirected != null && isProperUrl(redirected)) {
 					redirects++;
 				}
-				
+
 			}
 		}
 		System.out.println("rejects: " + rejects);
 		System.out.println("accepted: " + accepted);
 		System.out.println("redirects: " + redirects);
 	}
+	
 	private static boolean isProperUrl(String redirected) {
 		return !reject(redirected);
-	   
     }
 	public static boolean reject(String seed) {
 		
@@ -78,11 +82,5 @@ public class InitielFilter {
 	    validSchemesSet.add("http");
 	    validSchemesSet.add("ftp");
 	    return validSchemesSet.contains(scheme);  
-    }
-	
-	
-	
-	
-	
-	
+    }	
 }
