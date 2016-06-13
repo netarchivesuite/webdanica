@@ -13,9 +13,9 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.datamodel.IngestLog;
-import dk.kb.webdanica.datamodel.IngestLogDAO;
+import dk.kb.webdanica.datamodel.IngestLogCassandraDAO;
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.utils.UrlUtils;
 
@@ -76,7 +76,7 @@ public class LoadSeeds {
 	 * @return the ingestLog for the file just processed
 	 */
 	public IngestLog processSeeds() {
-		SeedDAO dao = SeedDAO.getInstance();
+		SeedCassandraDAO dao = SeedCassandraDAO.getInstance();
 		String line;
         long linecount=0L;
         long insertedcount=0L;
@@ -182,9 +182,9 @@ public class LoadSeeds {
     }
 
 	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
-		IngestLogDAO dao = null;
+		IngestLogCassandraDAO dao = null;
 		try {
-			dao = IngestLogDAO.getInstance();
+			dao = IngestLogCassandraDAO.getInstance();
 			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
 			return log;

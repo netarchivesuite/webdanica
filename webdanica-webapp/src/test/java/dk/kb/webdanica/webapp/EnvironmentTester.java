@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -73,5 +72,6 @@ public class EnvironmentTester {
 		
 		Environment e = new Environment(servletContext, theServletConfig);
 		assertFalse("Environment should not be null", e == null); 
+		
 	}
 }

@@ -15,9 +15,9 @@ import com.datastax.driver.core.Session;
  * @author svc
  *
  */
-public class SeedDAO {
+public class SeedCassandraDAO {
 		
-	static SeedDAO instance;
+	static SeedCassandraDAO instance;
 	
 	private Database db;
 
@@ -28,17 +28,22 @@ public class SeedDAO {
 
 	private PreparedStatement preparedUpdateState;
 	
-	private boolean newSession = false;
+	private PreparedStatement getSeedsCountStatement;
 	
-	public synchronized static SeedDAO getInstance(){
+	private boolean newSession = false;
+
+	
+	
+	public synchronized static SeedCassandraDAO getInstance(){
 		if (instance == null) {
-			instance = new SeedDAO();
+			instance = new SeedCassandraDAO();
 		} 
 		return instance;
 	}
 	
-	public SeedDAO() {
-		db = new Cassandra();
+	public SeedCassandraDAO() {
+		CassandraSettings settings = CassandraSettings.getDefaultSettings();
+		db = new Cassandra(settings);
 	}
 	
 	public List<Seed> getSeeds(Status status) {
@@ -100,7 +105,9 @@ public class SeedDAO {
 		if (readAllWithStatestatement == null || newSession) {
 			readAllWithStatestatement = session.prepare("SELECT * FROM seeds WHERE status=?");
 		}
-		
+		if (getSeedsCountStatement == null || newSession) {
+			getSeedsCountStatement = session.prepare("SELECT count(*) FROM seeds WHERE status=?");
+		}
 		newSession = false;
     }
 	
@@ -115,6 +122,15 @@ public class SeedDAO {
 		return !insertFailed;
 		
 	}
+	
+	public Long getSeedsCount(Status status) {
+		init();
+		BoundStatement bStatement = getSeedsCountStatement.bind(status.ordinal());
+		ResultSet rs = session.execute(bStatement);
+		Row row = rs.one();
+		return new Long(row.getLong(0));
+	}	
+	
 
 	public void close() {
 	    db.close();

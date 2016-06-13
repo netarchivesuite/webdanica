@@ -3,7 +3,7 @@ package dk.kb.webdanica.datamodel;
 import java.util.List;
 
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 
@@ -15,7 +15,7 @@ import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 public class SeedsDaoTester {
 
 	public static void main(String[] args) {
-		SeedDAO dao = SeedDAO.getInstance();
+		SeedCassandraDAO dao = SeedCassandraDAO.getInstance();
 		List<Seed> seeds = dao.getSeeds(Status.NEW);
 		System.out.println("Found '" +  seeds.size() + "' size with status NEW before filtering out urls with ignored suffixes");
 		for (Seed s: seeds) {
@@ -35,8 +35,12 @@ public class SeedsDaoTester {
 		System.out.println("Found '" +  seeds.size() + "' size with status REJECTED after filtering out urls with ignored suffixes");
 		seeds = dao.getSeeds(Status.READY_FOR_HARVESTING);
 		System.out.println("Found '" +  seeds.size() + "' size with status READY_FOR_HARVESTING after filtering out urls with ignored suffixes");
-		dao.close();
 
+		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
+			Long longvalue = dao.getSeedsCount(Status.fromOrdinal(i));
+			System.out.println("Found at status " + Status.fromOrdinal(i) +  ": " + longvalue);
+		}
+		dao.close();
 	}
 
 }

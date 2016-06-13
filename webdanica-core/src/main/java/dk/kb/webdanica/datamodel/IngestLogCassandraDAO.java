@@ -10,8 +10,6 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
-import dk.kb.webdanica.exceptions.WebdanicaException;
-
 /**
  * DAO for logging skipped entries during ingest in a single entry.
   
@@ -22,10 +20,10 @@ import dk.kb.webdanica.exceptions.WebdanicaException;
    PRIMARY KEY (inserted_date));  
  * 
  */
-public class IngestLogDAO implements Database {
+public class IngestLogCassandraDAO implements Database {
 	
 	public static void main(String args[]) {
-		IngestLogDAO dao = IngestLogDAO.getInstance();
+		IngestLogCassandraDAO dao = IngestLogCassandraDAO.getInstance();
 		List<String> entries = new ArrayList<String>();
 		entries.add("Line one in sample loglist");
 		entries.add("Line two in sample loglist");
@@ -47,7 +45,7 @@ public class IngestLogDAO implements Database {
 		}
 	}
 
-	static IngestLogDAO instance;
+	static IngestLogCassandraDAO instance;
 	
 	private Database db;
 
@@ -55,15 +53,15 @@ public class IngestLogDAO implements Database {
 	
 	private PreparedStatement preparedInsert;
 	
-	public synchronized static IngestLogDAO getInstance(){
+	public synchronized static IngestLogCassandraDAO getInstance(){
 		if (instance == null) {
-			instance = new IngestLogDAO();
+			instance = new IngestLogCassandraDAO();
 		} 
 		return instance;
 	}
 	
-	public IngestLogDAO() {
-		db = new Cassandra();
+	public IngestLogCassandraDAO() {
+		db = new Cassandra(CassandraSettings.getDefaultSettings());
 	}
 	
 	public void insertLog(IngestLog log){

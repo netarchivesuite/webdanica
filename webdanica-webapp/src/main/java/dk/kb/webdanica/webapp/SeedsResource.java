@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,8 +25,9 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
+import dk.netarkivet.common.utils.I18n;
 /*
 import dk.netarkivet.dab.webadmin.dao.ArchiveEntry;
 import dk.netarkivet.dab.webadmin.dao.GroupedByStatuses;
@@ -111,7 +113,7 @@ public class SeedsResource implements ResourceAbstract {
     private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
-    	SeedDAO dao = Servlet.environment.seedDao;
+    	SeedCassandraDAO dao = Servlet.environment.seedDao;
     	
         int status = 0; //Ordinal for Status.NEW
         if (numerics.size() >= 1) {
@@ -317,7 +319,7 @@ public class SeedsResource implements ResourceAbstract {
             throws IOException {
         String errorStr = null;
         String successStr = null;
-        SeedDAO dao = Servlet.environment.seedDao;
+        SeedCassandraDAO dao = Servlet.environment.seedDao;
         /*
         UrlRecords urlRecordsInstance = UrlRecords
                 .getInstance(environment.dataSource);
@@ -341,17 +343,16 @@ public class SeedsResource implements ResourceAbstract {
         boolean bShowAll = false;
         int itemsPerPage = 25;
         if (itemsperpageStr != null && itemsperpageStr.length() > 0) {
-        	if ("all".equalsIgnoreCase(itemsperpageStr)) {
-        		page = 1;
-        		itemsPerPage = Integer.MAX_VALUE; // FIXME this doesn't scale
-        		bShowAll = true;
-        	} else {
-                try {
-                    itemsPerPage = Integer.parseInt(itemsperpageStr);
-                } catch (NumberFormatException e) {
-                	itemsPerPage = 25;
-                	itemsperpageStr = "25";
-                }
+ //       	if ("all".equalsIgnoreCase(itemsperpageStr)) {
+ //       		page = 1;
+ //       		itemsPerPage = Integer.MAX_VALUE; // FIXME this doesn't scale
+ //       		bShowAll = true;
+ //       	} else {
+        	try {
+        		itemsPerPage = Integer.parseInt(itemsperpageStr);
+        	} catch (NumberFormatException e) {
+        		itemsPerPage = 25;
+        		itemsperpageStr = "25";
         	}
         }
 
@@ -757,11 +758,11 @@ public class SeedsResource implements ResourceAbstract {
             urlListSb.append("<td>");
             urlListSb.append("<a href=\"");
             urlListSb.append(Servlet.environment.getSeedsPath());
-    /*        
-            urlListSb.append(urlRecord.id);
+            
+            urlListSb.append(urlRecord.getUrl());
             urlListSb.append("/\">");
-            urlListSb.append(urlRecord.sysno);
-    */
+            urlListSb.append(urlRecord.getUrl());
+ 
             urlListSb.append("</a>");
             urlListSb.append("</td>");
             urlListSb.append("<td>");
@@ -1053,7 +1054,7 @@ public class SeedsResource implements ResourceAbstract {
         return resultString;
     }
 
-    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedDAO seedsInstance) {
+    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedCassandraDAO seedsInstance) {
         /*
          * State menu.
          */
@@ -1068,164 +1069,41 @@ public class SeedsResource implements ResourceAbstract {
         }
         */
 
-        Object[][] menuStatesArr = new Object[][] {
-                {
-                    0,
-                    "Oprettet",
-                    "Oprettet i systemet, afventer videre processering",
-                    false,
-                    0
-                },
-                {
-                    1,
-                    "URL afvist",
-                    "URL afvist",
-                    false,
-                    0
-                },
-                {
-                    2,
-                    "Afventer domæne godkendelse",
-                    "Afventer domæne godkendelse eller afvisning",
-                    false,
-                    0
-                },
-                {
-                    3,
-                    "Afventer URL godkendelse",
-                    "Afventer URL godkendelse eller afvisning",
-                    false,
-                    0
-                },
-                {
-                    4,
-                    "URL godkendt",
-                    "URL godkendt. Afventer Netarkiv status-check",
-                    true,
-                    0
-                },
-                {
-                    5,
-                    "Findes ikke i Netarkivet",
-                    "Findes ikke i Netarkivet",
-                    true,
-                    0
-                },
-                {
-                    6,
-                    "Afvist",
-                    "Afvist af systemet pga blacklistning",
-                    true,
-                    0
-                },
-                {
-                    7,
-                    "Filformat ikke godkendt",
-                    "Filformat ikke godkendt, afventer spontant filformat skifte",
-                    true,
-                    0
-                },
-                {
-                    8,
-                    "Udtrukket",
-                    "Udtrukket, afventer arkivering",
-                    true,
-                    0
-                },
-                {
-                    9,
-                    "Udtræksproblemer",
-                    "Findes i Netarkivet, man kan ikke hentes eller vises korrekt",
-                    true,
-                    0
-                },
-                {
-                    10,
-                    "Arkiveret til DAB",
-                    "Arkiveret til DAB",
-                    true,
-                    0
-                }};
- 
-//        List<GroupedByStatuses> groupedByStatusesList = urlRecordsInstance.getUrlRecordsGroupedByStatuses(conn);
-//        
-//        GroupedByStatuses groupedByStatuses;
-//        for (int i = 0; i < groupedByStatusesList.size(); ++i) {
-//            groupedByStatuses = groupedByStatusesList.get(i);
-//            switch (groupedByStatuses.status_url) {
-//            case UrlRecord.S_URL_ADDED:
-//            	/*
-//            	switch (groupedByStatuses.status_domain) {
-//            	case Domain.S_DOMAIN_ACCEPTED:
-//            	case Domain.S_DOMAIN_REJECTED:
-//                    menuStatesArr[0][4] = (Integer) menuStatesArr[0][4]
-//                            + groupedByStatuses.count;
-//            		break;
-//            	case Domain.S_DOMAIN_UNDECIDED:
-//                    menuStatesArr[1][4] = (Integer) menuStatesArr[1][4]
-//                            + groupedByStatuses.count;
-//            		break;
-//            	}
-//            	*/
-//                menuStatesArr[0][4] = (Integer) menuStatesArr[0][4] + groupedByStatuses.count;
-//                break;
-//            case UrlRecord.S_URL_REJECTED:
-//                menuStatesArr[1][4] = (Integer) menuStatesArr[1][4] + groupedByStatuses.count;
-//                break;
-//            case UrlRecord.S_URL_ACCEPT_DOMAIN:
-//                menuStatesArr[2][4] = (Integer) menuStatesArr[2][4] + groupedByStatuses.count;
-//            	break;
-//            case UrlRecord.S_URL_ACCEPT_URL:
-//                menuStatesArr[3][4] = (Integer) menuStatesArr[3][4] + groupedByStatuses.count;
-//            	break;
-//            case UrlRecord.S_URL_ACCEPTED:
-//                menuStatesArr[4][4] = (Integer) menuStatesArr[4][4] + groupedByStatuses.count;
-//                break;
-//            case UrlRecord.S_URL_NOT_IN_REMOTE_ARCHIVE:
-//                menuStatesArr[5][4] = (Integer) menuStatesArr[5][4] + groupedByStatuses.count;
-//                break;
-//            case UrlRecord.S_URL_IN_REMOTE_ARCHIVE:
-//                menuStatesArr[6][4] = (Integer) menuStatesArr[6][4] + groupedByStatuses.count;
-//                break;
-//            case UrlRecord.S_URL_UNSUPPORTED_FORMAT:
-//                menuStatesArr[7][4] = (Integer) menuStatesArr[7][4] + groupedByStatuses.count;
-//            	break;
-//            case UrlRecord.S_URL_FETCHED_FROM_REMOTE_ARCHIVE:
-//                menuStatesArr[8][4] = (Integer) menuStatesArr[8][4] + groupedByStatuses.count;
-//            	break;
-//            case UrlRecord.S_URL_IN_REMOTE_ARCHIVE_BUT_NOT_ACCESSABLE:
-//                menuStatesArr[9][4] = (Integer) menuStatesArr[9][4] + groupedByStatuses.count;
-//            	break;
-//            case UrlRecord.S_URL_ARCHIVED_LOCALLY:
-//                menuStatesArr[10][4] = (Integer) menuStatesArr[10][4] + groupedByStatuses.count;
-//                break;
-//            default: logger.warning("State " +  groupedByStatuses.status_url + " not handled yet");
-//            	break;
-//            }
-//        }
-
+    	List<MenuItem> menuStatesArr = makemenuArray(seedsInstance);
         String heading = "N/A";
 
-        for (int i = 0; i < menuStatesArr.length; ++i) {
+        for (MenuItem item:  menuStatesArr) {
             // javascript:switchToState(0)
             statemenuSb.append("<li id=\"state_");
-            statemenuSb.append((Integer) menuStatesArr[i][0]);
+            statemenuSb.append(item.getOrdinalState()); 
             statemenuSb.append("\"");
-            if (status == (Integer) menuStatesArr[i][0]) {
-                heading = (String) menuStatesArr[i][2];
+            if (status == item.getOrdinalState()) {
+                heading =  item.getLongHeaderDescription();
                 statemenuSb.append(" class=\"active\"");
             }
             statemenuSb.append("><a href=\"");
             statemenuSb.append(Servlet.environment.getSeedsPath());
-            statemenuSb.append((Integer) menuStatesArr[i][0]);
+            statemenuSb.append(item.getOrdinalState());
             statemenuSb.append("/\">");
-            statemenuSb.append((String) menuStatesArr[i][1]);
+            statemenuSb.append(item.getShortHeaderDescription());
             statemenuSb.append(" (");
-            statemenuSb.append((Integer) menuStatesArr[i][4]);
+            statemenuSb.append(item.getCount());
             statemenuSb.append(")</a></li>");
         }
 
         return heading;
+    }
+
+	private static List<MenuItem> makemenuArray(SeedCassandraDAO seedsInstance) {
+		
+		List<MenuItem> result = new ArrayList<MenuItem>();
+		I18n i18n = new I18n(dk.kb.webdanica.Constants.WEBDANICA_TRANSLATION_BUNDLE);
+		Locale locDa = new Locale("da");
+		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
+			Long count = seedsInstance.getSeedsCount(Status.fromOrdinal(i));
+			result.add(new MenuItem(i, count, locDa, i18n));
+		}
+	    return result;
     }
 
 }

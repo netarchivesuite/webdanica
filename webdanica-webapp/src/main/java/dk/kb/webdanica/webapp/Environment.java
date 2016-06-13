@@ -25,12 +25,9 @@ import com.antiaction.common.templateengine.TemplateMaster;
 import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
-import javax.sql.DataSource;
-import com.antiaction.multithreading.datasource.DataSourceReference;
-
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.Cassandra;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
@@ -49,8 +46,6 @@ public class Environment {
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(Environment.class.getName());
 
-    public static final String waybackPrefixDefault = "http://kb-test-dab-01.kb.dk:8080/wayback/";
-
     public static final String DEFAULT_LOOKUP_CRONTAB = "0 * * * *";
 	public static final String DEFAULT_PID_CRONTAB = "0 0 * * *";
 	public static final String DEFAULT_ALIVECHECK_CRONTAB = "0 0 * * *";
@@ -63,7 +58,8 @@ public class Environment {
     private ServletConfig servletConfig = null;
 
 	private String version = null;
-
+	
+	/** Env. (UNITTEST/TEST/STAGING/PROD) **/
     private String env;
 
     private WorkThreadAbstract[] workthreads;
@@ -73,7 +69,6 @@ public class Environment {
      */
 
     private String contextPath;
-
     private String seedsPath; // Maybe not fields here
 	private String seedPath;  // Maybe not fields here
     
@@ -154,7 +149,7 @@ public class Environment {
 
 	private int defaultItemsPerPage = 25; // create settings
 
-	public SeedDAO seedDao;
+	public SeedCassandraDAO seedDao;
 
 	private ServletContext servletContext;
 
@@ -166,7 +161,7 @@ public class Environment {
 	public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
 		this.setServletConfig(theServletConfig);
  		this.servletContext = theServletContext;
-
+ 		
 		/*
 		 * Version.
 		 */
@@ -264,7 +259,7 @@ public class Environment {
 		}
 
 		/*
-		 * Env. (TEST/STAGING/PROD)
+		 * Env. (UNITTEST/TEST/STAGING/PROD)
 		 */
 		env = "UNKNOWN";
 		if (Settings.hasKey(WebdanicaSettings.ENVIRONMENT)) {
@@ -379,10 +374,10 @@ public class Environment {
 		archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
 		emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
 
-		db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
+		//db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
 
-		seedDao = SeedDAO.getInstance(); 
-
+		seedDao = SeedCassandraDAO.getInstance(); 
+		
 		/*
 		 * Initialize emailer
 		 */
@@ -555,7 +550,7 @@ public class Environment {
         loginHandler = null;
         templateMaster=null;
         setServletConfig(null);
-        db.close();
+        seedDao.close();
     }
 
     public int getDefaultItemsPerPage() {

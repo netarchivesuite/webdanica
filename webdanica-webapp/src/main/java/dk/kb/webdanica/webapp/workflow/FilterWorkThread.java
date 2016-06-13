@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.webapp.Environment;
@@ -27,7 +27,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedDAO dao;
+	private SeedCassandraDAO dao;
 
     /**
      * Constructor for the NAS thread worker object.
@@ -101,7 +101,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
         }
 	}
 
-	private void filter(SeedDAO dao, List<Seed> workList) {
+	private void filter(SeedCassandraDAO dao, List<Seed> workList) {
 	    for (Seed s: workList) {
 	    	String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(s.getUrl());
 	    	if (ignoredSuffix != null) {

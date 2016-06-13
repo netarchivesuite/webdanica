@@ -8,14 +8,18 @@ public class Cassandra implements Database {
 
 	private Session session;
 	private Cluster cluster;
+	private String hostname;
+	private String keyspace;
+	private int clientPort;
 	
-	public Cassandra(){
+	public Cassandra(CassandraSettings settings){
 		// client port is 9042 by default 
 		// See https://github.com/datastax/java-driver/wiki/Connection-requirements
 		//the client port can be configured using the native_transport_port in cassandra.yaml.
-		String hostname = "127.0.0.1";
-		String keyspace = "webdanica";
-		int clientPort = 9042;
+		hostname = settings.getHostname();
+		keyspace = settings.getKeyspace();
+		clientPort = settings.getClientPort();
+				
 		cluster = Cluster.builder().addContactPoint(hostname).withPort(clientPort)
 				//.withCredentials(username, password) 
 				.build();
