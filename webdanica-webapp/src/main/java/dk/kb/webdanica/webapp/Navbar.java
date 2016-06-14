@@ -41,8 +41,8 @@ public class Navbar {
     			//{ DABServlet.environment.contextPath + "/insert/", "Opret" },
                 { Servlet.environment.getContextPath() + "/seeds/", "Seeds" },
                 // { DABServlet.environment.contextPath + "/search/", "Søg" },
-                { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
-                { Servlet.environment.getContextPath() + "/users/", "Brugere" },
+                // { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
+                // { Servlet.environment.getContextPath() + "/users/", "Brugere" },
                 { Servlet.environment.getContextPath() + "/status/", "Status" }
     	};
     }

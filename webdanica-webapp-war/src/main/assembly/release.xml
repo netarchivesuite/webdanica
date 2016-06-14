@@ -35,14 +35,20 @@
       <outputDirectory>/WEB-INF/</outputDirectory>
     </fileSet>
   </fileSets>
-  <!-- Copy all project dependencies to lib/ -->
   <dependencySets>
     <dependencySet>
       <includes>
-        <!--include>dk.netarkivet:dab-rest-webapp:*</include-->
         <include>*:jar</include>
       </includes>
+      <excludes>
+        <!--include>dk.netarkivet:dab-rest-webapp:*</include-->
+        <!-- avoid the error
+        SLF4J: Detected both log4j-over-slf4j.jar AND slf4j-log4j12.jar on the class path, preempting StackOverflowError.
+        -->
+        <exclude>org.slf4j:log4j-over-slf4j:jar</exclude>
+      </excludes>
       <outputDirectory>/WEB-INF/lib/</outputDirectory>
     </dependencySet>
   </dependencySets>
+</assembly>
 </assembly>

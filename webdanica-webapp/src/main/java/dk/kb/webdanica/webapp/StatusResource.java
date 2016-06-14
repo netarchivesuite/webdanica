@@ -218,6 +218,10 @@ public class StatusResource implements ResourceAbstract {
             	sb.append("\r\n");
         	}
         }
+        
+        // TODO insert webdanica-settings 
+        
+        // TODO insert netarchivesuite-settings
 
         sb.append("</pre>\r\n");
 

@@ -72,7 +72,8 @@ public class SeedsResource implements ResourceAbstract {
     public void resources_add(ResourceManagerAbstract resourceManager) {
         R_STATUS_LIST = resourceManager.resource_add(this, "/seeds/", true);
         R_STATUS_LIST_ID = resourceManager.resource_add(this, "/seeds/<numeric>/", true);
-        R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/<numeric>/", true);
+        //R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/<numeric>/", true);
+        R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/", true);
         //R_URL_WARC_DOWNLOAD = resourceManager.resource_add(this, "/url/warc/<numeric>/", true);
     }
 
@@ -105,9 +106,6 @@ public class SeedsResource implements ResourceAbstract {
             // text/plain; charset=utf-8
             urls_list_dump(dab_user, req, resp, numerics);
         } 
-        /*if (resource_id == R_URL_WARC_DOWNLOAD) {
-            url_warc_download(dab_user, req, resp, numerics);
-        } */
     }
 
     private void urls_list_dump(User dab_user, HttpServletRequest req,
@@ -119,7 +117,7 @@ public class SeedsResource implements ResourceAbstract {
         if (numerics.size() >= 1) {
             status = numerics.get(0); 
         }
-
+        
         int online_status = 0; // default = alle (alternatives: only_only, offline-only
         if (numerics.size() == 2) {
             online_status = numerics.get(1);
@@ -172,7 +170,7 @@ public class SeedsResource implements ResourceAbstract {
             break;
         }
         */
-
+/*
         String online_status_text;
         switch (online_status) {
         case 1:
@@ -186,6 +184,7 @@ public class SeedsResource implements ResourceAbstract {
         	online_status_text = "alle";
         	break;
         }
+*/        
         /*
         Connection conn = null;
         try {
@@ -197,11 +196,13 @@ public class SeedsResource implements ResourceAbstract {
         
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/plain; charset=utf-8");
-        resp.setHeader("content-disposition", "attachment; filename=\"url_list_status_"+ status + "_" + online_status_text + ".txt\"");
-
+        //resp.setHeader("content-disposition", "attachment; filename=\"url_list_status_"+ status + "_" + online_status_text + ".txt\"");
+        resp.setHeader("content-disposition", "attachment; filename=\"url_list_status_"+ status + ".txt\"");
         //logger.info("Using encoding in response: " + resp.getCharacterEncoding());
 
-        List<Seed> urlRecords = dao.getSeeds(Status.fromOrdinal(online_status)); // TODO this does not scale
+        // TODO this does not scale
+        // Make an iterator
+        List<Seed> urlRecords = dao.getSeeds(Status.fromOrdinal(online_status));  
         List<Seed> urlRecordsFiltered = new ArrayList<Seed>(urlRecords.size());
         urlRecordsFiltered = urlRecords;
         Seed urlRecord;
@@ -224,8 +225,8 @@ public class SeedsResource implements ResourceAbstract {
 */
         StringBuilder sb = new StringBuilder();
         sb.append("##\r\n");
-        sb.append("## Liste over alle " + online_status_text + " Seeds i status "
-                + status + "(" + urlRecordsFiltered.size() + ")\r\n");
+        sb.append("## Liste over alle " + urlRecordsFiltered.size() + " seeds i status "
+                + status + "\r\n");
         sb.append("##\r\n");
         
         for (Seed rec: urlRecordsFiltered) {
@@ -243,76 +244,10 @@ public class SeedsResource implements ResourceAbstract {
             out.flush();
             out.close();
         } catch (IOException e) {
+        	logger.warning("IOException thrown: " + e);
         }
-/*
-        try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        */
     }
     
-/*
-    private void url_warc_download(User dab_user, HttpServletRequest req,
-            HttpServletResponse resp, List<Integer> numerics) throws IOException {
-        UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
-
-        Connection conn = null;
-        try {
-            conn = environment.dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new IOException(e);
-        }
-
-        int id = numerics.get(0);
-        UrlRecord urlRecord = urlRecordsInstance.getUrlRecordById(conn, id);
-    	ArchiveEntry archiveEntry = null;
-		File archiveFile = null;
-        if (urlRecord != null) {
-        	archiveEntry = ArchiveEntry.getArchiveEntryByUrlId(conn, urlRecord.id);
-        	if (archiveEntry != null) {
-        		if (archiveEntry.package_path != null && archiveEntry.package_path.length() > 0) {
-            		archiveFile = new File(archiveEntry.package_path);
-            	}
-        	}
-        }
-
-        try {
-        	if (archiveFile != null && archiveFile.exists() && archiveFile.isFile()) {
-            	ServletOutputStream out = resp.getOutputStream();
-                resp.setContentType("text/plain; charset=utf-8");
-                resp.setContentLength((int)archiveFile.length());
-                resp.setHeader("content-disposition", "attachment; filename=\"" + archiveFile.getName() + "\"");
-
-                byte[] tmpBuf = new byte[8192];
-                RandomAccessFile raf = new RandomAccessFile(archiveEntry.package_path, "r");
-                int read;
-                while ((read = raf.read(tmpBuf)) != -1) {
-                	out.write(tmpBuf, 0, read);
-                }
-                raf.close();
-
-                out.flush();
-                out.close();
-    		} else {
-    			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    		}
-        } catch (IOException e) {
-        }
-
-        try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-    }
-
-*/
 
     public void urls_list(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics)
@@ -325,7 +260,7 @@ public class SeedsResource implements ResourceAbstract {
                 .getInstance(environment.dataSource);
         */
         
-        int status = 0; //Status.NEW
+        int status = 0; //Default state shown: Status.NEW
         if (numerics.size() == 1) {
             status = numerics.get(0);
         }
@@ -343,14 +278,11 @@ public class SeedsResource implements ResourceAbstract {
         boolean bShowAll = false;
         int itemsPerPage = 25;
         if (itemsperpageStr != null && itemsperpageStr.length() > 0) {
- //       	if ("all".equalsIgnoreCase(itemsperpageStr)) {
- //       		page = 1;
- //       		itemsPerPage = Integer.MAX_VALUE; // FIXME this doesn't scale
- //       		bShowAll = true;
- //       	} else {
         	try {
         		itemsPerPage = Integer.parseInt(itemsperpageStr);
         	} catch (NumberFormatException e) {
+        		logger.warning("The given value of 'itemsperpage': '" + itemsperpageStr
+        				+ "' is not a valid integer!. Using the default: 25"); 
         		itemsPerPage = 25;
         		itemsperpageStr = "25";
         	}
@@ -358,11 +290,13 @@ public class SeedsResource implements ResourceAbstract {
 
         String actionStr = req.getParameter("action");
         String urlIdStr = req.getParameter("url_id");
+/*        
         Integer urlId = null;
         if (urlIdStr != null && urlIdStr.length() > 0) {
         	try {
         		urlId = Integer.parseInt(urlIdStr);
         	} catch (NumberFormatException e) {
+        		
         	}
         }
         int action = 0;
@@ -373,6 +307,9 @@ public class SeedsResource implements ResourceAbstract {
         		action = A_REJECT;
         	}
         }
+*/
+        
+        
 /*
     	boolean bDecidePerm = dab_user.hasAnyPermission(URL_DECIDE_PERMISSION);
     	boolean bDeletePerm = dab_user.hasAnyPermission(URL_DELETE_PERMISSION);
@@ -708,16 +645,21 @@ public class SeedsResource implements ResourceAbstract {
             
         }
         if (itemsPerPage < 1) {
-            itemsPerPage = environment.getDefaultItemsPerPage();
+        	int defaultItemsPerPage = environment.getDefaultItemsPerPage();
+        	logger.warning("Got negative itemsPerPage '" +  itemsPerPage + "'. Changing it to itemsPerPage=" + defaultItemsPerPage);
+            itemsPerPage = defaultItemsPerPage;
+            
         }
         int items = urlRecordsFiltered.size();
         int pages = Pagination.getPages(items, itemsPerPage);
         if (page > pages) {
+        	logger.warning("Asked for page " + page + ", but we only have " + pages + ". Set page to maxpage");
             page = pages;
         }
         int fItem = (page - 1) * itemsPerPage;
         int show = itemsPerPage;
 
+        
         urlListSb.append("<table class=\"table table-striped\">\n");
         urlListSb.append("  <thead>\n");
         urlListSb.append("    <tr>\n");
@@ -725,17 +667,20 @@ public class SeedsResource implements ResourceAbstract {
         if (bDeletePerm || (bShowAcceptReject && bDecidePerm)) {
         	urlListSb.append("      <th style=\"width: 24px;\">&nbsp;</th>\n");
         } */
-        urlListSb.append("      <th>Sysno</th>\n");
+        
+        //urlListSb.append("      <th>Sysno</th>\n");
         urlListSb.append("      <th>url</th>\n");
-        if (bShowReason) {
+        if (status == Status.REJECTED.ordinal()) {
             urlListSb.append("      <th>grund</th>\n");
+            bShowReason = true;
         }
         if (bShowArchiveUrl) {
             urlListSb.append("      <th>arkiv-url</th>\n");
         }
+        /*
         if (bShowPid) {
             urlListSb.append("      <th>pid</th>\n");
-        }
+        }*/
 
         urlListSb.append("    </tr>\n");
         urlListSb.append("  </thead>\n");
@@ -757,11 +702,11 @@ public class SeedsResource implements ResourceAbstract {
             */
             urlListSb.append("<td>");
             urlListSb.append("<a href=\"");
-            urlListSb.append(Servlet.environment.getSeedsPath());
+            //urlListSb.append(Servlet.environment.getSeedsPath());
             
             urlListSb.append(urlRecord.getUrl());
             urlListSb.append("/\">");
-            urlListSb.append(urlRecord.getUrl());
+            urlListSb.append(makeEllipsis(urlRecord.getUrl(), 120));
  
             urlListSb.append("</a>");
             urlListSb.append("</td>");
@@ -801,12 +746,16 @@ public class SeedsResource implements ResourceAbstract {
             default:
             }
             */
-            
-            urlListSb.append("<a title=\"" + urlRecord.getUrl() + "\" href=\"");
-            urlListSb.append(urlRecord.getUrl());
+            if (bShowReason) {
+            /*	
+            urlListSb.append("<a title=\"" + urlRecord.getStatusReason() + "\" href=\"");
+            urlListSb.append(urlRecord.getStatusReason());
             urlListSb.append("\">");
-            urlListSb.append(makeEllipsis(urlRecord.getUrl(), 120));
+            urlListSb.append(urlRecord.getStatusReason());
             urlListSb.append("</a>");
+            */
+            	urlListSb.append("<b>" + urlRecord.getStatusReason() + "</b>");	
+            }
             /*
             if (statusState == UrlRecord.S_URL_IN_REMOTE_ARCHIVE_BUT_NOT_ACCESSABLE) {
             	urlListSb.append("&nbsp;");

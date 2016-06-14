@@ -54,7 +54,7 @@ public enum Status {
 		case 0:
 			return "seed.header.created";
 		case 1:
-			return "seed.header.ready.for.havesting";
+			return "seed.header.ready.for.harvesting";
 		case 2:
 			return "seed.header.being.harvested";
 		case 3:
@@ -76,7 +76,7 @@ public enum Status {
 		case 0:
 			return "seed.description.created";
 		case 1:
-			return "seed.description.ready.for.havesting";
+			return "seed.description.ready.for.harvesting";
 		case 2:
 			return "seed.description.being.harvested";
 		case 3:
