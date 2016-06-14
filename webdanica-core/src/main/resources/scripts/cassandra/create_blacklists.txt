@@ -1,0 +1,11 @@
+CREATE table blacklists (
+ uid uuid,
+ name text,
+ description text,
+ blacklist list<text>,   
+ last_update bigint, 
+ is_active boolean,
+ PRIMARY KEY (uid)
+ );
+ CREATE INDEX on blacklists  (is_active);
+
