@@ -33,15 +33,18 @@ public class Emailer {
     final private String fromMail;
     
     final private String mailAdmin;
+    
+    final private boolean dontSendMails;
 
     private Emailer(String smtp_host, int smtp_port, final String username,
-            final String password, String mailAdmin) {
+            final String password, String mailAdmin, boolean dontSendMails) {
         props.put("mail.smtp.auth", "false");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", smtp_host);
         props.put("mail.smtp.port", smtp_port);
         this.fromMail = mailAdmin;
         this.mailAdmin = mailAdmin;
+        this.dontSendMails = dontSendMails;
         if (username != null && username.length() > 0 && password != null
                 && password.length() > 0) {
             session = Session.getInstance(props,
@@ -62,17 +65,21 @@ public class Emailer {
      * @param username
      * @param password
      * @param mail_admin
+     * @param dontSendMails
      * @return
      */
     public static synchronized Emailer getInstance(String smtp_host,
-            int smtp_port, String username, String password, String mail_admin) {
+            int smtp_port, String username, String password, String mail_admin, boolean dontSendMails) {
         if (emailer == null) {
-            emailer = new Emailer(smtp_host, smtp_port, username, password, mail_admin);
+            emailer = new Emailer(smtp_host, smtp_port, username, password, mail_admin, dontSendMails);
         }
         return emailer;
     }
 
     public void send(String recipient, String subject, String body) {
+    	if (dontSendMails) {
+    		return;
+    	}
     	logger.info("Sending mail to '" + recipient + "' with subject '" + subject + "'"); 
         try {
             Message message = new MimeMessage(session);

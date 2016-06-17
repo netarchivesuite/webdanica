@@ -32,7 +32,7 @@ public class SeedCassandraDAO {
 	
 	private boolean newSession = false;
 
-	
+	private PreparedStatement preparedUpdateRedirectedUrl;
 	
 	public synchronized static SeedCassandraDAO getInstance(){
 		if (instance == null) {
@@ -108,6 +108,10 @@ public class SeedCassandraDAO {
 		if (getSeedsCountStatement == null || newSession) {
 			getSeedsCountStatement = session.prepare("SELECT count(*) FROM seeds WHERE status=?");
 		}
+		
+		if (preparedUpdateRedirectedUrl == null || newSession) {
+			preparedUpdateRedirectedUrl = session.prepare("UPDATE seeds SET redirected_url=? WHERE url=? IF EXISTS");
+		}
 		newSession = false;
     }
 	
@@ -118,9 +122,8 @@ public class SeedCassandraDAO {
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		// Possibly change this code. this depends on appending IF EXISTS to the statement
-		boolean insertFailed = row.getColumnDefinitions().contains("url");
-		return !insertFailed;
-		
+		boolean updateFailed = row.getColumnDefinitions().contains("url");
+		return !updateFailed;
 	}
 	
 	public Long getSeedsCount(Status status) {
@@ -134,5 +137,15 @@ public class SeedCassandraDAO {
 
 	public void close() {
 	    db.close();
+    }
+
+	public boolean updateRedirectedUrl(Seed s) {
+	    init();
+	    BoundStatement bound = preparedUpdateRedirectedUrl.bind(s.getRedirectedUrl(), s.getUrl()); 
+		ResultSet rs = session.execute(bound);
+		Row row = rs.one();
+		// Possibly change this code. this depends on appending IF EXISTS to the statement
+		boolean updateFailed = row.getColumnDefinitions().contains("url");
+		return !updateFailed;
     }
 }

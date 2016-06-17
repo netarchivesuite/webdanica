@@ -5,15 +5,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import dk.kb.webdanica.datamodel.WgetSettings;
+import dk.kb.webdanica.exceptions.WebdanicaException;
+
 /**
  * Class that resolves redirects by calling the 'wget' program.
  * This identifies destinations of URL-shorteners, and links to non-dk material
  * hidden inside dk-urls, eg.: 
  * http://go.eniro.dk/lg/ni/cat-7728/https:/www.cia.gov/library/publications/the-world-factbook/
  *
- * Use a tmpfolder to store the files: -P /var/cache/foobar/ 
+ * Uses a tmpfolder to store the temporary files using the argument -P /var/cache/foobar/ 
  * 
- * TODO Ensure that the wget program exists before calling the program   
  */
 public class ResolveRedirects {
 
@@ -44,9 +46,24 @@ public class ResolveRedirects {
     	this.delayInSecs = delayInSecs;
     	this.tmpFolder = tmpFolder;	
     	this.tries = tries;
+    	if (!wgetPath.canExecute()) {
+    		throw new WebdanicaException("The wget program at location '" + wgetPath.getAbsolutePath() 
+    				+ "' is either an incorrect path or not executable");
+    	}
     }
-    
-    public String resolveRedirectedUrl(String url) {
+ 
+    public ResolveRedirects(WgetSettings wgetSettings) {
+	    this.wgetPath = wgetSettings.getPath();
+	    this.delayInSecs = wgetSettings.getDelayInSecs();
+    	this.tmpFolder = wgetSettings.getTmpFolder();
+    	this.tries = wgetSettings.getTries();
+    	if (!wgetPath.canExecute()) {
+    		throw new WebdanicaException("The wget program at location '" + wgetPath.getAbsolutePath() 
+    				+ "' is either an incorrect path or not executable");
+    	}
+    }
+
+	public String resolveRedirectedUrl(String url) {
         try {
             String cmdString = wgetPath.getAbsolutePath() + " -P " + tmpFolder.getAbsolutePath() 
             		+ " -S --tries=" + tries + " --wait=" + delayInSecs  + " " + url + " 2>&1"; 
@@ -76,5 +93,32 @@ public class ResolveRedirects {
             ie.printStackTrace(); 
         }
         return null;
+    }
+    /**
+     *  https://en.wikipedia.org/wiki/URL_shortening#Registering_a_short_URL:
+     *   bit.ly (Bitly)
+     *   goo.gl (Google)
+     *	 ow.ly (Hootsuite)
+     *	 t.co (Twitter)
+     *	 TinyURL (Gilby) = > tinurl.com
+     *	 Tr.im (Gravity4)
+     *  
+     * @param url the given url
+     * @return true, if matches any of the possible redirect regexps
+     */
+    public static boolean isPossibleUrlredirect(String url) {
+    	String[] redirectRegexps = new String[] {"/http", // embedded urls  visible in the url 
+    			"redir.aspx", // markers that this is redirected (could be others)
+    			"http://bit.ly", "http://goo.gl",
+    			"http://ow.ly", "http://t.co", "http://tinyurl.com", "http://tr.im"
+    			};
+    	for (String redString: redirectRegexps) {
+    		if (url.matches(redString)) {
+    			// TODO log this
+    			return true;
+    		}
+    	}
+
+    	return false;
     }
 }

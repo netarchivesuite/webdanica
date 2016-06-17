@@ -1,16 +1,24 @@
 package dk.kb.webdanica.webapp.workflow;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import dk.kb.webdanica.datamodel.BlackList;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
+import dk.kb.webdanica.datamodel.WgetSettings;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
+import dk.kb.webdanica.seeds.filtering.ResolveRedirects;
+import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
+import dk.netarkivet.common.utils.DomainUtils;
 
 /**
  * Seeds filter work-thread.
@@ -27,8 +35,12 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedCassandraDAO dao;
+	private SeedCassandraDAO seeddao;
+	private BlackListDAO blacklistDao;
+	
+	private ResolveRedirects resolveRedirects;
 
+	private Configuration configuration;
     /**
      * Constructor for the NAS thread worker object.
      * @param environment DAB environment object
@@ -61,14 +73,16 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     @Override
 	protected void process_init() {
-    	dao = environment.seedDao;
-    	
+    	seeddao = environment.seedDao;
+    	blacklistDao = environment.blacklistDao;
+    	configuration = new Configuration();
+    	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());	
 	}
 
 	@Override
 	protected void process_run() {
 		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-		List<Seed> seedsNeedFiltering = dao.getSeeds(Status.NEW);
+		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW);
 		enqueue(seedsNeedFiltering);
 		if (seedsNeedFiltering.size() > 0) {
 			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");
@@ -88,7 +102,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
         	if (workList.size() > 0) {
                 logger.log(Level.INFO, "Filter queue: " + workList.size());
                 lastWorkRun = System.currentTimeMillis();
-                filter(dao, workList);
+                filter(workList);
                 startProgress(workList.size());
                 
                 stopProgress();
@@ -101,20 +115,81 @@ public class FilterWorkThread extends WorkThreadAbstract {
         }
 	}
 
-	private void filter(SeedCassandraDAO dao, List<Seed> workList) {
+	private void filter(List<Seed> workList) {
+		List<BlackList> activeBlackLists = blacklistDao.getLists(true); // only retrieve the active lists 
 	    for (Seed s: workList) {
-	    	String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(s.getUrl());
-	    	if (ignoredSuffix != null) {
-	    		s.setState(Status.REJECTED);
-	    		s.setStatusReason("REJECTED becausen it matches ignored suffix '" + ignoredSuffix + "'");
-	    	} else {
-	    		s.setState(Status.READY_FOR_HARVESTING);
-	    		s.setStatusReason("");
+	    	String url = s.getUrl();
+	    	if (ResolveRedirects.isPossibleUrlredirect(url)) {
+	    		logger.info("Identified possible redirect url '" + url + "'. Trying to resolve it");
+	    		String redirectedUrl = resolveRedirects.resolveRedirectedUrl(url);
+	    		if (redirectedUrl != null && !redirectedUrl.isEmpty()) {
+	    			s.setRedirectedUrl(redirectedUrl);
+	    			logger.info("Identified '" + url + "' as redirecting to '" + redirectedUrl + "'");
+	    		seeddao.updateRedirectedUrl(s);
+	    		}
 	    	}
-	    	dao.updateState(s);
+	    	doFilteringOnSeed(s, activeBlackLists);	
+	    	seeddao.updateState(s);
 	    }
-	    
     }
+	private void doFilteringOnSeed(Seed s, List<BlackList> blacklists) {
+		// We test on the redirectedUrl, if it exists
+		String urlInvestigated = s.getUrl();
+		String redUrl = s.getRedirectedUrl();
+		if (redUrl != null) {
+			logger.info("Testing on redirect url '" + redUrl + "' instead of original url '" + s.getUrl() + "'");
+			urlInvestigated = redUrl;
+		}
+		
+		// Test 1: test for ignored suffixes
+		String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(urlInvestigated);
+		if (ignoredSuffix != null) {
+			s.setState(Status.REJECTED);
+			s.setStatusReason("REJECTED because it matches ignored suffix '" + ignoredSuffix + "'");
+			return;
+		} 
+		// Test 2: test for matching any regular expression in the active blacklists
+		for (BlackList blackList: blacklists) {
+			String result = blackList.evaluateUrl(urlInvestigated);
+			if (result != null) {
+				s.setState(Status.REJECTED);
+				s.setStatusReason("REJECTED because it matches regular expression '" + result + "' in blacklist '" + blackList.getName() + "'");
+				return;
+			}
+		}
+		
+		// Test 3: test that url is not from the .DK top level domain.
+		if (belongsToDK(urlInvestigated)) {
+			s.setState(Status.REJECTED);
+			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
+					+ "' belongs to the .dk toplevel and by default is part of legal deposit"); 
+			return;
+		}
+		
+		// Otherwise set status to READY_FOR_HARVESTING and status_reason to the empty String
+		s.setState(Status.READY_FOR_HARVESTING);
+		s.setStatusReason("");
+	}
+
+	private boolean belongsToDK(String urlInvestigated) {
+		String urlLower = urlInvestigated.toLowerCase();
+		URL netUrl;
+		String host = null;
+		try {
+			netUrl = new URL(urlLower);
+			host = netUrl.getHost();
+		} catch (MalformedURLException e) {
+			return false;
+		}
+		if (host == null) {
+			return false;
+		}
+		if (host.endsWith(".dk")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	@Override
 	protected void process_cleanup() {

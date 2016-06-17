@@ -26,6 +26,7 @@ import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
 import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.utils.Settings;
@@ -152,6 +153,8 @@ public class Environment {
 	public SeedCassandraDAO seedDao;
 
 	private ServletContext servletContext;
+
+	public BlackListDAO blacklistDao;
 
     /**
      * @param servletContext
@@ -292,14 +295,6 @@ public class Environment {
 				ignoredProtocols));
 
 		/*
-		 * DataSource.
-		 */
-
-		String db_url = getServletConfig().getInitParameter("db-url");
-		String db_username = getServletConfig().getInitParameter("db-username");
-		String db_password = getServletConfig().getInitParameter("db-password");        
-
-		/*
 		 * Templates.
 		 */
 
@@ -377,25 +372,16 @@ public class Environment {
 		//db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
 
 		seedDao = SeedCassandraDAO.getInstance(); 
+		blacklistDao  = BlackListDAO.getInstance();
 		
 		/*
 		 * Initialize emailer
 		 */
-
-		emailer = Emailer.getInstance(smtp_host, smtp_port, null, null, mail_admin);
-
-		/*
-		 * Initialize database configuration (dataSource)
-		 */
-
-		Map<String, String> attribs = new HashMap<String, String>();
-		Map<String, String> props = new HashMap<String, String>();
-
-		attribs.put("driver-class", "org.postgresql.Driver");
-		attribs.put("connection-url", db_url);
-		attribs.put("user-name", db_username);
-		attribs.put("password", db_password);
-		//dataSource = DataSourceReference.getDataSource(attribs, props);
+		boolean dontSendMails = false;
+		if (env.equals("UNKNOWN") || env.equals("UNITTEST")) {
+			dontSendMails = true;	
+		}
+		emailer = Emailer.getInstance(smtp_host, smtp_port, null, null, mail_admin, dontSendMails);
 
 		/*
 		 * Initialize template master.
