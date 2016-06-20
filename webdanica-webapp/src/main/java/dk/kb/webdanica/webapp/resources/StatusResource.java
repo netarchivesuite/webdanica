@@ -5,15 +5,10 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.resources;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,9 +21,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -36,6 +29,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -43,6 +37,11 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
+import dk.kb.webdanica.webapp.Constants;
+import dk.kb.webdanica.webapp.Environment;
+import dk.kb.webdanica.webapp.Servlet;
+import dk.kb.webdanica.webapp.StatusBar;
+import dk.kb.webdanica.webapp.User;
 import dk.kb.webdanica.webapp.workflow.WorkProgress;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 
@@ -200,12 +199,21 @@ public class StatusResource implements ResourceAbstract {
         	sb.append(entry.getValue());
         	sb.append("\r\n");
         }
-
+        sb.append("\r\n");
+        sb.append("System environment:");
+        sb.append("\r\n");
+        for (String keyEntry: System.getenv().keySet()) {
+        	sb.append(keyEntry);
+        	sb.append('=');
+        	sb.append(System.getenv(keyEntry));
+        	sb.append("\r\n");
+        }
+        
         sb.append("\r\n");
         sb.append("Servlet properties:");
         sb.append("\r\n");
         sb.append("\r\n");
-
+        
         ServletConfig servletConfig = Servlet.environment.getServletConfig();
         @SuppressWarnings("rawtypes")
 		Enumeration enumeration = servletConfig.getInitParameterNames();
@@ -218,11 +226,19 @@ public class StatusResource implements ResourceAbstract {
             	sb.append("\r\n");
         	}
         }
+ 
+        sb.append("\r\n");
+        sb.append("Webdanica settings:");
+        sb.append("\r\n");
+        sb.append("\r\n");
         
-        // TODO insert webdanica-settings 
-        
-        // TODO insert netarchivesuite-settings
-
+        sb.append(HtmlEntity.encodeHtmlEntities(FileUtils.readFileToString(environment.getWebdanicaSettingsFile()))); 
+        sb.append("\r\n");
+        sb.append("Netarchivesuite settings:");
+        sb.append("\r\n");
+        sb.append("\r\n");
+ 
+        sb.append(HtmlEntity.encodeHtmlEntities(FileUtils.readFileToString(environment.getNetarchivesuiteSettingsFile()))); 
         sb.append("</pre>\r\n");
 
         if (titlePlace != null) {
@@ -423,8 +439,7 @@ public class StatusResource implements ResourceAbstract {
         }
     }
 
-    /*
-    public static void workthread_status(DateFormat dateFormat, WorkThreadAbstract workThread, StringBuilder sb) {
+     public static void workthread_status(DateFormat dateFormat, WorkThreadAbstract workThread, StringBuilder sb) {
     	String name = workThread.thread.getName();
     	sb.append(name);
         sb.append(".bRunning=");
@@ -456,7 +471,7 @@ public class StatusResource implements ResourceAbstract {
         sb.append(dateFormat.format(workThread.lastWorkRun));
     	sb.append("<br />\n");
     }
-    */
+ 
 
     public static void workthread_status_row(DateFormat dateFormat, WorkThreadAbstract workThread, StringBuilder sb) {
     	String name = workThread.thread.getName();

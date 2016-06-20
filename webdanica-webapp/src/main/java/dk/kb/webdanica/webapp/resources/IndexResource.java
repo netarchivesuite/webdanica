@@ -5,7 +5,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +22,12 @@ import com.antiaction.common.templateengine.Template;
 import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
+
+import dk.kb.webdanica.webapp.Constants;
+import dk.kb.webdanica.webapp.Environment;
+import dk.kb.webdanica.webapp.Navbar;
+import dk.kb.webdanica.webapp.Servlet;
+import dk.kb.webdanica.webapp.User;
 
 public class IndexResource implements ResourceAbstract {
 

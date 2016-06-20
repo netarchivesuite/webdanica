@@ -2,8 +2,6 @@ package dk.kb.webdanica.webapp;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +17,15 @@ import javax.servlet.http.HttpSession;
 import com.antiaction.common.servlet.AutoIncrement;
 import com.antiaction.common.servlet.PathMap;
 import com.antiaction.common.templateengine.login.LoginTemplateCallback;
+
+import dk.kb.webdanica.webapp.resources.BlackListResource;
+import dk.kb.webdanica.webapp.resources.BlackListsResource;
+import dk.kb.webdanica.webapp.resources.IndexResource;
+import dk.kb.webdanica.webapp.resources.ResourceAbstract;
+import dk.kb.webdanica.webapp.resources.ResourceManagerAbstract;
+import dk.kb.webdanica.webapp.resources.SeedsResource;
+import dk.kb.webdanica.webapp.resources.StaticResource;
+import dk.kb.webdanica.webapp.resources.StatusResource;
 
 public class Servlet extends HttpServlet implements ResourceManagerAbstract, LoginTemplateCallback<User> {
 
@@ -59,7 +66,15 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             SeedsResource seedsResource = new SeedsResource();
             seedsResource.resources_init(environment);
             seedsResource.resources_add(this);
-
+            // takes care of /blacklist path pages
+            BlackListResource blackListResource = new BlackListResource();
+            blackListResource.resources_init(environment);
+            blackListResource.resources_add(this);
+            
+            BlackListsResource blackListsResource = new BlackListsResource();
+            blackListsResource.resources_init(environment);
+            blackListsResource.resources_add(this);
+ 
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
     	} catch (Throwable t) {
             logger.log(Level.SEVERE, this.getClass().getName() + " failed to initialize properly.", t);

@@ -1,4 +1,4 @@
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.resources;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +27,13 @@ import com.antiaction.common.templateengine.TemplatePlaceTag;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
+import dk.kb.webdanica.webapp.Constants;
+import dk.kb.webdanica.webapp.Environment;
+import dk.kb.webdanica.webapp.MenuItem;
+import dk.kb.webdanica.webapp.Navbar;
+import dk.kb.webdanica.webapp.Pagination;
+import dk.kb.webdanica.webapp.Servlet;
+import dk.kb.webdanica.webapp.User;
 import dk.netarkivet.common.utils.I18n;
 /*
 import dk.netarkivet.dab.webadmin.dao.ArchiveEntry;

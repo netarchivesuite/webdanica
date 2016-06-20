@@ -1,4 +1,6 @@
 /tmpdircommon/
-/src/main/resources/outlinksWithAnnotations.txt.accepted.txt
-/src/main/resources/outlinksWithAnnotations.txt.rejected.txt
+/src/main/resources/outlinksWithAnnotations.txt.accepted.txt*
+/src/main/resources/outlinksWithAnnotations.txt.rejected.txt*
+/src/main/resources/outlink-reportfile-final-1460549754730.txt.accepted.txt*
+/src/main/resources/outlink-reportfile-final-1460549754730.txt.rejected.txt*
 

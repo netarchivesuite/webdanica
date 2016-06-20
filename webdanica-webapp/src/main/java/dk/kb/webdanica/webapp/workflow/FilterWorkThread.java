@@ -13,12 +13,10 @@ import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
-import dk.kb.webdanica.datamodel.WgetSettings;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.seeds.filtering.ResolveRedirects;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
-import dk.netarkivet.common.utils.DomainUtils;
 
 /**
  * Seeds filter work-thread.
@@ -82,7 +80,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	@Override
 	protected void process_run() {
 		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW);
+		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW); // limit this 
 		enqueue(seedsNeedFiltering);
 		if (seedsNeedFiltering.size() > 0) {
 			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");

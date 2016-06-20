@@ -5,7 +5,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.antiaction.common.filter.Caching;
+
+import dk.kb.webdanica.webapp.Environment;
+import dk.kb.webdanica.webapp.User;
 
 public class StaticResource implements ResourceAbstract {
 

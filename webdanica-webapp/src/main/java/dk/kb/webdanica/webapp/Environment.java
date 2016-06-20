@@ -5,10 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -27,7 +25,6 @@ import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.BlackListDAO;
-import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
@@ -141,9 +138,7 @@ public class Environment {
     public List<LogRecord> newLogRecords = new LinkedList<LogRecord>();
 
     public List<LogRecord> logRecords = new LinkedList<LogRecord>();
-
-	private Cassandra db;
-
+    
 	private String mail_admin;
 	private int smtp_port;
 	private String smtp_host;
@@ -156,6 +151,18 @@ public class Environment {
 
 	public BlackListDAO blacklistDao;
 
+	private String blacklistsPath;
+
+	private String blacklistPath;
+
+	private String ingestlogsPath;
+
+	private String ingestlogPath;
+
+	private File netarchiveSuiteSettingsFile;
+	
+	private File webdanicaSettingsFile;
+	
     /**
      * @param servletContext
      * @param theServletConfig
@@ -230,7 +237,7 @@ public class Environment {
 		if (!netarchiveSuiteSettings.startsWith("/")) {
 			netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
 		}
-		File netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
+		netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
 		if (netarchiveSuiteSettingsFile.isFile()) {	  	
 			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
 				throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
@@ -247,7 +254,7 @@ public class Environment {
 		if (!webdanicaSettings.startsWith("/")) {
 			webdanicaSettings = webdanicaHomeDir.getAbsolutePath() + "/" + webdanicaSettings;
 		}
-		File webdanicaSettingsFile = new File(webdanicaSettings);
+		webdanicaSettingsFile = new File(webdanicaSettings);
 		if (webdanicaSettingsFile.isFile()) {
 
 			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
@@ -593,11 +600,55 @@ public class Environment {
 
 
 	public LoginTemplateHandler<User> getLoginHandler() {
-	    return loginHandler;
+	    return this.loginHandler;
     }
 
 	public TemplateMaster getTemplateMaster() {
-	    return templateMaster;
+	    return this.templateMaster;
     }
+
+	/// Path methods for blacklists: 
 	
+	public String getBlacklistsPath() {
+	    return this.blacklistsPath;
+    }
+
+	public void setBlacklistsPath(String string) {
+		this.blacklistsPath = string;
+    }
+
+	public String getBlacklistPath() {
+	    return this.blacklistPath;
+    }
+
+	public void setBlacklistPath(String string) {
+		this.blacklistPath = string;
+    }
+
+	/// Path methods for ingestlogs: 
+	
+	public String getIngestLogsPath() {
+	    return this.ingestlogsPath;
+    }
+
+	public void setIngestLogsPath(String string) {
+		this.ingestlogsPath = string;
+    }
+
+	public String getIngestLogPath() {
+	    return this.ingestlogPath;
+    }
+
+	public void setIngestLogPath(String string) {
+		this.ingestlogPath = string;
+    }
+
+	// TODO Add to configuration object for webdanica.
+	public File getNetarchivesuiteSettingsFile() {
+	    return this.netarchiveSuiteSettingsFile;
+    }
+	// TODO Add to configuration object for webdanica.
+	public File getWebdanicaSettingsFile() {
+	    return this.webdanicaSettingsFile;	    
+    }
 }

@@ -5,7 +5,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,9 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import dk.kb.webdanica.webapp.Environment;
+import dk.kb.webdanica.webapp.User;
 
 public interface ResourceAbstract {
 	/**

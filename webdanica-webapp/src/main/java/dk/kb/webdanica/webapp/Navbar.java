@@ -32,20 +32,24 @@ public class Navbar {
 
     public static final int N_USERS = 3;
 
+    public static int N_BLACKLISTS = 3;
+    
+    
     private static Map<Integer, String> navbarMap = new TreeMap<Integer, String>();
 
-    private static String[][] items = null;
-
-    static {
-    	items = new String[][] {
-    			//{ DABServlet.environment.contextPath + "/insert/", "Opret" },
+    private static String[][] items  = new String[][] {
+    			//{ Servlet.environment.contextPath + "/ingest/", "Ingest" },
                 { Servlet.environment.getContextPath() + "/seeds/", "Seeds" },
-                // { DABServlet.environment.contextPath + "/search/", "Søg" },
+                { Servlet.environment.getContextPath() + "/blacklists/", "Blacklists" },                 
+                // { Servlet.environment.contextPath + "/search/", "Søg" },
                 // { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
                 // { Servlet.environment.getContextPath() + "/users/", "Brugere" },
+                
+				//  Servlet.environment.getContextPath() + "/ingestlogs/", "Ingest logs" },
                 { Servlet.environment.getContextPath() + "/status/", "Status" }
     	};
-    }
+
+	
 
     public static synchronized String getNavbar(int menu) {
     	String str = navbarMap.get(menu);
