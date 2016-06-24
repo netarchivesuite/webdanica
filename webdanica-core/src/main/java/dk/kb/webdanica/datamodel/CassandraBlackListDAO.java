@@ -22,14 +22,14 @@ CREATE table blacklists (
  );
  CREATE INDEX on blacklists  (is_active);
 */
-public class BlackListDAO {
+public class CassandraBlackListDAO {
 
 	public static void main(String args[]) {
 		List<String> list = new ArrayList<String>();
 		list.add("an item to avoid");
 		list.add("another item to avoid");
 		BlackList b = new BlackList("noname", "nodescription",list , false);
-		BlackListDAO dao = BlackListDAO.getInstance();
+		CassandraBlackListDAO dao = CassandraBlackListDAO.getInstance();
 		dao.insertList(b);
 		List<BlackList> bLists = dao.getLists(false);
 		for (BlackList b1: bLists) {
@@ -38,11 +38,11 @@ public class BlackListDAO {
 		dao.close();
 	}
 	
-	private static BlackListDAO instance;
+	private static CassandraBlackListDAO instance;
 
-	public synchronized static BlackListDAO getInstance(){
+	public synchronized static CassandraBlackListDAO getInstance(){
 		if (instance == null) {
-			instance = new BlackListDAO();
+			instance = new CassandraBlackListDAO();
 		} 
 		return instance;
 	}
@@ -53,7 +53,7 @@ public class BlackListDAO {
 
 	private PreparedStatement preparedInsert;
 
-	public BlackListDAO() {
+	public CassandraBlackListDAO() {
 		db = new Cassandra(CassandraSettings.getDefaultSettings());
 	}
 
@@ -119,16 +119,22 @@ public class BlackListDAO {
     }
 	
 	public BlackList readBlackList(UUID uid) {
+		init();
 		PreparedStatement statement = getSession().prepare("SELECT * FROM blacklists WHERE uid=?");
 		BoundStatement bStatement = statement.bind(uid);
 		ResultSet results = session.execute(bStatement);
-		Row singleRow = results.one();
-		BlackList retrievedBlacklist = new BlackList(uid,
+		List<Row> allRows = results.all();
+		if (allRows.isEmpty() || allRows.size() > 1) {
+			return null;
+		} else {
+			Row singleRow = allRows.get(0);
+			BlackList retrievedBlacklist = new BlackList(uid,
 				singleRow.getString("name"),singleRow.getString("description"),
 				singleRow.getList("blacklist", String.class), singleRow.getLong("last_update"),
 				singleRow.getBool("is_active")
 				);
-		return retrievedBlacklist;
+			return retrievedBlacklist;
+		}
 	}
 
 

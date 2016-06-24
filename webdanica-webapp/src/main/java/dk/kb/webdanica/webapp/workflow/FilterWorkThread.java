@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.datamodel.Status;
@@ -34,7 +34,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
     private List<Seed> workList = new LinkedList<Seed>();
 
 	private SeedCassandraDAO seeddao;
-	private BlackListDAO blacklistDao;
+	private CassandraBlackListDAO blacklistDao;
 	
 	private ResolveRedirects resolveRedirects;
 

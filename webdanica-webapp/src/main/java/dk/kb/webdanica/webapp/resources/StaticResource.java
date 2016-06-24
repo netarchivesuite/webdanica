@@ -23,17 +23,26 @@ import dk.kb.webdanica.webapp.User;
 
 public class StaticResource implements ResourceAbstract {
 
+	public static final String CSS_PATH = "/css/*";
+	public static final String IMG_PATH = "/img/*";
+	public static final String JS_PATH = "/js/*";
+	private Environment environment;
+	
     @Override
     public void resources_init(Environment environment) {
-        // argument ignored
+        this.environment = environment;
     }
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        resourceManager.resource_add(this, "/css/*", false);
-        resourceManager.resource_add(this, "/img/*", false);
-        resourceManager.resource_add(this, "/js/*", false);
-    }
+        resourceManager.resource_add(this, CSS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(CSS_PATH).isSecure());
+        resourceManager.resource_add(this, IMG_PATH, 
+        		environment.getResourcesMap().getResourceByPath(IMG_PATH).isSecure());
+        resourceManager.resource_add(this, JS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(JS_PATH).isSecure());
+    }    
+        
 
     @Override
     public void resource_service(ServletContext servletContext, User dab_user,

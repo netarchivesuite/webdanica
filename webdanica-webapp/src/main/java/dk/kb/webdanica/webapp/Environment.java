@@ -24,10 +24,11 @@ import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
 import dk.kb.webdanica.WebdanicaSettings;
-import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
+import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
@@ -149,7 +150,7 @@ public class Environment {
 
 	private ServletContext servletContext;
 
-	public BlackListDAO blacklistDao;
+	public CassandraBlackListDAO blacklistDao;
 
 	private String blacklistsPath;
 
@@ -162,6 +163,8 @@ public class Environment {
 	private File netarchiveSuiteSettingsFile;
 	
 	private File webdanicaSettingsFile;
+
+	private ResourcesMap resourcesMap;
 	
     /**
      * @param servletContext
@@ -379,7 +382,13 @@ public class Environment {
 		//db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
 
 		seedDao = SeedCassandraDAO.getInstance(); 
-		blacklistDao  = BlackListDAO.getInstance();
+		blacklistDao  = CassandraBlackListDAO.getInstance();
+		
+		// Read resources and their secured status from settings.
+		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
+		// if the resource is not found, it sets the secure-status as false, later it will be true (login required)
+		resourcesMap = new ResourcesMap();
+		
 		
 		/*
 		 * Initialize emailer
@@ -651,4 +660,10 @@ public class Environment {
 	public File getWebdanicaSettingsFile() {
 	    return this.webdanicaSettingsFile;	    
     }
+	
+	// TODO Add to configuration object for webdanica.
+	public ResourcesMap getResourcesMap() {
+	    return this.resourcesMap;	    
+    }
+	
 }

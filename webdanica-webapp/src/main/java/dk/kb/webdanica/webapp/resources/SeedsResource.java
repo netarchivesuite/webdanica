@@ -70,6 +70,12 @@ public class SeedsResource implements ResourceAbstract {
 
     protected int R_URL_WARC_DOWNLOAD = -1;
 
+    public static final String SEEDS_PATH = "/seeds/";
+    
+    public static final String SEEDS_NUMERIC_PATH = "/seeds/<numeric>/";
+    
+    public static final String SEEDS_NUMERIC_DUMP_PATH = "/seeds/<numeric>/dump/";
+    
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
@@ -77,10 +83,16 @@ public class SeedsResource implements ResourceAbstract {
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        R_STATUS_LIST = resourceManager.resource_add(this, "/seeds/", true);
-        R_STATUS_LIST_ID = resourceManager.resource_add(this, "/seeds/<numeric>/", true);
+        R_STATUS_LIST = resourceManager.resource_add(this, SEEDS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(SEEDS_PATH).isSecure()); 
+     
+        R_STATUS_LIST_ID = resourceManager.resource_add(this, SEEDS_NUMERIC_PATH, 
+        		environment.getResourcesMap().getResourceByPath(SEEDS_NUMERIC_PATH).isSecure());
+        
         //R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/<numeric>/", true);
-        R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/", true);
+        R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, SEEDS_NUMERIC_DUMP_PATH, 
+        		environment.getResourcesMap().getResourceByPath(SEEDS_NUMERIC_DUMP_PATH).isSecure());
+        
         //R_URL_WARC_DOWNLOAD = resourceManager.resource_add(this, "/url/warc/<numeric>/", true);
     }
 

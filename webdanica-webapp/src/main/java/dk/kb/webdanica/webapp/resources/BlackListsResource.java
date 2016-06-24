@@ -19,7 +19,7 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -40,6 +40,8 @@ public class BlackListsResource implements ResourceAbstract {
 
 		protected int R_BLACKLIST_ADD = -1;
 
+		public static final String BLACKLIST_LIST_PATH = "/blacklists/";
+		
 	    @Override
 	    public void resources_init(Environment environment) {
 	        this.environment = environment;
@@ -48,7 +50,8 @@ public class BlackListsResource implements ResourceAbstract {
 
 	    @Override
 	    public void resources_add(ResourceManagerAbstract resourceManager) {
-	        R_BLACKLIST_LIST = resourceManager.resource_add(this, "/blacklists/", true);
+	        R_BLACKLIST_LIST = resourceManager.resource_add(this, BLACKLIST_LIST_PATH, 
+	        		   		environment.getResourcesMap().getResourceByPath(BLACKLIST_LIST_PATH).isSecure());
 	        //R_BLACKLIST_ADD = resourceManager.resource_add(this, "/blacklists/add", true);
 	    }
 
@@ -123,7 +126,7 @@ public class BlackListsResource implements ResourceAbstract {
 	        //Connection conn = null;
 	    
 	            //conn = environment.dataSource.getConnection();
-	            List<BlackList> blacklistList = BlackListDAO.getInstance().getLists(false);
+	            List<BlackList> blacklistList = CassandraBlackListDAO.getInstance().getLists(false);
 	            for (BlackList b: blacklistList) {
 	                sb.append("<tr>");
 	                sb.append("<td>");

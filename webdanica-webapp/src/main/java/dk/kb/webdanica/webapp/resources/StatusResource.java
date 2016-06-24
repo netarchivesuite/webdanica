@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -47,12 +49,12 @@ import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 
 public class StatusResource implements ResourceAbstract {
 
-    //private static final Logger logger = Logger.getLogger(StatusResource.class.getName());
+    private static final Logger logger = Logger.getLogger(StatusResource.class.getName());
 
     private Environment environment;
 
     protected int R_STATUS = -1;
-
+    
     protected int R_STATUS_PROPS = -1;
 
     protected int R_STATUS_DEP = -1;
@@ -67,6 +69,15 @@ public class StatusResource implements ResourceAbstract {
 
     protected int R_STATUS_SQL_QUERY = -1;
 
+    public static final String STATUS_PATH = "/status/";
+    public static final String STATUS_PROPS_PATH = "/status/props/";
+    public static final String STATUS_DEPS_PATH = "/status/dep/";
+    public static final String STATUS_THREADS_PATH = "/status/threads/";
+    public static final String STATUS_PROGRESS_PATH = "/status/progress/";
+    public static final String STATUS_LOG_PATH = "/status/log/";
+    public static final String STATUS_HEALTHY_PATH = "/status/healthy/";
+    public static final String STATUS_SQLQUERY_PATH = "/status/sqlquery/";
+    
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
@@ -74,17 +85,23 @@ public class StatusResource implements ResourceAbstract {
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        R_STATUS = resourceManager.resource_add(this, "/status/", false);
-        R_STATUS_PROPS = resourceManager.resource_add(this, "/status/props/", false);
-        R_STATUS_DEP = resourceManager.resource_add(this, "/status/dep/", false);
-        R_STATUS_THREADS = resourceManager.resource_add(this, "/status/threads/", false);
-        R_STATUS_PROGRESS = resourceManager.resource_add(this, "/status/progress/", false);
-        R_STATUS_LOG = resourceManager.resource_add(this, "/status/log/", false);
-        R_STATUS_HEALTHY = resourceManager.resource_add(this, "/status/healthy/", false);
-        R_STATUS_SQL_QUERY = resourceManager.resource_add(this, "/status/sqlquery/", true);
+        R_STATUS = resourceManager.resource_add(this, STATUS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_PATH).isSecure());
+        R_STATUS_PROPS = resourceManager.resource_add(this, STATUS_PROPS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_PROPS_PATH).isSecure());
+        R_STATUS_DEP = resourceManager.resource_add(this, STATUS_DEPS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_DEPS_PATH).isSecure());
+        R_STATUS_THREADS = resourceManager.resource_add(this, STATUS_THREADS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_THREADS_PATH).isSecure());
+        R_STATUS_PROGRESS = resourceManager.resource_add(this, STATUS_PROGRESS_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_PROGRESS_PATH).isSecure());
+        R_STATUS_LOG = resourceManager.resource_add(this, STATUS_LOG_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_LOG_PATH).isSecure());
+        R_STATUS_HEALTHY = resourceManager.resource_add(this, STATUS_HEALTHY_PATH,
+        		environment.getResourcesMap().getResourceByPath(STATUS_HEALTHY_PATH).isSecure());
+        R_STATUS_SQL_QUERY = resourceManager.resource_add(this, STATUS_SQLQUERY_PATH, 
+        		environment.getResourcesMap().getResourceByPath(STATUS_SQLQUERY_PATH).isSecure());
     }
-
-    //private String servicePath;
 
     @Override
     public void resource_service(ServletContext servletContext, User dab_user, HttpServletRequest req, HttpServletResponse resp, int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
@@ -92,10 +109,10 @@ public class StatusResource implements ResourceAbstract {
         	Servlet.environment.setContextPath(req.getContextPath());
         }
         /*
-        if (servicePath == null) {
-            servicePath = req.getContextPath() + req.getServletPath();
-        }
+        logger.info("pathInfo: " + pathInfo);
+        logger.info("resource_id: " + resource_id);
         */
+
         if (resource_id == R_STATUS) {
             status(dab_user, req, resp, numerics);
         } else if (resource_id == R_STATUS_PROPS) {

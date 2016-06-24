@@ -21,6 +21,7 @@ import com.antiaction.common.templateengine.login.LoginTemplateCallback;
 import dk.kb.webdanica.webapp.resources.BlackListResource;
 import dk.kb.webdanica.webapp.resources.BlackListsResource;
 import dk.kb.webdanica.webapp.resources.IndexResource;
+import dk.kb.webdanica.webapp.resources.Resource;
 import dk.kb.webdanica.webapp.resources.ResourceAbstract;
 import dk.kb.webdanica.webapp.resources.ResourceManagerAbstract;
 import dk.kb.webdanica.webapp.resources.SeedsResource;
@@ -47,7 +48,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             super.init(servletConfig);
 
             environment = new Environment(getServletContext(), servletConfig);
-
+            // TODO Initialization seems to fail sometimes, resulting in NPE in the Servlet.doGet method
             pathMap = new PathMap<Resource>();
             
             // takes care that the js, img, and css are loaded by tomcat 
@@ -70,7 +71,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             BlackListResource blackListResource = new BlackListResource();
             blackListResource.resources_init(environment);
             blackListResource.resources_add(this);
-            
+            // takes care of /blacklists path pages
             BlackListsResource blackListsResource = new BlackListsResource();
             blackListsResource.resources_init(environment);
             blackListsResource.resources_add(this);
@@ -86,10 +87,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     public int resource_add(ResourceAbstract resources, String path,
             boolean bSecured) {
         int resource_id = resourceAutoInc.getId();
-        Resource resource = new Resource();
-        resource.resource_id = resource_id;
-        resource.resources = resources;
-        resource.bSecured = bSecured;
+        Resource resource = new Resource(resource_id, resources, bSecured);
         pathMap.add(path, resource);
         return resource_id;
     }
@@ -160,19 +158,24 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (pathInfo == null || pathInfo.length() == 0) {
                     pathInfo = "/";
                 }
-
+                logger.info("pathInfo:" + pathInfo);
                 List<Integer> numerics = new ArrayList<Integer>();
                 Resource resource = pathMap.get(pathInfo, numerics);
-
+                // Hack for handling access to /blacklist/<uid>/ pages
+                if (resource == null && pathInfo.startsWith("/blacklist/")) {
+                	resource = pathMap.get("/blacklist/", numerics);
+                }
+                
                 if (resource != null) {
-                    if (resource.bSecured && current_user == null) {
+                	logger.info("found resource in pathMap: " + resource);
+                    if (resource.isSecured() && current_user == null) {
                     	// Note 'this' == LoginTemplateCallback<User>
                         environment.getLoginHandler().loginFromForm(req, resp, session, this);
-                    } else if (!resource.bSecured) {
-                        resource.resources.resource_service(this.getServletContext(), current_user, req, resp, resource.resource_id, numerics, pathInfo);
+                    } else if (!resource.isSecured()) {
+                        resource.getResources().resource_service(this.getServletContext(), current_user, req, resp, resource.getId(), numerics, pathInfo);
                     } else {
                         // authorized( req, resp, current_user );
-                        resource.resources.resource_service(this.getServletContext(), current_user, req, resp, resource.resource_id, numerics, pathInfo);
+                        resource.getResources().resource_service(this.getServletContext(), current_user, req, resp, resource.getId(), numerics, pathInfo);
                     }
                 } else {
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, pathInfo);
@@ -214,7 +217,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     @Override
     public User validateUserCredentials(String id, String password) {
         User current_user = null;
-        // FIXME: Temporary hack 
+        // FIXME: Temporary hack: replace with LDAP id/password validation 
         current_user = User.getAdminByCredentials(id, password);
         logger.info("returned a User for id=" + id);
 /*        
@@ -250,16 +253,6 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     @Override
     public String getTranslated(String text_idstring) {
         return null;
-    }
-
-    public static class Resource {
-
-        public int resource_id;
-
-        public ResourceAbstract resources;
-
-        public boolean bSecured;
-
     }
 
 }

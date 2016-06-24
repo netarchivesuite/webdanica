@@ -8,17 +8,10 @@
 package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Level;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -32,25 +25,19 @@ import com.antiaction.common.templateengine.Template;
 import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
-import com.antiaction.common.templateengine.TemplatePlaceTag;
 
+import dk.kb.webdanica.datamodel.BlackList;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
 
-/*
-import dk.netarkivet.dab.webadmin.dao.Domain;
-import dk.netarkivet.dab.webadmin.dao.NotificationSubscription;
-import dk.netarkivet.dab.webadmin.dao.Organization;
-import dk.netarkivet.dab.webadmin.dao.Permission;
-import dk.netarkivet.dab.webadmin.dao.UrlRecord;
-import dk.netarkivet.dab.webadmin.dao.User;
-*/
-
 public class BlackListResource implements ResourceAbstract {
 
     private static final Logger logger = Logger.getLogger(BlackListResource.class.getName());
+    
+    private static final String BLACKLIST_SHOW_TEMPLATE = "blacklist_master.html";
 /*
     protected static final int[] USER_ADD_PERMISSIONS = {Permission.P_USER_ADMIN, Permission.P_USER_ADD};
 
@@ -58,18 +45,22 @@ public class BlackListResource implements ResourceAbstract {
 */
 
     protected int R_BLACKLIST = -1;
-    
+    public static final String BLACKLIST_PATH = "/blacklist/";
     private Environment environment;
 
+    private CassandraBlackListDAO dao;
+    
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
+        this.dao = environment.blacklistDao;
     }
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        R_BLACKLIST = resourceManager.resource_add(this, "/blacklist/<string>/", true);
-        
+        //R_BLACKLIST = resourceManager.resource_add(this, "/blacklist/<string>/", true);
+        R_BLACKLIST = resourceManager.resource_add(this, BLACKLIST_PATH, 
+        		environment.getResourcesMap().getResourceByPath(BLACKLIST_PATH).isSecure());
 /*        
         R_USER_PASSWORD = resourceManager.resource_add(this, "/user/<numeric>/change_password/", true);
         R_USER_PERMISSIONS = resourceManager.resource_add(this, "/user/<numeric>/permissions/", true);
@@ -83,16 +74,34 @@ public class BlackListResource implements ResourceAbstract {
     public void resource_service(ServletContext servletContext, User dab_user,
     		HttpServletRequest req, HttpServletResponse resp,
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-    	logger.info("pathInfo:" + pathInfo);
-    	
+    	logger.info("pathInfo: " + pathInfo);
+        logger.info("resource_id: " + resource_id);
+        BlackList b;
+        // FIXME when the uid can be retrieved from the List argument
+        // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
+        String[] pathInfoParts  = pathInfo.split(BLACKLIST_PATH);
+        UUID dummyUUID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+        List<String> dummyList = new ArrayList<String>();
+        if (pathInfoParts.length > 1) {
+        	String UUIDString = pathInfoParts[1];
+            if (UUIDString.endsWith("/")) {
+            	UUIDString = UUIDString.substring(0, UUIDString.length()-1);
+            }
+            b = dao.readBlackList(UUID.fromString(UUIDString));
+            if (b == null) { // no blacklist found with UID=UUIDString
+            	logger.warning("No blacklist found with uid=" + UUIDString);
+            	b = new BlackList(dummyUUID, "dummyUUD", "No blacklist found with UUID=" + UUIDString, dummyList, System.currentTimeMillis() , false);
+            }
+        } else {
+        	// create default dummy blacklist
+        	logger.warning("No UUID for blacklist given as argument in the path: " + pathInfo);
+        	b = new BlackList(dummyUUID, "dummyUUD", "No blacklist designated", dummyList, System.currentTimeMillis() , false);
+        }
+        
         if (Servlet.environment.getContextPath()== null) {
         	Servlet.environment.setContextPath(req.getContextPath());
         }
-        /*
-        if (servicePath == null) {
-            servicePath = req.getContextPath() + req.getServletPath();
-        }
-        */
+        
         if (Servlet.environment.getBlacklistPath() == null) {
         	Servlet.environment.setBlacklistPath(Servlet.environment.getContextPath() + "/blacklist/");
         }
@@ -100,86 +109,21 @@ public class BlackListResource implements ResourceAbstract {
         	Servlet.environment.setBlacklistsPath(Servlet.environment.getContextPath() + "/blacklists/");
         }
         if (resource_id == R_BLACKLIST) {
-            blacklist_show(dab_user, req, resp, "");
+            blacklist_show(dab_user, req, resp, b);
         } 
- /*       
-        
-        
-        else if (resource_id == R_USER_PASSWORD) {
-            user_change_password(dab_user, req, resp, numerics);
-        } else if (resource_id == R_USER_PERMISSIONS) {
-            user_show_permissions(dab_user, req, resp, numerics);
-        }
-        else if (resource_id == R_USER_NOTIFICATION_SUBSCRIPTIONS) {
-            user_show_notification_subscriptions(dab_user, req, resp, numerics);
-        }
-   */     
-        
     }
 
     public void blacklist_show(User dab_user, HttpServletRequest req,
-            HttpServletResponse resp, String blacklistName)
+            HttpServletResponse resp, BlackList b)
             throws IOException {
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/html; charset=utf-8");
-
+        // TODO error text
         String errorStr = null;
         String successStr = null;
-
         Caching.caching_disable_headers(resp);
 
-        User user = null;
-/*
-        
-        Connection conn = null;
-        try {
-            conn = environment.dataSource.getConnection();
-            user = User.getUserById(conn, numerics.get(0));
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-*/                                       
-        
-/*
-        if ("POST".equals(req.getMethod())) {        	
-	        if (dab_user.hasAnyPermission(USER_ADMIN_PERMISSIONS)) {
-	            String username = req.getParameter("username");
-	            String name = req.getParameter("name");
-	            String email = req.getParameter("email");
-	            String organization = req.getParameter("organization");
-	            String active = req.getParameter("active");
-	            if (username != null && username.length() > 0) {
-	                user.username = username;
-	            }
-	            if (name != null && name.length() > 0) {
-	                user.name = name;
-	            }
-	            if (email != null && email.length() > 0) {
-	                user.email = email;
-	            }
-	            if (organization != null && organization.length() > 0) {
-	            	try {
-	            		user.organization = Integer.parseInt(organization);
-	            	} catch (NumberFormatException e) {
-	            	}
-	            }
-	            if (active != null && active.length() > 0) {
-	            	user.active = true;
-	            } else {
-	            	user.active = false;
-	            }
-	            user.store(conn);
-	            successStr = "Bruger oplysninger gemt.";
-	        } else {
-	        	errorStr = "Du har ikke rettighed til at ændre bruger oplysninger!";
-	        }
-        }
-*/
-
-
-        // TODO error text
-
-        Template template = environment.getTemplateMaster().getTemplate("user_show.html");
+        Template template = environment.getTemplateMaster().getTemplate(BLACKLIST_SHOW_TEMPLATE);
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -190,12 +134,14 @@ public class BlackListResource implements ResourceAbstract {
         TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
         TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
         TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
-        TemplatePlaceTag usernameTag = TemplatePlaceTag.getInstance("input", "username");
-        TemplatePlaceTag nameTag = TemplatePlaceTag.getInstance("input", "name");
-        TemplatePlaceTag emailTag = TemplatePlaceTag.getInstance("input", "email");
-        TemplatePlaceHolder organizationPlace = TemplatePlaceBase.getTemplatePlaceHolder("organizations_input");
-        TemplatePlaceTag activeTag = TemplatePlaceTag.getInstance("input", "active");
-
+        
+        TemplatePlaceHolder uidPlace = TemplatePlaceBase.getTemplatePlaceHolder("uid");
+        TemplatePlaceHolder namePlace = TemplatePlaceBase.getTemplatePlaceHolder("name");
+        TemplatePlaceHolder descriptionPlace = TemplatePlaceBase.getTemplatePlaceHolder("description");
+        TemplatePlaceHolder lastupdatetimePlace = TemplatePlaceBase.getTemplatePlaceHolder("last_update_time");
+        TemplatePlaceHolder listsizePlace = TemplatePlaceBase.getTemplatePlaceHolder("list_size");
+        TemplatePlaceHolder activePlace = TemplatePlaceBase.getTemplatePlaceHolder("activeStatus");
+        
         List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
         placeHolders.add(titlePlace);
         placeHolders.add(appnamePlace);
@@ -206,82 +152,26 @@ public class BlackListResource implements ResourceAbstract {
         placeHolders.add(headingPlace);
         placeHolders.add(alertPlace);
         placeHolders.add(contentPlace);
-        placeHolders.add(usernameTag);
-        placeHolders.add(nameTag);
-        placeHolders.add(emailTag);
-        placeHolders.add(organizationPlace);
-        placeHolders.add(activeTag);
+        // add the new placeholders
+        placeHolders.add(uidPlace);
+        placeHolders.add(namePlace);
+        placeHolders.add(descriptionPlace);
+        placeHolders.add(lastupdatetimePlace);
+        placeHolders.add(listsizePlace);
+        placeHolders.add(activePlace);
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
-        /*
-         * Menu.
-         */
 
-        StringBuilder menuSb = new StringBuilder();
-
-        menuSb.append("<li id=\"state_0\"");
-        menuSb.append(" class=\"active\"");
-        menuSb.append("><a href=\"");
-        menuSb.append(Servlet.environment.getBlacklistPath());
-        menuSb.append(user.id);
-        menuSb.append("/\">");
-        menuSb.append("user.name");
-        menuSb.append("</a></li>");
-
-        menuSb.append("<li id=\"state_0\"");
-        menuSb.append("><a href=\"");
-        menuSb.append(Servlet.environment.getBlacklistPath());
-        menuSb.append(user.id);
-        menuSb.append("/change_password/\">");
-        menuSb.append("Skift adgangskode");
-        menuSb.append("</a></li>");
-
-        menuSb.append("<li id=\"state_1\"");
-        menuSb.append("><a href=\"");
-        menuSb.append(Servlet.environment.getBlacklistPath());
-        menuSb.append(user.id);
-        menuSb.append("/permissions/\">");
-        menuSb.append("Rettigheder");
-        menuSb.append("</a></li>");
-
-        menuSb.append("<li id=\"state_1\"");
-        menuSb.append("><a href=\"");
-        menuSb.append(Servlet.environment.getBlacklistPath());
-        menuSb.append(user.id);
-        menuSb.append("/notification_subscriptions/\">");
-        menuSb.append("Email abonnementer");
-        menuSb.append("</a></li>");
-
-        /*
-         * Organization.
-         */
-/*
-        StringBuilder orgSb = new StringBuilder();
-        List<Organization> orgs = Organization.getOrganizationsList(conn);
-        orgSb.append("<select name=\"organization\">");
-        for (Organization org: orgs) {
-        	orgSb.append("<option value=\"");
-        	orgSb.append(org.id);
-        	orgSb.append("\"");
-        	if (user.organization == org.id) {
-        		orgSb.append(" selected=\"1\"");
-        	}
-        	orgSb.append(">");
-        	orgSb.append(org.name);
-        	orgSb.append("</option>");
-        }
-        orgSb.append("</select>");
-*/
+        Date blackListLastUpdatedTime = new Date(b.getLastUpdate());
+        List<String> blacklist = b.getList();
+        long blackListSize = blacklist.size();
+        
         /*
          * Heading.
          */
-        String blackListName = null;
-        Long blackListLastUpdatedTime = null;
-        Boolean blackListActive = false;
-        long blackListSize = 0;
-        String heading = "Oplysninger om blacklist '" + blackListName + "':";
-
+        String heading = "Information about blacklist '" + b.getName() + "' of size " + blackListSize + " :";
+        
         /*
          * Places.
          */
@@ -300,62 +190,39 @@ public class BlackListResource implements ResourceAbstract {
 
         if (userPlace != null) {
             userPlace.setText(Navbar.getUserHref(dab_user));
-        }
-
-        if (menuPlace != null) {
-            menuPlace.setText(menuSb.toString());
-        }
+        } 
 
         if (backPlace != null) {
         	backPlace.setText("<a href=\"" 
         			+ Servlet.environment.getBlacklistsPath() 
         			+ "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
+        } else {
+        	logger.warning("No back´placeholder found in template '" + BLACKLIST_SHOW_TEMPLATE + "'" );
         }
 
         if (headingPlace != null) {
             headingPlace.setText(heading);
+        } else {
+        	logger.warning("No heading´ placeholder found in template '" + BLACKLIST_SHOW_TEMPLATE + "'" );
         }
 
-        if (contentPlace != null) {
-            //contentPlace.setText(sb.toString());
-        }
-
-        if (usernameTag != null) {
-        	usernameTag.htmlItem.setAttribute("value", user.username);
-        	/*
-	        if (!dab_user.hasAnyPermission(USER_ADMIN_PERMISSIONS)) {
-	        	usernameTag.htmlItem.setAttribute("disabled", "1");
-	        } */
-        }
-
-        if (nameTag != null) {
-        	nameTag.htmlItem.setAttribute("value", "user.name");
-        	/*
-	        if (!dab_user.hasAnyPermission(USER_ADMIN_PERMISSIONS)) {
-	        	nameTag.htmlItem.setAttribute("disabled", "1");
-	        } */
-        }
-
-        if (emailTag != null) {
-            emailTag.htmlItem.setAttribute("value", "user.email");
-            /*
-	        if (!dab_user.hasAnyPermission(USER_ADMIN_PERMISSIONS)) {
-	        	emailTag.htmlItem.setAttribute("disabled", "1");
-	        } */
-	        
-        }
-/*
         
-        if (organizationPlace != null) {
-        	organizationPlace.setText(orgSb.toString());
-        }
-*/
-        if (activeTag != null) {
-        	if (user.active) {
-        		activeTag.htmlItem.setAttribute("checked", "1");
-        	}
-        }
-
+        ResourceUtils.insertText(uidPlace, "uid",  b.getUid().toString(), BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(namePlace, "name",  b.getName(), BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(descriptionPlace, "description",  b.getDescription(), BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(lastupdatetimePlace, "last_update_time",  blackListLastUpdatedTime.toString(), BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(listsizePlace, "list_size",  blackListSize + "", BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(activePlace, "activeStatus",  b.isActive() + "", BLACKLIST_SHOW_TEMPLATE, logger);
+         
+        StringBuilder sb = new StringBuilder();
+        sb.append("<pre>\r\n");
+    	for (String listElement: blacklist) {
+    		sb.append(listElement);
+    		sb.append("\r\n");
+    	}	
+    	
+    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), BLACKLIST_SHOW_TEMPLATE, logger);
+        
         if (alertPlace != null) {
             StringBuilder alertSb = new StringBuilder();
             if (errorStr != null) {
@@ -368,6 +235,8 @@ public class BlackListResource implements ResourceAbstract {
                 alertSb.append("</div>");
                 alertSb.append("</div>");
                 alertPlace.setText(alertSb.toString());
+            } else {
+            	logger.warning("No alert placeholder found in template '" + BLACKLIST_SHOW_TEMPLATE + "'" );
             }
             if (successStr != null) {
                 alertSb.append("<div class=\"row-fluid\">");
@@ -379,6 +248,8 @@ public class BlackListResource implements ResourceAbstract {
                 alertSb.append("</div>");
                 alertSb.append("</div>");
                 alertPlace.setText(alertSb.toString());
+            } else {
+            	logger.warning("No success placeholder found in template '" + BLACKLIST_SHOW_TEMPLATE + "'" );
             }
         }
 
@@ -391,16 +262,6 @@ public class BlackListResource implements ResourceAbstract {
         } catch (IOException e) {
         	logger.warning("IOException thrown, but ignored: " + e);        
         }
-
-        /*
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, e.toString(), e);
-            }
-        }
-        */
     }
         
 }

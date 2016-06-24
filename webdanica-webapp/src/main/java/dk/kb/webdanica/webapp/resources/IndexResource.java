@@ -34,7 +34,8 @@ public class IndexResource implements ResourceAbstract {
     private Environment environment;
 
     protected int R_INDEX = -1;
-
+    public static final String INDEX_PATH = "/";
+    
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
@@ -42,7 +43,8 @@ public class IndexResource implements ResourceAbstract {
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        R_INDEX = resourceManager.resource_add(this, "/", false);
+        R_INDEX = resourceManager.resource_add(this, INDEX_PATH, 
+        		environment.getResourcesMap().getResourceByPath(INDEX_PATH).isSecure());
     }
 
     @Override

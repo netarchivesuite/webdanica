@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 
 /**
  * Program to load blacklists into the webdanica database.
@@ -50,7 +50,7 @@ public class LoadBlacklists {
 		LoadBlacklists loadseeds = new LoadBlacklists(seedsfile);
 		loadseeds.insertList();
 		
-		BlackListDAO dao = BlackListDAO.getInstance();
+		CassandraBlackListDAO dao = CassandraBlackListDAO.getInstance();
 		System.out.println("Showing all existing blacklists:");
 		List<BlackList> allLists = dao.getLists(false);
 		for (BlackList b: allLists) {
@@ -68,7 +68,7 @@ public class LoadBlacklists {
 	 * 
 	 */
 	public void insertList() {
-		BlackListDAO dao = BlackListDAO.getInstance();
+		CassandraBlackListDAO dao = CassandraBlackListDAO.getInstance();
 		String line;
         long linecount=0L;
         long insertedcount=0L;
