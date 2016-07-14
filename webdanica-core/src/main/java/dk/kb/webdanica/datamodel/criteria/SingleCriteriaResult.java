@@ -85,7 +85,7 @@ public class SingleCriteriaResult {
     /**
      * Construct a SingleCriteriaResult from a database ResultSet
      * @param res
-     * @param extendedNewHadoopTable
+     * @param extendedNewHadoopTable FIXME not necessary to be used?
      * @throws SQLException
      */
     public SingleCriteriaResult(ResultSet res, boolean extendedNewHadoopTable)  throws SQLException {
@@ -371,295 +371,114 @@ public class SingleCriteriaResult {
 	    s.setString(index, res.urlOrig);
 	    
 	    index++;
-	    if (res.C1a != null) {
-	        s.setString(index, res.C1a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    } 
-
+	    setString(s, index, res.C1a); 
 	    index++;
-	    if (res.C2a != null) {
-	        s.setString(index, res.C2a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C2a);
 	    index++;
-	    if (res.C2b != null) {
-	        s.setString(index, res.C2b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-
+	    setString(s, index, res.C2b);
 	    index++;
-	    if (res.C3a != null) {
-	        s.setString(index, res.C3a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3a);
 	    index++;
-	    if (res.C3b != null) {
-	        s.setString(index, res.C3b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3b);
 	    
 	    //        + " C6a,C6b,C6c
 	    //,C7a,C7b,C7c,C7d,C7e, C7f,C8a,C8b,C9a,C9b,C9c,C9d,C10a,"
 	    //        + " C10b, C15a, C15b, C16a, C17a, C18a
 	    
 	    index++;
-	    if (res.C3c != null) {
-	        s.setString(index, res.C3c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3c);
 	    index++;
-	    if (res.C3d != null) {
-	        s.setString(index, res.C3d);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3d);
 	    index++;
-	    if (res.C3e != null) {
-	        s.setString(index, res.C3e);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3e);
 	    index++;
-	    if (res.C3f != null) {
-	        s.setString(index, res.C3f);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C3f);
 	    index++;
-	    if (res.C3g != null) {
-	        s.setString(index, res.C3g);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-
+	    setString(s, index, res.C3g);
 	    index++;
-	    if (res.C4a != null) {
-	        s.setString(index, res.C4a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C4a);
+	    index++;
+	    setString(s, index, res.C5a);
+	    index++;
+	    setString(s, index, res.C5b);
 	    
-	    index++;
-	    if (res.C5a != null) {
-	        s.setString(index, res.C5a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    
-	    index++;
-	    if (res.C5b != null) {
-	        s.setString(index, res.C5b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
 	    //System.out.println("Index for c5b: " + index);
 	    //+ " C6a,C6b,C6c
-	    
 	    index++;
-	    if (res.C6a != null) {
-	        s.setString(index, res.C6a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C6a);
 	    index++;
-	    if (res.C6b != null) {
-	        s.setString(index, res.C6b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C6b);
 	    index++;
-	    if (res.C6c != null) {
-	        s.setString(index, res.C6c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C6c);
 	    index++;
-	    if (res.C6d != null) {
-	        s.setString(index, res.C6d);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C6d);
 	    //C7a,C7b,C7c,C7d,C7e, C7f
 	    
 	    index++;
-	    if (res.C7a != null) {
-	        s.setString(index, res.C7a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7a);
 	    index++;
-	    if (res.C7b != null) {
-	        s.setString(index, res.C7b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7b);
 	    index++;
-	    if (res.C7c != null) {
-	        s.setString(index, res.C7c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7c);
+	    index++;
+	    setString(s, index, res.C7d);
+	    index++;
+	    setString(s, index, res.C7e);
 	    
 	    index++;
-	    if (res.C7d != null) {
-	        s.setString(index, res.C7d);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C7e != null) {
-	        s.setString(index, res.C7e);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C7f != null) {
-	        s.setString(index, res.C7f);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C7g != null) {
-	        s.setString(index, res.C7g);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C7h != null) {
-	        s.setString(index, res.C7h);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7f);
 	    
 	    index++;
-	    if (res.C8a != null) {
-	        s.setString(index, res.C8a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C8b != null) {
-	        s.setString(index, res.C8b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C8c != null) {
-	        s.setString(index, res.C8c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7g);
 	    
 	    index++;
-	    if (res.C9a != null) {
-	        s.setString(index, res.C9a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C7h);
 	    index++;
-	    if (res.C9b != null) {
-	        s.setString(index, res.C9b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    index++;
-	    if (res.C9c != null) {
-	        s.setString(index, res.C9c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C8a);
 	    
 	    index++;
-	    if (res.C9d != null) {
-	        s.setString(index, res.C9d);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C8b);
 	    index++;
-	    if (res.C9e != null) {
-	        s.setString(index, res.C9e);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C8c);
 	    index++;
-	    if (res.C9f != null) {
-	        s.setString(index, res.C9f);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    
+	    setString(s, index, res.C9a);
 	    index++;
-	    if (res.C10a != null) {
-	        s.setString(index, res.C10a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C9b);
+	    index++;
+	    setString(s, index, res.C9c);
+	    index++;
+	    setString(s, index, res.C9d);
+	    index++;
+	    setString(s, index, res.C9e);
+	    index++;
+	    setString(s, index, res.C9f);
+	    index++;
+	    setString(s, index, res.C10a);
 	    
 	    //System.out.println("Index for c10a: " + index);
 	    index++;
-	    if (res.C10b != null) {
-	        s.setString(index, res.C10b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C10b);
 	    index++;
-	    if (res.C10c != null) {
-	        s.setString(index, res.C10c);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
+	    setString(s, index, res.C10c);
 	    
 	    //C15a, C15b, C16a, C17a,
 	    index++;
-	    if (res.C15a != null) {
-	        s.setString(index, res.C15a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-	    
+	    setString(s, index, res.C15a);
 	    index++;
-	    if (res.C15b != null) {
-	        s.setString(index, res.C15b);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-
+	    setString(s, index, res.C15b);
 	    index++;
-	    if (res.C16a != null) {
-	        s.setLong(index, Long.parseLong(res.C16a));
-	    } else {
-	        s.setNull(index, Types.BIGINT);
-	    }
-	    
+	    Long C16aValue = parseLongFromString(res.C16a);
+	    setLong(s, index, C16aValue);
 	    index++;
-	    if (res.C17a != null) {
-	        s.setLong(index, Long.parseLong(res.C17a));
-	    } else {
-	        s.setNull(index, Types.BIGINT);
-	    }
-	
+	    Long C17aValue = parseLongFromString(res.C17a);
+	    setLong(s, index, C17aValue);
 	    index++;
-	    if (res.C18a != null) {
-	        s.setString(index, res.C18a);
-	    } else {
-	        s.setNull(index, Types.VARCHAR);
-	    }
-
+	    setString(s, index, res.C18a);
 	    index++;
 	    s.setLong(index, res.Cext1); // = extSize in table
-	    
 	    index++;
-	    if (res.Cext2 != null) {
-	        s.setLong(index, res.Cext2); // = extDblChar in table (truncated to int during processing)
-	    } else {
-	        s.setNull(index, Types.BIGINT); // can be null if Cext1 == 0
-	    }
+	    // Cext2 can be null if Cext1 == 0
+	    setLong(s, index, res.Cext2); // = extDblChar in table (truncated to int during processing)
 	    
 	    index++;
 	    s.setTimestamp(index, res.Cext3); // = date
@@ -680,6 +499,34 @@ public class SingleCriteriaResult {
 	    s.close();
 	    return true;
     }
+    
+    private static Long parseLongFromString(String value) {
+	    Long result = null;
+	    try {
+	    	result = Long.parseLong(value);
+	    } catch (NumberFormatException e) {
+	    	e.printStackTrace();
+	    }
+	    return result;
+    }
+    
+	private static void setString(PreparedStatement s, int index, String value) throws SQLException {
+    	if (value != null) {
+    		s.setString(index, value);
+    	} else {
+    		s.setNull(index, Types.VARCHAR);
+    	}
+    }
+    
+    private static void setLong(PreparedStatement s, int index, Long value) throws SQLException {
+    	if (value != null) {
+    		s.setLong(index, value);
+    	} else {
+    		s.setNull(index, Types.BIGINT);
+    	}
+    }
+    
+    
     
     private void parseResultSet(ResultSet rs, boolean extendedNewHadoop) throws SQLException {
         this.url = rs.getString("Url");
@@ -735,6 +582,12 @@ public class SingleCriteriaResult {
         this.calcDanishCode = rs.getInt("calcDanishCode");
     }   
     
+    /** Used by ???
+     * 
+     * @param row_delim
+     * @param keyval_delim
+     * @return
+     */
     public String getValuesInString(String row_delim, String keyval_delim) {
     	//EXCEPT Url and date!!
     	String s = "";
@@ -807,8 +660,8 @@ public class SingleCriteriaResult {
     	sql = sql + "  C3b TEXT, "; 
     	sql = sql + "  C3c varchar(500), "; 
     	sql = sql + "  C3d TEXT, ";        
-    	sql = sql + "  C3e TEXT, ";             //Added 9/9 as 3b  form ae, oe/o, aa but restrcted list
-    	sql = sql + "  C3f varchar(500), ";     //Added 9/9 as 3d  form ae, oe/o, aa but restrcted list in URL
+    	sql = sql + "  C3e TEXT, ";             //Added 9/9 as 3b  form ae, oe/o, aa but with reduced list
+    	sql = sql + "  C3f varchar(500), ";     //Added 9/9 as 3d  form ae, oe/o, aa but with reduced list in URL
     	sql = sql + "  C3g TEXT, "; //NewHadoop
     	sql = sql + "  C4a varchar(100), "; 
     	sql = sql + "  C5a varchar(500), "; 
@@ -843,7 +696,7 @@ public class SingleCriteriaResult {
     	sql = sql + "  C17a BIGINT, "; 
     	sql = sql + "  C18a varchar(1), "; 
     	sql = sql + "  intDanish FLOAT, "; 
-    	sql = sql + "  IsIASource TINYINT(1), ";
+    	sql = sql + "  IsIASource TINYINT(1), "; // FIXME not relevant for webdanica projecy
     	sql = sql + "  calcDanishCode MEDIUMINT(3) "; //updated from calcDanishCode SMALLINT(2) 9/9
     	sql = sql + "  )";
     	
@@ -852,7 +705,4 @@ public class SingleCriteriaResult {
 	    s.close();
 	    return ok;
     }
-    
 }
-
-

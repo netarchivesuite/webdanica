@@ -12,15 +12,6 @@ import java.util.Random;
 import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
-import dk.kb.webdanica.oldtools.MysqlRes;
-import dk.kb.webdanica.oldtools.MysqlWorkFlow.HadoopResItem;
-import dk.kb.webdanica.oldtools.MysqlX;
-import dk.kb.webdanica.oldtools.MysqlX.CodesSizeIntervals;
-import dk.kb.webdanica.oldtools.MysqlX.CodesSizeIntervalsDetailed0;
-import dk.kb.webdanica.oldtools.MysqlX.CodesSizeIntervalsDetailed98112;
-import dk.kb.webdanica.oldtools.MysqlX.DataSource;
-import dk.kb.webdanica.oldtools.MysqlX.Interval;
-import dk.kb.webdanica.oldtools.MysqlX.Source;
 import dk.kb.webdanica.utils.TextUtils;
 
 public class CodesResult {
@@ -401,7 +392,7 @@ enum NotDkExceptions{
 	companies,
 }
 
-public static CodesResult setcodes_notDkLanguageVeryLikelyNewFields(MysqlRes.SingleCriteriaResult res, NotDkExceptions e)  {
+public static CodesResult setcodes_notDkLanguageVeryLikelyNewFields(SingleCriteriaResult res, NotDkExceptions e)  {
 	CodesResult cr = new CodesResult(); 
 	
     boolean bigSize = (res.Cext1>250); // 50 for size 200-250
@@ -571,8 +562,8 @@ public static CodesResult setcodes_otherLanguagesChars(String c4a)  {
 	return coderes;
 }*/
 
-public static MysqlRes.CodesResult setcodes_WRONGphone(String c2a)  {
-	MysqlRes.CodesResult coderes = new MysqlRes.CodesResult();
+public static CodesResult setcodes_WRONGphone(String c2a)  {
+	CodesResult coderes = new CodesResult();
 	if (c2a!=null) { 
     	if (!c2a.contains("tlf"))  { // Contains tlf as minimum (45 not enough on its own) 
     		coderes.calcDanishCode = 6;
@@ -800,7 +791,7 @@ public static String findTLD(String url) {
     return tld;
 }
 
-public   static Set<String> computeC8b(String text) {
+public static Set<String> computeC8b(String text) {
     return TextUtils.SearchPattern(text, 
             Words.foreninger_lowercased);
 }    
@@ -810,7 +801,7 @@ public   static Set<String> computeC8b(String text) {
             Words.frequentwordsWithDanishLettersCodedNew);
 } */   
 
-public  static boolean getBoleanSetting(String string) {
+public static boolean getBoleanSetting(String string) {
     String[] parts = string.split("=");
     if (parts[1].equalsIgnoreCase("true")) {
         return true;
@@ -818,13 +809,13 @@ public  static boolean getBoleanSetting(String string) {
     return false;
 }
 
-public  static String getStringSetting(String string) {
+public static String getStringSetting(String string) {
     String[] parts = string.split("=");
     if (parts.length>1) return parts[1];
     else return "";
 }
 
-public  static int unsetBit(int x, int calcDanishCode) {
+public static int unsetBit(int x, int calcDanishCode) {
     BigInteger v = new BigInteger( Integer.toString((int) (-1 * calcDanishCode)));
     v = v.clearBit(x-1);
     return (-1*v.intValue());
@@ -1090,7 +1081,7 @@ public static String getCalcDkCodeText(int code, Display codesOut, Level level, 
     		String txt = "";
         	String seperator = "++";
         	for (int b=1; b<=maxbit; b++) {
-        		txt = (MysqlX.getBit((short)b, code)==1 ? getBitCalcDkCodeText((short)b, codesOut, viaFields) : "");
+        		txt = (getBit((short)b, code)==1 ? getBitCalcDkCodeText((short)b, codesOut, viaFields) : "");
         		s = s + (s.isEmpty() || txt.isEmpty() ? txt : seperator  + txt);
         	}
     		s = "Not decided - but has: " + s;
@@ -1107,6 +1098,10 @@ public static String getCalcDkCodeText(int code, Display codesOut, Level level, 
     
     return s;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// All code beneath this line is probably to be ignored
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum Level {
 	intervals, //=0; //make lagkage where e.g. 20-27 is in 20 etc.
@@ -1158,26 +1153,6 @@ public static class Statistics{
     Map <Integer,Long> countMap = new HashMap<Integer,Long>(); 
 }
 
-public static boolean isPartfile(String fn) {
-	//names on form part_m_00132
-	//              012345678901
-	return fn.startsWith(partfile_prefix);
-}
-
-public static int getPartno(String fn) {
-	//names on form part_m_00132
-	//              012345678901
-	if(fn.startsWith(partfile_prefix)) {
-		String s = fn.substring(partfile_prefix.length());
-		if(fn.endsWith(".gz")) {
-			s = s.substring(0, s.length()-3);
-		}
-		return Integer.parseInt(s);
-	} else {
-		return 0;
-	}
-}
-
 public static File checkDir(String dirname) {
     File statDir = new File(dirname);
     if (!statDir.isDirectory()) {
@@ -1185,16 +1160,6 @@ public static File checkDir(String dirname) {
         System.exit(1);
     }
     return statDir;
-}
-
-public static String NAS_infix = "NAS_";
-public static String IA_infix = "IA_";
-
-public static String getStatFileSuffix(HadoopResItem item, String seqno) {
-	String s = "M" + item.dbmachine 
-			+ "_V" + seqno 
-			+ "_T" + item.getname("_");
-    return s;
 }
 
 public static boolean isNumeric(String s) {
@@ -1279,55 +1244,7 @@ public static CodesSizeIntervals getSetItemCodesSizeIntervals(Set<CodesSizeInter
     }
     return res;
 }
-	
-public enum DataSource{
-	source_IA,
-	source_NAS,
-	source_none
-}
 
-public enum Source{
-	IA,
-	NAS
-}
-
-public static int getSourceIndex(Source src) {
-	int i = -1;
-	switch (src) {
-		case IA: i=0; break;
-		case NAS: i=1; break;
-	}
-	return i;
-}
-
-
-public static String getSourceInfix(DataSource src) {
-	String s = "";
-	switch (src) {
-		case source_IA: s=IA_infix; break;
-		case source_NAS: s=NAS_infix; break;
-		case source_none: s=""; break;
-	}
-	return s;
-}
-
-public static String getSourceInfix(Source src) {
-	String s = "";
-	switch (src) {
-		case IA: s=IA_infix; break;
-		case NAS: s=NAS_infix; break;
-	}
-	return s;
-}
-
-public static DataSource convertSource(Source src) {
-	DataSource s = DataSource.source_none;
-	switch (src) {
-		case IA: s = DataSource.source_IA; break;
-		case NAS: s = DataSource.source_NAS; break;
-	}
-	return s;
-}
 
 public static class Interval{
 	public int start = 0;
