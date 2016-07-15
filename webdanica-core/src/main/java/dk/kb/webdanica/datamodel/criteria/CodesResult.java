@@ -1,28 +1,24 @@
 package dk.kb.webdanica.datamodel.criteria;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import dk.kb.webdanica.criteria.Words;
-import dk.kb.webdanica.utils.TextUtils;
+import static dk.kb.webdanica.datamodel.criteria.BitUtils.setBit;
 
 public class CodesResult {
-        public float intDanish;
-        public int calcDanishCode;
+	public float intDanish;
+	public int calcDanishCode;
 
-        public CodesResult() {
-        	intDanish = 0F;
-        	calcDanishCode = 0;
-        }
+	public CodesResult() {
+		intDanish = 0F;
+		calcDanishCode = 0;
+	}
 
+	// Static classes producing 
+	
+        
 	/*public static boolean containsDkAndNotNw(String C5a, String C5b) {
 	boolean found = false;
 	if ((C5a!=null) && (!C5a.isEmpty()) && (!C5a.startsWith("0"))) {
@@ -386,12 +382,23 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
     return ok;
 }
 
+
+
+
+
+
 enum NotDkExceptions{
 	noException,
 	unions,
 	companies,
 }
 
+/**
+ * 
+ * @param res
+ * @param e
+ * @return a CodesResult
+ */
 public static CodesResult setcodes_notDkLanguageVeryLikelyNewFields(SingleCriteriaResult res, NotDkExceptions e)  {
 	CodesResult cr = new CodesResult(); 
 	
@@ -604,64 +611,6 @@ public static CodesResult setcodes_WRONGphone(String c2a)  {
 	return coderes;
 }*/
 
-public static String findC9eval(String c9b, String c9e)  {
-	String s = "";
-	if (c9b!=null && (!c9b.isEmpty() && !c9b.startsWith("0"))) {
-        String[] comps9b = c9b.substring(1).trim().split(",");
-        Set<String> compsLst9b = new HashSet<String>();
-        compsLst9b.addAll(java.util.Arrays.asList(comps9b));
-        List<String> words2 = Arrays.asList(Words.virksomheder_lowercased_2_words_Nov2);
-        compsLst9b.retainAll(words2);
-        Set<String>  compsLst9e = new HashSet<String>();
-    	if (c9e!=null && (!c9e.isEmpty() && !c9e.startsWith("0"))) {
-            String[] comps9e = c9e.substring(1).trim().split(",");
-            compsLst9e.addAll(java.util.Arrays.asList(comps9e));
-            List<String> words1 = Arrays.asList(Words.virksomheder_lowercased_1_word_Nov3);
-            compsLst9e.retainAll(words1);
-    	}
-    	compsLst9e.addAll(compsLst9b);
-    	s = compsLst9e.size() + " " + TextUtils.conjoin("#", compsLst9e);
-	}
-	if (s.isEmpty() && !c9e.isEmpty()) s=c9e;
-	return s;
-}
-
-public static String findC8cval(String c8a, String c8c)  {
-	String s = "";
-	if (c8a!=null && (!c8a.isEmpty() && !c8a.startsWith("0"))) {
-        String[] comps8a = c8a.substring(1).trim().split(",");
-        Set<String> compsLst8a = new HashSet<String>();
-        compsLst8a.addAll(java.util.Arrays.asList(comps8a));
-        List<String> words2 = Arrays.asList(Words.foreninger_lowercased_2_words_Nov2);
-        compsLst8a.retainAll(words2);
-        Set<String>  compsLst8c = new HashSet<String>();
-    	if (c8c!=null && (!c8c.isEmpty() && !c8c.startsWith("0"))) {
-            String[] comps8c = c8c.substring(1).trim().split(",");
-            compsLst8c.addAll(java.util.Arrays.asList(comps8c));
-            List<String> words1 = Arrays.asList(Words.foreninger_lowercased_1_word_Nov2);
-            compsLst8c.retainAll(words1);
-    	}
-    	compsLst8c.addAll(compsLst8a);
-    	s = compsLst8c.size() + " " + TextUtils.conjoin("#", compsLst8c);
-	}
-	if (s.isEmpty() && !c8c.isEmpty()) s=c8c;
-	return s;
-}
-
-public static String findC10cval(String c10c)  {
-	String s = "";
-	if (c10c!=null && (!c10c.isEmpty())) {
-		if (!c10c.startsWith("0")) {
-            Set<String> tokens = TextUtils.tokenizeText(c10c.substring(1).trim());
-            List<String> words = Arrays.asList(Words.DanishNamesNov3);
-            tokens.retainAll(words);
-            s = tokens.size() + " " + TextUtils.conjoin("#", tokens);
-		} else {
-			s=c10c;
-		}
-    }
-	return s;
-}
 
 /*public static MysqlRes.CodesResult setcodes_languageDk(String c4a, String c5a, String c5b)  {
 	//res.calcDanishCode = 76-79  likely dk language (not norwegain)
@@ -707,131 +656,6 @@ public static CodesResult setcodes_smallSize(String c4a, String c3a, String c3b,
 	return coderes;
 }
 
-public static String find8bVal(String url) {
-    Set<String> foundMatches = computeC8b(url);
-    String val = (foundMatches.size() > 0 
-		    		? (foundMatches.size() + " " + TextUtils.conjoin("#", foundMatches))
-		    		: "0");
-    return val;
-}
-
-/*public static String findNew3Val(String previous) {
-	String val = "";
-	if (previous.startsWith("0")) {
-		val = "0";
-	} else {
-        Set<String> foundMatches = computeNewC3x(previous);
-        val = (foundMatches.size() > 0 
-   		    		? (foundMatches.size() + " " + TextUtils.conjoin("#", foundMatches))
-   		    		: "0");
-	}
-    return val;
-}*/
-
-public static String findNew3ValToken(String previous) {
-	String val = "";
-	if (previous.startsWith("0")) {
-		val = "0";
-	} else {
-        Set<String> tokens = TextUtils.tokenizeText(previous);
-        Set<String> foundMatches = new HashSet<String>();
-        for (String word: tokens) {
-        	if(TextUtils.findMatches(word, Words.frequentwordsWithDanishLettersCodedNew).size()>0) {
-                foundMatches.add(word);
-            }
-        }
-    	val = (foundMatches.size() > 0 
-		    		? (foundMatches.size() + " " + TextUtils.conjoin("#", foundMatches))
-		    		: "0");
-	}
-    return val;
-}
-
-public static String findTLD(String url) {
-    String[] parts0 = url.split(":");
-    // Check http://www.medicasur.com.mx:8090/ - becomes .mx
-    
-    if (parts0.length <2) {
-        //System.out.println("Error --- no ':' in url " + url); 
-        return "";
-    }
-    
-    String[] parts1 = parts0[1].split("/");
-    String[] parts2 = parts0[1].split( "\\\\");
-    String[] parts = (parts1.length > parts2.length ? parts1 : parts2);
-    
-    if (parts.length == 0) {
-        //System.out.println("Error --- no parts in url " + url); 
-        return "";
-    }
-    
-    int i = -1;
-    boolean found = false;
-    boolean stop = false;
-    while (!stop && !found) {
-    	i++;
-    	found = !parts[i].isEmpty();
-    	stop = (i==parts.length-1);	
-    }
-    
-    if (stop && !found) {
-    	//System.out.println("stopped --- : " + url); 
-        return "";
-    }
-    
-    String s = parts[i];
-    
-    int tldbegin = s.lastIndexOf('.');
-    if (tldbegin == -1) {
-        //System.out.println("No TLD found: " + url );
-        return "";
-    }
-    String tld = s.substring(tldbegin+1, s.length());
-    
-    return tld;
-}
-
-public static Set<String> computeC8b(String text) {
-    return TextUtils.SearchPattern(text, 
-            Words.foreninger_lowercased);
-}    
-
-/*public   static Set<String> computeNewC3x(String text) {
-    return TextUtils.SearchPattern(text, 
-            Words.frequentwordsWithDanishLettersCodedNew);
-} */   
-
-public static boolean getBoleanSetting(String string) {
-    String[] parts = string.split("=");
-    if (parts[1].equalsIgnoreCase("true")) {
-        return true;
-    }
-    return false;
-}
-
-public static String getStringSetting(String string) {
-    String[] parts = string.split("=");
-    if (parts.length>1) return parts[1];
-    else return "";
-}
-
-public static int unsetBit(int x, int calcDanishCode) {
-    BigInteger v = new BigInteger( Integer.toString((int) (-1 * calcDanishCode)));
-    v = v.clearBit(x-1);
-    return (-1*v.intValue());
-} 
-
-public static int getBit(short x, int calcDanishCode) {
-    BigInteger v = new BigInteger( Integer.toString((int) (-1 * calcDanishCode)));
-    return (v.testBit(x-1)?1:0);
-}
-
-public static int setBit(int x, int calcDanishCode) {
-    int v = -1* (int)calcDanishCode;
-    v |= (1 << (x-1) );
-    return (-1*v);
-}
-
 public static int randomFromInterval(int startInterval, int endInterval) {
     Random rn = new Random();
     int range = endInterval - startInterval + 1;
@@ -843,261 +667,7 @@ public static String row_delim = "#";
 public static String tablename_delim = ", ";
 public static String statustext_delim = ",";
 
-public static String getStringSequence(Collection<String> strSet, String delim) {
-	String s = "";
-    for (String str: strSet) {
-    	s = (s.isEmpty() ? str : s + delim + str);
-    }
-	return s;
-}
 
-public static String getIntegerSequence(Collection<Integer> intSet, String delim) {
-	String s = "";
-    for (int i: intSet) {
-    	s = (s.isEmpty() ? ""+i : s + delim + i);
-    }
-	return s;
-}
-
-public static String getBooleanSequence(Collection<Boolean> boolSet, String delim) {
-	String s = "";
-    for (Boolean b: boolSet) {
-    	s = (s.isEmpty() ? "" : s + delim) + (b?"true":"false");
-    }
-	return s;
-}
-
-public static String getBitCalcDkCodeText(short bit, Display codesOut, boolean viaFields) {
-    //text for codes
-	String s = "";
-
-	if (codesOut!=Display.onlyCodes) { 
-		if (bit==1) s = (viaFields? "C1a[1]<>0 or C2a[1]<>0" : "ph or mail");
-        else if (bit==2) s = (viaFields? "C3a[1]<>0 or C3c[1]<>0" : "incl æ ø å");
-        else if (bit==3) s = (viaFields? "C4a = 'da' 'no' or 'sv'" : "language like danish");
-        else if (bit==4) s = (viaFields? "C6b[1]<>0 or C6c[1]<>0" : "freq. used selected words");
-        else if (bit==5) s = (viaFields? "C7a[1]<>0 or C7b[1]<>0 or C7e[1]<>0 or C7f[1]<>0" : "largest dk towns");
-        else if (bit==6) s = (viaFields? "C9a[1]<>0 or C9d[1]<>0" : "A/S… or CVR");
-        else if (bit==7) s = (viaFields? "C15a='y'" : "neighboring tld");
-        else if (bit==8) s = (viaFields? "C16a>0 or C17a>0" : "links");
-        else if (bit==9) s = (viaFields? "C3b[1]<>0 or C3d[1]<>0"  : "incl ae, oe, aa");
-        else if (bit==10) s = (viaFields? "new C6d[1]<>0 (as 6a)" : "new limmited freq. used dk word"); //(viaFields? "C6a[1]<>0" : "freq. used dk word");
-        else if (bit==11) s = (viaFields? "C7c[1]<>0 or C7d[1]<>0" : "suffixes in town");
-        else if (bit==12) s = (viaFields? "C8a[1]<>0 or C8b[1]<>0" : "union and asscociation");
-        else if (bit==13) s = (viaFields? "C9b[1]<>0 or C9c[1]<>0" : "company names");
-        else if (bit==14) s = (viaFields? "new C10c[1]<>0 (as 10b)" : "new limmited danish names"); //(viaFields? "C10a[1]<>0 or C10b[1]<>0" : "danish surnames & endings");
-        else if (bit==15) s = (viaFields? "Cext1>250" : "size>250");
-        else if (bit==16) s = (viaFields? "C10a[1]<>0" : "danish names (no endings)");
-        else if (bit==17) s = (viaFields? "new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limmited union or companies"); //Reset
-        else if (bit==18) s = (viaFields? "new C7g[1]<>0 | C7h[1]<>0 (as 7e,7a)" : "new limmited largest dk towns (incl. translations)"); //Reset 
-        else if (bit==19) s = (viaFields? "Cext2>=120 (<200)" : "maybe chinese (Charsize>150)");
-        else if (bit==20) s = (viaFields? "C3e[1]<>0 (from 3b) and C3f[1]<>0  (from 3d)" : "limmited wordlist o,oe,ae,aa");
-        else if (bit==21) s = (viaFields? "new C3g[1]<>0 (as 3b)" : "new limmited wordlist o,oe,ae,aa");
-        else if (bit==22) s = (viaFields? "new C2b[1]='y' | C9f[1]='y'" : "ph. or cvr from reg. exp");
-        else s="UNKNOWN BIT" + bit;
-    }
-    if (codesOut==Display.onlyCodes) s = String.valueOf(bit) ; //text before count
-    else if (codesOut==Display.inText) s = s +  "(" + bit + ")"; //text before count
-    else if (codesOut==Display.separateText) s = bit +  row_delim  + s; //(number , text) before count
-    else if (codesOut==Display.allDisplays) s = bit +  row_delim  + s +  "(" + bit + ")" + row_delim  + s; //(number , text(number), text) before count
-    //else if (codesOut==Display.noCodes) s = s;
-    
-    return s;
-}    
-
-public static String getCalcDkCodeText(int code, Display codesOut, Level level, boolean viaFields) {
-    //text for codes
-	String s = "";
-	
-    if (codesOut!=Display.onlyCodes) { 
-        if (code==0) s = (viaFields ? "No bits and no criteria fulfilled" : "Not set yet");
-        else if (code==1) s = (viaFields ? "Cext1=0" : "size of html=0");
-        else if (code==2) s = (viaFields ? "Cext2>= 200" : "bytes per char > 2");
-        else if (code==3) s = (viaFields ? "C15b='dk'" : "tld=dk");
-        else if (code==5) s = "UDGÅET"; //(viaFields ? "C1a>0" : "dk mail address");
-        else if (code==6) s = "UDGÅET - WRONG ph.";
-        else if (code==7) s = "UDGÅET"; // (viaFields ? "C2a incl. +45 & tlf. + C5a>0 C5b=0" : "ph. and dk + NOT no. words");
-        else if (code==8) s = "UDGÅET"; // (viaFields ? "C2a incl. +45 & tlf. + C5a>0 C5b>0" : "ph. and dk + no.swords");
-        else if (code>=10 && code<=12) { //asian/arabic languages
-        	if (level==Level.intervals) s = (viaFields ? "C4a is arabic/asian language code" : "chinese/arabic");
-        	else if (code==10) s = (viaFields ? "C4a='zh'/'ja'/'ko'" : "chinese like languages");
-            else if (code==11) s = (viaFields ? "C4a = 'bo'/'hi'/'mn'/'my'/'ne'/'ta'/'th'/'vi'" : "asian languages");
-            else if (code==12) s = (viaFields ? "C4a='he'/'fa'/'ur'/'yi'/'ar'" : "arabic languages");
-        } else  if ((code>=20 && code<=27) || (code>=40 && code<=47)) { //many dk indications 
-    	    int interval = ((code >=20 && code <=27) ? 20 : 40 ); 
-            s = "likely dk";
-            s = s + (interval == 20 ? " (size>250)" : " (200<=size<250)" );
-        	if (level!=Level.intervals) {
-	    		int bit1 = (code-interval) / 4;
-	    		int bit2 = (code-interval-(4*bit1)) / 2;
-	    		int bit3 = (code-interval-(4*bit1)-(2*bit2)) ;
-	        	boolean inclTld = (bit1==1);     // The URL belongs to a TLD often used by Danes
-	        	boolean inclToLinks = (bit2==1); // There are .dk sites that points to the webpage
-	        	boolean inclFromLinks = (bit3==1);	 // <The webpage points to other .dk sites>
-	            s = s + " - " +(inclTld ? (viaFields?"C15a='y'":"dk used tld") : (viaFields?"C15a='n'":"NOT dk used tld") );
-	            s = s + " - " + (inclToLinks ? (viaFields?"C16a>0":"has to links") : (viaFields?"C16a=0":"has NO to links") );
-	            s = s + " - " + (inclFromLinks ? (viaFields?"C17a>0":"has from links") : (viaFields?"C17a=0":"has NO from links") );
-        	}
-        } else if ((code>=30 && code<=35) || code==38 || code==58 || (code>=50 && code<=55)) { //  no dk indications    
-    	    int interval = ((code >=30 && code <=35) ? 30 : 50 ); 
-            s = "NOT likely dk";
-            s = s + (interval == 30 ? "(size>250)" : "(200<=size<250)" );
-        	if (level!=Level.intervals) {
-        		if (code==38 || code==58) {
-		            s = s + " - on new fields";
-        		} else {
-		        	boolean inclTld = (code%2==1);     // The URL belongs to a TLD often used by Danes
-		            s = s + " - " + (inclTld ? (viaFields?"C15a='y'":"dk used tld") : (viaFields?"C15a='n'":"NOT dk used tld") );
-		        	boolean incl6aOnly = (code%10==2 || code%10==3);
-		            s = s + (incl6aOnly ? (viaFields?" - 6a>0 only":" - freq dk words"): "" );
-		        	boolean incl6aOr7cdOnly = (code%10==4 || code%10==5);
-		            s = s + (incl6aOr7cdOnly ? (viaFields?" - 6a>0 | 7c>0 | 7d>0":" - freq dk words | dk town suffixes") : "" );
-        		}
-    		}
-	    } else if (code >= 301 && code <= 302) {
-            s = "NOT likely dk - but ";
-        	if (level!=Level.intervals) {
-        		if (code==301) { 
-        			s = s + (viaFields? " - C8c>0":" - has unions");
-        		} else if (code==302) { 
-        			s = s + (viaFields? " - C9e or f>0":" - has companies");
-    	        } 
-	        }
-        } else if (code >= 70 && code <= 79) {
-	        s = "UDGÅET (110's and 120's instead)";
-        } else if (code>=100 && code<=112) { //(code>=70 && code<=79) { //  danish language indications
-            s = "dk language æøå";  //replaces 71, 72 - only html not URL
-        	if (level!=Level.intervals) {
-        		if (code==110) {
-        			s = s + (viaFields?"C3a>0 & C5a>0 & C5b=0":" - dk words & NOT 'no' words");
-        		} else if (code==111) {
-        			s = s + (viaFields?"C3a>0 & C5a>0 & C5b>0 & C15b<>no/sv":" - dk words  & 'no' words & ‘no’ or ‘sv’ tld");
-        		} else if (code==112) {
-        			s = s + (viaFields?"C3b>0 & C5a=0 & C5b>0 & C15b<>no/sv":" - NO dk & 'no' words & ‘no’ or ‘sv’ tld");
-	        	}
-        	}
-        } else if (code>=120 && code<=128) { //(code>=70 && code<=79) { //  danish language indications
-            s = "dk language tikka";  //replaces 71, 72 - only html not URL
-        	if (level!=Level.intervals) {
-        		int dif = 0;
-        		if (code>=120 && code<=122) {
-        			s = s + (viaFields? " - C4a=da" :" - 'dk'");
-        			dif = code - 120;
-        		} else if (code>=123 && code<=125) {
-	        		s = s + (viaFields? " - C4a=no" : " - 'no'");
-        			dif = code - 123;
-        		} else if (code>=126 && code<=128) {
-	        		s = s + (viaFields? " - C4a=sv" : " - 'sv'");
-        			dif = code - 126;
-	        	}
-        		if (dif==0) {
-        			s = s + (viaFields?" & C5a>0 & C5b=0":" - dk words & NOT 'no' words");
-        		} else if (dif==1) {
-        			s = s + (viaFields?" & C5a>0 & C5b>0 & C15b<>no/sv":" - dk words  & 'no' words & ‘no’ or ‘sv’ tld");
-        		} else if (dif==2) {
-        			s = s + (viaFields?" & C5a=0 & C5b>0 & C15b<>no/sv":" - NO dk & 'no' words & ‘no’ or ‘sv’ tld");
-	        	}
-        	}
-        } else if (code>=100 && code<=107) { 
-            s = "size<=200";
-        	if (level!=Level.intervals) {
-	    		int bit1 = (code-100) / 4;
-	    		int bit2 = (code-100-(4*bit1)) / 2;
-	    		int bit3 = (code-100-(4*bit1)-(2*bit2)) ;
-	        	boolean inclc4a = (bit1==1);     // The URL belongs to a TLD often used by Danes
-	        	boolean inclc3abcd = (bit2==1); // There are .dk sites that points to the webpage
-	        	boolean inclc6abc = (bit3==1);	 // <The webpage points to other .dk sites>
-	            s = s + " - " + (inclc4a ? (viaFields?"C4a='da'/'no'/'sv'":"scandi language") : (viaFields?"NOT C4a='da'/'no'/'sv'":"NOT scandi language" ));
-	            s = s + " - " + (inclc3abcd ? (viaFields?"incl min. 1 C3abcd>0":"incl min. 1 æøå (C3*)") : (viaFields?"NO C3abcd>0)":"has NO æøå (C3*)" ));
-	            s = s + " - " + (inclc6abc ? (viaFields?"incl min. 1 C6abc>0":"incl min. 1 dk words (C6*)") : (viaFields?"NO C6abc>0)":"has NO dk words (C6*)" ));
-        	}
-        } else if (code>=200 && code<=203) { 
-        	s = "UDGÅET";
-            /*s = "NOT likely dk CHECK union/comp";
-        	if (!intervals) {
-	        	boolean inclTld = (code%2==1);     // The URL belongs to a TLD often used by Danes
-	            s = s + (inclTld ? (viaFields?"C15a='y'":"dk used tld") : (viaFields?"C15a='n'":"NOT dk used tld") );
-	        	boolean inclUnion = (code%200<2);
-	            s = s + " - " + (inclUnion  ? (viaFields?"8ab>0":"unions") : (viaFields?"9ab>0":"companies") );
-        	} */
-        } else if (code>=206 && code<=207) { 
-        	s = "UDGÅET (mails)";
-        } else if (code>=208 && code<=209) { 
-        	s = "UDGÅET (phone)";
-        } else if (code==220) {
-        	s = (viaFields ? "Cext2>= 130 (<200)" : "bytes per char > 1,3 (<2)");
-        } else if (code==230) {
-        	s = (viaFields ? "C7g>0" : "dk towns (new)" );
-        } else if ((code>=310 && code<=313) || (code>=315 && code<=318) ) {
-        	int dif = 0;
-        	if (code>=310 && code<=313) {
-        		s = (viaFields ? "C2b>0" : "tlf (new)" );
-        		dif = code - 310;
-	        } else if (code>=315 && code<=318) {
-	        	s = (viaFields ? "C2a>0" : "tlf (old)" );
-        		dif = code - 315;
-	        }
-    		if (dif==0) {
-    			s = s + (viaFields?" & C5a>0 & C5b=0":" - dk words & NOT 'no' words");
-    		} else if (dif==1) {
-    			s = s + (viaFields?" & C5a>0 & C5b>0 & C15b<>no/sv":" - dk words  & 'no' words & ‘no’ or ‘sv’ tld");
-    		} else if (dif==2) {
-    			s = s + (viaFields?" & C5a=0 & C5b>0 & C15b<>no/sv":" - NO dk & 'no' words & ‘no’ or ‘sv’ tld");
-        	} else { 
-    			s = s + " - rest";
-        	}
-        } else if ((code>=320 && code<=327)) {
-        	s = (viaFields ? "C1a>0" : "mail" );
-        	if (code==320) {
-    			s = s + (viaFields?" & C5a>0 & C5b=0":" - dk words & NOT 'no' words");
-        	} else if (code==326) {
-    			s = s + (viaFields?" - C7g>0 -  C5a=0 & C5b>0 & C15b<>no/sv":" - bynavn - NO dk & 'no' words & ‘no’ or ‘sv’ tld") ;
-        	} else if ( code==327) {
-    			s = s + (viaFields?" - C7g=0 -  C5a=0 & C5b>0 & C15b<>no/sv":" - NO dk & 'no' words & ‘no’ or ‘sv’ tld") ;
-        	} else if ( code==321) {
-    			s = s + (viaFields?" - C7g>0 - C5a>0 & C5b>0 & C15b<>no/sv":" - bynavn - dk words  & 'no' words & ‘no’ or ‘sv’ tld");
-        	} else if ( code==322) {
-    			s = s + (viaFields?" - C7g=0 - C5a>0 & C5b>0 & C15b<>no/sv":" - dk words  & 'no' words & ‘no’ or ‘sv’ tld");
-    			
-        	} else if ( code==323) {
-    			s = s + (viaFields?" - C7g>0 - resten":" - bynavn - resten");
-        	} else if ( code==324) {
-    			s = s + (viaFields?" - C7g=0 - resten":" - resten");
-        	} 
-        } else if (code==Codes.cat_ERROR_dk) {
-        	s = "error";
-        } else if (code==Codes.cat_ignored_dk) {
-        	s = "ignored";
-        } else if (code==Codes.cat_likely_dk) {
-        	s = "likely danish";
-        } else if (code==Codes.cat_maybes_dk) {
-        	s = "maybes";
-        } else if (code==Codes.cat_not_likely_dk) {
-        	s = "NOT likely danish";
-        } else if (code==Codes.cat_unknown_dk) {
-        	s = "undecided";
-    	} else if (code<0)  { //  codes for which fields are set (in xls doc)	=> calcDanishCode <0
-    		s = "";
-    		String txt = "";
-        	String seperator = "++";
-        	for (int b=1; b<=maxbit; b++) {
-        		txt = (getBit((short)b, code)==1 ? getBitCalcDkCodeText((short)b, codesOut, viaFields) : "");
-        		s = s + (s.isEmpty() || txt.isEmpty() ? txt : seperator  + txt);
-        	}
-    		s = "Not decided - but has: " + s;
-    	} else {
-        	s="UNKNOWN CODE " + code;
-        }
-    }
-    
-    if (codesOut==Display.onlyCodes) s = String.valueOf(code) ; //text before count
-    else if (codesOut==Display.inText) s = s +  "(" + code + ")"; //text before count
-    else if (codesOut==Display.separateText) s = code +  row_delim  + s; //(number , text) before count
-    else if (codesOut==Display.allDisplays) s = code +  row_delim  + s +  "(" + code + ")" + row_delim  + s; //(number , text(number), text) before count
-    //else if (codesOut==Display.noCodes) s = s;
-    
-    return s;
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // All code beneath this line is probably to be ignored
@@ -1153,18 +723,6 @@ public static class Statistics{
     Map <Integer,Long> countMap = new HashMap<Integer,Long>(); 
 }
 
-public static File checkDir(String dirname) {
-    File statDir = new File(dirname);
-    if (!statDir.isDirectory()) {
-        System.err.println("ERROR: Cannot find dir'" + statDir.getAbsolutePath() + "' as a proper directory");
-        System.exit(1);
-    }
-    return statDir;
-}
-
-public static boolean isNumeric(String s) {
- 	return s.matches("((-|\\+)?[0-9]+(\\.[0-9]+)?)+");
-}
  	
 public static class CheckResult { 
     long resfileLineCount=0L;

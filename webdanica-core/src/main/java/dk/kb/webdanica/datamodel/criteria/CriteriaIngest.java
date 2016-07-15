@@ -13,9 +13,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import dk.kb.webdanica.oldtools.MysqlRes;
 import dk.kb.webdanica.oldtools.MysqlWorkFlow;
-import dk.kb.webdanica.oldtools.MysqlX;
 import dk.kb.webdanica.oldtools.MysqlWorkFlow.HadoopResItem;
 
 
@@ -149,7 +147,7 @@ public static boolean ingest(Connection conn, File ingestFile, HadoopResItem ite
     }
 }
 
-private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata	) throws SQLException {
+private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata) throws SQLException {
 	/*** set IA source ***/
     res.IsIASource = isIAdata;
 
@@ -166,7 +164,7 @@ private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata	) 
 	
     /*** calculate C15b ***/
     if (res.calcDanishCode==0) { //calcDanishCode!=0 means the rest of the fields are empty
-    	String tld = MysqlX.findTLD(res.url);
+    	String tld = CriteriaUtils.findTLD(res.url);
 		if (!tld.isEmpty() && tld.length() < 6) {
 			res.C15b = tld;
 		} else {
@@ -177,7 +175,7 @@ private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata	) 
     /*** calculate C8b if equal to 8a ***/
     if (res.calcDanishCode==0 && !(res.C8a == null)) { //calcDanishCode!=0 means the rest of the fields are empty
     	if (res.C8b.equals(res.C8a)) {
-	        res.C8b = MysqlX.find8bVal(res.url); 
+	        res.C8b = CriteriaUtils.find8bVal(res.url); 
     	} 
     }
     
@@ -190,12 +188,12 @@ private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata	) 
 
     /*** calculate C3e restricted o/oe,ae, aa in html ***/
     if (res.calcDanishCode==0 && !(res.C3b == null)) { //added 9/9
-	    res.C3e = MysqlX.findNew3ValToken(res.C3b); 
+	    res.C3e = CriteriaUtils.findNew3ValToken(res.C3b); 
     }
 
     /*** calculate C3f restricted o/oe,ae, aa in url ***/
     if (res.calcDanishCode==0 && !(res.C3d == null)) { //added 9/9
-	    res.C3f = MysqlX.findNew3ValToken(res.C3d); 
+	    res.C3f = CriteriaUtils.findNew3ValToken(res.C3d); 
     }
 
     /*** END: Update missing fields     ***/
@@ -233,8 +231,8 @@ private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata	) 
 	
 	//res.calcDanishCode = 76-77  likely dk language (not norwegain)
     if (res.calcDanishCode==0 && res.C4a!=null && res.C5a!=null) {  
-    	MysqlRes.CodesResult coderes = new MysqlRes.CodesResult(); 
-    	coderes = MysqlX.setcodes_languageDkNew(res.C4a, res.C5a, res.C5b, res.C15b);
+    	CodesResult coderes = new CodesResult(); 
+    	coderes = CodesResult.setcodes_languageDkNew(res.C4a, res.C5a, res.C5b, res.C15b);
     	if (coderes.calcDanishCode>0) {
 	    	res.calcDanishCode = coderes.calcDanishCode;
 	        res.intDanish = coderes.intDanish;
