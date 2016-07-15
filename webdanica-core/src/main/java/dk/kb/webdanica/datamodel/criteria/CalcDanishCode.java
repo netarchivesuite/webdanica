@@ -13,6 +13,42 @@ import dk.kb.webdanica.datamodel.criteria.CodesResult.Level;
 
 public class CalcDanishCode {
 
+	public static void main(String[] args) {
+		Set<Integer> set1 = Codes.getCodesForDanishResults();
+		Set<Integer> set2 = Codes.getCodesForFrasorterede();
+		Set<Integer> set3 = Codes.getCodesForMaybees();
+		Set<Integer> set4 = Codes.getCodesForUdgaaede();
+		Set<Integer> set5 = Codes.getCodesForNOTDanishResults();
+		Level level = Level.none;
+		Display codesOut = Display.inText;
+		boolean viaFields = false;
+		System.out.println("Describing codes for cat_likely_dk");
+		for (Integer code: set1){
+			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
+		}
+		System.out.println("-----------------------------------");
+		System.out.println("Describing codes for cat_ignored_dk:");
+		for (Integer code: set2){
+			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
+		}
+		System.out.println("-----------------------------------");
+		System.out.println("Describing codes for cat_maybes_dk:");
+		for (Integer code: set3){
+			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
+		}
+		System.out.println("-----------------------------------");
+		System.out.println("Describing codes for ERROR_dk:");
+		for (Integer code: set4){
+			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
+		}
+		System.out.println("-----------------------------------");
+		System.out.println("Describing codes for cat_not_likely_dk:");
+		for (Integer code: set5){
+			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
+		}
+		
+	}	
+	
 	public static int maxbit = 22;
 	public static String row_delim = "#";
 	
