@@ -16,7 +16,6 @@ public class UrlUtils {
 	 * @return a reason for rejection (URL_REJECT_REASON.NONE means seed is OK)
 	 */
 	public static URL_REJECT_REASON isRejectableURL(String seed) {
-
 		try {
 			URI url = new URI(seed);
 			String scheme = url.getScheme();
@@ -24,6 +23,9 @@ public class UrlUtils {
 				return URL_REJECT_REASON.BAD_SCHEME; // wrong scheme and scheme == null
 			}
 			String host = url.getHost();
+			if (host == null) { // TODO: Or a different reason: MISSING_HOST or just BAD_URL 
+				return URL_REJECT_REASON.MISSING_DOMAIN;
+			}
 			String domainName = DomainUtils.domainNameFromHostname(host);
 			if (domainName == null) {
 				return URL_REJECT_REASON.MISSING_DOMAIN; 
