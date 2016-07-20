@@ -21,6 +21,52 @@ import dk.kb.webdanica.utils.TextUtils;
  * links     = tuple[3]
  * hostname = tuple[4]
  * 
+ * String result produced by Combo.exec:
+ * 
+ * URL, Cext1: sizeOfInput, Cext3=timestamp  
+ * followed by comma-separated results for (if Cext1 > 0):
+ * Cext2 - Include Asian Symbols test
+ * if Cext2 < 200 (normal text):
+ * C4a
+ * C5a (provided C4a is "da" or "no")
+ * C5b (provided C4a is "da" or "no")
+ * C3a
+ * C6a
+ * C6b
+ * C3b
+ * C3c
+ * C3d
+ * C6c
+ * Uncommented conditions before the remainder of the tests:
+ * //                if (C4a.equalsIgnoreCase("da") && C5amatches.size() > 0 && C5bmatches.size() == 0 && C3amatches.size() > 0 
+ * //                    &&  C6amatches.size() > 0 && C6bmatches.size() > 0 && Cext1 > 200) {  
+ * //            if (Cext1 > 200) {
+ * 
+ * C1a
+ * C2a
+ * 
+ * C7a
+ * C7b
+ * C7c
+ * C7d
+ * C7e
+ * C7f
+ * 
+ * C8a
+ * C8b
+ * 
+ * C9a
+ * C9b
+ * C9c
+ * C9d
+ * 
+ * C10a
+ * C10b
+ * 
+ * C15a 'Url belongs to a tld often used by danes:  ".dk", ".no", ".se", ".de", ".eu", ".org", ".com", ".net", ".nu",".tv",
+        ".info"
+ * C16a 'looks for the url in a BerkeleyDB database with links 
+ * C17a 'Refers to .dk web pages
  */
 public class Combo extends EvalFunc<String> {
     @Override

@@ -1,7 +1,6 @@
 package dk.kb.webdanica.criteria;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +19,22 @@ import dk.kb.webdanica.utils.TextUtils;
  * links     = tuple[3]
  * hostname = tuple[4]
  * 
+ * String result produced by ComboNovV5.exec:
+ * 
+ * URL, Cext1: sizeOfInput, Cext3=timestamp  
+ * followed by comma-separated results for (if Cext1 > 0):
+ * Cext2 - Include Asian Symbols test
+ * if Cext2 < 200 (normal text):
+ * 
+ * C2b
+ * C3g
+ * C6d
+ * C7g
+ * C7h
+ * C8c
+ * C9e
+ * C9f
+ * C10c
  */
 public class ComboNovV5 extends EvalFunc<String> {
     @Override
