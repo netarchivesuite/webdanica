@@ -2,7 +2,9 @@ package dk.kb.webdanica.datamodel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,5 +50,99 @@ public class HBasePhoenixBlackListDAO {
 		}
 		return res;
 	}
+
+	private static final String GET_BLACKLIST_SQL;
+
+	static {
+		GET_BLACKLIST_SQL = "SELECT * FROM blacklists WHERE uid=? ";
+	}
+
+	public BlackList readBlackList(Connection conn, UUID uid) throws SQLException {
+		BlackList retrievedBlacklist = null;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		try {
+			stm = conn.prepareStatement(GET_BLACKLIST_SQL);
+			stm.clearParameters();
+			stm.setString(1, uid.toString());
+			rs = stm.executeQuery();
+			if (rs != null) {
+				if (rs.next()) {
+					retrievedBlacklist = new BlackList(
+							uid,
+							rs.getString("name"),
+							rs.getString("description"),
+							//JDBCUtils.sqlArrayRecordSetToList(rs.getArray("blacklist"), String.class),
+							JDBCUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
+							rs.getLong("last_update"),
+							rs.getBoolean("is_active")
+					);
+				}
+			}
+			stm.close();
+			conn.commit();
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return retrievedBlacklist;
+	}
+
+	private static final String GET_ACTIVE_SQL;
+
+	private static final String GET_ALL_SQL;
+
+	static {
+		GET_ACTIVE_SQL = "SELECT * "
+				+ "FROM blacklists "
+				+ "WHERE is_active=true ";
+
+		GET_ALL_SQL = "SELECT * "
+				+ "FROM blacklists ";
+	}
+
+	public List<BlackList> getLists(Connection conn, boolean activeOnly) throws SQLException {
+		List<BlackList> blacklistList = new ArrayList<BlackList>();
+		BlackList blacklist = null;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		try {
+			if (activeOnly) {
+				stm = conn.prepareStatement(GET_ACTIVE_SQL);
+			} else {
+				stm = conn.prepareStatement(GET_ALL_SQL);
+			}
+			stm.clearParameters();
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					blacklist = new BlackList(
+							UUID.fromString(rs.getString("uid")),
+							rs.getString("name"),
+							rs.getString("description"),
+							//JDBCUtils.sqlArrayRecordSetToList(rs.getArray("blacklist"), String.class),
+							JDBCUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
+							rs.getLong("last_update"),
+							rs.getBoolean("is_active")
+					);
+					blacklistList.add(blacklist);
+				}
+			}
+			stm.close();
+			conn.commit();
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return blacklistList; 
+	}	
 
 }

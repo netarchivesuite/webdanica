@@ -5,6 +5,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -42,6 +43,27 @@ public class TestHBasePhoenixSeedsDAO {
 
 			HBasePhoenixSeedsDAO dao = new HBasePhoenixSeedsDAO();
 			dao.insertSeed(conn, seed);
+
+			seed.setState(Status.NEW);
+			seed.setStatusReason("Just added.");
+			dao.updateState(conn, seed);
+
+			seed.setRedirectedUrl("http://www.karburator.dk/");
+			dao.updateRedirectedUrl(conn, seed);
+
+			long cnt = dao.getSeedsCount(conn, Status.NEW);
+			// debug
+			System.out.println(cnt);
+
+			cnt = dao.getSeedsCount(conn, Status.AWAITS_CURATOR_FINALAPPROVAL);
+			// debug
+			System.out.println(cnt);
+
+			List<Seed> seedList = dao.getSeeds(conn, Status.NEW);
+			for (int i=0; i<seedList.size(); ++i) {
+				seed = seedList.get(i);
+				System.out.println(seed.getUrl());
+			}
 
 			conn.close();
 		}

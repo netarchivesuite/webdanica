@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +50,20 @@ public class TestHBasePhoenixBlackListDAO {
 
 			HBasePhoenixBlackListDAO dao = new HBasePhoenixBlackListDAO();
 			dao.insertList(conn, aBlackList);
+
+			UUID uid = UUID.fromString("cbd23b95-6951-4136-ad26-e609928adc22");
+			aBlackList = dao.readBlackList(conn, uid);
+
+			aList = aBlackList.getList();
+			for (int i=0; i<aList.size(); ++i) {
+				System.out.println(aList.get(i));
+			}
+
+			List<BlackList> blacklistList = dao.getLists(conn, true);
+			System.out.println(blacklistList.size());
+
+			blacklistList = dao.getLists(conn, false);
+			System.out.println(blacklistList.size());
 
 			conn.close();
 		}

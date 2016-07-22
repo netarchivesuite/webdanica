@@ -50,6 +50,14 @@ public class TestHBasePhoenixIngestLogDAO {
 			HBasePhoenixIngestLogDAO dao = new HBasePhoenixIngestLogDAO();
 			dao.insertLog(conn, log);
 
+			List<Long>dates = dao.getIngestDates(conn);
+			for (int i=0; i<dates.size(); ++i) {
+				System.out.println(dates.get(i));
+			}
+
+			log = dao.readIngestLog(conn, dates.get(0));
+			System.out.println(log.getDate() + " - " + log.getFilename());
+
 			conn.close();
 		}
 		catch (SQLException e) {

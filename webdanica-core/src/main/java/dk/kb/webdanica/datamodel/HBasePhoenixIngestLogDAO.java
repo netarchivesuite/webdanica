@@ -2,7 +2,10 @@ package dk.kb.webdanica.datamodel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HBasePhoenixIngestLogDAO {
@@ -51,4 +54,82 @@ public class HBasePhoenixIngestLogDAO {
 		return res;
 	}
 
+	private static final String GET_INGEST_DATES_SQL;
+
+	static {
+		GET_INGEST_DATES_SQL = ""
+				+ "SELECT inserted_date "
+				+ "from ingestLog";
+	}
+
+	public List<Long> getIngestDates(Connection conn) throws SQLException { // as represented as millis from epoch
+		List<Long> ingestDates = new ArrayList<Long>();
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		try {
+			stm = conn.prepareStatement(GET_INGEST_DATES_SQL);
+			stm.clearParameters();
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					ingestDates.add(rs.getLong("inserted_date"));
+				}
+			}
+			stm.close();
+			conn.commit();
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return ingestDates;
+	}
+
+	private static final String GET_INGEST_BY_DATE_SQL;
+
+	static {
+		GET_INGEST_BY_DATE_SQL = ""
+				+ "SELECT * "
+				+ "FROM ingestLog "
+				+ "WHERE inserted_date=?";
+	}
+
+	public IngestLog readIngestLog(Connection conn, Long timestamp) throws SQLException {
+		IngestLog retrievedLog = null;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		try {
+			stm = conn.prepareStatement(GET_INGEST_BY_DATE_SQL);
+			stm.clearParameters();
+			stm.setLong(1, timestamp);
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					retrievedLog = new IngestLog(
+							JDBCUtils.sqlArrayToArrayList(rs.getArray("logLines")),
+							rs.getString("filename"),
+							new Date(rs.getLong("inserted_date")),
+							rs.getLong("linecount"),
+							rs.getLong("insertedcount"),
+							rs.getLong("rejectedcount"),
+							rs.getLong("duplicatecount")
+					);
+				}
+			}
+			stm.close();
+			conn.commit();
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return retrievedLog;
+	}
+	
 }
