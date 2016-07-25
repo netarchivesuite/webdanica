@@ -5,13 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
-import org.apache.tika.language.detect.LanguageDetector;
-import org.apache.tika.language.detect.LanguageResult;
-import org.apache.tika.langdetect.OptimaizeLangDetector;
 
 import dk.kb.webdanica.utils.Constants;
 import dk.kb.webdanica.utils.TextUtils;
@@ -118,35 +114,10 @@ public class CombinedCombo extends EvalFunc<String> {
 			if (Cext2 < 200) {
 				// Assume non-asian text if below 200 %
 
-				//String C4a = new LanguageIdentifier(text).getLanguage(); Use deprecated code
-				LanguageDetector ld = new OptimaizeLangDetector();
-				ld.setMixedLanguages(true);
-				ld.setShortText(true);
-				List<LanguageResult> results= ld.detectAll(text);
-				String C4a = "";
-				String C4b = ""; // contains all found languages with probability scores
-				if (results.size() == 0) {
-					C4a = "0"; // represents no language found
-					C4b = "0";
-				} else if (results.size() == 1) {
-					C4a = results.get(0).getLanguage();
-					C4b = results.get(0).toString();
-				} else {
-					// Set C4a to the language with the highest probability score
-					float highscore = 0.0f;
-					C4b = StringUtils.join(results, "#");
-					for (LanguageResult r: results) {
-						if (r.getRawScore() > highscore){
-							C4a = r.getLanguage();
-							highscore = r.getRawScore();
-						}
-					}
-				}
-				
-				for (LanguageResult r: results) {
-					C4a += r.getLanguage();
-				}
-				
+				//String C4a = new LanguageIdentifier(text).getLanguage(); Uses deprecated code
+				List<String> languageTestResults = C4.computeNewC4(text);
+				String C4a = languageTestResults.get(0);
+				String C4b = languageTestResults.get(1);
 				result += ", C4a: " + C4a;
 				result += ", C4b: " + C4b; // New result
 				Set<String> C5amatches = new HashSet<String>();

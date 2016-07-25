@@ -60,13 +60,12 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-app</artifactId>
-      <version>1.12</version>
-<!--      <version>${tika.version}</version> -->
+      <version>${tika.version}</version> <!-- previously hardwired to 1.12 -->
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-langdetect</artifactId>
-      <version>1.13</version>
+      <version>${tika.version}</version>
     </dependency>
     <dependency>
       <groupId>org.htmlparser</groupId>
