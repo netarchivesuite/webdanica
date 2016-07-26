@@ -41,8 +41,7 @@ public class MysqlUpdateNewHadoop {
      * @throws InstantiationException 
      * @throws SQLException 
      * @throws IOException 
-     */
-    
+     */    
     public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
     	/////////////////////////
     	// arguments

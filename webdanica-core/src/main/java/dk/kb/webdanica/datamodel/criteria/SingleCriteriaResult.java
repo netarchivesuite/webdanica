@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
+import java.util.Set;
 
 public class SingleCriteriaResult {
     public String url;
@@ -57,7 +57,7 @@ public class SingleCriteriaResult {
     public String C17a;
     public String C18a;
     public float intDanish;
-    public boolean IsIASource;
+    public DataSource source;
     public int calcDanishCode;
     public String tablename; //only for UrlExtract
     
@@ -145,7 +145,7 @@ public class SingleCriteriaResult {
         C17a="";
         C18a="";
         intDanish = 0F;
-        IsIASource = true;
+        source = DataSource.NETARKIVET;
         calcDanishCode = 0;
     }
 
@@ -490,7 +490,7 @@ public class SingleCriteriaResult {
 	    s.setFloat(index, res.intDanish); // Could be added to hadoop job later, so included here 
 	    
 	    index++;
-	    s.setBoolean(index, res.IsIASource); // = extWDate in table (truncated to int during processing)
+	    s.setInt(index, res.source.ordinal()); 
 
 	    index++;
 	    s.setInt(index, res.calcDanishCode); // = extWDate in table (truncated to int during processing)
@@ -578,7 +578,7 @@ public class SingleCriteriaResult {
         this.C17a = rs.getString("C17a");
         this.C18a = rs.getString("C18a");
         this.intDanish = rs.getFloat("intDanish");
-        this.IsIASource = rs.getBoolean("IsIASource");
+        this.source = DataSource.fromOrdinal(rs.getInt("source"));
         this.calcDanishCode = rs.getInt("calcDanishCode");
     }   
     
@@ -636,7 +636,7 @@ public class SingleCriteriaResult {
     	s = s + row_delim + "C17a" + keyval_delim + (this.C17a!=null?this.C17a.replace(row_delim, ","):""); //45
     	s = s + row_delim + "C18a" + keyval_delim + (this.C18a!=null?this.C18a.replace(row_delim, ","):""); //46
     	s = s + row_delim + "intDanish" + keyval_delim + this.intDanish; //47
-    	s = s + row_delim + "IsIASource" + keyval_delim + this.IsIASource; //48
+    	s = s + row_delim + "Source" + keyval_delim + this.source; //48
     	s = s + row_delim + "calcDanishCode" + keyval_delim + this.calcDanishCode; //49
     	return s;
     } 
@@ -696,7 +696,7 @@ public class SingleCriteriaResult {
     	sql = sql + "  C17a BIGINT, "; 
     	sql = sql + "  C18a varchar(1), "; 
     	sql = sql + "  intDanish FLOAT, "; 
-    	sql = sql + "  IsIASource TINYINT(1), "; // FIXME not relevant for webdanica projecy
+    	sql = sql + "  Source TINYINT(1), "; // FIXME not relevant for webdanica project
     	sql = sql + "  calcDanishCode MEDIUMINT(3) "; //updated from calcDanishCode SMALLINT(2) 9/9
     	sql = sql + "  )";
     	
@@ -705,4 +705,68 @@ public class SingleCriteriaResult {
 	    s.close();
 	    return ok;
     }
+    
+    public static boolean updateHadoopLineSingleTable(Connection conn, String tablename, SingleCriteriaResult res) throws SQLException {
+    	String sql = "UPDATE " + tablename + " " ;
+    	sql = sql  + "SET calcDanishCode = ?, ";
+        sql = sql  +  "   intDanish = ?, ";
+        sql = sql  +  "   C2b = ?, ";
+        sql = sql  +  "   C3g = ?, ";
+        sql = sql  +  "   C6d = ?, ";
+        sql = sql  +  "   C7g = ?, ";
+        sql = sql  +  "   C7h = ?, ";
+        sql = sql  +  "   C8c = ?, ";
+        sql = sql  +  "   C9e = ?, ";
+        sql = sql  +  "   C9f = ?, ";
+        sql = sql  +  "   C10c = ? ";
+    	sql = sql  + "WHERE Url = ? AND extWDate = ?"; 
+    	PreparedStatement s = conn.prepareStatement( sql ); 
+	    
+	    int index = 1;
+	    s.setInt(index, res.calcDanishCode);
+	    index++;
+	    s.setDouble(index, res.intDanish);
+	    index++;
+	    s.setString(index, res.C2b);
+	    index++;
+	    s.setString(index, res.C3g);
+	    index++;
+	    s.setString(index, res.C6d);
+	    index++;
+	    s.setString(index, res.C7g);
+	    index++;
+	    s.setString(index, res.C7h);
+	    index++;
+	    s.setString(index, res.C8c);
+	    index++;
+	    s.setString(index, res.C9e);
+	    index++;
+	    s.setString(index, res.C9f);
+	    index++;
+	    s.setString(index, res.C10c);
+	    index++;
+	    s.setString(index, res.url);
+	    index++;
+	    s.setTimestamp(index, res.Cext3);
+	    
+	    boolean ok = true;
+		try {
+			s.executeUpdate();                
+		} catch(SQLException ex) {
+			ok = false;
+		}
+	    s.close();
+	    return ok;
+    }
+    
+    public static boolean updateHadoopLines(Connection conn, Set<String> tablenameSet, SingleCriteriaResult res) throws SQLException {
+    	boolean found = false;
+    	for (String t: tablenameSet) {
+        	found = updateHadoopLineSingleTable(conn, t, res);
+        	if (found) break;
+        }
+	    return found;
+    }
+    
+    
 }

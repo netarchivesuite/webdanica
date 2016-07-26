@@ -16,18 +16,26 @@ import java.util.Set;
 import dk.kb.webdanica.oldtools.MysqlWorkFlow;
 import dk.kb.webdanica.oldtools.MysqlWorkFlow.HadoopResItem;
 
-
 public class CriteriaIngest {
+	
+	
+	public static void main(String[] args) {
+		
+	}
+	
+	
 	//////////////////////////
 	// Start processing
-	public static void processFile(File ingestFile) throws IOException {
+	public static ProcessResult processFile(File ingestFile) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		/*
 		String dbMachine = "test6"; // FIXME	
 		HadoopResItem hres =  MysqlWorkFlow.readItemFromIngestFile(ingestFile, dbMachine, "");
 		if (!hres.hadoop_version.isEmpty()) {
 			System.err.println("ERROR: this is NOT an ingest file, but a new hadoop update file " + hres.dataresfile.getAbsolutePath());
 			System.exit(1);
 		}
-
+	    */
+		
 		//String resultFilename = resultDir + "/" + hres.resfilename();
 		//File resultFile = new File(resultFilename);
 
@@ -41,16 +49,17 @@ public class CriteriaIngest {
 		} 
 	} */ 
 
-		hres.dataresfile.createNewFile();
-		FileWriter fw = new FileWriter(hres.dataresfile.getAbsoluteFile());
-		BufferedWriter resfile = new BufferedWriter(fw);  
-		resfile.write("Running WebdanicaJobs - MysqlIngester");
-		resfile.newLine();
-		resfile.close();
+		//hres.dataresfile.createNewFile();
+		//FileWriter fw = new FileWriter(hres.dataresfile.getAbsoluteFile());
+		//BufferedWriter resfile = new BufferedWriter(fw);  
+		//resfile.write("Running WebdanicaJobs - MysqlIngester");
+		//resfile.newLine();
+		//resfile.close();
+		boolean checkDoublets = true;
+		boolean listIgnored = true;
 
-
-		//ingest(conn, ingestFile, hres, tablename, isIADATA, checkDoublets, listIgnored);
-
+		return ingest(ingestFile, checkDoublets, listIgnored);
+		
 		//conn.close();
 	}
 
@@ -61,8 +70,7 @@ public class CriteriaIngest {
 		ftest.flush();
 	}
 
-	public static boolean ingest(Connection conn, File ingestFile, HadoopResItem item, String tablename, 
-			boolean isIADATA, boolean checkDoublets, boolean listIgnored) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+	public static ProcessResult ingest(File ingestFile, boolean checkDoublets, boolean listIgnored) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 		long linecount=0L;
 		long skippedCount=0L;
 		long ignoredCount=0L;
@@ -71,23 +79,12 @@ public class CriteriaIngest {
 		//Check files
 
 		if (!ingestFile.exists()) {
-			System.err.println("ERROR: Cound not find ingest file " + ingestFile.getAbsolutePath());
+			System.err.println("ERROR: ingest file '" + ingestFile.getAbsolutePath() + "' does not exist!");
 			System.exit(1);
 		}  
-		if (!item.dataresfile.exists()) {
-			System.err.println("ERROR: Cound not find result file " + item.dataresfile.getAbsolutePath());
-			System.exit(1);
-		}
-		FileOutputStream res_fo = new FileOutputStream(item.dataresfile, true);
-
-		//resultFile - item.dataresfile   
-		//FileWriter fw = new FileWriter(resultFile.getAbsoluteFile());
-		//BufferedWriter resfile = new BufferedWriter(fw);  
-		System.out.println("--- Processing file: " + ingestFile.getAbsolutePath());
-		writeline(res_fo, "--- Processing file: " + ingestFile.getAbsolutePath());
-
+		
 		BufferedReader fr = new BufferedReader(new FileReader(ingestFile));        
-		String line ="";
+		String line = "";
 
 		String trimmedLine = null;
 
@@ -100,7 +97,7 @@ public class CriteriaIngest {
 
 				SingleCriteriaResult res = new SingleCriteriaResult(trimmedLine, true);
 				if (res.url == null || res.Cext1 == null || res.Cext3Orig == null || res.Cext3Orig.length() != 14) {
-					writeline(res_fo, "Skipping line '" + trimmedLine 
+					log("Skipping line '" + trimmedLine 
 							+ "': Missing one or more of fields url, Cext1, Cext3Orig");
 					success = false;
 				}
@@ -112,7 +109,7 @@ public class CriteriaIngest {
 
 
 				if (success && doInsert) {
-					success = prepareLine( res, isIADATA );   
+					success = prepareLine( res, DataSource.NETARKIVET);   
 					// FIXME
 					//success = success && MysqlRes.insertLine(conn, res, tablename);
 				}
@@ -129,27 +126,35 @@ public class CriteriaIngest {
 		}
 		fr.close();
 
-		writeline(res_fo, "Processed " + linecount + " lines");
-		writeline(res_fo, "Skipped " + skippedCount + " lines");
-		writeline(res_fo, "Ignored " + ignoredCount + " lines");
-		for (String ignored: ignoredSet) {
-			writeline(res_fo, " - " + ignored);
+		log("Processed " + linecount + " lines");
+		log("Skipped " + skippedCount + " lines");
+		log("Ignored " + ignoredCount + " lines");
+		for(String ignored: ignoredSet) {
+			log(" - " + ignored);
 		}
+		
+		return null; // replace with proper ProcessResult construction
+		/*
 		if (linecount==0) {
 			System.out.println("WARNING: ingest file had no lines ingested: " + ingestFile.getAbsolutePath());
 		}
-
-		res_fo.close();
+		
 		if (skippedCount==0) {
 			return true;
 		} else {
 			return false;
-		}
+		}*/
 	}
 
-	private static boolean prepareLine(SingleCriteriaResult res, boolean isIAdata) throws SQLException {
-		/*** set IA source ***/
-		res.IsIASource = isIAdata;
+	private static void log(String string) {
+	    System.out.println(string);
+	    
+    }
+
+
+	private static boolean prepareLine(SingleCriteriaResult res, DataSource source) throws SQLException {
+		/*** set source ***/
+		res.source = source;
 
 		/*** pre-calculate calcDanishCode and other fields ***/
 		// See MysqlX.getCalcDkCodeText for explanations
@@ -277,8 +282,9 @@ public class CriteriaIngest {
 			}
 		}
 
-		//res.calcDanishCode = 2 double-char >= 200
+		//res.calcDanishCode = 2: double-char (Cext2 >= 200)
 		if (res.calcDanishCode==0 && res.Cext2>=200) res.calcDanishCode = 2; //lots of doublechars
+		//res.calcDanishCode = 220: double-char( 130 <= Cext2 < 200)
 		if (res.calcDanishCode==0 && res.Cext2>=130) res.calcDanishCode = 220; //lots of doublechars
 
 		///////////////////////////////////
@@ -289,7 +295,7 @@ public class CriteriaIngest {
 
 		return true;
 	}
-
+/*
 	public static String ingest_turk_update_no = "0008"; //updated tyrk and arabic codes  after 30/8 (7/9)
 	public static String ingest_arabic_update_no = "0009"; //updated tyrk and arabic codes  after 30/8 (7/9)
 	public static String ingest_big0909_update_no = "0010"; //added code 32-35, 52-55, 200-203 and new calccodes (mediunint)
@@ -304,6 +310,7 @@ public class CriteriaIngest {
 	public static String ingest_0s = "0019"; //set bits for 0's
 	public static String ingest_0cleanups = "0020"; //set bits for 0's
 	public static String ingest_correctNotDk = "0021"; //set bits for 0's
-	public static String ingest_current_update_no = ingest_0cleanups; //ingest_reset_unusable_codes; 
+	public static String ingest_current_update_no = ingest_0cleanups; //ingest_reset_unusable_codes;
+	*/ 
 }
 

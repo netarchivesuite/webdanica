@@ -138,6 +138,7 @@ public class Codes {
 	//+ "withvalues=<true|false>"
 	//+ "ignoreFile=true|false ";
 
+	
 	public static void getResults() throws SQLException, IOException {
 		String tablename = "unused";
 
@@ -174,7 +175,7 @@ public class Codes {
 
 		//conn.close();
 	}
-	
+	/*
 	public static String writeTestReses(File outDir, File urlfile, boolean incldate, Set<String> tableSet, Set<CriteriaKeyAndTableForUrl> resSet, IgnoreFile ignoreFile, boolean withvalues) throws IOException {
 		//create file
         //String fn = getFilename(machine, urlfile); // + MysqlX.txtfile_suffix;
@@ -259,7 +260,21 @@ public class Codes {
 		bw.close();
 		return outDir.getAbsolutePath() + "/" + fn;
 	}
-
+*/
+	
+	/**
+	 * Get 
+	 * 
+	 * @param conn
+	 * @param tableSet
+	 * @param url
+	 * @param date
+	 * @param incldate
+	 * @param code
+	 * @param withvalues
+	 * @return
+	 * @throws SQLException
+	 */
 	private static Set<CriteriaKeyAndTable> getResForSearch(Connection conn, Set<String> tableSet, String url, String date, boolean incldate, int code, boolean withvalues) throws SQLException {
 		Set<CriteriaKeyAndTable> resUrlSet = new HashSet<CriteriaKeyAndTable>();
 		for (String nextTable: tableSet) {
