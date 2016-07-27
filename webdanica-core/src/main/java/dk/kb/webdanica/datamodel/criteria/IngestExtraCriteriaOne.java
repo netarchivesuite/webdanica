@@ -160,13 +160,6 @@ import dk.kb.webdanica.criteria.Words;
 	        }
     }
 
-		public static void writeline(FileOutputStream ftest, String txt) throws FileNotFoundException, IOException {
-	        byte[] contentInBytes = txt.getBytes();
-	        ftest.write(contentInBytes);
-	        ftest.write("\n".getBytes());
-	        ftest.flush();
-	    }
-
 	    public static boolean updateHadoop(Connection conn, File ingestFile) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 	    	/** ingest file is a part-file with fields to be updated for item in table with tablename */
 	        boolean ok = true;
