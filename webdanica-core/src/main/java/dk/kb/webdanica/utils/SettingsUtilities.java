@@ -77,7 +77,17 @@ public class SettingsUtilities {
 	    return returnValue;
     }
 
+	public static void testPropertyFile(String propertyKey) throws Throwable {
+		String setting = System.getProperty(propertyKey);
+		if (setting == null) {
+			throw new Throwable("Required java property '" + propertyKey + "' is undefined");
+		}
+		File settingsFile = new File(setting);
 	
-	
+		if (!settingsFile.exists()) {
+			throw new Throwable("The settings file defined by property '" + propertyKey + "' does not exist: " 
+					+ settingsFile.getAbsolutePath() + "' does not exist");
+		}
+	}
 }
 

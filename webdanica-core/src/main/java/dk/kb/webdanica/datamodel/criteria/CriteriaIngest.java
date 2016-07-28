@@ -335,7 +335,7 @@ public class CriteriaIngest {
             	}
                 
 	            if (actTablename.isEmpty()) {  // url was not found amongst the tables in tableNameSet   
-	            	System.out.println("WARNING: Url NOT FOUND: '" + r.url + "', " + r.Cext3 + " in line '" + trimmedLine + "l");	            	
+	            	log("WARNING: Url NOT FOUND: '" + r.url + "', " + r.Cext3 + " in line '" + trimmedLine + "l");	            	
                 	//MysqlIngester.writeline(res_fo, "WARNING: Url NOT FOUND: '" + r.url + "', " + r.Cext3 + " in line '" + trimmedLine + "l");
                 	success = false;
 	            } else {
@@ -352,7 +352,7 @@ public class CriteriaIngest {
             	res = r; // This is now a combination of the data read from the database table and the new criteria C2b,C3g,C6d, C7g, C7h, C8c, C9e, C9f and C10c
 	                
                 if (res.url == null || res.Cext3Orig == null || res.Cext3Orig.length() != 14) {
-                	System.out.println("Skipping line '" + trimmedLine 
+                	log("Skipping line '" + trimmedLine 
                             + "': Missing one or more of the fields url, Cext1, Cext3Orig");
                 	//MysqlIngester.writeline(res_fo, "Skipping line '" + trimmedLine 
                     //        + "': Missing one or more of fields url, Cext1, Cext3Orig");
@@ -362,15 +362,20 @@ public class CriteriaIngest {
             	if (success) {
             		//update 3g
             		if (res.C3g!=null && (!res.C3g.isEmpty() && !res.C3g.startsWith("0"))) {
+            			String oldC3g = res.C3g;
 	                    Set<String> tokens = TextUtils.tokenizeText(res.C3g.substring(1).trim());
 	                    List<String> words = Arrays.asList(Words.frequentwordsWithDanishLettersCodedNew);
 	                    tokens.retainAll(words);
 	                    res.C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
+	                    log("Updating criteria C3g. Changed from '" + oldC3g + "' to '" + res.C3g + "'");
 	            	}
 
             		//update 8c foreninger
 	            	if (res.C8a!=null && (!res.C8a.isEmpty() && !res.C8a.startsWith("0"))) {
+	            		String oldC8c = res.C8c;
 	            		res.C8c = CriteriaUtils.findC8cval(res.C8a, res.C8c);
+	            		log("Updating criteria C8c. Changed from '" + oldC8c + "' to '" + res.C8c + "' using the C8a value '" + res.C8a + "'");
+	            		
 	            	}
 
 	            	//update 9e firmaer on the basis on 
@@ -402,7 +407,7 @@ public class CriteriaIngest {
 								res.calcDanishCode = cr.calcDanishCode;
 								res.intDanish = cr.intDanish;
 							} else {
-								res.calcDanishCode = 230;
+								res.calcDanishCode = 230; 
 								res.intDanish = 75/100;
 							}
 			    		}

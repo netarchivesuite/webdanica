@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import dk.kb.webdanica.exceptions.WebdanicaException;
+import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.harvester.datamodel.HarvestDefinition;
@@ -36,59 +39,77 @@ import dk.netarkivet.viewerproxy.webinterface.Reporting;
  * The java 'dk.netarkivet.settings.file' property needs to defined 
  * using -Ddk.netarkivet.settings.file=/full/path/to/netarchivesuite_settingsfile.xml
  */
-public class PrepareHarvest {
-	
+public class SingleSeedHarvest {
 	
 	final String seed; // The single seed being harvested;
 	private String evName; // The name of the eventharvest
+	private JobStatus finishedState;
+	private List<String> files;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
 	 * and Heritrix template 'webdanica_order'
 	 * @param args currently no args read
+	 * @throws Throwable When the property "dk.netarkivet.settings.file" either is not defined or points to a non existing file
 	 */
-	public static void main (String[] args) {
-
-		PrepareHarvest ph = new PrepareHarvest("http://www.familien-carlsen.dk", 
-				"test-" + System.currentTimeMillis(), "Once", "webdanica_order");
-
-		while (ph.getHarvestStatus() == null){
+	public static void main (String[] args) throws Throwable {
+		// Verify that netarchiveSuite settings file is defined and exists
+		SettingsUtilities.testPropertyFile("dk.netarkivet.settings.file");
+		SingleSeedHarvest ph = new SingleSeedHarvest("http://www.familien-carlsen.dk", 
+				"test1" + System.currentTimeMillis(), "Once", "webdanica_order");
+		boolean success = ph.finishHarvest();
+		System.out.println("Harvest was successful: " + success);
+		System.out.println("final state of harvest: " + ph.getFinalState());
+		System.out.println("files harvested: " + StringUtils.join(ph.getFiles(), ","));
+	}	
+	public JobStatus getFinalState() {
+	    return this.finishedState;
+    }
+	/**
+	 * Wait until harvest is finished or failed.
+	 * @return true, if successful otherwise false;
+	 */
+	public boolean finishHarvest() {
+		
+		while (getHarvestStatus() == null){
 			System.out.println("Waiting for job to be scheduled .."); 
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
 		// Harvest is now in progress ph.getHarvestStatus() != null
-		JobStatusInfo jsi = ph.getHarvestStatus();
+		JobStatusInfo jsi = getHarvestStatus();
 		Long jobId = jsi.getJobID();
 		JobStatus status = jsi.getStatus();
 		System.out.println("State of Job " + jobId + ": " + status);
 		Set<JobStatus> finishedState = new HashSet<JobStatus>();
 		finishedState.add(JobStatus.DONE);
-		finishedState.add(JobStatus.FAILED);
-
+		finishedState.add(JobStatus.FAILED); 
+		
 		while (!finishedState.contains(status)) {
 			System.out.println("Waiting for job to finish. Current state is " + status);
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			status = ph.getHarvestStatus().getStatus(); // Refresh status
+			status = getHarvestStatus().getStatus(); // Refresh status
 		}
 		System.out.println("Job " + jobId + " now has finished state " + status);
-
+		this.finishedState = status;
 		// Look up the files associated with the job using a batchjob
 		// e.g. by the method used by the jsp page:
 		//  QA/QA-getfiles.jsp?jobid=4&harvestprefix=4-5
 		Job theJob = JobDAO.getInstance().read(jobId);
+		// jobEndState should be equal to this.finishedState
 		JobStatus jobEndState = theJob.getStatus();
-
+		if (!jobEndState.equals(finishedState)) {
+			System.err.println("JobEndState (" + jobEndState + ") is not equal to finishedstate (" +  finishedState + ")!");
+		}
+		
 		String harvestPrefix = theJob.getHarvestFilenamePrefix();
 		ApplicationUtils.dirMustExist(FileUtils.getTempDir()); // Inserted to ensure that the getTempDir() exists.
 		List<String> lines = Reporting.getFilesForJob(jobId.intValue(), harvestPrefix);
@@ -96,7 +117,13 @@ public class PrepareHarvest {
 		for (String line: lines) {
 			System.out.println(line);
 		}
-	}	
+		this.files = lines;
+		return status.equals(JobStatus.DONE);
+    }
+
+	public List<String> getFiles() {
+		return this.files;
+	}
 	
 	/**
 	 * 
@@ -105,7 +132,7 @@ public class PrepareHarvest {
 	 * @param scheduleName
 	 * @param templateName
 	 */
-	public PrepareHarvest(String seed, String eventHarvestName, String scheduleName, String templateName) {
+	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName) {
 		this.seed = seed;
 		this.evName = eventHarvestName;
 		List<DomainConfiguration> noDcs = new ArrayList<DomainConfiguration>();
