@@ -1,6 +1,14 @@
 package dk.kb.webdanica.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.URL_REJECT_REASON;
@@ -28,7 +36,7 @@ public class Harvest {
 		SettingsUtilities.testPropertyFile(NETARCHIVESUITE_SETTING_PROPERTY_KEY);
 		String scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
 		String templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
-		
+
 		if (args.length != 1) {
 			System.err.println("Need file with seeds to harvest as argument or just a seed");
 			System.exit(1);
@@ -36,6 +44,7 @@ public class Harvest {
 		String argument = args[0];
 		// Consider it as file first:
 		File argumentAsFile = new File(argument);
+		//List<SingleS>
 		if (argumentAsFile.exists()) {
 			System.out.println("harvesting based on seeds from file '" + argumentAsFile.getAbsolutePath() + "'");
 			doSeriesOfharvests(argumentAsFile, scheduleName, templateName);
@@ -46,39 +55,54 @@ public class Harvest {
 				doSingleHarvest(argument, scheduleName, templateName);
 			} else {
 				System.out.println("No harvesting done. The argument '" + argument + "' is not a valid url");
-				
+
 			}
 		}
-		/*
-		
-		BufferedReader fr = new BufferedReader(new FileReader(ingestFile));        
-		String line = "";
-
-		String trimmedLine = null;
-
-		//read file and ingest
-		while ((line = fr.readLine()) != null) {
-			trimmedLine = line.trim();
-			if (!trimmedLine.isEmpty()) {
-	}
-  */
 	}
 
-	private static void doSingleHarvest(String seed, String scheduleName,
+	private static SingleSeedHarvest doSingleHarvest(String seed, String scheduleName,
             String templateName) {
 		final String prefix = "webdanica-trial-";
 		String eventHarvestName = prefix + System.currentTimeMillis();
 		
 	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName);
 	    boolean success = ssh.finishHarvest();
-	    
+	    System.out.println("Harvest of seed '" + seed + "': " + (success? "succeeded":"failed"));
+	    return ssh;
 	    
     }
 
-	private static void doSeriesOfharvests(File argumentAsFile,
+	private static List<SingleSeedHarvest> doSeriesOfharvests(File argumentAsFile,
             String scheduleName, String templateName) {
-	    // TODO Auto-generated method stub
-	    
-    }
+		
+		BufferedReader fr = null;
+		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
+        try {
+	        fr = new BufferedReader(new FileReader(argumentAsFile));
+        } catch (FileNotFoundException e) {
+        	e.printStackTrace();
+        	// Should not happen: already tested
+        }        
+		String line = "";
+		String seed = null;
 
+		//read file and ingest
+		try {
+	        while ((line = fr.readLine()) != null) {
+	        	seed = line.trim();
+	        	if (!seed.isEmpty()) {
+	        		SingleSeedHarvest ssh = doSingleHarvest(seed, scheduleName, templateName);
+	        		results.add(ssh);
+	        	}
+	        }
+        } catch (IOException e) {	        
+	        e.printStackTrace();
+        } finally {
+        	IOUtils.closeQuietly(fr);
+        }
+		
+		return results;
+	}
 }
+		
+		
