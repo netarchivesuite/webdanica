@@ -12,8 +12,12 @@ import org.apache.commons.lang.StringUtils;
 
 import dk.kb.webdanica.exceptions.WebdanicaException;
 import dk.kb.webdanica.utils.SettingsUtilities;
+import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
+import dk.netarkivet.common.distribute.arcrepository.BitarchiveRecord;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
+import dk.netarkivet.common.utils.StreamUtils;
+import dk.netarkivet.common.utils.cdx.CDXRecord;
 import dk.netarkivet.harvester.datamodel.HarvestDefinition;
 import dk.netarkivet.harvester.datamodel.HarvestDefinitionDAO;
 import dk.netarkivet.harvester.datamodel.Job;
@@ -45,6 +49,9 @@ public class SingleSeedHarvest {
 	private String evName; // The name of the eventharvest
 	private JobStatus finishedState;
 	private List<String> files;
+	private JobStatusInfo statusInfo;
+	private Map<String, String> reportMap;
+	private boolean successful;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
@@ -62,9 +69,7 @@ public class SingleSeedHarvest {
 		System.out.println("final state of harvest: " + ph.getFinalState());
 		System.out.println("files harvested: " + StringUtils.join(ph.getFiles(), ","));
 	}	
-	public JobStatus getFinalState() {
-	    return this.finishedState;
-    }
+	
 	/**
 	 * Wait until harvest is finished or failed.
 	 * @return true, if successful otherwise false;
@@ -96,13 +101,13 @@ public class SingleSeedHarvest {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			status = getHarvestStatus().getStatus(); // Refresh status
+			jsi = getHarvestStatus();
+			status = jsi.getStatus(); // Refresh status
 		}
+		
 		System.out.println("Job " + jobId + " now has finished state " + status);
 		this.finishedState = status;
-		// Look up the files associated with the job using a batchjob
-		// e.g. by the method used by the jsp page:
-		//  QA/QA-getfiles.jsp?jobid=4&harvestprefix=4-5
+		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);
 		// jobEndState should be equal to this.finishedState
 		JobStatus jobEndState = theJob.getStatus();
@@ -118,14 +123,38 @@ public class SingleSeedHarvest {
 			System.out.println(line);
 		}
 		this.files = lines;
-		return status.equals(JobStatus.DONE);
+		
+		//get the reports associated with the harvest as well, extracted from the metadatawarc.file. 
+		//this.reportMap = getReports(theJob.getJobID()); //TODO not tested - add later
+		this.successful = status.equals(JobStatus.DONE);
+		return this.successful;
+    }
+
+	private Map<String, String> getReports(Long jobID) {
+		Map<String, String> reportMap = new HashMap<String,String>();
+		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
+	    for (CDXRecord record : records) {
+	    	String key = record.getURL();
+	    	System.out.println("Fetching the record: " + key);
+	        BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
+	        		record.getOffset());
+	        String data = StreamUtils.getInputStreamAsString(baRecord.getData());
+	        reportMap.put(key, data);
+	    }
+
+	    return reportMap;
     }
 
 	public List<String> getFiles() {
 		return this.files;
 	}
 	
+	public boolean successful() {
+		return this.successful;
+	}
+	
 	/**
+	 * TODO check that a schedule with the given scheduleName exists, and that a template with the templateName exists.
 	 * 
 	 * @param seed
 	 * @param eventHarvestName
@@ -147,7 +176,6 @@ public class SingleSeedHarvest {
 		long maxBytes = 10000L; // TODO What to write here, if we want to disable quotaenforcing
 		int maxObjects = 10000; // TODO What to write here, if we want to disable quotaenforcing
 		eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
-
 		eventHarvest.setActive(true);
 		HarvestDefinitionDAO.getInstance().update(eventHarvest);		 
 	}
@@ -156,7 +184,7 @@ public class SingleSeedHarvest {
 	 * 
 	 * @return JobStatus of the job in progress (expects only one job to be created)
 	 */
-	public JobStatusInfo getHarvestStatus() {
+	private JobStatusInfo getHarvestStatus() {
 		HarvestDefinition hd = HarvestDefinitionDAO.getInstance().getHarvestDefinition(evName);
 		Long oid = hd.getOid();
 		HarvestStatusQuery hsq = new HarvestStatusQuery(oid, 0); 
@@ -169,6 +197,25 @@ public class SingleSeedHarvest {
 		} else {
 			throw new WebdanicaException("Should be either 0 or 1 jobs generated, but there are  " + jobs.size() + " jobs for harvestId " + oid + " and harvestRun 0");   
 		}
-		
 	} 
+	
+	public String getSeed() {
+		return this.seed;
+	}
+	
+	public String getHarvestName() {
+		return this.evName;
+	}
+	
+	public JobStatus getFinalState() {
+	    return this.finishedState;
+    }
+	
+	public JobStatusInfo getJobStatusInfo() {
+		return this.statusInfo;
+	}
+
+	public Map<String, String> getReportMap() {
+	    return reportMap;
+    }
 }
