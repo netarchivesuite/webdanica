@@ -90,14 +90,14 @@ public class SingleSeedHarvest {
 		Long jobId = jsi.getJobID();
 		JobStatus status = jsi.getStatus();
 		System.out.println("State of Job " + jobId + ": " + status);
-		Set<JobStatus> finishedState = new HashSet<JobStatus>();
-		finishedState.add(JobStatus.DONE);
-		finishedState.add(JobStatus.FAILED); 
+		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
+		finishedStates.add(JobStatus.DONE);
+		finishedStates.add(JobStatus.FAILED); 
 		
-		while (!finishedState.contains(status)) {
-			System.out.println("Waiting for job to finish. Current state is " + status);
+		while (!finishedStates.contains(status)) {
+			System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status);
 			try {
-				Thread.sleep(5000L);
+				Thread.sleep(30000L); // 30 secs sleep
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -117,6 +117,7 @@ public class SingleSeedHarvest {
 		
 		String harvestPrefix = theJob.getHarvestFilenamePrefix();
 		ApplicationUtils.dirMustExist(FileUtils.getTempDir()); // Inserted to ensure that the getTempDir() exists.
+		System.out.println("Retrieving the list of files belonging to the job: ");
 		List<String> lines = Reporting.getFilesForJob(jobId.intValue(), harvestPrefix);
 		System.out.println("The following files were harvested: ");
 		for (String line: lines) {

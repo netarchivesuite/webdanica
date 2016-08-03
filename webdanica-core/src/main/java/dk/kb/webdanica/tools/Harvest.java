@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -20,6 +21,7 @@ import dk.kb.webdanica.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.utils.UrlUtils;
+import dk.netarkivet.harvester.datamodel.DBSpecifics;
 
 public class Harvest {
 
@@ -47,6 +49,13 @@ public class Harvest {
 		String scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
 		String templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
 
+		// Verify that database driver exists in classpath. If not exit program
+		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
+		SettingsUtilities.verifyClassOrExit(dbdriver);
+		// Verify that arcrepositoryclient exists in classpath. If not exit program
+		String arcrepositoryClient = dk.netarkivet.common.utils.Settings.get("settings.common.arcrepositoryClient.class");
+		SettingsUtilities.verifyClassOrExit(arcrepositoryClient);
+		
 		// Check if argument is a file or just considered a single seed
 		String argument = args[0];
 		// Assume the argument is a file, and see if it exists
@@ -92,10 +101,8 @@ public class Harvest {
     	}
     	   	
     	harvestLogWriter.close();
-    	
-    	
-    	
-		
+    	System.out.println("Program exited at date: " +  new Date());
+    	System.exit(0);
 	}
 
 	private static SingleSeedHarvest doSingleHarvest(String seed, String scheduleName,

@@ -60,6 +60,7 @@ public class SingleCriteriaResult {
     public DataSource source;
     public int calcDanishCode;
     public String tablename; //only for UrlExtract
+	private String C4b;
     
     
     public SingleCriteriaResult(String trimmedLine, boolean ingestMode) {
@@ -103,6 +104,7 @@ public class SingleCriteriaResult {
         Cext3Orig="20140901000000"; //date //FIXME shouldn't this changed
         Cext3 = findDateFromString(Cext3Orig);
         C4a="";
+        C4b="";
         C3a="";
         C6a="";
         C3b="";
@@ -177,6 +179,9 @@ public class SingleCriteriaResult {
                 } else if (trimmedResultPart.startsWith("C4a")) {
                     this.C4a = valueparts[1].trim();
                     //System.out.println("C4a: " + this.C4a);
+                } else if (trimmedResultPart.startsWith("C4b")) {
+                	this.C4b = valueparts[1].trim();
+                    //System.out.println("C4a: " + this.C4a);    
                 } else if (trimmedResultPart.startsWith("C1a")) {
                     this.C1a = valueparts[1].trim();
                     //System.out.println("C1a: " + this.C1a);
@@ -583,7 +588,8 @@ public class SingleCriteriaResult {
     }   
     
     /** Used by ???
-     * 
+     *  A sort of toString method ??
+     *  
      * @param row_delim
      * @param keyval_delim
      * @return
@@ -604,6 +610,7 @@ public class SingleCriteriaResult {
     	s = s + row_delim + "C3f" + keyval_delim + (this.C3f!=null?this.C3f.replace(row_delim, ","):""); //13
     	s = s + row_delim + "C3g" + keyval_delim + (this.C3g!=null?this.C3g.replace(row_delim, ","):""); //14
     	s = s + row_delim + "C4a" + keyval_delim + (this.C4a!=null?this.C4a.replace(row_delim, ","):""); //15
+    	s = s + row_delim + "C4b" + keyval_delim + (this.C4b!=null?this.C4b.replace(row_delim, ","):""); //15a
     	s = s + row_delim + "C5a" + keyval_delim + (this.C5a!=null?this.C5a.replace(row_delim, ","):""); //16
     	s = s + row_delim + "C5b" + keyval_delim + (this.C5b!=null?this.C5b.replace(row_delim, ","):""); //17
     	s = s + row_delim + "C6a" + keyval_delim + (this.C6a!=null?this.C6a.replace(row_delim, ","):""); //18

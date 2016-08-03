@@ -96,6 +96,16 @@ public class SettingsUtilities {
 			System.exit(1);
 		}
 	}
+
+	public static void verifyClassOrExit(String dbdriver) {
+		try {
+			Class.forName(dbdriver);
+		} catch (ClassNotFoundException e) {
+			System.out.println("Required class '" + dbdriver + "' not found in classpath");
+			System.out.println("Program terminated");
+			System.exit(1);
+		}
+    }
 	
 }
 

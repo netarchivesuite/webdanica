@@ -6,12 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
+import dk.kb.webdanica.utils.StreamUtils;
 import dk.kb.webdanica.utils.TextUtils;
 
 /**
@@ -20,9 +22,36 @@ import dk.kb.webdanica.utils.TextUtils;
  */
 public class CriteriaIngest {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, SQLException {
+		//File f = new File("/home/test/criteria-results/03-08-2016-1470237223/68-55-20160803110922385-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
+		//System.out.println(isGzippedFile(f));
+		
+		// Read a harvestlog, and look for the associated criteria-results in the criteria-results folder. 
+		// a parameter: get all, get the latest
+		
+		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
+		File danicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog.report");
+		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
+		File notdanicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog.report");
+		
+		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
+		List<Harvest> danicaharvests = Harvest.parseHarvestLog(danicaHarvestLog);
+		Harvest.processHarvests(danicaharvests, baseCriteriaDir);
+		List<Harvest> notdanicaharvests = Harvest.parseHarvestLog(notdanicaHarvestLog);
+		Harvest.processHarvests(notdanicaharvests, baseCriteriaDir);
+		Harvest.printToFile(danicaharvests, danicaHarvestLogReport);
+		Harvest.printToFile(notdanicaharvests, notdanicaHarvestLogReport);
+		/*
+		for (Harvest h: harvests) {
+			System.out.println("harvest of seed: " + h.seed);
+			for (SingleCriteriaResult r: h.results) {
+				System.out.println(r.getValuesInString("\n", ","));
+			}
+		}*/
+		
 	}
 	
+
 	/**
 	 * 
 	 * @param ingestFile
@@ -33,7 +62,7 @@ public class CriteriaIngest {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public ProcessResult processFile(File ingestFile) throws IOException, SQLException {
+	public static ProcessResult processFile(File ingestFile) throws IOException, SQLException {
 		boolean checkDoublets = true;
 		boolean listIgnored = true;
 		return ingest(ingestFile, checkDoublets, listIgnored);
@@ -51,12 +80,13 @@ public class CriteriaIngest {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public ProcessResult ingest(File ingestFile, boolean checkDoublets, boolean listIgnored) throws IOException, SQLException {
+	public static ProcessResult ingest(File ingestFile, boolean checkDoublets, boolean listIgnored) throws IOException, SQLException {
 		long linecount=0L;
 		long skippedCount=0L;
 		long ignoredCount=0L;
 		Set<String> ignoredSet = new HashSet<String>();
-
+		ProcessResult pr = new ProcessResult();
+		List<SingleCriteriaResult> results = new ArrayList<SingleCriteriaResult>();
 		//Check files
 
 		if (!ingestFile.exists()) {
@@ -64,7 +94,7 @@ public class CriteriaIngest {
 			System.exit(1);
 		}  
 		
-		BufferedReader fr = new BufferedReader(new FileReader(ingestFile));        
+		BufferedReader fr = StreamUtils.getBufferedReader(ingestFile);        
 		String line = "";
 
 		String trimmedLine = null;
@@ -94,6 +124,7 @@ public class CriteriaIngest {
 					log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
 					// FIXME
 					//success = success && MysqlRes.insertLine(conn, res, tablename);
+					results.add(res);
 				}
 				linecount++;
 				if (!doInsert) {
@@ -115,7 +146,8 @@ public class CriteriaIngest {
 			log(" - " + ignored);
 		}
 		
-		return null; // replace with proper ProcessResult construction
+		pr.results = results;
+		return pr; // replace with proper ProcessResult construction
 		/*
 		if (linecount==0) {
 			System.out.println("WARNING: ingest file had no lines ingested: " + ingestFile.getAbsolutePath());
