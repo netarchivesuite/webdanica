@@ -41,6 +41,8 @@ public class CriteriaIngest {
 		Harvest.processHarvests(notdanicaharvests, baseCriteriaDir);
 		Harvest.printToFile(danicaharvests, danicaHarvestLogReport);
 		Harvest.printToFile(notdanicaharvests, notdanicaHarvestLogReport);
+		System.out.println(danicaHarvestLogReport.getAbsolutePath());
+		System.out.println(notdanicaHarvestLogReport.getAbsolutePath());
 		/*
 		for (Harvest h: harvests) {
 			System.out.println("harvest of seed: " + h.seed);

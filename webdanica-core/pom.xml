@@ -39,7 +39,6 @@
       <artifactId>pig</artifactId>
       <version>0.15.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-core</artifactId>
@@ -72,7 +71,11 @@
       <artifactId>htmlparser</artifactId>
       <version>2.1</version>
     </dependency>
-
+    <dependency>
+    <groupId>net.iharder</groupId>
+    <artifactId>base64</artifactId>
+    <version>2.3.9</version>
+	</dependency>
 <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>

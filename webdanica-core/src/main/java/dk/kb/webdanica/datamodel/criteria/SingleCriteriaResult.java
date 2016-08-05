@@ -597,7 +597,8 @@ public class SingleCriteriaResult {
     public String getValuesInString(String row_delim, String keyval_delim) {
     	//EXCEPT Url and date!!
     	String s = "";
-    	s = s + "extSize" + keyval_delim + keyval_delim + this.Cext1; //3
+    	s = s + "url" + keyval_delim + keyval_delim + this.url;
+    	s = s + row_delim + "extSize" + keyval_delim + keyval_delim + this.Cext1; //3
     	s = s + row_delim + "extDblChar" + keyval_delim + this.Cext2; //4
     	s = s + row_delim + "C1a" + keyval_delim + (this.C1a!=null?this.C1a.replace(row_delim, ","):""); //5
     	s = s + row_delim + "C2a" + keyval_delim + (this.C2a!=null?this.C2a.replace(row_delim, ","):""); //6

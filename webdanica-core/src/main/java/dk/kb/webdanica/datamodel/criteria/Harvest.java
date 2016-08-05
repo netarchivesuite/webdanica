@@ -124,9 +124,8 @@ public class Harvest {
 	        for (SingleCriteriaResult scr: h.results) {
 	        	resfile.append(scr.getValuesInString(",", ","));
 	        	resfile.newLine();
-	        }
-	        
-	        
+	        	resfile.newLine();
+	        }   
         }
 		
 		public static void processHarvests(List<Harvest> harvests, File baseCriteriaDir) throws IOException, SQLException {
