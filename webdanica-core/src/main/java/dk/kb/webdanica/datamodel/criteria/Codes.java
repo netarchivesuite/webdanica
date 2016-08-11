@@ -331,7 +331,7 @@ public class Codes {
 				        res.Cext3 = rs.getTimestamp("extWDate");
 				        res.Cext3Orig = rs.getString("extWDateOrig");
 				        res.tablename = nextTable;
-				        if (withvalues) res.allres = new SingleCriteriaResult(rs, true);
+				        if (withvalues) res.allres = new SingleCriteriaResult(rs);
 				        resUrlSet.add(res);
 					}
 			        r.close();

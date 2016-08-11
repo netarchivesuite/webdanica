@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
+import dk.kb.webdanica.interfaces.harvesting.HarvestError;
+import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.utils.StreamUtils;
 import dk.kb.webdanica.utils.TextUtils;
 
@@ -28,21 +30,133 @@ public class CriteriaIngest {
 		
 		// Read a harvestlog, and look for the associated criteria-results in the criteria-results folder. 
 		// a parameter: get all, get the latest
+
+		// TEST2: Nyt sample fra fredag d. 
+		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
+		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
+		File HarvestLogTest1 = new File(basedir, "harvestlog-1470674884515.txt");
+		File HarvestLogTest2 = new File(basedir, "test_danica_urls.txt.harvestlog");
+		File HarvestLogTest3 = new File(basedir, "test_non_danica_urls.txt.harvestlog");
 		
+		doTest(HarvestLogTest1, baseCriteriaDir);
+		doTest(HarvestLogTest2, baseCriteriaDir);
+		doTest(HarvestLogTest3, baseCriteriaDir);
+		
+		//runTest3();
+		
+		//runTest1();
+		//runTest2();
+		
+		
+		
+		
+	}
+	public static void doTest(File harvestLog, File baseCriteriaDir) throws IOException, SQLException {
+		File basedir = harvestLog.getParentFile();
+		String harvestLogReportName = harvestLog.getName() + ".report.txt";
+		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
+		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(harvestLog);
+		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir);
+		for (HarvestError e: errors) {
+			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+		}
+		HarvestReport.printToFile(danicaharvests, harvestLogReport);
+	}
+	
+	
+		
+	
+	
+	
+	
+	
+	
+	private static File findReportFile(File basedir, String harvestLogReportName) {
+		File harvestLogReport = new File(basedir, harvestLogReportName);
+		int count = 0;
+		while(harvestLogReport.exists()) {
+			harvestLogReport = new File(basedir, harvestLogReportName + "." +  count);
+			count++;
+		}
+	    return harvestLogReport;
+    }
+
+
+
+
+	private static void runTest3() throws IOException, SQLException{
+		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
+		String harvestLogName = "harvestlog-1470674884515.txt";
+		File HarvestLog = new File(basedir, harvestLogName);
+		
+		String harvestLogReportName = harvestLogName + ".report.txt";
+		
+		File harvestLogReport = new File(basedir, harvestLogReportName);
+		int count = 0;
+		while(harvestLogReport.exists()) {
+			harvestLogReport = new File(basedir, harvestLogReportName + "." +  count);
+			count++;
+		}
+		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
+		if(!baseCriteriaDir.exists()) {
+			System.out.println("Basecriteriadir '" + baseCriteriaDir.getAbsolutePath() + "' does not exist");
+			System.exit(1);
+		}
+		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(HarvestLog);
+		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir);
+		for (HarvestError e: errors) {
+			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+		}
+		HarvestReport.printToFile(danicaharvests, harvestLogReport);
+		
+    }
+
+
+	private static void runTest2() throws IOException, SQLException { 
+			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
+			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
+			File danicaHarvestLogReport = new File(basedir, "harvestlog-1470674884515.txt.report.txt");
+			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
+			List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(HarvestLog);
+			List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir);
+			for (HarvestError e: errors) {
+				System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+			}
+			HarvestReport.printToFile(danicaharvests, danicaHarvestLogReport);
+    }
+
+
+	private static void runTest1() throws IOException, SQLException {
 		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
-		File danicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog.report");
+		File danicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog.report.txt");
 		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
-		File notdanicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog.report");
+		File notdanicaHarvestLogReport = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog.report.txt");
 		
 		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		List<Harvest> danicaharvests = Harvest.parseHarvestLog(danicaHarvestLog);
-		Harvest.processHarvests(danicaharvests, baseCriteriaDir);
-		List<Harvest> notdanicaharvests = Harvest.parseHarvestLog(notdanicaHarvestLog);
-		Harvest.processHarvests(notdanicaharvests, baseCriteriaDir);
-		Harvest.printToFile(danicaharvests, danicaHarvestLogReport);
-		Harvest.printToFile(notdanicaharvests, notdanicaHarvestLogReport);
+		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(danicaHarvestLog);
+		List<HarvestError> danicaerrors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir);
+		List<HarvestReport> notdanicaharvests = HarvestReport.readHarvestLog(notdanicaHarvestLog);
+		List<HarvestError> notdanicaerrors = HarvestReport.processCriteriaResults(notdanicaharvests, baseCriteriaDir);
+		HarvestReport.printToFile(danicaharvests, danicaHarvestLogReport);
+		HarvestReport.printToFile(notdanicaharvests, notdanicaHarvestLogReport);
 		System.out.println(danicaHarvestLogReport.getAbsolutePath());
 		System.out.println(notdanicaHarvestLogReport.getAbsolutePath());
+		
+		
+		if (danicaerrors.size() > 0) {
+			System.out.println(danicaerrors.size() + " errors found for the danica harvests:");
+			for (HarvestError e: danicaerrors) {
+				System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+			}
+		}
+		if (notdanicaerrors.size() > 0) {
+			System.out.println(notdanicaerrors.size() + " errors found for the notdanica harvests:");
+			for (HarvestError e: notdanicaerrors) {
+				System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+			}
+		}
+		
+		
 		/*
 		for (Harvest h: harvests) {
 			System.out.println("harvest of seed: " + h.seed);
@@ -50,9 +164,9 @@ public class CriteriaIngest {
 				System.out.println(r.getValuesInString("\n", ","));
 			}
 		}*/
-		
-	}
-	
+	    
+    }
+
 
 	/**
 	 * 

@@ -1,10 +1,12 @@
 package dk.kb.webdanica.datamodel.criteria;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.Set;
 
 public class SingleCriteriaResult {
@@ -60,13 +62,36 @@ public class SingleCriteriaResult {
     public DataSource source;
     public int calcDanishCode;
     public String tablename; //only for UrlExtract
-	private String C4b;
+	public String C4b;
+	public String CText;
+	public String CLinks;
     
+	public String getClinks() {
+		//Set<String> linkSet = new HashSet<String>();
+		if (CLinks != null && !CLinks.isEmpty()) {
+			//String[] resultParts = CLinks.split("##");
+			return CLinks;
+		} else {
+			return "";
+		}
+	}
+	public String getCText() throws IOException {
+		if (CText != null && !CText.isEmpty()) {
+			
+			return CriteriaUtils.fromBase64(CText);
+		} else {
+			return "";
+		}
+	}
+	
+	
+	
     
     public SingleCriteriaResult(String trimmedLine, boolean ingestMode) {
     	String[] resultParts = trimmedLine.split(",");   
     	for (String resultPart: resultParts) {
     		String trimmedResultPart = resultPart.trim();
+    		System.out.println(trimmedResultPart);
     		parseString(trimmedResultPart, ingestMode); // Assigns Values to criteria
     	}
     	/*** url hack in order to have PK size < 1000 bytes ***/
@@ -81,16 +106,16 @@ public class SingleCriteriaResult {
     	if (Cext3Orig==null || Cext3Orig.isEmpty()) {
     		System.err.println("no date for url: " + url + " --- got: " + Cext3Orig);
     	}
+    	
     	Cext3 = findDateFromString(Cext3Orig);
     }
     /**
      * Construct a SingleCriteriaResult from a database ResultSet
      * @param res
-     * @param extendedNewHadoopTable FIXME not necessary to be used?
      * @throws SQLException
      */
-    public SingleCriteriaResult(ResultSet res, boolean extendedNewHadoopTable)  throws SQLException {
-    	parseResultSet(res, extendedNewHadoopTable);
+    public SingleCriteriaResult(ResultSet res)  throws SQLException {
+    	parseResultSet(res);
     }
 
     /**
@@ -163,142 +188,103 @@ public class SingleCriteriaResult {
         	this.url = trimmedResultPart;
         }
         else if (trimmedResultPart.startsWith("C")) 
-        {
+    {
             String[] valueparts = trimmedResultPart.split(":");
             if (valueparts.length > 1) {
                 if (trimmedResultPart.startsWith("Cext1")) {
-                    //System.out.println("Cext1: " + trimmedResultPart);
                     this.Cext1 = Long.parseLong(valueparts[1].trim());
-                    //System.out.println("Cext1: " + this.Cext1);
                 } else if (trimmedResultPart.startsWith("Cext2")) {
                     this.Cext2 = Long.parseLong(valueparts[1].trim());
-                    //System.out.println("Cext2: " + this.Cext2);
                 } else if (trimmedResultPart.startsWith("Cext3")) {
                     this.Cext3Orig = valueparts[1].trim();
-                    //System.out.println("Cext3: " + this.Cext3);
+                    System.out.println("Date: " + this.Cext3Orig);
                 } else if (trimmedResultPart.startsWith("C4a")) {
                     this.C4a = valueparts[1].trim();
-                    //System.out.println("C4a: " + this.C4a);
                 } else if (trimmedResultPart.startsWith("C4b")) {
-                	this.C4b = valueparts[1].trim();
-                    //System.out.println("C4a: " + this.C4a);    
+                	this.C4b = trimmedResultPart.split("C4b:")[1].trim();  
+                	System.out.println("C4b: " + this.C4b);
                 } else if (trimmedResultPart.startsWith("C1a")) {
                     this.C1a = valueparts[1].trim();
-                    //System.out.println("C1a: " + this.C1a);
                 } else if (trimmedResultPart.startsWith("C2a")) {
                     this.C2a = valueparts[1].trim();
-                    //System.out.println("C2a: " + this.C2a);
                 } else if (trimmedResultPart.startsWith("C2b")) {
                     this.C2b = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C2b: " + this.C2b);
                 } else if (trimmedResultPart.startsWith("C3a")) {
                     this.C3a = valueparts[1].trim();
-                    //System.out.println("C3a: " + this.C3a); 
                 } else if (trimmedResultPart.startsWith("C3b")) {
                     this.C3b = valueparts[1].trim();
-                    //System.out.println("C3b: " + this.C3b);
                 } else if (trimmedResultPart.startsWith("C3c")) {
                     this.C3c = valueparts[1].trim();
-                    //System.out.println("C3c: " + this.C3c);
                 } else if (trimmedResultPart.startsWith("C3d")) {
                     this.C3d = valueparts[1].trim();
-                    //System.out.println("C3d: " + this.C3d);
                 } else if (trimmedResultPart.startsWith("C3g")) {
                     this.C3g = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C3g: " + this.C3g);
                 } else if (trimmedResultPart.startsWith("C5a")) {
                     this.C5a = valueparts[1].trim();
-                    //System.out.println("C5a: " + this.C5a);
                 } else if (trimmedResultPart.startsWith("C5b")) {
                     this.C5b = valueparts[1].trim();
-                    //System.out.println("C5b: " + this.C5b);
                 } else if (trimmedResultPart.startsWith("C6a")) {
                     this.C6a = valueparts[1].trim();
-                    //System.out.println("C6a: " + this.C6a);
                 } else if (trimmedResultPart.startsWith("C6b")) {
                     this.C6b = valueparts[1].trim();
-                    //System.out.println("C6b: " + this.C6b);
                 } else if (trimmedResultPart.startsWith("C6c")) {
                     this.C6c = valueparts[1].trim();
-                    //System.out.println("C6c: " + this.C6c);
                 } else if (trimmedResultPart.startsWith("C6d")) {
                     this.C6d = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C6d: " + this.C6d);
                 } else if (trimmedResultPart.startsWith("C7a")) {
                     this.C7a = valueparts[1].trim();
-                    //System.out.println("C7a: " + this.C7a);
                 } else if (trimmedResultPart.startsWith("C7b")) {
                     this.C7b = valueparts[1].trim();
-                    //System.out.println("C7b: " + this.C7b);    
                 } else if (trimmedResultPart.startsWith("C7c")) {
                     this.C7c = valueparts[1].trim();
-                    //System.out.println("C7c: " + this.C7c);    
                 } else if (trimmedResultPart.startsWith("C7d")) {
                     this.C7d = valueparts[1].trim();
-                    //System.out.println("C7d: " + this.C7d);    
                 } else if (trimmedResultPart.startsWith("C7e")) {
                     this.C7e = valueparts[1].trim();
-                    //System.out.println("C7e: " + this.C7e);    
                 } else if (trimmedResultPart.startsWith("C7f")) {
                     this.C7f = valueparts[1].trim();
-                    //System.out.println("C7f: " + this.C7f);    
                 } else if (trimmedResultPart.startsWith("C7g")) {
                     this.C7g = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C7g: " + this.C7g);
                 } else if (trimmedResultPart.startsWith("C7h")) {
                     this.C7h = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C7h: " + this.C7h);
                 } else if (trimmedResultPart.startsWith("C8a")) {
                     this.C8a = valueparts[1].trim();
-                    //System.out.println("C8a: " + this.C8a);    
                 } else if (trimmedResultPart.startsWith("C8b")) {
                     this.C8b = valueparts[1].trim();
-                    //System.out.println("C8b: " + this.C8b);    
                 } else if (trimmedResultPart.startsWith("C8c")) {
                     this.C8c = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C8c: " + this.C8c);
                 } else if (trimmedResultPart.startsWith("C9a")) {
                     this.C9a = valueparts[1].trim();
-                    //System.out.println("C9a: " + this.C9a);    
                 } else if (trimmedResultPart.startsWith("C9b")) {
                     this.C9b = valueparts[1].trim();
-                    //System.out.println("C9b: " + this.C9b);    
                 } else if (trimmedResultPart.startsWith("C9c")) {
                     this.C9c = valueparts[1].trim();
-                    //System.out.println("C9c: " + this.C9c);    
                 } else if (trimmedResultPart.startsWith("C9d")) {
                     this.C9d = valueparts[1].trim();
-                    //System.out.println("C9d: " + this.C9d);    
                 } else if (trimmedResultPart.startsWith("C9e")) {
                     this.C9e = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C9e: " + this.C9e);
                 } else if (trimmedResultPart.startsWith("C9f")) {
                     this.C9f = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C9f: " + this.C9f);
                 } else if (trimmedResultPart.startsWith("C10a")) {
                     this.C10a = valueparts[1].trim();
-                    //System.out.println("C10a: " + this.C10a);    
                 } else if (trimmedResultPart.startsWith("C10b")) {
                     this.C10b = valueparts[1].trim();
-                    //System.out.println("C10b: " + this.C10b);    
                 } else if (trimmedResultPart.startsWith("C10c")) {
                     this.C10c = valueparts[1].trim(); 				//TODO: check with ingestMode?
-                    //System.out.println("C10c: " + this.C10c);
                 } else if (trimmedResultPart.startsWith("C15a")) {
                     this.C15a = valueparts[1].trim();
-                    //System.out.println("C15a: " + this.C15a);    
                 } else if (trimmedResultPart.startsWith("C15b")) {
                     this.C15b = valueparts[1].trim();
-                    //System.out.println("C15b: " + this.C15b);    
                 } else if (trimmedResultPart.startsWith("C16a")) {
                     this.C16a = valueparts[1].trim();
-                    //System.out.println("C16a: " + this.C16a);    
                 } else if (trimmedResultPart.startsWith("C17a")) {
                     this.C17a = valueparts[1].trim();
-                    //System.out.println("C17a: " + this.C17a);   
                 } else if (trimmedResultPart.startsWith("C18a")) {
                     this.C18a = valueparts[1].trim();
-                    //System.out.println("C18a: " + this.C18a);    
+                } else if (trimmedResultPart.startsWith("CText")) {
+                	this.CText = valueparts[1].trim();
+                } else if (trimmedResultPart.startsWith("CLinks")) {
+                	this.CLinks = valueparts[1].trim();
                 } else {
                 	//not abbr. for criteria thus it is not a criteria, and therefore must be part of Url
                 	this.url = this.url + "," + trimmedResultPart.trim();
@@ -339,7 +325,7 @@ public class SingleCriteriaResult {
 
         SingleCriteriaResult r = new SingleCriteriaResult();
         if (rs.next()) {
-        	r = new SingleCriteriaResult(rs, extendedNewHadoopTable);
+        	r = new SingleCriteriaResult(rs);
         }
         s.close();
         return r;
@@ -533,7 +519,7 @@ public class SingleCriteriaResult {
     
     
     
-    private void parseResultSet(ResultSet rs, boolean extendedNewHadoop) throws SQLException {
+    private void parseResultSet(ResultSet rs) throws SQLException {
         this.url = rs.getString("Url");
         this.urlOrig = rs.getString("UrlOrig");
         this.Cext3= rs.getTimestamp("extWDate");
@@ -542,41 +528,41 @@ public class SingleCriteriaResult {
         this.Cext2 =rs.getLong("extDblChar");
         this.C1a = rs.getString("C1a");
         this.C2a = rs.getString("C2a");
-        if (extendedNewHadoop) this.C2b = rs.getString("C2b");
+        this.C2b = rs.getString("C2b");
         this.C3a = rs.getString("C3a");
         this.C3b = rs.getString("C3b");
         this.C3c = rs.getString("C3c");  
         this.C3d = rs.getString("C3d");
         this.C3e = rs.getString("C3e");
         this.C3f = rs.getString("C3f");
-        if (extendedNewHadoop) this.C3g = rs.getString("C3g");
+        this.C3g = rs.getString("C3g");
         this.C4a = rs.getString("C4a");
         this.C5a = rs.getString("C5a");
         this.C5b = rs.getString("C5b");
         this.C6a = rs.getString("C6a");
         this.C6b = rs.getString("C6b");
         this.C6c = rs.getString("C6c");
-        if (extendedNewHadoop) this.C6d = rs.getString("C6d");
+        this.C6d = rs.getString("C6d");
         this.C7a = rs.getString("C7a");
         this.C7b = rs.getString("C7b");
         this.C7c = rs.getString("C7c");
         this.C7d = rs.getString("C7d");
         this.C7e = rs.getString("C7e");
         this.C7f = rs.getString("C7f");
-        if (extendedNewHadoop) this.C7g = rs.getString("C7g");
-        if (extendedNewHadoop) this.C7h = rs.getString("C7h");
+        this.C7g = rs.getString("C7g");
+        this.C7h = rs.getString("C7h");
         this.C8a = rs.getString("C8a");
         this.C8b = rs.getString("C8b");
-        if (extendedNewHadoop) this.C8c = rs.getString("C8c");
+        this.C8c = rs.getString("C8c");
         this.C9a = rs.getString("C9a");
         this.C9b = rs.getString("C9b");
         this.C9c = rs.getString("C9c");
         this.C9d = rs.getString("C9d");
-        if (extendedNewHadoop) this.C9e = rs.getString("C9e");
-        if (extendedNewHadoop) this.C9f = rs.getString("C9f");
+        this.C9e = rs.getString("C9e");
+        this.C9f = rs.getString("C9f");
         this.C10a = rs.getString("C10a");
         this.C10b = rs.getString("C10b");
-        if (extendedNewHadoop) this.C10c = rs.getString("C10c");
+        this.C10c = rs.getString("C10c");
         this.C15a = rs.getString("C15a");
         this.C15b = rs.getString("C15b");
         this.C16a = rs.getString("C16a");
@@ -597,8 +583,9 @@ public class SingleCriteriaResult {
     public String getValuesInString(String row_delim, String keyval_delim) {
     	//EXCEPT Url and date!!
     	String s = "";
-    	s = s + "url" + keyval_delim + keyval_delim + this.url;
-    	s = s + row_delim + "extSize" + keyval_delim + keyval_delim + this.Cext1; //3
+    	s = s + "url" + keyval_delim + this.url;
+    	s = s + row_delim + "date" + keyval_delim + this.Cext3; 
+    	s = s + row_delim + "extSize" + keyval_delim + this.Cext1; //3
     	s = s + row_delim + "extDblChar" + keyval_delim + this.Cext2; //4
     	s = s + row_delim + "C1a" + keyval_delim + (this.C1a!=null?this.C1a.replace(row_delim, ","):""); //5
     	s = s + row_delim + "C2a" + keyval_delim + (this.C2a!=null?this.C2a.replace(row_delim, ","):""); //6
@@ -775,6 +762,5 @@ public class SingleCriteriaResult {
         }
 	    return found;
     }
-    
     
 }

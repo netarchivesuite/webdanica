@@ -9,6 +9,7 @@ import org.apache.pig.EvalFunc;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 
+import dk.kb.webdanica.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.utils.Constants;
 import dk.kb.webdanica.utils.TextUtils;
 
@@ -20,7 +21,7 @@ import dk.kb.webdanica.utils.TextUtils;
  * text= tuple[2]
  * links     = tuple[3]
  * hostname = tuple[4]
- * 
+ * debugMode = tuple[5] (optional argument), default = false
  * 
  * Note: C16a removed, as it is not relevant for production use, but only in the Research project
  * 
@@ -96,6 +97,10 @@ public class CombinedCombo extends EvalFunc<String> {
 		String text = (String) input.get(2);
 		DataBag links = (DataBag)(input.get(3));
 		String hostname = (String) input.get(4);
+		boolean debugMode = false;
+		if (input.size() == 6) {
+			debugMode = (Boolean) input.get(5);
+		}
 		Set<String> tokens = TextUtils.tokenizeText(text);
 		int Cext2 = 0;
 		//System.out.println("TUPLE-length: " + input.size());
@@ -177,38 +182,38 @@ public class CombinedCombo extends EvalFunc<String> {
 				result.append(addResultForCriterie("C6d", C6dmatches));
 				
 				
-				//Calc C7a         'towns in htm
+				//Calc C7a         'towns in htm (input: lowercase tezt)
 				Set<String> C7amatches = C7a.computeC7a(text);
 				result.append(addResultForCriterie("C7a", C7amatches));
 				//Calc C7b         'towns in url (input: lowercase url)
 				Set<String> C7bmatches = C7b.computeC7b(urlLower);
 				result.append(addResultForCriterie("C7b", C7bmatches));
-				//Calc C7c         'town suffixes in htm
+				//Calc C7c         'town suffixes in htm (input: lowercase text)
 				Set<String> C7cmatches = C7c.computeC7c(text);
 				result.append(addResultForCriterie("C7c", C7cmatches));
 				//Calc C7d         'town suffixes in url (input: lowercase url)
 				Set<String> C7dmatches = C7d.computeC7d(urlLower);
 				result.append(addResultForCriterie("C7d", C7dmatches));
-				//Calc C7e         'names in foreign in htm
+				//Calc C7e         '(København/Danmark) translated to foreign languages in htm 
 				Set<String> C7ematches = C7e.computeC7e(text);
 				result.append(addResultForCriterie("C7e", C7ematches));
-				//Calc C7f         'names in foreign in url (input: lowercase url)
+				//Calc C7f         '(København/Danmark) translated to foreign languages in url (input: lowercase url)
 				Set<String> C7fmatches = C7f.computeC7f(urlLower);
 				result.append(addResultForCriterie("C7f", C7fmatches));
-				//Calc C7g
+				//Calc C7g 			'danish city names (input: al text, tokenized)
 				Set<String> C7gmatches = C7g_from_a_Nov.computeC7gV5(copyTokens(tokens));
 				result.append(addResultForCriterie("C7g", C7gmatches));
-				//Calc C7h
+				//Calc C7h			'(København/Danmark) translated to foreign languages in htm (input: text, tokemized) 
 				Set<String> C7hmatches = C7h_from_e_Nov.computeC7hV5(copyTokens(tokens));
 				result.append(addResultForCriterie("C7h", C7hmatches));
 				
-				//Calc C8a         'unions in htm
+				//Calc C8a         'unions in htm (input: al text lowercased)
 				Set<String> C8amatches = C8a.computeC8a(text);
 				result.append(addResultForCriterie("C8a", C8amatches));
-				//Calc C8b         'unions in url
-				Set<String> C8bmatches = C8b.computeC8b(text);
+				//Calc C8b         'unions in url (input: lowercase url) (WRONGLY computed earlier on text instead of urlLower) 
+				Set<String> C8bmatches = C8b.computeC8b(urlLower);
 				result.append(addResultForCriterie("C8b", C8bmatches));
-				//Calc C8c         
+				//Calc C8c         'unions in htm (input: al text lowercased, tokenized)
 				Set<String> C8cmatches = C8c_from_a_Nov.computeC8cV5(copyTokens(tokens));
 				result.append(addResultForCriterie("C8c", C8cmatches));
 				
@@ -219,23 +224,23 @@ public class CombinedCombo extends EvalFunc<String> {
 				//Calc C9b         'company names in htm
 				Set<String> C9bmatches = C9b.computeC9b(text);
 				result.append(addResultForCriterie("C9b", C9bmatches));
-				Set<String> C9cmatches = C9c.computeC9c(urlLower);
 				//Calc C9c         'company names in url
+				Set<String> C9cmatches = C9c.computeC9c(urlLower);
 				result.append(addResultForCriterie("C9c", C9cmatches));
 				//Calc C9d         'company cvr
 				Set<String> C9dmatches = C9d.computeC9d(text);
 				result.append(addResultForCriterie("C9d", C9dmatches));
-				//Calc C9d
+				//Calc C9e 		   'search for lowercase company-names (input: lowercased text tokenized,  Output: any matches) 
 				Set<String> C9ematches = C9e_from_b_Nov.computeC9eV5(copyTokens(tokens));
 				result.append(addResultForCriterie("C9e", C9ematches));
-				//Calc C9f
+				//Calc C9f          'search for lowercased cvr-number, input: al text lowercased, output: y/n
 				boolean C9f = C9f_from_d_Nov.computeC9f(text);
 				result.append(", C9f: " + (C9f? "y": "n"));
 				
-				//Calc C10a         'surname patterns
+				//Calc C10a         'surname patterns (input: lowercased text, tokenized, output: )
 				Set<String> C10amatches = C10a.computeC10a(text);
 				result.append(addResultForCriterie("C10a", C10amatches));
-				//Calc C10b         'freq. person names
+				//Calc C10b         'freq. person names (input: lowercased text, output: any found names in the text)
 				Set<String> C10bmatches = C10b.computeC10b(text);
 				result.append(addResultForCriterie("C10b", C10bmatches));
 				//Calc C10c		
@@ -248,6 +253,13 @@ public class CombinedCombo extends EvalFunc<String> {
 				//Calc C17a      'The outlinks of the page refers to .dk web pages
 				int c17a = C17.computeC17(links);
 				result.append(", C17a: " + c17a);
+				if (debugMode) {
+					String ctext = CriteriaUtils.toBase64(text); 
+					result.append(", CText: " + ctext);
+					String clinks = TextUtils.conjoin("##", C17.getLinks(links));
+					result.append(", CLinks: " + clinks);
+				}
+				
 			}
 		}
 		return result.toString();

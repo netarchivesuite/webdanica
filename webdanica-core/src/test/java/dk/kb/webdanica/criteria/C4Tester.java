@@ -37,8 +37,9 @@ public class C4Tester {
 		List<String> results = C4.computeNewC4(sampleLangTextFilePath);
 		String c4a = results.get(0);
 		String c4b = results.get(1);
-		System.out.println(c4a);
-		System.out.println(c4b);
+		assertEquals(c4a, "da");
+		assertEquals(c4b, "da: HIGH (0.999995)");
+		
 	}
 
 }
