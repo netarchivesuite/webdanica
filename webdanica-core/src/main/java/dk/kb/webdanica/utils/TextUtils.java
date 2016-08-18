@@ -227,5 +227,5 @@ public class TextUtils {
         Set<String> tokens = TextUtils.tokenizeText(text);
         tokens.retainAll(wordsToFind);
         return tokens;
-    }    
+    }  
 }

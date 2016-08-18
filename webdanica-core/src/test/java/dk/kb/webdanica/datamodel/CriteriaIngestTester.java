@@ -32,9 +32,8 @@ public class CriteriaIngestTester {
 	@Test
 	public void test() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
-		CriteriaIngest ci = new CriteriaIngest();
-		ProcessResult pr = ci.processFile(ingestFile);
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false );
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = ci.processFile(ingestFile);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", false);
 	}
 }

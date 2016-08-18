@@ -171,7 +171,7 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir) throws IOException, SQLException {
+	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		for (HarvestReport h: harvests) {
 			Set<String> errs = new HashSet<String>();
@@ -188,7 +188,7 @@ public class HarvestReport {
 					} else {
 						for (String partfile: partfiles) {
 							File ingest = new File(ingestDir, partfile);
-							ProcessResult pr = CriteriaIngest.processFile(ingest);
+							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase);
 							if (pr.results.isEmpty()) {
 								errs.add("Partfile '" + ingest.getAbsolutePath() 
 										+ "' contained no results.original warc: " + filename);

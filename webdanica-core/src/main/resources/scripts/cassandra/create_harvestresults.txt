@@ -1,0 +1,13 @@
+use webdanica;
+CREATE TABLE harvest_results (
+    seedurl text, 
+    harvestname text,
+    harvested_time bigint,
+    files list<text>,
+    fetched_urls list<text>,
+    seed_report text,
+    crawllog text,
+    PRIMARY KEY (seedurl, harvestname)
+    );
+    
+    

@@ -94,7 +94,8 @@ public class CombinedCombo extends EvalFunc<String> {
 		String url = (String) input.get(0);
 		String urlLower = url.toLowerCase();
 		String timestamp = (String) input.get(1);
-		String text = (String) input.get(2);
+		String textNormal = (String) input.get(2);
+		String text = textNormal.toLowerCase();
 		DataBag links = (DataBag)(input.get(3));
 		String hostname = (String) input.get(4);
 		boolean debugMode = false;
