@@ -1,0 +1,3 @@
+http://localhost:50070/
+http://localhost:8088/
+http://localhost:16010/

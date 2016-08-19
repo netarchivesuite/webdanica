@@ -1,0 +1,115 @@
+[nicl-admin@kb-test-webdanica-001 java]$ sudo tar -zxf /home/nicl-admin/hadoop-2.7.2.tar.gz 
+[nicl-admin@kb-test-webdanica-001 java]$ sudo tar -zxf /home/nicl-admin/hbase-1.1.5-bin.tar.gz 
+[nicl-admin@kb-test-webdanica-001 java]$ sudo tar -zxf /home/nicl-admin/phoenix-4.7.0-HBase-1.1-bin.tar.gz 
+[nicl-admin@kb-test-webdanica-001 java]$ sudo groupadd hadoop
+[nicl-admin@kb-test-webdanica-001 java]$ sudo useradd -G hadoop hduser
+[nicl-admin@kb-test-webdanica-001 java]$ sudo passwd hduser
+[nicl-admin@kb-test-webdanica-001 java]$ sudo ln -s hadoop-2.7.2 hadoop
+[nicl-admin@kb-test-webdanica-001 java]$ sudo ln -s hbase-1.1.5 hbase
+[nicl-admin@kb-test-webdanica-001 java]$ sudo chown -R hduser:hadoop hadoop hadoop-2.7.2 hbase hbase-1.1.5 phoenix-4.7.0-HBase-1.1-bin
+
+
+
+[hduser@kb-test-webdanica-001 ~]$ ssh-keygen -t rsa -P ""
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/hduser/.ssh/id_rsa): 
+Created directory '/home/hduser/.ssh'.
+Your identification has been saved in /home/hduser/.ssh/id_rsa.
+Your public key has been saved in /home/hduser/.ssh/id_rsa.pub.
+The key fingerprint is:
+9b:ff:f3:20:7b:cc:63:f0:41:ee:b4:ac:ba:c2:43:8d hduser@kb-test-webdanica-001.kb.dk
+The key's randomart image is:
++--[ RSA 2048]----+
+|                 |
+|                 |
+|                 |
+|            .    |
+|       oS  o     |
+|      E .o. +    |
+|     o  o .O.o   |
+|      +  . o%.   |
+|       ooo+=.+.  |
++-----------------+
+[hduser@kb-test-webdanica-001 ~]$ cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+[hduser@kb-test-webdanica-001 ~]$ ssh localhost
+The authenticity of host 'localhost (::1)' can't be established.
+RSA key fingerprint is 9a:bd:07:b7:39:02:60:43:fc:69:9e:37:1f:71:4e:fa.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'localhost' (RSA) to the list of known hosts.
+hduser@localhost's password: 
+Last login: Mon Jul 18 15:05:12 2016 from localhost
+[hduser@kb-test-webdanica-001 ~]$ 
+
+
+
+/etc/ssh/sshd_config
+--------------------
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile      .ssh/authorized_keys
+AuthorizedKeysCommand none
+AuthorizedKeysCommandRunAs nobody
+
+
+
+.ssh/
+-----
+Jul 18 15:10:47 kb-test-webdanica-001 sshd[4660]: Authentication refused: bad ownership or modes for file /home/hduser/.ssh/authorized_keys
+
+chmod u=rwx,g=,o= .ssh
+chmod u=rw,g=,o= .ssh/authorized_keys
+chmod u=rw,g=,o= .ssh/id_?sa
+
+
+
+.bashrc
+-------
+# Set Hadoop-related environment variables
+export HADOOP_HOME=/usr/local/hadoop
+
+# Set JAVA_HOME (we will also configure JAVA_HOME directly for Hadoop later on)
+export JAVA_HOME=/usr/java/jdk1.8.0_60_x64
+
+# Some convenient aliases and functions for running Hadoop-related commands
+unalias fs &> /dev/null
+alias fs="hadoop fs"
+unalias hls &> /dev/null
+alias hls="fs -ls"
+
+# If you have LZO compression enabled in your Hadoop cluster and
+# compress job outputs with LZOP (not covered in this tutorial):
+# Conveniently inspect an LZOP compressed file from the command
+# line; run via:
+#
+# $ lzohead /hdfs/path/to/lzop/compressed/file.lzo
+#
+# Requires installed 'lzop' command.
+#
+lzohead () {
+    hadoop fs -cat $1 | lzop -dc | head -1000 | less
+}
+
+# Add Hadoop bin/ directory to PATH
+export PATH=$PATH:$HADOOP_HOME/bin
+
+
+
+$JAVA_HOME
+----------
+emacs /home/hduser/.bashrc 
+emacs hadoop/etc/hadoop/hadoop-env.sh 
+emacs hbase/conf/hbase-env.sh 
+
+
+
+-rw-r--r-- 1 hduser hadoop 25649710 Mar  3 21:50 phoenix-4.7.0-HBase-1.1-server.jar
+-----------------------------------------------------------------------------------
+cp phoenix-4.7.0-HBase-1.1-bin/phoenix-4.7.0-HBase-1.1-server.jar hbase/lib/
+
+
+
+hadoop/bin/hdfs namenode -format
+
+hadoop/sbin/start-dfs.sh 
+hadoop/sbin/start-yarn.sh 
+hbase/bin/start-hbase.sh 
