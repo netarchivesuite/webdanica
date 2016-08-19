@@ -77,7 +77,35 @@ public class SettingsUtilities {
 	    return returnValue;
     }
 
+	/**
+	 * test if property file is defined by the given propertyKey. If not call
+	 * System.exit(1);
+	 * @param propertyKey a key for a property
+	 */
+	public static void testPropertyFile(String propertyKey){
+		String setting = System.getProperty(propertyKey);
+		if (setting == null) {
+			System.err.println("Required java property '" + propertyKey + "' is undefined");
+			System.exit(1);
+		}
+		File settingsFile = new File(setting);
 	
+		if (!settingsFile.exists()) {
+			System.err.println("The settings file defined by property '" + propertyKey + "' does not exist: " 
+					+ settingsFile.getAbsolutePath() + "' does not exist");
+			System.exit(1);
+		}
+	}
+
+	public static void verifyClassOrExit(String dbdriver) {
+		try {
+			Class.forName(dbdriver);
+		} catch (ClassNotFoundException e) {
+			System.out.println("Required class '" + dbdriver + "' not found in classpath");
+			System.out.println("Program terminated");
+			System.exit(1);
+		}
+    }
 	
 }
 

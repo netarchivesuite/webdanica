@@ -25,8 +25,11 @@ import dk.netarkivet.common.utils.StringUtils;
  * specified by the system property {@link #SETTINGS_FILE_PROPERTY}, multiple files can be separated by
  * {@link File#pathSeparator}, that is ':' on linux and ';' on windows; or if that property is not set, the default
  * location is {@link #DEFAULT_SETTINGS_FILEPATH}.
+ * 
+ * Slight modification of dk.netarkivet.common.utils.Settings that uses the property webdanica.settings.file instead of dk.netarkivet.settings.file
+ * and that doesn't look for default values in the classpath
+ * 
  */
-
 public class Settings {
 
 	/** Logger for this class. */

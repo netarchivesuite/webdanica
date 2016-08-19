@@ -3,8 +3,10 @@ package dk.kb.webdanica.criteria;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.pig.EvalFunc;
 import org.apache.pig.backend.executionengine.ExecException;
@@ -82,4 +84,17 @@ public class C17 extends EvalFunc<String>{
         return foundDKoutLinks;
     }
 
+	public static Set<String> getLinks(DataBag links) throws ExecException{
+		Set<String> linkSet = new HashSet<String>();
+        if (links != null) {
+            Iterator<Tuple> i = links.iterator();
+            while (i.hasNext()) {
+                Tuple o = i.next();
+                Map o1 = (Map) o.get(0);
+                String url = (String) o1.get("url");
+                linkSet.add(url);
+            }
+        }
+        return linkSet;
+    }
 }

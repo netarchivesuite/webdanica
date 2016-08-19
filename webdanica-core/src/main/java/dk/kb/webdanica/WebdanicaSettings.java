@@ -12,10 +12,12 @@ public class WebdanicaSettings {
 	public static String MAIL_ADMIN = "settings.mail.admin";
 	
 	/** seeds settings. */
-	
 	public static String IGNORED_PROTOCOLS = "settings.seeds.ignoredProtocols.protocol";
-    
 	public static String IGNORED_SUFFIXES = "settings.seeds.ignoredSuffixes.suffix";
+	
+	/** harvesting settings. */
+	public static String HARVESTING_TEMPLATE = "settings.harvesting.template";
+	public static String HARVESTING_SCHEDULE = "settings.harvesting.schedule";
 	
 	/** webapp settings */
 	

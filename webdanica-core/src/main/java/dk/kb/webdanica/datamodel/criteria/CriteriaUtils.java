@@ -1,14 +1,19 @@
 package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.Inflater;
 
 import dk.kb.webdanica.criteria.Words;
+import dk.kb.webdanica.utils.Base64;
+import dk.kb.webdanica.utils.StringCompressor;
 import dk.kb.webdanica.utils.TextUtils;
 
 public class CriteriaUtils {
@@ -216,6 +221,27 @@ public class CriteriaUtils {
 		return s;
 	}
 
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public static String compress(String text) {
+		byte[] bytes = StringCompressor.compress(text);
+		return Base64.encodeBytes(bytes);
+    }
 	
+	public static String decompress(String text) throws IOException {
+		byte[] bytes = Base64.decode(text);
+		return StringCompressor.decompress(bytes);
+    }
+
+	public static String toBase64(String text) throws UnsupportedEncodingException {
+		return Base64.encodeBytes(text.getBytes("UTF-8"));
+    }
 	
+	public static String fromBase64(String text) throws IOException {
+		byte[] bytes = Base64.decode(text.getBytes("UTF-8"));
+		return new String(bytes, "UTF-8");
+    }
 }

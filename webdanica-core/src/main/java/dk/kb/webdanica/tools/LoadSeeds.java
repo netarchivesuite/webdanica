@@ -68,8 +68,10 @@ public class LoadSeeds {
 		
 		IngestLog res = loadseeds.processSeeds();
 		System.out.println(res.getStatistics());
-		System.out.println("Acceptlog in file: " + loadseeds.getAcceptLog());
-		System.out.println("Rejectlog in file: " + loadseeds.getRejectLog());
+		File acceptLog = loadseeds.getAcceptLog();
+		File rejectLog = loadseeds.getRejectLog();
+		System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
+		System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath()));
 		
 	}
 	/**

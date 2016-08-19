@@ -1,0 +1,31 @@
+/home/hadoop/pig-0.12.0/bin/pig -x local -f scripts/criteriaRun-1.pig -param input="/data1/SEQ/11-03-2014/Known*"
+/home/hadoop/pig-0.12.0/bin/pig -x local -f scripts/criteriaRun-1.pig -param input="/data1/SEQ/31-01-2014/Webdanica*"
+
+/home/hadoop/pig-0.12.0/bin/pig -x local -f scripts/criteriaRun-3.pig -param input="/data1/SEQ/11-03-2014/Known*"
+/home/hadoop/pig-0.12.0/bin/pig -x local -f scripts/criteriaRun-3.pig -param input="/data1/SEQ/11-03-2014/Webdanica*"
+
+
+
+
+
+
+Building PigUnit
+===============
+To compile PigUnit (pigunit.jar), run this command from the Pig trunk:
+
+cd pig-distribution
+ant pigunit-jar   
+
+
+
+
+
+pig -x local -secretDebugCmd
+Find hadoop at /home/hadoop/hadoop-0.20.1/bin/hadoop
+dry run:
+HADOOP_CLASSPATH: /home/hadoop/pig-0.12.0/bin/../conf:/usr/java/jdk1.7.0_17-x32/lib/tools.jar:/home/hadoop/pig-0.12.0/bin/../lib/jython-standalone-2.5.3.jar:/home/hadoop/pig-0.12.0/bin/../pig-0.12.0-withouthadoop.jar:
+HADOOP_OPTS: -Xmx1000m  -Dpig.log.dir=/home/hadoop/pig-0.12.0/bin/../logs -Dpig.log.file=pig.log -Dpig.home.dir=/home/hadoop/pig-0.12.0/bin/.. 
+/home/hadoop/hadoop-0.20.1/bin/hadoop jar /home/hadoop/pig-0.12.0/bin/../pig-0.12.0-withouthadoop.jar -x local
+
+[hadoop@kb-test-webdania-001 ~]$ 
+

@@ -2,6 +2,9 @@ package dk.kb.webdanica.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,4 +58,25 @@ public class SystemUtils {
         LOG.warning("Hostname undetermined");
         throw new UnknownHostException("Hostname undetermined");
     }
+
+	/**
+     * Arc-style date stamp in the format yyyyMMddHHmmssSSS and UTC time zone.
+     */
+    private static final ThreadLocal<SimpleDateFormat> 
+    TIMESTAMP17 = threadLocalDateFormat("yyyyMMddHHmmssSSS");
+
+    public static String get17DigitDate(Date date){
+    	return TIMESTAMP17.get().format(date);
+    }
+
+    private static ThreadLocal<SimpleDateFormat> threadLocalDateFormat(final String pattern) {
+    	ThreadLocal<SimpleDateFormat> tl = new ThreadLocal<SimpleDateFormat>() {
+    		protected SimpleDateFormat initialValue() {
+    			SimpleDateFormat df = new SimpleDateFormat(pattern);
+    			df.setTimeZone(TimeZone.getTimeZone("UTC"));
+    			return df;
+    		}
+    	};
+    	return tl;
+    }    
 }
