@@ -1,11 +1,6 @@
 package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +44,8 @@ public class SingleCriteriaResult {
 	// Database fields
 	public long insertedDate;
 	public long updatedDate;
+
+	private String errorMsg;
     
 	public List<String> getClinks() {
 		return CLinks;
@@ -256,15 +253,14 @@ public class SingleCriteriaResult {
         ); 
     	return t;
     }
-    /** Used by ???
-     *  A sort of toString method ??
+    /**
+     *  A sort of toString method for this class
      *  
      * @param row_delim
      * @param keyval_delim
      * @return
      */
     public String getValuesInString(String row_delim, String keyval_delim) {
-    	//EXCEPT Url and date!!
     	String s = "";
     	s = s + "url" + keyval_delim + this.url;
     	s = s + row_delim + "date" + keyval_delim + this.Cext3; 
@@ -279,7 +275,32 @@ public class SingleCriteriaResult {
     	s = s + row_delim + "Source" + keyval_delim + this.source; //48
     	s = s + row_delim + "calcDanishCode" + keyval_delim + this.calcDanishCode; //49
     	return s;
+    }
+    
+    public List<String> getValuesAsStringList(String row_delim, String keyval_delim) {
+    	List<String> list = new ArrayList<String>();
+    	list.add("url" + keyval_delim + this.url);
+    	list.add("date" + keyval_delim + this.Cext3); 
+    	list.add("Cext1/extsize" + keyval_delim + this.Cext1); //3
+    	list.add("Cext2/extDblChar" + keyval_delim + this.Cext2); //4
+    	
+    	for (String c: StringCriteria) {
+    		list.add(c + keyval_delim + (this.C.get(c) != null?this.C.get(c).replace(row_delim, ","):""));
+    	}
+
+    	list.add("intDanish" + keyval_delim + this.intDanish); //47
+    	list.add("Source" + keyval_delim + this.source); //48
+    	list.add("calcDanishCode" + keyval_delim + this.calcDanishCode); //49
+    	return list;
+    }
+
+    public static SingleCriteriaResult createErrorResult(String error) {
+		SingleCriteriaResult s = new SingleCriteriaResult();
+		s.errorMsg = error;
+	    return s;
     } 
     
-    
+	public boolean isError() {
+		return errorMsg != null;
+	}
 }

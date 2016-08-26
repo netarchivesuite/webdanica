@@ -36,6 +36,7 @@ public class HarvestReport {
 	public final static String successfulPattern = "Successful: ";
 	public final static String endstatePattern = "EndState: ";
 	public final static String filesPattern = "Files harvested: ";
+	public final static String errorPattern = "Errors: ";
 	
 	public String seed;
 	public String harvestName;
@@ -45,7 +46,13 @@ public class HarvestReport {
 	public List<SingleCriteriaResult> results;
 	private boolean resultsInitiated;
 	private Set<String> errors;
+	private String error;
 
+	
+	public boolean hasError() {
+		return error != null;
+	}
+	
 	public static List<HarvestReport> readHarvestLog(File harvestlog) throws IOException {
 		List<HarvestReport> results = new ArrayList<HarvestReport>();
 
@@ -62,6 +69,10 @@ public class HarvestReport {
 					// Skip line
 				} else {
 					if (line.startsWith(seedPattern)) {
+						// add harvestReport if current != null
+						if (current != null) {
+							results.add(current);
+						}
 						// start new harvest
 						current = new HarvestReport();
 						current.seed = line.split(seedPattern)[1];
@@ -74,10 +85,16 @@ public class HarvestReport {
 					} else if (line.startsWith(filesPattern)) {
 						String files = line.split(filesPattern)[1];
 						current.FilesHarvested = files.split(",");
-						results.add(current);
+					} else if (line.startsWith(errorPattern)) {
+						String error = line.split(errorPattern)[1];
+						current.error = error;
+					} else {
+						System.err.println("Ignoring line: " + line);
 					}
+			
 				}
 			};
+			results.add(current); // add the last one to the list
 		} finally {
 			IOUtils.closeQuietly(fr);
 		}

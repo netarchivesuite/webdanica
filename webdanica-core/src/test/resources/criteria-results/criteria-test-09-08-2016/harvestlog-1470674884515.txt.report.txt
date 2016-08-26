@@ -1,0 +1,70 @@
+################################################
+Analysis of harvest of seed http://www.guldbrandsen.net/kontakt/
+################################################
+url:http://www.guldbrandsen.net/kontakt/,date:2016-08-08 16:31:25.0,extSize:527,extDblChar:101,C1a:0,C2a:0,C2b:n,C3a:2 ø#æ,C3b:2 to#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999994),C5a:1 af,C5b:0,C6a:9 om#du#side#navn#musik#tv#mig#en#af,C6b:0,C6c:0,C6d:8 om#du#side#navn#musik#mig#en#af,C7a:0,C7b:0,C7c:11 bo#lev#or#øje#vig#lse#by#ing#er#sig#hem,C7d:0,C7e:0,C7f:0,C7g:0,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:1 cvr,C9e:0,C9f:n,C10a:1 guldbrandsen,C10b:2 per#jesper,C10c:1 jesper,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-61286
+
+
+################################################
+Analysis of harvest of seed http://maarslet.net/
+################################################
+url:http://maarslet.net/,date:2016-08-08 16:32:54.0,extSize:88,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:2 aar#maa,C3e:0,C3f:0,C3g:0,C4a:so,C4b:so: MEDIUM (0.571426)#ht: MEDIUM (0.142859),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:2 lok#bo,C7d:1 aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:102
+
+url:http://maarslet.net/system/forside/l-v.htm,date:2016-08-08 16:32:56.0,extSize:26,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:3 aar#for#maa,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: MEDIUM (0.700348)#no: MEDIUM (0.298642),C5a:0,C5b:0,C6a:2 luft#venstre,C6b:0,C6c:0,C6d:2 luft#venstre,C7a:0,C7b:0,C7c:1 ns,C7d:2 or#aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:107
+
+url:http://maarslet.net/system/forside/top.php,date:2016-08-08 16:32:57.0,extSize:324,extDblChar:103,C1a:0,C2a:0,C2b:n,C3a:2 ø#æ,C3b:4 to#for#fore#go,C3c:0,C3d:4 to#aar#for#maa,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999994),C5a:0,C5b:0,C6a:6 til#om#folk#hjælp#i#tilbage,C6b:1 forening,C6c:0,C6d:4 til#om#hjælp#tilbage,C7a:0,C7b:0,C7c:9 lok#ns#inge#or#ore#by#ing#lt#er,C7d:2 or#aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:2 inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:1,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-18382
+
+
+################################################
+Analysis of harvest of seed https://www.domainnameshop.com/?currency=DKK&lang=da
+################################################
+url:https://www.domainnameshop.com/?currency=DKK&lang=da,date:2016-08-08 16:35:03.0,extSize:2424,extDblChar:105,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:4 to#rod#do#tor,C3c:0,C3d:1 do,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999996),C5a:1 af,C5b:0,C6a:21 til#ændre#om#og#betale#os#svar#vi#kom#min#i#gang#et#er#ind#hjælp#fra#nå#alle#må#af,C6b:0,C6c:0,C6d:19 til#ændre#om#og#betale#os#svar#vi#kom#gang#et#er#ind#hjælp#fra#nå#alle#må#af,C7a:0,C7b:0,C7c:11 ør#ov#rod#inge#or#ie#ore#å#by#ing#er,C7d:0,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:1 name,C9d:0,C9e:0,C9f:n,C10a:0,C10b:3 inge#inger#maria,C10c:0,C15a:y,C15b:com,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-22343
+
+
+################################################
+Analysis of harvest of seed http://maddansk.net/index2.htm
+################################################
+url:http://maddansk.net/index2.htm,date:2016-08-08 16:36:23.0,extSize:221,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:1 å,C3b:2 dor#do,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:sv,C4b:sv: HIGH (0.999996),C5a:,C5b:,C6a:5 med#kan#se#usa#på,C6b:1 dansk,C6c:1 dansk,C6d:3 med#kan#på,C7a:0,C7b:0,C7c:6 bo#ns#or#å#er#hem,C7d:1 ns,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:1 webbplatsen,C10b:1 erik,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-34638
+
+url:http://maddansk.net/vanster.htm,date:2016-08-08 16:36:27.0,extSize:16,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:af,C4b:af: HIGH (0.906718),C5a:,C5b:,C6a:0,C6b:0,C6c:1 dansk,C6d:0,C7a:0,C7b:0,C7c:2 ns#er,C7d:2 ns#er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:101
+
+url:http://maddansk.net/meny.htm,date:2016-08-08 16:36:29.0,extSize:30,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:so,C4b:so: MEDIUM (0.714285)#id: MEDIUM (0.142857)#sv: MEDIUM (0.142857),C5a:,C5b:,C6a:0,C6b:1 dansk,C6c:1 dansk,C6d:0,C7a:0,C7b:0,C7c:1 ns,C7d:1 ns,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:101
+
+
+################################################
+Analysis of harvest of seed http://www.newgear.net/
+################################################
+url:http://www.newgear.net/,date:2016-08-08 16:37:54.0,extSize:5070,extDblChar:106,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:6 to#for#son#fore#tor#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:da,C4b:da: HIGH (0.999996),C5a:1 af,C5b:0,C6a:53 du#give#vi#kvinde#i#en#et#er#to#medlem#har#på#bo#se#tilfreds#med#fra#brug#alle#alt#at#dansk#af#tilbage#til#for#eller#flere#helt#om#her#og#mand#form#kan#følge#andersen#vis#godt#det#søge#bruge#hvis#mig#denne#lære#søren#mere#dette#fortsætte#modtage#fysisk#få,C6b:1 dansk,C6c:0,C6d:44 du#vi#kvinde#en#et#er#medlem#har#på#tilfreds#med#fra#brug#alle#alt#dansk#af#tilbage#til#eller#flere#helt#om#her#og#mand#form#kan#følge#vis#det#godt#søge#bruge#hvis#mig#denne#lære#mere#dette#fortsætte#modtage#fysisk#få,C7a:1 roskilde,C7b:0,C7c:22 ør#rp#ns#øre#øv#høj#or#ore#mark#å#lt#ing#um#køb#kilde#bo#holm#ie#nse#ker#er#sig,C7d:0,C7e:1 denmark,C7f:0,C7g:1 roskilde,C7h:1 denmark,C8a:1 kl,C8b:0,C8c:0,C9a:0,C9b:1 iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:3 christensen#thomsen#andersen,C10b:8 christian#per#karen#christensen#thomsen#andersen#søren#anders,C10c:5 thomsen#christensen#andersen#karen#søren,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1245023
+
+
+################################################
+Analysis of harvest of seed http://eltjek.net/Om-Eltjek.net/om-firmaet-bag-eltjek-net
+################################################
+url:http://eltjek.net/Om-Eltjek.net/om-firmaet-bag-eltjek-net,date:2016-08-08 16:39:53.0,extSize:4923,extDblChar:101,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:8 to#oje#oge#for#do#son#fore#tor,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:da,C4b:da: HIGH (0.999993),C5a:2 af#nu,C5b:0,C6a:60 personlig#jeg#blive#du#vi#give#de#side#man#i#uden#mulighed#en#et#ved#er#to#har#på#egentlig#forbindelse#område#pris#skabe#med#brug#alle#siden#noget#udføre#men#at#lille#arbejde#af#nu#til#for#sag#eller#helt#drive#om#og#mand#som#virksomhed#der#det#selv#den#end#hele#stilling#denne#mere#også#stor#samme#ikke,C6b:1 forening,C6c:0,C6d:51 personlig#jeg#blive#du#vi#de#side#uden#mulighed#en#et#er#ved#har#på#egentlig#forbindelse#område#pris#skabe#med#brug#alle#siden#noget#udføre#lille#arbejde#af#nu#til#sag#eller#helt#om#og#mand#som#virksomhed#der#det#selv#den#hele#stilling#denne#mere#også#stor#samme#ikke,C7a:1 vejle,C7b:0,C7c:27 ns#bol#ore#borg#by#lt#bo#ie#ker#lse#ør#ov#lev#øre#bæk#inge#or#å#ing#um#køb#bjerg#oje#lte#ved#skov#er,C7d:1 lt,C7e:0,C7f:0,C7g:0,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:2 dong energy#dsb,C9c:0,C9d:2 cvr#cvr-nr,C9e:1 dsb,C9f:n,C10a:1 fuldtidsbeskæftigelsen,C10b:4 christian#per#inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1171327
+
+
+################################################
+Analysis of harvest of seed http://munchow.net/claus/
+################################################
+url:http://munchow.net/claus/,date:2016-08-08 16:41:24.0,extSize:735,extDblChar:104,C1a:0,C2a:0,C2b:n,C3a:3 ø#æ#å,C3b:5 to#for#los#aaben#tor,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999995),C5a:2 nu#af,C5b:0,C6a:18 nu#for#sag#jeg#blev#bare#og#os#så#det#fik#den#formand#min#lidt#at#er#af,C6b:0,C6c:0,C6d:15 nu#sag#jeg#blev#bare#og#os#så#det#fik#den#formand#lidt#er#af,C7a:1 sønderborg,C7b:0,C7c:12 bjerg#bo#ns#lev#inge#or#ie#aa#borg#å#ing#er,C7d:0,C7e:0,C7f:0,C7g:1 sønderborg,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:1 sas,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:3 per#inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:1,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-155606
+
+
+################################################
+Analysis of harvest of seed nordicwomensliterature.net
+################################################
+Errors found: Partfile '/home/svc/devel/webdanica/criteria-test-09-08-2016/09-08-2016-1470760002/82-68-20160808164252264-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz' contained no results.original warc: 82-68-20160808164252264-00000-dia-prod-udv-01.kb.dk.warc.gz
+No results found for seed
+
+################################################
+Analysis of harvest of seed http://rockfreaks.net/
+################################################
+url:http://rockfreaks.net/,date:2016-08-08 16:44:53.0,extSize:27044,extDblChar:101,C1a:0,C2a:0,C2b:n,C3a:3 ø#æ#å,C3b:11 to#dor#lob#rod#oje#for#lobe#do#son#tor#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:en,C4b:en: HIGH (0.999995),C5a:,C5b:,C6a:19 time#i#plan#århus#radio#over#de#by#alt#at#to#fra#lille#kommer#for#den#hun#have#fin,C6b:0,C6c:0,C6d:10 time#århus#de#alt#fra#lille#kommer#den#hun#fin,C7a:2 århus#odense,C7b:0,C7c:31 rp#ns#ore#by#lt#rum#bo#holm#ie#ager#ker#hem#torp#ør#ov#inge#sund#or#å#mark#ing#um#kob#sted#rod#oje#nse#aa#lte#er#ved,C7d:0,C7e:2 copenhagen#denmark,C7f:0,C7g:1 århus,C7h:1 denmark,C8a:2 mask#koda,C8b:0,C8c:1 mask,C9a:0,C9b:4 ambu#eas#iss#torm,C9c:0,C9d:0,C9e:0,C9f:n,C10a:1 nissen,C10b:6 per#inge#jan#inger#helle#ole,C10c:0,C15a:y,C15b:net,C16a:,C17a:23,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1302482
+
+
+################################################
+Analysis of harvest of seed http://www.orchidaceae.net/?caf&query=Orchid%20plants%20seeds%20bulbs&afdToken=CkgKEwjkyLvr5qnOAhVzIXIKHb54BV4YASADcRVwl4LDU__KggETCJqKvOvmqc4CFekjcgodtTEABo0B5nvUVZEBQeN9uTZRONgSGQBtOoqQWRhz-9fz_lfKJn-3k-upGDhtemU
+################################################
+url:http://www.orchidaceae.net/?caf&query=Orchid%20plants%20seeds%20bulbs&afdToken=CkgKEwjkyLvr5qnOAhVzIXIKHb54BV4YASADcRVwl4LDU__KggETCJqKvOvmqc4CFekjcgodtTEABo0B5nvUVZEBQeN9uTZRONgSGQBtOoqQWRhz-9fz_lfKJn-3k-upGDhtemU,date:2016-08-08 16:46:54.0,extSize:667,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:3 to#for#do,C3c:0,C3d:2 to#go,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999997),C5a:,C5b:,C6a:1 by,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:10 bo#ov#ns#or#ore#mark#by#ing#er#ved,C7d:4 bo#ov#or#er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:2 eas#iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-21824
+
+url:http://www.orchidaceae.net/,date:2016-08-08 16:46:56.0,extSize:667,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:3 to#for#do,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999997),C5a:,C5b:,C6a:1 by,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:10 bo#ov#ns#or#ore#mark#by#ing#er#ved,C7d:1 or,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:2 eas#iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-21824
+
+

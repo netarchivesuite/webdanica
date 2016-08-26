@@ -1,0 +1,62 @@
+Harvestlog for  seedfile /home/test/harvestTrials/seeds-jei-05-08-2016.txt
+################################################################################
+Seed: http://www.guldbrandsen.net/kontakt/
+HarvestName: webdanica-trial-1470673859950
+Successful: true
+EndState: DONE
+Files harvested: 75-61-20160808163122905-00000-dia-prod-udv-01.kb.dk.warc.gz,75-metadata-1.warc
+################################################################################
+Seed: http://maarslet.net/
+HarvestName: webdanica-trial-1470673956563
+Successful: true
+EndState: DONE
+Files harvested: 76-62-20160808163252277-00000-dia-prod-udv-01.kb.dk.warc.gz,76-metadata-1.warc
+################################################################################
+Seed: https://www.domainnameshop.com/?currency=DKK&lang=da
+HarvestName: webdanica-trial-1470674057005
+Successful: true
+EndState: DONE
+Files harvested: 77-63-20160808163452230-00000-dia-prod-udv-01.kb.dk.warc.gz,77-metadata-1.warc
+################################################################################
+Seed: http://maddansk.net/index2.htm
+HarvestName: webdanica-trial-1470674157349
+Successful: true
+EndState: DONE
+Files harvested: 78-64-20160808163621926-00000-dia-prod-udv-01.kb.dk.warc.gz,78-metadata-1.warc
+################################################################################
+Seed: http://www.newgear.net/
+HarvestName: webdanica-trial-1470674257681
+Successful: true
+EndState: DONE
+Files harvested: 79-65-20160808163752099-00000-dia-prod-udv-01.kb.dk.warc.gz,79-metadata-1.warc
+################################################################################
+Seed: http://eltjek.net/Om-Eltjek.net/om-firmaet-bag-eltjek-net
+HarvestName: webdanica-trial-1470674358040
+Successful: true
+EndState: DONE
+Files harvested: 80-66-20160808163951822-00000-dia-prod-udv-01.kb.dk.warc.gz,80-metadata-1.warc
+################################################################################
+Seed: http://munchow.net/claus/
+HarvestName: webdanica-trial-1470674458363
+Successful: true
+EndState: DONE
+Files harvested: 81-67-20160808164122199-00000-dia-prod-udv-01.kb.dk.warc.gz,81-metadata-1.warc
+################################################################################
+Seed: nordicwomensliterature.net
+HarvestName: webdanica-trial-1470674558623
+Successful: true
+EndState: DONE
+Files harvested: 82-68-20160808164252264-00000-dia-prod-udv-01.kb.dk.warc.gz,82-metadata-1.warc
+################################################################################
+Seed: http://rockfreaks.net/
+HarvestName: webdanica-trial-1470674658917
+Successful: true
+EndState: DONE
+Files harvested: 83-69-20160808164452030-00000-dia-prod-udv-01.kb.dk.warc.gz,83-metadata-1.warc
+################################################################################
+Seed: http://www.orchidaceae.net/?caf&query=Orchid%20plants%20seeds%20bulbs&afdToken=CkgKEwjkyLvr5qnOAhVzIXIKHb54BV4YASADcRVwl4LDU__KggETCJqKvOvmqc4CFekjcgodtTEABo0B5nvUVZEBQeN9uTZRONgSGQBtOoqQWRhz-9fz_lfKJn-3k-upGDhtemU
+HarvestName: webdanica-trial-1470674784214
+Successful: true
+EndState: DONE
+Files harvested: 84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz,84-metadata-1.warc
+################################################################################

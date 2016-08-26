@@ -300,4 +300,8 @@ public class CassandraCriteriaResultsDAO {
 		BoundStatement bStatement = deleteAllWithUrlAndHarvestnamestatement.bind(url, harvestname);
 		session.execute(bStatement);
     }
+
+	public SingleCriteriaResult getResult(String url, String harvest, String seeduri) {
+	    return null;
+    }
 }

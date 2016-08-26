@@ -48,6 +48,9 @@ public class Harvest {
 		SettingsUtilities.testPropertyFile(NETARCHIVESUITE_SETTING_PROPERTY_KEY);
 		String scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
 		String templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
+		int harvestMaxObjects = Settings.getInt(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
+		long harvestMaxBytes = Settings.getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
+		String harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
 
 		// Verify that database driver exists in classpath. If not exit program
 		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
@@ -65,12 +68,12 @@ public class Harvest {
 		
 		if (argumentIsSeedFile) {
 			System.out.println("harvesting based on seeds from file '" + argumentAsFile.getAbsolutePath() + "'");
-			results = doSeriesOfharvests(argumentAsFile, scheduleName, templateName);
+			results = doSeriesOfharvests(argumentAsFile, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
 		} else {
 			URL_REJECT_REASON reason = UrlUtils.isRejectableURL(argument);
 			if (reason.equals(URL_REJECT_REASON.NONE)) {
 				System.out.println("Do single harvest of seed '" + argument + "'");
-				SingleSeedHarvest result = doSingleHarvest(argument, scheduleName, templateName);
+				SingleSeedHarvest result = doSingleHarvest(argument, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
 				
 				results.add(result);
 			} else {
@@ -106,11 +109,11 @@ public class Harvest {
 	}
 
 	private static SingleSeedHarvest doSingleHarvest(String seed, String scheduleName,
-            String templateName) {
+            String templateName, String harvestPrefix, long maxBytes, int maxObjects) {
 		final String prefix = "webdanica-trial-";
 		String eventHarvestName = prefix + System.currentTimeMillis();
 		
-	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName);
+	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName, maxBytes, maxObjects);
 	    boolean success = ssh.finishHarvest();
 	    System.out.println("Harvest of seed '" + seed + "': " + (success? "succeeded":"failed"));
 	    return ssh;
@@ -118,7 +121,7 @@ public class Harvest {
     }
 
 	private static List<SingleSeedHarvest> doSeriesOfharvests(File argumentAsFile,
-            String scheduleName, String templateName) {
+            String scheduleName, String templateName, String harvestPrefix, long harvestMaxBytes, int harvestMaxObjects) {
 		
 		BufferedReader fr = null;
 		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
@@ -136,12 +139,13 @@ public class Harvest {
 	        while ((line = fr.readLine()) != null) {
 	        	seed = line.trim();
 	        	if (!seed.isEmpty()) {
-	        		SingleSeedHarvest ssh = doSingleHarvest(seed, scheduleName, templateName);
+	        		SingleSeedHarvest ssh = doSingleHarvest(seed, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
 	        		results.add(ssh);
 	        	}
 	        }
-        } catch (IOException e) {	        
-	        e.printStackTrace();
+        } catch (Throwable e) {	        
+        	SingleSeedHarvest s = SingleSeedHarvest.getErrorObject(seed, "Harvest Failed", e);
+        	results.add(s);
         } finally {
         	IOUtils.closeQuietly(fr);
         }

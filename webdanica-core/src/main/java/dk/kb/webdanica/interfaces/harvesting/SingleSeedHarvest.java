@@ -28,6 +28,7 @@ import dk.netarkivet.harvester.datamodel.PartialHarvest;
 import dk.netarkivet.harvester.datamodel.Schedule;
 import dk.netarkivet.harvester.datamodel.ScheduleDAO;
 import dk.netarkivet.harvester.datamodel.DomainConfiguration;
+import dk.netarkivet.harvester.datamodel.TemplateDAO;
 import dk.netarkivet.harvester.webinterface.HarvestStatus;
 import dk.netarkivet.harvester.webinterface.HarvestStatusQuery;
 import dk.netarkivet.viewerproxy.webinterface.Reporting;
@@ -51,7 +52,11 @@ public class SingleSeedHarvest {
 	private List<String> files;
 	private JobStatusInfo statusInfo;
 	private Map<String, String> reportMap;
+	private String errMsg;
 	private boolean successful;
+	private Throwable exception;
+	private long maxBytes;
+	private int maxObjects;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
@@ -62,8 +67,10 @@ public class SingleSeedHarvest {
 	public static void main (String[] args) throws Throwable {
 		// Verify that netarchiveSuite settings file is defined and exists
 		SettingsUtilities.testPropertyFile("dk.netarkivet.settings.file");
+		long maxBytes = 10000L;
+		int maxOjects = 10000;
 		SingleSeedHarvest ph = new SingleSeedHarvest("http://www.familien-carlsen.dk", 
-				"test1" + System.currentTimeMillis(), "Once", "webdanica_order");
+				"test1" + System.currentTimeMillis(), "Once", "webdanica_order", maxBytes, maxOjects);
 		boolean success = ph.finishHarvest();
 		System.out.println("Harvest was successful: " + success);
 		System.out.println("final state of harvest: " + ph.getFinalState());
@@ -71,17 +78,26 @@ public class SingleSeedHarvest {
 	}	
 	
 	/**
-	 * TODO check that a schedule with the given scheduleName exists, and that a template with the templateName exists.
-	 * 
 	 * @param seed
 	 * @param eventHarvestName
 	 * @param scheduleName
 	 * @param templateName
+	 * @param maxBytes
+	 * @param maxObjects
 	 */
-	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName) {
+	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName, long maxBytes, int maxObjects) {
 		this.seed = seed;
 		this.evName = eventHarvestName;
 		List<DomainConfiguration> noDcs = new ArrayList<DomainConfiguration>();
+		this.maxBytes = maxBytes;
+		this.maxObjects = maxObjects;
+		
+		if (!ScheduleDAO.getInstance().exists(scheduleName)) {
+			throw new WebdanicaException("The chosen schedule with name '" + scheduleName + "' does not exist");
+		}
+		if (!TemplateDAO.getInstance().exists(templateName)) {
+			throw new WebdanicaException("The chosen heritrix template with name '" + templateName + "' does not exist");
+		}
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
 		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "event harvest created by webdanica system at " + new Date(), "No specific audience");
 		HarvestDefinitionDAO.getInstance().create(hd);
@@ -90,13 +106,24 @@ public class SingleSeedHarvest {
 		PartialHarvest eventHarvest = (PartialHarvest) HarvestDefinitionDAO.getInstance().getHarvestDefinition(eventHarvestName);
 		Set<String> seedSet = new HashSet<String>();
 		seedSet.add(seed);
-		long maxBytes = 10000L; // TODO What to write here, if we want to disable quotaenforcing
-		int maxObjects = 10000; // TODO What to write here, if we want to disable quotaenforcing
+		
 		eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
 		eventHarvest.setActive(true);
 		HarvestDefinitionDAO.getInstance().update(eventHarvest);		 
 	}
 	
+	public static SingleSeedHarvest getErrorObject(String seed, String error, Throwable e) {
+		SingleSeedHarvest s = new SingleSeedHarvest(seed, error, e);
+		s.successful = false;
+		return s;
+	}
+	
+	private SingleSeedHarvest(String seed, String error, Throwable e) {
+	    this.seed = seed;
+	    this.errMsg = error;
+	    this.exception = e;
+    }
+
 	/**
 	 * 
 	 * @return JobStatus of the job in progress (expects only one job to be created)
@@ -195,7 +222,7 @@ public class SingleSeedHarvest {
 		return this.successful;
     }
 
-	private Map<String, String> getReports(Long jobID) {
+	public static Map<String, String> getReports(Long jobID) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
 	    for (CDXRecord record : records) {
@@ -217,4 +244,21 @@ public class SingleSeedHarvest {
 	public boolean successful() {
 		return this.successful;
 	}
+	
+	public Throwable getException() {
+		return this.exception;
+	}
+	
+	public int getMaxObjects() {
+		return this.maxObjects;
+	}
+	
+	public long getMaxBytes() {
+		return this.maxBytes;
+	}
+	
+	public String getErrMsg() {
+		return this.errMsg;
+	}
+		
 }
