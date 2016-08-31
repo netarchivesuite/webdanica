@@ -5,6 +5,14 @@ import java.util.logging.Logger;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 public class ResourceUtils {
+	/**
+	 * 
+	 * @param somePlace
+	 * @param placeholdername
+	 * @param value
+	 * @param template
+	 * @param logger
+	 */
 	public static void insertText(TemplatePlaceHolder somePlace, String placeholdername, String value, String template, Logger logger) {
 	if (somePlace != null) {
         somePlace.setText(value);

@@ -23,39 +23,58 @@ import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
+import dk.netarkivet.common.webinterface.HTMLUtils;
 
+/**
+ * 
+ * pathInfo: /criteriaresult/<string>/<string>/
+ * 1. string: harvestname
+ * 2. string: url
+ */
 public class CriteriaResultResource implements ResourceAbstract {
 	
 	private static final Logger logger = Logger.getLogger(CriteriaResultResource.class.getName());
 	private static final String CRITERIA_RESULT_SHOW_TEMPLATE = "criteriaresult_master.html";
 
-	  protected int R_CRITERIA_RESULT = -1;
-	  
-	    public static final String CRITERIA_RESULT_PATH = "/criteriaresult/";
-	    //public static final String CRITERIA_RESULT_PATH = "/criteriaresult/<string>/<string>/<string>/";
-	    private Environment environment;
+	public static void main (String[] args) {
+		String pathinfo = "/criteriaresult/webdanica-trial-1470219095233/http%3A%2Fhedgehogs.net%2F/";
+		String[] infoParts = pathinfo.split(CRITERIA_RESULT_PATH);
+		System.out.println(CriteriaResultResource.getCriteriaKeys(infoParts));
+/*
+		int count=0;
+		for (String infopart: infoParts) {
+			System.out.println("i=" + count + ", infopart: " + infopart);
+			count++;
+		}
+		*/
+	}
 
-	    private CassandraCriteriaResultsDAO dao;
-	    
-	    @Override
-	    public void resources_init(Environment environment) {
-	        this.environment = environment;
-	        
-	    }
+	protected int R_CRITERIA_RESULT = -1;
 
-	    @Override
-	    public void resources_add(ResourceManagerAbstract resourceManager) {
-	        //R_BLACKLIST = resourceManager.resource_add(this, "/blacklist/<string>/", true);
-	    	R_CRITERIA_RESULT = resourceManager.resource_add(this, CRITERIA_RESULT_PATH, 
-	        		environment.getResourcesMap().getResourceByPath(CRITERIA_RESULT_PATH).isSecure());
-	/*        
+	public static final String CRITERIA_RESULT_PATH = "/criteriaresult/";
+	//public static final String CRITERIA_RESULT_PATH = "/criteriaresult/<string>/<string>/";
+	private Environment environment;
+
+	private CassandraCriteriaResultsDAO dao;
+
+	@Override
+	public void resources_init(Environment environment) {
+		this.environment = environment;
+
+	}
+
+	@Override
+	public void resources_add(ResourceManagerAbstract resourceManager) {
+		R_CRITERIA_RESULT = resourceManager.resource_add(this, CRITERIA_RESULT_PATH, 
+				environment.getResourcesMap().getResourceByPath(CRITERIA_RESULT_PATH).isSecure());
+		/*        
 	        R_USER_PASSWORD = resourceManager.resource_add(this, "/user/<numeric>/change_password/", true);
 	        R_USER_PERMISSIONS = resourceManager.resource_add(this, "/user/<numeric>/permissions/", true);
 	        R_USER_NOTIFICATION_SUBSCRIPTIONS = resourceManager.resource_add(this, "/user/<numeric>/notification_subscriptions/", true);
-	 */       
-	    }
+		 */       
+	}
 
-	    //private String servicePath;
+	//private String servicePath;
 
 	    @Override
 	    public void resource_service(ServletContext servletContext, User dab_user,
@@ -67,14 +86,14 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        CriteriaKeys CK = getCriteriaKeys(pathInfo.split(CRITERIA_RESULT_PATH));
 	        if (CK == null) {
 	        	// create default dummy blacklist
-	        	String errMsg = "No url,harvestname, and seedUri information given in the path: " + pathInfo;
+	        	String errMsg = "No url, and harvestname information found in the path: " + pathInfo;
 	        	logger.warning(errMsg);
 	        	b = SingleCriteriaResult.createErrorResult(errMsg); 
 	        } else {
-	            b = dao.getResult(CK.url, CK.harvest, CK.seeduri);
-	            if (b == null) { // no blacklist found with UID=UUIDString
+	            b = dao.getSingleResult(CK.url, CK.harvest);
+	            if (b == null) { // no criteria_result found with given url and harvestname
 	            	String errMsg = "No result found for url='" + CK.url + "', harvest='" 
-        			+ CK.harvest + "', seedUri='" + CK.seeduri + "'.";
+        			+ CK.harvest + "'.";
 	            	logger.warning(errMsg);
 	            	b = SingleCriteriaResult.createErrorResult(errMsg);
 	            }
@@ -248,12 +267,13 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        }
 	    }
 	
-		private CriteriaKeys getCriteriaKeys(String[] split) {
+		public static CriteriaKeys getCriteriaKeys(String[] split) {
 			CriteriaKeys resultKeys = null;
 	        if (split.length > 1) {
-	        	String UUIDString = split[1];
-	            if (UUIDString.endsWith("/")) {
-	            	UUIDString = UUIDString.substring(0, UUIDString.length()-1);
+	        	String arguments = split[1];
+	            String[] argumentParts = arguments.split("/");
+	            if (argumentParts.length == 2) {
+	            	resultKeys = new CriteriaKeys(argumentParts[0], HTMLUtils.decode(argumentParts[1]));
 	            }
 	        }
 	        return resultKeys;
@@ -262,12 +282,13 @@ public class CriteriaResultResource implements ResourceAbstract {
 	    static class CriteriaKeys {
 	    	private String url;
 	    	private String harvest;
-	    	private String seeduri;
 
-	    	private CriteriaKeys(String url, String harvest, String seeduri) {
+	    	private CriteriaKeys(String harvest, String url) {
 	    		this.url = url;
 	    		this.harvest = harvest;
-	    		this.seeduri = seeduri;
+	    	}
+	    	public String toString() {
+	    		return "harvest='" + harvest + "', url= '" + url + "'";
 	    	}
 	    }
 

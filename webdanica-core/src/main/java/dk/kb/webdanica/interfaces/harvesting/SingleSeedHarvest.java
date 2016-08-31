@@ -57,6 +57,7 @@ public class SingleSeedHarvest {
 	private Throwable exception;
 	private long maxBytes;
 	private int maxObjects;
+	private long harvestedTime;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
@@ -99,7 +100,7 @@ public class SingleSeedHarvest {
 			throw new WebdanicaException("The chosen heritrix template with name '" + templateName + "' does not exist");
 		}
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
-		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "event harvest created by webdanica system at " + new Date(), "No specific audience");
+		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed= " + seed, "Webdanica Curators");
 		HarvestDefinitionDAO.getInstance().create(hd);
 		Map<String,String> attributeValues = new HashMap<String,String>(); // Empty attributeset
 
@@ -114,7 +115,6 @@ public class SingleSeedHarvest {
 	
 	public static SingleSeedHarvest getErrorObject(String seed, String error, Throwable e) {
 		SingleSeedHarvest s = new SingleSeedHarvest(seed, error, e);
-		s.successful = false;
 		return s;
 	}
 	
@@ -168,8 +168,12 @@ public class SingleSeedHarvest {
 	 * @return true, if successful otherwise false;
 	 */
 	public boolean finishHarvest() {
+		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
+		finishedStates.add(JobStatus.DONE);
+		finishedStates.add(JobStatus.FAILED); 
+
 		while (getHarvestStatus() == null){
-			System.out.println("Waiting for job to be scheduled .."); 
+			System.out.println("Waiting for job for eventharvest '" + evName + "' to be scheduled .."); 
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
@@ -181,10 +185,7 @@ public class SingleSeedHarvest {
 		Long jobId = jsi.getJobID();
 		JobStatus status = jsi.getStatus();
 		System.out.println("State of Job " + jobId + ": " + status);
-		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
-		finishedStates.add(JobStatus.DONE);
-		finishedStates.add(JobStatus.FAILED); 
-		
+		long starttime = System.currentTimeMillis();
 		while (!finishedStates.contains(status)) {
 			System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status);
 			try {
@@ -195,8 +196,9 @@ public class SingleSeedHarvest {
 			jsi = getHarvestStatus();
 			status = jsi.getStatus(); // Refresh status
 		}
-		
-		System.out.println("Job " + jobId + " now has finished state " + status);
+		long endtime = System.currentTimeMillis();
+		long usedtimeSecs = (endtime-starttime)/1000;
+		System.out.println("After " + usedtimeSecs + "secs the job " + jobId + " now has finished state " + status );
 		this.finishedState = status;
 		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);
@@ -219,6 +221,7 @@ public class SingleSeedHarvest {
 		//get the reports associated with the harvest as well, extracted from the metadatawarc.file. 
 		//this.reportMap = getReports(theJob.getJobID()); //TODO not tested - add later
 		this.successful = status.equals(JobStatus.DONE);
+		this.harvestedTime = theJob.getActualStop().getTime();
 		return this.successful;
     }
 
@@ -260,5 +263,8 @@ public class SingleSeedHarvest {
 	public String getErrMsg() {
 		return this.errMsg;
 	}
-		
+
+	public long getHarvestedTime() {
+	    return this.harvestedTime;
+    }
 }

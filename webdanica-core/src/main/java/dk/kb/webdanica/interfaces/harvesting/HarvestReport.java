@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ import dk.kb.webdanica.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.exceptions.WebdanicaException;
 import dk.kb.webdanica.utils.StreamUtils;
+import dk.netarkivet.harvester.datamodel.JobStatus;
 
 /*		
 Seed: https://changecoachdk.com/resources/
@@ -35,19 +37,37 @@ public class HarvestReport {
 	public final static String harvestnamePattern = "HarvestName: ";
 	public final static String successfulPattern = "Successful: ";
 	public final static String endstatePattern = "EndState: ";
+	public final static String harvestedTimePattern = "HarvestedTime: ";
 	public final static String filesPattern = "Files harvested: ";
 	public final static String errorPattern = "Errors: ";
 	
 	public String seed;
 	public String harvestName;
-	public String Successful;
-	public String EndState;
+	public boolean successful;
+	public JobStatus finalState;
 	public String[] FilesHarvested;
 	public List<SingleCriteriaResult> results;
 	private boolean resultsInitiated;
 	private Set<String> errors;
-	private String error;
+	public String error;
+	public long harvestedTime;
+	
+	
+	public HarvestReport(String harvestname, String seedurl, boolean successful, List<String> files, String error, 
+			JobStatus finalState, long harvestedTime) {
+		this.harvestName = harvestname;
+		this.seed = seedurl;
+		this.successful = successful;
+		this.FilesHarvested = files.toArray(new String[0]);
+		this.error = error;
+		this.finalState = finalState;
+		this.harvestedTime = harvestedTime;
+		
+    }
 
+	public HarvestReport(){
+	}
+	
 	
 	public boolean hasError() {
 		return error != null;
@@ -79,9 +99,11 @@ public class HarvestReport {
 					} else if (line.startsWith(harvestnamePattern)) {
 						current.harvestName = line.split(harvestnamePattern)[1];
 					} else if (line.startsWith(successfulPattern)) {
-						current.Successful = line.split(successfulPattern)[1];
+						current.successful = Boolean.valueOf(line.split(successfulPattern)[1]);
 					} else if (line.startsWith(endstatePattern)) {
-						current.EndState = line.split(endstatePattern)[1];
+						current.finalState = JobStatus.valueOf(line.split(endstatePattern)[1]);
+					} else if (line.startsWith(endstatePattern)) {
+							current.harvestedTime = Long.parseLong(line.split(endstatePattern)[1]);	
 					} else if (line.startsWith(filesPattern)) {
 						String files = line.split(filesPattern)[1];
 						current.FilesHarvested = files.split(",");
@@ -102,8 +124,8 @@ public class HarvestReport {
 	}
 	
 	
-	public Set<String> getAllFiles() {
-		Set<String> allFiles = new HashSet<String>(); 
+	public List<String> getAllFiles() {
+		List<String> allFiles = new ArrayList<String>(); 
 		for (String f: this.FilesHarvested) {
 			allFiles.add(f);
 		}
@@ -232,8 +254,7 @@ public class HarvestReport {
 
 
 	private void setErrors(Set<String> errs) {
-	    this.errors = errs;
-	    
+	    this.errors = errs;  
     }
 
 
@@ -245,7 +266,32 @@ public class HarvestReport {
 				return name.startsWith("part-m-");
 			}
 		});
-		
 	    return Arrays.asList(parts);
+    }
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(seedPattern + seed);
+		sb.append("\n");
+		sb.append(harvestnamePattern + harvestName);
+		sb.append("\n");
+		sb.append(successfulPattern + successful);
+		sb.append("\n");
+		sb.append(harvestedTimePattern + new Date(harvestedTime));
+		sb.append("\n");
+		sb.append(endstatePattern + finalState);
+		sb.append("\n");
+		sb.append(filesPattern + StringUtils.join(getAllFiles(), ","));
+		sb.append("\n");
+		sb.append(errorPattern + ((error == null)?"":error));
+		sb.append("\n");
+		return sb.toString();
+	}
+
+	public static HarvestReport makeErrorObject(String error) {
+	    HarvestReport h = new HarvestReport();
+	    h.harvestName = error;
+	    h.error = error;
+	    h.FilesHarvested = new String[]{};
+	    return h;
     }
 }

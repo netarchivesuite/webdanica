@@ -1,6 +1,7 @@
 package dk.kb.webdanica.utils;
 
 import java.io.File;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -105,6 +106,21 @@ public class SettingsUtilities {
 			System.out.println("Program terminated");
 			System.exit(1);
 		}
+    }
+
+	public static void verifyWebdanicaSettings(Set<String> requiredSettings) {
+	    boolean exit = false;
+	    for (String key: requiredSettings){
+	    	if (!Settings.hasKey(key)) {
+	    		exit = true;
+	    		System.err.println("Missing setting '" + key + "' in settingsfile");
+	    	}
+	    }
+	    if (exit) {
+	    	System.err.println("Exiting program prematurely because of missing settings");
+	    	System.exit(1);
+	    }
+	    
     }
 	
 }
