@@ -2,6 +2,7 @@ package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -137,12 +138,10 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
 	        
 	        TemplatePlaceHolder urlPlace = TemplatePlaceBase.getTemplatePlaceHolder("url");
-	        TemplatePlaceHolder namePlace = TemplatePlaceBase.getTemplatePlaceHolder("name");
-	        TemplatePlaceHolder descriptionPlace = TemplatePlaceBase.getTemplatePlaceHolder("description");
-	        TemplatePlaceHolder lastupdatetimePlace = TemplatePlaceBase.getTemplatePlaceHolder("last_update_time");
-	        TemplatePlaceHolder listsizePlace = TemplatePlaceBase.getTemplatePlaceHolder("list_size");
-	        TemplatePlaceHolder activePlace = TemplatePlaceBase.getTemplatePlaceHolder("activeStatus");
-	        
+	        TemplatePlaceHolder harvestNamePlace = TemplatePlaceBase.getTemplatePlaceHolder("harvestName");
+	        TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
+	        TemplatePlaceHolder seedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("seed_url");
+	        TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("error");
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
 	        placeHolders.add(appnamePlace);
@@ -155,19 +154,20 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        placeHolders.add(contentPlace);
 	        // add the new placeholders
 	        placeHolders.add(urlPlace);
-	        placeHolders.add(namePlace);
-	        placeHolders.add(descriptionPlace);
-	        placeHolders.add(lastupdatetimePlace);
-	        placeHolders.add(listsizePlace);
-	        placeHolders.add(activePlace);
-
+	        placeHolders.add(harvestNamePlace);
+	        placeHolders.add(insertedTimePlace);
+	        placeHolders.add(seedUrlPlace);
+	        placeHolders.add(errorPlace);
+	        
+	        
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 	        
 	        
 	        /*
 	         * Heading.
 	         */
-	        String heading = "Information about CriteriaResult for url '" + b.url + "', seedUri = '" + b.seedurl + "' harvest='" + b.harvestName + "':";
+	        String heading = "Information about CriteriaResult for url \"" + b.url + "\", seedUri = \"" + b.seedurl + "\" harvest=\"" 
+	         + b.harvestName + "\":";
 	        
 	        /*
 	         * Places.
@@ -205,13 +205,11 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        }
 	        
 	        ResourceUtils.insertText(urlPlace, "url",  b.url, templateName, logger);
-	        //ResourceUtils.insertText(namePlace, "name",  b.getName(), templateName, logger);
+	        ResourceUtils.insertText(harvestNamePlace, "harvestName",  b.harvestName, templateName, logger);
+	        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + new Date(b.insertedDate), templateName, logger); 
+	        ResourceUtils.insertText(errorPlace, "error", "" + b.errorMsg, templateName, logger);
+	        ResourceUtils.insertText(seedUrlPlace, "seed_url", b.seedurl, templateName, logger);
 	        
-	        //ResourceUtils.insertText(descriptionPlace, "description",  b.getDescription(), templateName, logger);
-	        ResourceUtils.insertText(lastupdatetimePlace, "last_update_time",  "" + b.insertedDate, templateName, logger);  // Convert to proper date
-	        //ResourceUtils.insertText(listsizePlace, "list_size",  blackListSize + "", templateName, logger);
-	        //ResourceUtils.insertText(activePlace, "activeStatus",  b.isActive() + "", templateName, logger);
-	         
 	        StringBuilder sb = new StringBuilder();
 	        sb.append("<pre>\r\n");
 	        String ROW_DELIM = ",";

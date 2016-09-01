@@ -45,7 +45,7 @@ public class SingleCriteriaResult {
 	public long insertedDate;
 	public long updatedDate;
 
-	private String errorMsg;
+	public String errorMsg;
     
 	public List<String> getClinks() {
 		return CLinks;
@@ -297,6 +297,9 @@ public class SingleCriteriaResult {
     public static SingleCriteriaResult createErrorResult(String error) {
 		SingleCriteriaResult s = new SingleCriteriaResult();
 		s.errorMsg = error;
+		s.url = "Dummy";
+		s.harvestName = "Dummy";
+		s.seedurl = "Dummy";
 	    return s;
     } 
     
