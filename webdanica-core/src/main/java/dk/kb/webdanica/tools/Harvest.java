@@ -10,13 +10,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.exceptions.WebdanicaException;
+import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
@@ -46,8 +50,18 @@ public class Harvest {
 		// Verify that -Ddk.netarkivet.settings.file is set and points to an existing file.
 		final String NETARCHIVESUITE_SETTING_PROPERTY_KEY = "dk.netarkivet.settings.file";
 		SettingsUtilities.testPropertyFile(NETARCHIVESUITE_SETTING_PROPERTY_KEY);
+		Set<String> requiredSettings = new HashSet<String>();
+		requiredSettings.add(WebdanicaSettings.HARVESTING_SCHEDULE);
+		requiredSettings.add(WebdanicaSettings.HARVESTING_TEMPLATE);
+		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
+		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_BYTES);
+		requiredSettings.add(WebdanicaSettings.HARVESTING_PREFIX);								
+		SettingsUtilities.verifyWebdanicaSettings(requiredSettings);
 		String scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
 		String templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
+		int harvestMaxObjects = Settings.getInt(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
+		long harvestMaxBytes = Settings.getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
+		String harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
 
 		// Verify that database driver exists in classpath. If not exit program
 		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
@@ -65,17 +79,19 @@ public class Harvest {
 		
 		if (argumentIsSeedFile) {
 			System.out.println("harvesting based on seeds from file '" + argumentAsFile.getAbsolutePath() + "'");
-			results = doSeriesOfharvests(argumentAsFile, scheduleName, templateName);
+			results = doSeriesOfharvests(argumentAsFile, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
 		} else {
 			URL_REJECT_REASON reason = UrlUtils.isRejectableURL(argument);
 			if (reason.equals(URL_REJECT_REASON.NONE)) {
 				System.out.println("Do single harvest of seed '" + argument + "'");
-				SingleSeedHarvest result = doSingleHarvest(argument, scheduleName, templateName);
+				SingleSeedHarvest result = doSingleHarvest(argument, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
 				
 				results.add(result);
 			} else {
-				System.out.println("No harvesting done. The argument '" + argument + "' is not a valid url");
-				
+				String errMsg = "No harvesting done. The argument '" + argument + "' is not a valid url";
+				System.out.println(errMsg);
+				SingleSeedHarvest s = SingleSeedHarvest.getErrorObject(argument, errMsg, null);
+	        	results.add(s);
 			}
 		}
 		// Print results to a file in Current Working Directory
@@ -92,11 +108,15 @@ public class Harvest {
     	harvestLogWriter.println(harvestLogHeader);
     	harvestLogWriter.println(StringUtils.repeat("#", 80));
     	for (SingleSeedHarvest s: results) {
-    		harvestLogWriter.println("Seed: " + s.getSeed());
-    		harvestLogWriter.println("HarvestName: " + s.getHarvestName());
-    		harvestLogWriter.println("Successful: " + s.successful());
-    		harvestLogWriter.println("EndState: " + s.getFinalState());
-    		harvestLogWriter.println("Files harvested: " + StringUtils.join(s.getFiles(), ","));
+    		harvestLogWriter.println(HarvestReport.seedPattern + s.getSeed());
+    		harvestLogWriter.println(HarvestReport.harvestnamePattern + s.getHarvestName());
+    		harvestLogWriter.println(HarvestReport.successfulPattern + s.successful());
+    		harvestLogWriter.println(HarvestReport.endstatePattern + s.getFinalState());
+    		harvestLogWriter.println(HarvestReport.harvestedTimePattern + s.getHarvestedTime());
+    		harvestLogWriter.println(HarvestReport.filesPattern + StringUtils.join(s.getFiles(), ","));
+    		String errString = (s.getErrMsg() != null?s.getErrMsg():"");
+    		String excpString = (s.getException() != null)? "" + s.getException():""; 
+    		harvestLogWriter.println(HarvestReport.errorPattern + errString + " " + excpString);
     		harvestLogWriter.println(StringUtils.repeat("#", 80));
     	}
     	   	
@@ -106,11 +126,10 @@ public class Harvest {
 	}
 
 	private static SingleSeedHarvest doSingleHarvest(String seed, String scheduleName,
-            String templateName) {
-		final String prefix = "webdanica-trial-";
-		String eventHarvestName = prefix + System.currentTimeMillis();
+            String templateName, String harvestPrefix, long maxBytes, int maxObjects) {
+		String eventHarvestName = harvestPrefix + System.currentTimeMillis();
 		
-	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName);
+	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName, maxBytes, maxObjects);
 	    boolean success = ssh.finishHarvest();
 	    System.out.println("Harvest of seed '" + seed + "': " + (success? "succeeded":"failed"));
 	    return ssh;
@@ -118,7 +137,7 @@ public class Harvest {
     }
 
 	private static List<SingleSeedHarvest> doSeriesOfharvests(File argumentAsFile,
-            String scheduleName, String templateName) {
+            String scheduleName, String templateName, String harvestPrefix, long harvestMaxBytes, int harvestMaxObjects) {
 		
 		BufferedReader fr = null;
 		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
@@ -128,24 +147,34 @@ public class Harvest {
         	e.printStackTrace();
         	// Should not happen: already tested
         }        
-		String line = "";
-		String seed = null;
 
-		//read file and harvest each non-empty seed in the file
+		//read file 
+		Set<String> seeds = new HashSet<String>();
 		try {
-	        while ((line = fr.readLine()) != null) {
-	        	seed = line.trim();
+			String line = "";
+			while ((line = fr.readLine()) != null) {
+	        	String seed = line.trim();
 	        	if (!seed.isEmpty()) {
-	        		SingleSeedHarvest ssh = doSingleHarvest(seed, scheduleName, templateName);
-	        		results.add(ssh);
+	        		seeds.add(seed);
 	        	}
-	        }
-        } catch (IOException e) {	        
-	        e.printStackTrace();
-        } finally {
+			}
+		} catch (IOException e) {
+			throw new WebdanicaException("Exception during the reading of the file '" 
+					+ argumentAsFile.getAbsolutePath() + "'", e);
+		} finally {
         	IOUtils.closeQuietly(fr);
         }
 		
+		//harvest each seed in the file
+		for (String seed: seeds) {
+			try {
+				SingleSeedHarvest ssh = doSingleHarvest(seed, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects);
+				results.add(ssh);
+			} catch (Throwable e) {	        
+				SingleSeedHarvest s = SingleSeedHarvest.getErrorObject(seed, "Harvest Failed", e);
+				results.add(s);
+			}
+		}
 		return results;
 	}
 }

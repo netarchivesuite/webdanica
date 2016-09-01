@@ -28,6 +28,7 @@ import dk.netarkivet.harvester.datamodel.PartialHarvest;
 import dk.netarkivet.harvester.datamodel.Schedule;
 import dk.netarkivet.harvester.datamodel.ScheduleDAO;
 import dk.netarkivet.harvester.datamodel.DomainConfiguration;
+import dk.netarkivet.harvester.datamodel.TemplateDAO;
 import dk.netarkivet.harvester.webinterface.HarvestStatus;
 import dk.netarkivet.harvester.webinterface.HarvestStatusQuery;
 import dk.netarkivet.viewerproxy.webinterface.Reporting;
@@ -51,7 +52,12 @@ public class SingleSeedHarvest {
 	private List<String> files;
 	private JobStatusInfo statusInfo;
 	private Map<String, String> reportMap;
+	private String errMsg;
 	private boolean successful;
+	private Throwable exception;
+	private long maxBytes;
+	private int maxObjects;
+	private long harvestedTime;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
@@ -62,8 +68,10 @@ public class SingleSeedHarvest {
 	public static void main (String[] args) throws Throwable {
 		// Verify that netarchiveSuite settings file is defined and exists
 		SettingsUtilities.testPropertyFile("dk.netarkivet.settings.file");
+		long maxBytes = 10000L;
+		int maxOjects = 10000;
 		SingleSeedHarvest ph = new SingleSeedHarvest("http://www.familien-carlsen.dk", 
-				"test1" + System.currentTimeMillis(), "Once", "webdanica_order");
+				"test1" + System.currentTimeMillis(), "Once", "webdanica_order", maxBytes, maxOjects);
 		boolean success = ph.finishHarvest();
 		System.out.println("Harvest was successful: " + success);
 		System.out.println("final state of harvest: " + ph.getFinalState());
@@ -71,32 +79,51 @@ public class SingleSeedHarvest {
 	}	
 	
 	/**
-	 * TODO check that a schedule with the given scheduleName exists, and that a template with the templateName exists.
-	 * 
 	 * @param seed
 	 * @param eventHarvestName
 	 * @param scheduleName
 	 * @param templateName
+	 * @param maxBytes
+	 * @param maxObjects
 	 */
-	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName) {
+	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName, long maxBytes, int maxObjects) {
 		this.seed = seed;
 		this.evName = eventHarvestName;
 		List<DomainConfiguration> noDcs = new ArrayList<DomainConfiguration>();
+		this.maxBytes = maxBytes;
+		this.maxObjects = maxObjects;
+		
+		if (!ScheduleDAO.getInstance().exists(scheduleName)) {
+			throw new WebdanicaException("The chosen schedule with name '" + scheduleName + "' does not exist");
+		}
+		if (!TemplateDAO.getInstance().exists(templateName)) {
+			throw new WebdanicaException("The chosen heritrix template with name '" + templateName + "' does not exist");
+		}
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
-		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "event harvest created by webdanica system at " + new Date(), "No specific audience");
+		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed= " + seed, "Webdanica Curators");
 		HarvestDefinitionDAO.getInstance().create(hd);
 		Map<String,String> attributeValues = new HashMap<String,String>(); // Empty attributeset
 
 		PartialHarvest eventHarvest = (PartialHarvest) HarvestDefinitionDAO.getInstance().getHarvestDefinition(eventHarvestName);
 		Set<String> seedSet = new HashSet<String>();
 		seedSet.add(seed);
-		long maxBytes = 10000L; // TODO What to write here, if we want to disable quotaenforcing
-		int maxObjects = 10000; // TODO What to write here, if we want to disable quotaenforcing
+		
 		eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
 		eventHarvest.setActive(true);
 		HarvestDefinitionDAO.getInstance().update(eventHarvest);		 
 	}
 	
+	public static SingleSeedHarvest getErrorObject(String seed, String error, Throwable e) {
+		SingleSeedHarvest s = new SingleSeedHarvest(seed, error, e);
+		return s;
+	}
+	
+	private SingleSeedHarvest(String seed, String error, Throwable e) {
+	    this.seed = seed;
+	    this.errMsg = error;
+	    this.exception = e;
+    }
+
 	/**
 	 * 
 	 * @return JobStatus of the job in progress (expects only one job to be created)
@@ -141,8 +168,12 @@ public class SingleSeedHarvest {
 	 * @return true, if successful otherwise false;
 	 */
 	public boolean finishHarvest() {
+		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
+		finishedStates.add(JobStatus.DONE);
+		finishedStates.add(JobStatus.FAILED); 
+
 		while (getHarvestStatus() == null){
-			System.out.println("Waiting for job to be scheduled .."); 
+			System.out.println("Waiting for job for eventharvest '" + evName + "' to be scheduled .."); 
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
@@ -154,10 +185,7 @@ public class SingleSeedHarvest {
 		Long jobId = jsi.getJobID();
 		JobStatus status = jsi.getStatus();
 		System.out.println("State of Job " + jobId + ": " + status);
-		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
-		finishedStates.add(JobStatus.DONE);
-		finishedStates.add(JobStatus.FAILED); 
-		
+		long starttime = System.currentTimeMillis();
 		while (!finishedStates.contains(status)) {
 			System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status);
 			try {
@@ -168,8 +196,9 @@ public class SingleSeedHarvest {
 			jsi = getHarvestStatus();
 			status = jsi.getStatus(); // Refresh status
 		}
-		
-		System.out.println("Job " + jobId + " now has finished state " + status);
+		long endtime = System.currentTimeMillis();
+		long usedtimeSecs = (endtime-starttime)/1000;
+		System.out.println("After " + usedtimeSecs + "secs the job " + jobId + " now has finished state " + status );
 		this.finishedState = status;
 		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);
@@ -192,10 +221,11 @@ public class SingleSeedHarvest {
 		//get the reports associated with the harvest as well, extracted from the metadatawarc.file. 
 		//this.reportMap = getReports(theJob.getJobID()); //TODO not tested - add later
 		this.successful = status.equals(JobStatus.DONE);
+		this.harvestedTime = theJob.getActualStop().getTime();
 		return this.successful;
     }
 
-	private Map<String, String> getReports(Long jobID) {
+	public static Map<String, String> getReports(Long jobID) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
 	    for (CDXRecord record : records) {
@@ -217,4 +247,24 @@ public class SingleSeedHarvest {
 	public boolean successful() {
 		return this.successful;
 	}
+	
+	public Throwable getException() {
+		return this.exception;
+	}
+	
+	public int getMaxObjects() {
+		return this.maxObjects;
+	}
+	
+	public long getMaxBytes() {
+		return this.maxBytes;
+	}
+	
+	public String getErrMsg() {
+		return this.errMsg;
+	}
+
+	public long getHarvestedTime() {
+	    return this.harvestedTime;
+    }
 }

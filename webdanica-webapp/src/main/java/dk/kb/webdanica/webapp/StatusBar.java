@@ -17,7 +17,8 @@ public class StatusBar {
     public static final int N_THREADS = 3;
     public static final int N_PROGRESS = 4;
     public static final int N_LOG = 5;
-    public static final int N_PIDS = 6;
+    public static final int N_HARVESTS = 6;
+    public static final int N_CRITERIARESULTS = 7;
 
 	private static Map<Integer, String> navbarMap = new TreeMap<Integer, String>();
 
@@ -31,6 +32,8 @@ public class StatusBar {
                     { Servlet.environment.getContextPath() + "/status/threads/", "Threads" },
                     { Servlet.environment.getContextPath() + "/status/progress/", "Progress" },
                     { Servlet.environment.getContextPath() + "/status/log/", "Log" },
+                    { Servlet.environment.getContextPath() + "/harvests/", "Harvests" },
+                    { Servlet.environment.getContextPath() + "/criteriaresults/", "Kriterie Resultater" },
                     //{ Servlet.environment.getContextPath() + "/status/pids/", "Pids" }
                     // "/status/sysno/pid/<numeric>/"
                     // "/status/pids/*"

@@ -20,6 +20,10 @@ import com.antiaction.common.templateengine.login.LoginTemplateCallback;
 
 import dk.kb.webdanica.webapp.resources.BlackListResource;
 import dk.kb.webdanica.webapp.resources.BlackListsResource;
+import dk.kb.webdanica.webapp.resources.CriteriaResultResource;
+import dk.kb.webdanica.webapp.resources.CriteriaResultsResource;
+import dk.kb.webdanica.webapp.resources.HarvestResource;
+import dk.kb.webdanica.webapp.resources.HarvestsResource;
 import dk.kb.webdanica.webapp.resources.IndexResource;
 import dk.kb.webdanica.webapp.resources.Resource;
 import dk.kb.webdanica.webapp.resources.ResourceAbstract;
@@ -75,6 +79,22 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             BlackListsResource blackListsResource = new BlackListsResource();
             blackListsResource.resources_init(environment);
             blackListsResource.resources_add(this);
+            
+            CriteriaResultResource criteriaResultResource = new CriteriaResultResource();
+            criteriaResultResource.resources_init(environment);
+            criteriaResultResource.resources_add(this);
+            
+            CriteriaResultsResource criteriaResultsResource = new CriteriaResultsResource();
+            criteriaResultsResource.resources_init(environment);
+            criteriaResultsResource.resources_add(this);
+            
+            HarvestResource harvestResource = new HarvestResource();
+            harvestResource.resources_init(environment);
+            harvestResource.resources_add(this);
+            
+            HarvestsResource harvestsResource = new HarvestsResource();
+            harvestsResource.resources_init(environment);
+            harvestsResource.resources_add(this);
  
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
     	} catch (Throwable t) {
@@ -158,12 +178,26 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (pathInfo == null || pathInfo.length() == 0) {
                     pathInfo = "/";
                 }
-                logger.info("pathInfo:" + pathInfo);
+                logger.info("Looking for resource to match pathInfo:" + pathInfo);
                 List<Integer> numerics = new ArrayList<Integer>();
                 Resource resource = pathMap.get(pathInfo, numerics);
                 // Hack for handling access to /blacklist/<uid>/ pages
-                if (resource == null && pathInfo.startsWith("/blacklist/")) {
-                	resource = pathMap.get("/blacklist/", numerics);
+                if (resource == null && pathInfo.startsWith(BlackListResource.BLACKLIST_PATH)) {
+                	resource = pathMap.get(BlackListResource.BLACKLIST_PATH, numerics);
+                }
+                if (resource == null && pathInfo.startsWith(HarvestResource.HARVEST_PATH)) {
+                	resource = pathMap.get(HarvestResource.HARVEST_PATH, numerics);
+                }
+                if (resource == null && pathInfo.startsWith(HarvestsResource.HARVEST_LIST_PATH)) {
+                	resource = pathMap.get(HarvestsResource.HARVEST_LIST_PATH, numerics);
+                }
+                
+                if (resource == null && pathInfo.startsWith(CriteriaResultResource.CRITERIA_RESULT_PATH)) {
+                	resource = pathMap.get(CriteriaResultResource.CRITERIA_RESULT_PATH, numerics);
+                }
+                
+                if (resource == null && pathInfo.startsWith(CriteriaResultsResource.CRITERIA_RESULTS_PATH)) {
+                	resource = pathMap.get(CriteriaResultsResource.CRITERIA_RESULTS_PATH, numerics);
                 }
                 
                 if (resource != null) {
@@ -178,6 +212,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                         resource.getResources().resource_service(this.getServletContext(), current_user, req, resp, resource.getId(), numerics, pathInfo);
                     }
                 } else {
+                	logger.warning("No resource found for path: " + pathInfo);
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, pathInfo);
                 }
             }

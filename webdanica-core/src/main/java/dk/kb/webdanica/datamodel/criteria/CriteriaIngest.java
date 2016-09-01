@@ -2,9 +2,7 @@ package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,9 +37,13 @@ public class CriteriaIngest {
 		File HarvestLogTest2 = new File(basedir, "test_danica_urls.txt.harvestlog");
 		File HarvestLogTest3 = new File(basedir, "test_non_danica_urls.txt.harvestlog");
 		
-		doTest(HarvestLogTest1, baseCriteriaDir, true);
-		doTest(HarvestLogTest2, baseCriteriaDir, true);
-		doTest(HarvestLogTest3, baseCriteriaDir, true);
+		//doTest(HarvestLogTest1, baseCriteriaDir, true);
+		//doTest(HarvestLogTest2, baseCriteriaDir, true);
+		//doTest(HarvestLogTest3, baseCriteriaDir, true);
+		File basedir1 = new File("/home/svc/devel/webdanica/criteria-test-23-08-2016");
+		File baseCriteriaDir1 = new File(basedir1, "23-08-2016-1471968184");
+		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt"); 
+		ingest(HarvestLogTest4, baseCriteriaDir1,false);
 
 		//runTest3();
 		
@@ -49,7 +51,7 @@ public class CriteriaIngest {
 		//runTest2();
 		System.exit(0);
 	}
-	public static void doTest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
@@ -77,22 +79,22 @@ public class CriteriaIngest {
 		String harvestLogName = "harvestlog-1470674884515.txt";
 		File HarvestLog = new File(basedir, harvestLogName);
 		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		doTest(HarvestLog, baseCriteriaDir, false);
+		ingest(HarvestLog, baseCriteriaDir, false);
 	}
 
 	private static void runTest2() throws IOException, SQLException { 
 			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
 			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
 			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
-			doTest(HarvestLog, baseCriteriaDir,false);
+			ingest(HarvestLog, baseCriteriaDir,false);
     }
 
 	private static void runTest1() throws IOException, SQLException {
 		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
 		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
 		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		doTest(danicaHarvestLog, baseCriteriaDir, false);
-		doTest(notdanicaHarvestLog, baseCriteriaDir, false);	
+		ingest(danicaHarvestLog, baseCriteriaDir, false);
+		ingest(notdanicaHarvestLog, baseCriteriaDir, false);	
 	}
 
 

@@ -1,0 +1,679 @@
+################################################
+Analysis of harvest of seed http://www.guldbrandsen.net/kontakt/
+################################################
+url:http://www.guldbrandsen.net/kontakt/,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,latin-ext##http://www.guldbrandsen.net/portraet/##http://www.guldbrandsen.net/##http://www.guldbrandsen.net/indlaeg/##http://www.guldbrandsen.net/wp-content/themes/Divi/includes/builder/scripts/jquery.fitvids.js?ver=2.5.2##http://www.guldbrandsen.net/wp-content/themes/Divi/js/custom.js?ver=2.5.2##http://www.elegantthemes.com##https://www.facebook.com/guldbrandsen.net##http://www.guldbrandsen.net/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1##http://www.guldbrandsen.net/xmlrpc.php?rsd##http://www.guldbrandsen.net/wp-content/themes/Divi/js/smoothscroll.js?ver=2.5.2##http://www.guldbrandsen.net/wp-includes/js/jquery/jquery.js?ver=1.11.3,date:null,extSize:527,extDblChar:101,C1a:0,C2a:0,C2b:n,C3a:2 ø#æ,C3b:2 to#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999994),C5a:1 af,C5b:0,C6a:9 om#du#side#navn#musik#tv#mig#en#af,C6b:0,C6c:0,C6d:8 om#du#side#navn#musik#mig#en#af,C7a:0,C7b:0,C7c:11 bo#lev#or#øje#vig#lse#by#ing#er#sig#hem,C7d:0,C7e:0,C7f:0,C7g:0,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:1 cvr,C9e:0,C9f:n,C10a:1 guldbrandsen,C10b:2 per#jesper,C10c:1 jesper,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-61282
+Text: om mig | fotograf jesper guldbrandsen
+om mig | fotograf jesper guldbrandsen portføje portræt stemning musik bevægelse om mig blog mangler du en fotograf erhverv vælg en side kontakt mig navn e-mailadresse besked besked indsend 10 + 7 = jesper guldbrandsen fotograf vigerslevvej 200 st tv 2500 valby tlf: 6166 7079 mail: cvr: 36369086   facebook google rss designet af elegant themes | støttet af wordpress
+portræt
+stemning
+musik
+bevægelse
+om mig
+blog
+mangler du en fotograf
+erhverv
+facebook
+google
+rss
+elegant themes
+wordpress
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://maarslet.net/
+################################################
+url:http://maarslet.net/,date:null,extSize:88,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:2 aar#maa,C3e:0,C3f:0,C3g:0,C4a:so,C4b:so: MEDIUM (0.571426)#ht: MEDIUM (0.142859),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:2 lok#bo,C7d:1 aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:102
+Text: lokalweb 1.1
+lokalweb 1.1 <body link="#000000" vlink="#000000" alink="#000000"> </body>
+
+Links: [http]
+
+url:http://maarslet.net/system/forside/l-v.htm,CLinks:,date:null,extSize:26,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:3 aar#for#maa,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: MEDIUM (0.700348)#no: MEDIUM (0.298642),C5a:0,C5b:0,C6a:2 luft#venstre,C6b:0,C6c:0,C6d:2 luft#venstre,C7a:0,C7b:0,C7c:1 ns,C7d:2 or#aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:107
+Text: luft venstre
+luft venstre
+
+Links: []
+
+url:http://maarslet.net/system/forside/top.php,Danmark,date:null,extSize:324,extDblChar:103,C1a:0,C2a:0,C2b:n,C3a:2 ø#æ,C3b:4 to#for#fore#go,C3c:0,C3d:4 to#aar#for#maa,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999994),C5a:0,C5b:0,C6a:6 til#om#folk#hjælp#i#tilbage,C6b:1 forening,C6c:0,C6d:4 til#om#hjælp#tilbage,C7a:0,C7b:0,C7c:9 lok#ns#inge#or#ore#by#ing#lt#er,C7d:2 or#aa,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:2 inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:1,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-18378
+Text: top
+top institutioner service kultur bag om 8320 tilbage til forside vejret i 8320 følg beder-bering vejen   søg lokalt   foreninger   find folk   byens puls   hjælp   google
+institutioner
+service
+kultur
+bag om 8320
+tilbage til forside
+vejret i 8320
+følg beder-bering vejen
+søg lokalt
+foreninger
+find folk
+byens puls
+google
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed https://www.domainnameshop.com/?currency=DKK&lang=da
+################################################
+url:https://www.domainnameshop.com/?currency=DKK&lang=da,date:null,extSize:2424,extDblChar:105,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:4 to#rod#do#tor,C3c:0,C3d:1 do,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999996),C5a:1 af,C5b:0,C6a:21 til#ændre#om#og#betale#os#svar#vi#kom#min#i#gang#et#er#ind#hjælp#fra#nå#alle#må#af,C6b:0,C6c:0,C6d:19 til#ændre#om#og#betale#os#svar#vi#kom#gang#et#er#ind#hjælp#fra#nå#alle#må#af,C7a:0,C7b:0,C7c:11 ør#ov#rod#inge#or#ie#ore#å#by#ing#er,C7d:0,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:1 name,C9d:0,C9e:0,C9f:n,C10a:0,C10b:3 inge#inger#maria,C10c:0,C15a:y,C15b:com,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-22339
+Text: kunder i norge må betale 25% moms i tillæg.
+domænenavn
+domæneshop
+domæneshop   log ind | webmail   log ind glemt adgangskoden? domænenavn læs mer / bestil flyt til domæneshop ændre ejer udløbte domæner domæneovervågning hvem ejer domænet? mail læs mer / bestil opsæt af mail spørsmål om mail webmail webhotel læs mer / bestil kom i gang opsæt af joomla opsæt af wordpress hjælp spørsmål og svar kontakt os driftsmældinger alle produkter prisliste min konto log ind .dk 55,- .com 75,- .finance 245,- alle priser er i dkk og gælder et års registrering. kunder i norge må betale 25% moms i tillæg. domænenavn fra 30,-/år mail fra 45,-/år webhotel fra 10,-/mnd flyt til os fra 0,- nyheder 29-06-2016 vi tilbyr nå .stream 14-06-2016 vi tilbyr nå .store 03-05-2016 vi tilbyr nå .mom alle nyheder driftsmældinger 22-07-2016 06:25 mariadb-oppdatering 14-07-2016 12:34 nedetid tirsdag - manglende info 12-07-2016 19:02 nedetid tirsdag ettermiddag alle driftsmældinger domænenavn læs mer / bestil flyt til domæneshop ændre ejer udløbte domæner domæneovervågning hvem ejer domænet? mail læs mer / bestil opsæt af mail spørsmål om mail webmail webhotel læs mer / bestil kom i gang opsæt af joomla opsæt af wordpress hjælp spørsmål og svar kontakt os driftsmældinger alle produkter prisliste  kundeservice @ domaeneshop.dk  (+45) 36 91 87 54          © 2016 domeneshop as · om os · vilkår · om brug af cookies
+log ind
+webmail
+glemt adgangskoden?
+læs mer / bestil
+flyt til domæneshop
+ændre ejer
+udløbte domæner
+domæneovervågning
+hvem ejer domænet?
+læs mer / bestil
+opsæt af mail
+spørsmål om mail
+webmail
+læs mer / bestil
+kom i gang
+opsæt af joomla
+opsæt af wordpress
+spørsmål og svar
+kontakt os
+driftsmældinger
+alle produkter
+prisliste
+log ind
+.dk 55,-
+.com 75,-
+.finance 245,-
+29-06-2016 vi tilbyr nå .stream
+14-06-2016 vi tilbyr nå .store
+03-05-2016 vi tilbyr nå .mom
+alle nyheder
+22-07-2016 06:25 mariadb-oppdatering
+14-07-2016 12:34 nedetid tirsdag - manglende info
+12-07-2016 19:02 nedetid tirsdag ettermiddag
+alle driftsmældinger
+domænenavn
+læs mer / bestil
+flyt til domæneshop
+ændre ejer
+udløbte domæner
+domæneovervågning
+hvem ejer domænet?
+mail
+læs mer / bestil
+opsæt af mail
+spørsmål om mail
+webmail
+webhotel
+læs mer / bestil
+kom i gang
+opsæt af joomla
+opsæt af wordpress
+hjælp
+spørsmål og svar
+kontakt os
+driftsmældinger
+alle produkter
+prisliste
+ kundeservice @ domaeneshop.dk
+ (+45) 36 91 87 54
+om os
+vilkår
+om brug af cookies
+
+Links: [https]
+
+
+################################################
+Analysis of harvest of seed http://maddansk.net/index2.htm
+################################################
+url:http://maddansk.net/index2.htm,date:null,extSize:221,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:1 å,C3b:2 dor#do,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:sv,C4b:sv: HIGH (0.999996),C5a:,C5b:,C6a:5 med#kan#se#usa#på,C6b:1 dansk,C6c:1 dansk,C6d:3 med#kan#på,C7a:0,C7b:0,C7c:6 bo#ns#or#å#er#hem,C7d:1 ns,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:1 webbplatsen,C10b:1 erik,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-34634
+Text: bilar, usa bilar, amerikanska bilar, hemsidor, webbsidor, webbmaster, maddansk,
+maddansks hemsida med usa bilar.
+maddansks hemsida med usa bilar. <body> </body>
+på denna webbplatsen kan ni se bilder på amerikanska bilar.
+
+Links: [http]
+
+url:http://maddansk.net/vanster.htm,date:null,extSize:16,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:af,C4b:af: HIGH (0.906718),C5a:,C5b:,C6a:0,C6b:0,C6c:1 dansk,C6d:0,C7a:0,C7b:0,C7c:2 ns#er,C7d:2 ns#er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:101
+Text: vanster
+vanster
+
+Links: [http]
+
+url:http://maddansk.net/meny.htm,date:null,extSize:30,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:so,C4b:so: MEDIUM (0.714285)#id: MEDIUM (0.142857)#sv: MEDIUM (0.142857),C5a:,C5b:,C6a:0,C6b:1 dansk,C6c:1 dansk,C6d:0,C7a:0,C7b:0,C7c:1 ns,C7d:1 ns,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:101
+Text: maddansk_meny2
+maddansk_meny2
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.newgear.net/
+################################################
+url:http://www.newgear.net/,date:null,extSize:5070,extDblChar:106,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:6 to#for#son#fore#tor#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:da,C4b:da: HIGH (0.999996),C5a:1 af,C5b:0,C6a:53 du#give#vi#kvinde#i#en#et#er#to#medlem#har#på#bo#se#tilfreds#med#fra#brug#alle#alt#at#dansk#af#tilbage#til#for#eller#flere#helt#om#her#og#mand#form#kan#følge#andersen#vis#godt#det#søge#bruge#hvis#mig#denne#lære#søren#mere#dette#fortsætte#modtage#fysisk#få,C6b:1 dansk,C6c:0,C6d:44 du#vi#kvinde#en#et#er#medlem#har#på#tilfreds#med#fra#brug#alle#alt#dansk#af#tilbage#til#eller#flere#helt#om#her#og#mand#form#kan#følge#vis#det#godt#søge#bruge#hvis#mig#denne#lære#mere#dette#fortsætte#modtage#fysisk#få,C7a:1 roskilde,C7b:0,C7c:22 ør#rp#ns#øre#øv#høj#or#ore#mark#å#lt#ing#um#køb#kilde#bo#holm#ie#nse#ker#er#sig,C7d:0,C7e:1 denmark,C7f:0,C7g:1 roskilde,C7h:1 denmark,C8a:1 kl,C8b:0,C8c:0,C9a:0,C9b:1 iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:3 christensen#thomsen#andersen,C10b:8 christian#per#karen#christensen#thomsen#andersen#søren#anders,C10c:5 thomsen#christensen#andersen#karen#søren,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1245019
+Text: vi sender til 
+k2    
+helhedsindtryk udefor pisten :
+positioned for the ladies demanding precision when bringing heat to the steepest,..
+60%
+the unique 10 is an ultra-lightweight high-performance women's carving ski for technical expert skie..
+mikkel alexander
+intruktør niveau : bsi2 
+intruktør niveau : 
+foretrukken ski :
+intruktør niveau : 
+foretrukken ski :
+intruktør niveau : 
+foretrukken ski :
+intruktør niveau : bsi1 
+contact
+adress:
+newgear
+skitest 2014/2015
+skitest 2014/2015 skitest 2014/2015 ski test ski test home testpersoner mand   begynder niveau   øvet niveau   avanceret niveau   expert niveau kvinde   begynder niveau   øvet niveau   avanceret niveau   expert niveau ski   all mountain ski   allround pisteski   cross ski   freeride ski   freestyle ski   race ski mærker angel flow atomic blizzard dynastar elan fischer head icelantic k2 kneissl kästle line lacroix moment nordica rossignol salomon sporten stöckli völkl language dansk english vi bruger cookies til at give dig en bedre service. fortsætte med at bruge hjemmesiden, hvis du er tilfreds med dette. hvis du ønsker at lære mere om cookies, kan du følge dette link til wikipedia. luk din indkøbskurv indeholder 0 varer vi sender til                      ,- € vis mig ski test ski testpersoner sæson 2014 / 2015 2013 / 2014 2012 / 2013 2011 / 2012 2010 / 2011 2009 / 2010 2008 / 2009 2007 / 2008 2006 / 2007 2005 / 2006 2004 / 2005 2003 / 2004 type             køn  mand  kvinde niveau niveau         søg ski 2014/2015. find flere ski. brug søge menuen her k2     potion 74 xti type :           allround pisteski niveau :       helhedsindtryk på pisten : 76% helhedsindtryk udefor pisten : positioned for the ladies demanding precision when bringing heat to the steepest,.. se mere head worldcup rebels i.gsx type :           race ski niveau :       helhedsindtryk på pisten : 77% helhedsindtryk udefor pisten : se mere angel flow xray rough type :           freestyle ski niveau :       helhedsindtryk på pisten : 65% helhedsindtryk udefor pisten : 72% the xray | rough's maneuverability is razor sharp... se mere head i.supershape rally type :           allround pisteski niveau :       helhedsindtryk på pisten : 62% helhedsindtryk udefor pisten : 60% se mere rossignol     unique 10 type :           allround pisteski niveau :       helhedsindtryk på pisten : 75% helhedsindtryk udefor pisten : 60% the unique 10 is an ultra-lightweight high-performance women's carving ski for technical expert skie.. se mere testpersoner 2014/2015. find flere testpersoner. brug søgemenuen længere oppe mikkel alexander niveau :       alder : 40 vægt : 82 kg. højde : 183 cm. uger på ski : 50 fysisk form :   trænet  hverken / eller  utrænet dyrker sport  0 dage om ugen. intruktør niveau : bsi2  foretrukken ski : all mountain 175cm. se mere søren bo christensen niveau :       alder : 43 vægt : 71 kg. højde : 183 cm. uger på ski : 40 fysisk form :   trænet  hverken / eller  utrænet dyrker sport  4 dage om ugen. intruktør niveau :  foretrukken ski : k2 amp rictor 82ti 178cm. se mere troels thomsen niveau :       alder : 41 vægt : 68 kg. højde : 168 cm. uger på ski : 20 fysisk form :   trænet  hverken / eller  utrænet dyrker sport  1 dage om ugen. intruktør niveau :  foretrukken ski : vōlkl supersport s5 165cm. se mere karen mølholm andersen niveau :       alder : 37 vægt : 60 kg. højde : 168 cm. uger på ski : 25 fysisk form :   trænet  hverken / eller  utrænet dyrker sport  3 dage om ugen. intruktør niveau :  foretrukken ski :  cm. se mere christian eismark niveau :       alder : 24 vægt : 80 kg. højde : 177 cm. uger på ski : 43 fysisk form :   trænet  hverken / eller  utrænet dyrker sport  4 dage om ugen. intruktør niveau : bsi1  foretrukken ski : head i.magnum 170cm. se mere ski shop find alt det ski udstyr, du har brug for, denne sæson. used shop få et godt tilbud på brugt udstyr. ski test se alle testresultater, fra vores skitest. startet helt tilbage i 2003/2004. club newgear bliv medlem af club newgear og modtage gode tilbud og rabatter. contact adress: newgear gartnervang 30 4000 roskilde denmark mail: newgear@newgear.net phone: +45 5050 4997 © newgear 2016
+ski test
+ski test home
+testpersoner
+mand
+  begynder niveau
+  øvet niveau
+  avanceret niveau
+  expert niveau
+kvinde
+  begynder niveau
+  øvet niveau
+  avanceret niveau
+  expert niveau
+ski
+  all mountain ski
+  allround pisteski
+  cross ski
+  freeride ski
+  freestyle ski
+  race ski
+mærker
+angel flow
+atomic
+blizzard
+dynastar
+elan
+fischer
+head
+icelantic
+k2
+kneissl
+kästle
+line
+lacroix
+moment
+nordica
+rossignol
+salomon
+sporten
+stöckli
+völkl
+language
+dansk
+english
+wikipedia.
+din indkøbskurv indeholder 0 varer vi sender til                      ,- € vis mig
+ski test ski testpersoner sæson 2014 / 2015 2013 / 2014 2012 / 2013 2011 / 2012 2010 / 2011 2009 / 2010 2008 / 2009 2007 / 2008 2006 / 2007 2005 / 2006 2004 / 2005 2003 / 2004 type             køn  mand  kvinde niveau niveau         søg
+se mere
+se mere
+se mere
+se mere
+se mere
+se mere
+se mere
+se mere
+se mere
+se mere
+ski shop
+used shop
+ski test
+club newgear
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://eltjek.net/Om-Eltjek.net/om-firmaet-bag-eltjek-net
+################################################
+url:http://eltjek.net/Om-Eltjek.net/om-firmaet-bag-eltjek-net,date:null,extSize:4923,extDblChar:101,C1a:0,C2a:1 +45,C2b:n,C3a:3 ø#æ#å,C3b:8 to#oje#oge#for#do#son#fore#tor,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:da,C4b:da: HIGH (0.999993),C5a:2 af#nu,C5b:0,C6a:60 personlig#jeg#blive#du#vi#give#de#side#man#i#uden#mulighed#en#et#ved#er#to#har#på#egentlig#forbindelse#område#pris#skabe#med#brug#alle#siden#noget#udføre#men#at#lille#arbejde#af#nu#til#for#sag#eller#helt#drive#om#og#mand#som#virksomhed#der#det#selv#den#end#hele#stilling#denne#mere#også#stor#samme#ikke,C6b:1 forening,C6c:0,C6d:51 personlig#jeg#blive#du#vi#de#side#uden#mulighed#en#et#er#ved#har#på#egentlig#forbindelse#område#pris#skabe#med#brug#alle#siden#noget#udføre#lille#arbejde#af#nu#til#sag#eller#helt#om#og#mand#som#virksomhed#der#det#selv#den#hele#stilling#denne#mere#også#stor#samme#ikke,C7a:1 vejle,C7b:0,C7c:27 ns#bol#ore#borg#by#lt#bo#ie#ker#lse#ør#ov#lev#øre#bæk#inge#or#å#ing#um#køb#bjerg#oje#lte#ved#skov#er,C7d:1 lt,C7e:0,C7f:0,C7g:0,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:2 dong energy#dsb,C9c:0,C9d:2 cvr#cvr-nr,C9e:1 dsb,C9f:n,C10a:1 fuldtidsbeskæftigelsen,C10b:4 christian#per#inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1171323
+Text: eltjek.net leverer vejledning om elektriske installationer til privatpersoner, normalt i forbindelse med bolig-kã¸b og -salg.
+siden og virksomheden er drevet og ejet pã¥ personlig basis, som bibeskã¦ftigelse.
+fuldtidsbeskã¦ftigelsen udfyldes af en stilling som projekterende ingeniã¸r i et stã¸rre rã¥dgivningsfirma, med bl.a. elektriske anlã¦g som speciale.
+virksomheden drives uden cvr-nr og indehaver er autoriseret el-installatã¸r.
+engagement
+lysten til at drive en lille, men kompentent virksomhed, udspringer af stor interesser for elektriske installationer og regler herom. elektriske installationer er en "sort plet" for de fleste, et omrã¥de man ikke helt sikkert ved noget om. vi tilbyder dig at blive bedre vidende om elinstallationer.
+du mã¸der altid mester selv
+virksomheden bestã¥r udelukkende af mester selv - hvilket betyder at det er den samme mand, der laver alle aftaler og behandler din sag hele vejen igennem.
+erfaring - referencer
+mere end 11 ã¥rs erfaring som projekterende ingeniã¸r indenfor elektriske installationer samt vejleder for privatpersoner, har bl.a. resulteret i fã¸lgende referencer. 
+dsb (s-tog) - rullende materiel og stationer
+dsb (lange skinner)
+dong energy - renewables
+grundlag
+vi leverer uvildigt og uafhã¦ngigt eftersyn og tilsyn med el-installationer. vi har ikke mulighed for at udfã¸re eller udbedre de fejl vi finder - og det mener vi egentlig ogsã¥ er bedst.
+det betyder at vi ikke udfã¸rer eltjek i hã¥b om at skabe mere arbejde. vi udfã¸rer eltjek for at give dig en prã¦cis vurdering af din elinstallation.
+virksomheds-oplysninger
+hvidbjerg
+t: +45 3095 3365
+@: this email address is being protected from spambots. you need javascript enabled to view it.
+autorisationsnr: efbi-07226
+t: +45 3095 3365
+@: this email address is being protected from spambots. you need javascript enabled to view it.
+aut.nr: efbi-07226
+om firmaet bag eltjek.net
+om firmaet bag eltjek.net denne side anvender cookies ved brug af eltjek.net accepterer du brug af cookies. jeg accepterer kontakt eltjek.net virksomhedsoplysninger ophavsret    bestil eltjek nu priser dækningsområde dokumentation kunderne mener bolig- og ejerforeninger download hent "el-guide for boligkøbere" hent "skema for elsyn" hent "gør-det-selv-el-arbejde" om eltjek.net eltjek.net leverer vejledning om elektriske installationer til privatpersoner, normalt i forbindelse med bolig-køb og -salg. siden og virksomheden er drevet og ejet på personlig basis, som bibeskæftigelse. fuldtidsbeskæftigelsen udfyldes af en stilling som projekterende ingeniør i et større rådgivningsfirma, med bl.a. elektriske anlæg som speciale. virksomheden drives uden cvr-nr og indehaver er autoriseret el-installatør. engagement lysten til at drive en lille, men kompentent virksomhed, udspringer af stor interesser for elektriske installationer og regler herom. elektriske installationer er en "sort plet" for de fleste, et område man ikke helt sikkert ved noget om. vi tilbyder dig at blive bedre vidende om elinstallationer. du møder altid mester selv virksomheden består udelukkende af mester selv - hvilket betyder at det er den samme mand, der laver alle aftaler og behandler din sag hele vejen igennem. erfaring - referencer mere end 11 års erfaring som projekterende ingeniør indenfor elektriske installationer samt vejleder for privatpersoner, har bl.a. resulteret i følgende referencer.  dsb (s-tog) - rullende materiel og stationer dsb (lange skinner) dong energy - renewables leo pharma christiansborg ...mere end 200 uvildige eltjek grundlag vi leverer uvildigt og uafhængigt eftersyn og tilsyn med el-installationer. vi har ikke mulighed for at udføre eller udbedre de fejl vi finder - og det mener vi egentlig også er bedst. det betyder at vi ikke udfører eltjek i håb om at skabe mere arbejde. vi udfører eltjek for at give dig en præcis vurdering af din elinstallation. virksomheds-oplysninger hvidbjerg skovvænget 14a 3100 hornbæk t: +45 3095 3365 @: this email address is being protected from spambots. you need javascript enabled to view it. autorisationsnr: efbi-07226   hvidbjerg skovvænget 14a 3100 hornbæk t: +45 3095 3365 @: this email address is being protected from spambots. you need javascript enabled to view it. aut.nr: efbi-07226 © 2016 eltjek.net - vi sœtter pris på fejl! ophavsret og rettigheder priser dækningsområde dokumentation kunderne mener bolig- og ejerforeninger download hent "el-guide for boligkøbere" hent "skema for elsyn" hent "gør-det-selv-el-arbejde"
+kontakt eltjek.net
+virksomhedsoplysninger
+ophavsret
+   bestil eltjek nu
+priser
+dækningsområde
+dokumentation
+kunderne mener
+bolig- og ejerforeninger
+download
+hent "el-guide for boligkøbere"
+hent "skema for elsyn"
+hent "gør-det-selv-el-arbejde"
+ophavsret og rettigheder
+priser
+dækningsområde
+dokumentation
+kunderne mener
+bolig- og ejerforeninger
+download
+hent "el-guide for boligkøbere"
+hent "skema for elsyn"
+hent "gør-det-selv-el-arbejde"
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://munchow.net/claus/
+################################################
+url:http://munchow.net/claus/,date:null,extSize:735,extDblChar:104,C1a:0,C2a:0,C2b:n,C3a:3 ø#æ#å,C3b:5 to#for#los#aaben#tor,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:da,C4b:da: HIGH (0.999995),C5a:2 nu#af,C5b:0,C6a:18 nu#for#sag#jeg#blev#bare#og#os#så#det#fik#den#formand#min#lidt#at#er#af,C6b:0,C6c:0,C6d:15 nu#sag#jeg#blev#bare#og#os#så#det#fik#den#formand#lidt#er#af,C7a:1 sønderborg,C7b:0,C7c:12 bjerg#bo#ns#lev#inge#or#ie#aa#borg#å#ing#er,C7d:0,C7e:0,C7f:0,C7g:1 sønderborg,C7h:0,C8a:1 lev,C8b:0,C8c:0,C9a:0,C9b:1 sas,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:3 per#inge#inger,C10c:0,C15a:y,C15b:net,C16a:,C17a:1,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-155602
+Text: tjahh, bom-bom, … lad os nu se…
+færøerne, tjekkiet, fysik, filosofi, musik
+claus münchow, hjemmeside
+claus münchow, hjemmeside   claus münchow lektor emeritus (da. efterlønner) bjerggade 1 6400, sønderborg 7442 3457 claus@munchow.net om...    stamtræ familiekrøniken af sidens tilbud er det bare at vælge: tjahh, bom-bom, … lad os nu se…     aabenraa motetkor   - og pludselig blev jeg formand for saso .  og så blev jeg skibsreder - indti! jeg fik solgt min flipper rejseberetninger ,  opskrifter ,  jena ,  den frie vilje sag , 4.vest - og lidt navlepilleri , because  
+privat
+om...
+stamtræ
+familiekrøniken
+aabenraa motetkor
+saso
+og så blev jeg skibsreder
+flipper
+rejseberetninger
+jena
+den frie vilje
+sag
+4.vest
+navlepilleri
+because
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed nordicwomensliterature.net
+################################################
+Errors found: Partfile '/home/svc/devel/webdanica/criteria-test-11-08-2016/11-08-2016-1470934842/82-68-20160808164252264-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz' contained no results.original warc: 82-68-20160808164252264-00000-dia-prod-udv-01.kb.dk.warc.gz
+No results found for seed
+
+################################################
+Analysis of harvest of seed http://rockfreaks.net/
+################################################
+url:http://rockfreaks.net/,date:null,extSize:27044,extDblChar:101,C1a:0,C2a:0,C2b:n,C3a:3 ø#æ#å,C3b:11 to#dor#lob#rod#oje#for#lobe#do#son#tor#go,C3c:0,C3d:0,C3e:0,C3f:0,C3g:1 to,C4a:en,C4b:en: HIGH (0.999995),C5a:,C5b:,C6a:19 time#i#plan#århus#radio#over#de#by#alt#at#to#fra#lille#kommer#for#den#hun#have#fin,C6b:0,C6c:0,C6d:10 time#århus#de#alt#fra#lille#kommer#den#hun#fin,C7a:2 århus#odense,C7b:0,C7c:31 rp#ns#ore#by#lt#rum#bo#holm#ie#ager#ker#hem#torp#ør#ov#inge#sund#or#å#mark#ing#um#kob#sted#rod#oje#nse#aa#lte#er#ved,C7d:0,C7e:2 copenhagen#denmark,C7f:0,C7g:1 århus,C7h:1 denmark,C8a:2 mask#koda,C8b:0,C8c:1 mask,C9a:0,C9b:4 ambu#eas#iss#torm,C9c:0,C9d:0,C9e:0,C9f:n,C10a:1 nissen,C10b:6 per#inge#jan#inger#helle#ole,C10c:0,C15a:y,C15b:net,C16a:,C17a:23,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-1302482
+Text: gig reviews
+posted by hes on 8/08/16
+the angsty alt folk-quintet frightened rabbit has announced a danish show in the fall.
+the scottish outfit released the dark and moody " painting of a panic attack " to critical acclaim. this will be the band's first appearance in denmark since its release.
+see more information on the facebook-event .
+posted by ap on 8/08/16
+according to this blog post , avenged sevenfold will shortly confirm the mainland leg of their european tour next year, which features support from disturbed and chevelle . here’s how the trek will pan out:
+february 12th - festhalle, frankfurt am main, ger
+february 13th - sporthalle, hamburg, ger
+february 15th - arena, berlin, ger
+february 16th - mitsubishi electric halle, düsseldorf, ger
+february 18th - ziggo dome, amsterdam, net
+february 20th - schleyerhalle, stuttgart, ger
+february 21st - forum, milan, ita
+february 23rd - stadthalle, vienna, aut
+february 25th - zenith, munich, ger
+february 26th - halle 622, zürich, swi
+february 28th - zenith, lille, fra
+march 01st - rockhal, luxembourg, lux
+march 02nd - accor hotels arena, paris, fra
+march 04th - valby hallen, valby, den
+march 07th - hartwall arena, helsinki, fin
+march 09th - globe, stockholm, swe
+march 10th - telenor arena, oslo, nor
+the already confirmed uk leg has in flames billed as the opening act instead of chevelle , and runs, as follows:
+january 10th - hydro, glasgow, uk
+january 12th - metro radio arena, newcastle, uk
+january 13th - genting arena, birmingham, uk
+january 15th - arena, sheffield, uk
+january 16th - arena, manchester, uk
+january 18th - motorpoint arena, nottingham, uk
+january 19th - motorpoint arena, cardiff, uk
+january 21st - o2 arena, london, uk
+avenged sevenfold are expected to release their seventh studio album later this year.
+posted by ap on 6/08/16
+kadavar have put up a new single dubbed ”words of evil” , which was recorded for scion av  / skybound entertainment , and can be streamed below.
+the german heritage rockers will play at pumpehuset in copenhagen on october 03rd , and at voxhall in århus on october 04th , as main support for blues pills .
+tickets for the two gigs can be bought here and here , respectively. the respective official facebook events are found here and here .
+posted by ap on 6/08/16
+the devin townsend project have made their new single ”failure”  available for streaming below. the group is gearing up to release their new album ”transcendence”  on september 09th , with the following tracks included on it:
+01. “truth”
+02. “stormbending”
+03. “failure”
+10. “transdermal celebration”
+danish fans can look forward to watching the band live at voxhall in århus on february 22nd  and/or at amager bio in copenhagen on march 05th . the dates are part of a massive european tour with support from between the buried and me and leprous .
+tickets for the århus gig can be bought here for 270 dkk  a piece, whilst its official facebook event is found here .
+tickets for the copenhagen show cost 300 dkk , and are available to purchase from billetlugen.dk . the official facebook event is found here .
+posted by ap on 6/08/16
+the dillinger escape plan have made the saddening decision that their upcoming album ”dissociation”  is going to be their last. the band’s guitar
+posted by tl on 5/08/16
+odense-based emo/alt/punk-rock group halcyon hope has revealed a new single called "fawn" . the song comes from the soon to be released album "onward to fracture town" , which is to come out on october 7th . the album will be the band's first new release since their 2014 debut release "northern lights" and it will contain the following tracks:
+1. against the wall
+3. marshland
+5. clandestine
+posted by ap on 5/08/16
+meshuggah have provided more details regarding the djent pioneers’ upcoming album ”the violent sleep of reason” , which apparently can be bought as an edition that includes a mask . other than that, the effort comes out on october 07th  and comprises the following ten tracks:
+01. “clockworks”
+06. “ivory tower”
+10. “into decay”
+meshuggah will tour europe with high on fire later this year, including two shows in denmark. those take place at amager bio in copenhagen on december 09th  and at train in århus on december 10th , with tickets available from ticketmaster.dk .
+the official facebook events are found here and here , respectively; while the entire itinerary for the tour was detailed in our earlier news item .
+posted by ap on 5/08/16
+french post-metal / shoegaze act alcest has debuted the first song from their upcoming album ”kodama” , which releases on september 30th . the track, available to stream below courtesy of noisey , is called ”oiseaux de proie” , and finds the band in customarily cinematic territory with plenty of exchanges between the heavy and the atmospheric. further details regarding the album itself can be found in our earlier news item .
+alcest will play at lille vega in copenhagen on november 22nd , as support for japanese post-rockers mono .
+tickets cost 205 dkk , and can be bought from ticketmaster.dk . for the official facebook event, click here .
+posted by ap on 4/08/16
+swedish dark hardcore crew grieved will team up with danish blackened hardcore act hexis for a european tour late this year, which includes a show at templet in lyngby on december 02nd . tickets for that show cost 90 dkk , and can be bought from ticketmaster.dk .
+here’s how the entire tour pans out thus far:
+december 02nd - templet, lyngby, den
+december 03rd - scherer 8, berlin, ger
+december 04th - chemiefabrik, dresden, ger
+december 05th - kafé kult, munich, ger
+december 06th - venster 99, vienna, aut
+december 07th - dürer kert, budapest, hun
+december 08th - il blocco, verona, ita
+december 09th - babar, crema, ita
+december 10th - daevacian, bruino, ita
+december 11th - urgence disk records, genève, swi
+december 11th - kuzeb, bremgarten, swi
+december 12th - tba, paris, fra
+december 13th - hipster café, rouen, fra
+december 14th - het bos, antwerpen, bel
+december 15th - jam, koblenz, ger
+december 17th - az, wuppertal, ger
+december 18th - alte meierei, kiel, ger
+you can watch the music video for ”opaque”  — one of the songs from grieved ’s newest outing ”grieved” , which came out on january 22nd  — right here:
+danish alternative rockers siamese have announced a concert at beta in copenhagen on september 10th , with support from h.e.r.o .
+tickets cost 125 dkk  (+ fees), and can be bought from billetlugen.dk . the official facebook event is found here .
+the band recently premiered a new video single called ”avaritia (greed)” , which you can revisit below. it is taken from their upcoming third album ”sagilia” , the details for which are yet to be revealed.
+posted by ap on 4/08/16
+according to killtown bookings , subrosa ’s european tour with sinistro this autumn now also features a danish show at pumpehuset in copenhagen on october 07th .
+whilst further information regarding the concert is still pending, you can listen to one of the songs from subrosa ’s forthcoming album ”for this we fought the battle of ages” , which is set to be released on august 26th  via profound lore . the track is called ”wound of the warden” , and can be heard below.
+posted by ap on 4/08/16
+copenhagen, denmark based hardcore punk outfit night fever will play a headlining show at pumpehuset in copenhagen on september 09th , with the support slots filled by smertegrænsens toldere and ruined .
+tickets cost 100 dkk  (+ fees) and can be bought from billetto.dk . for more information, join the official facebook event .
+<a href="http://nightfeverhc.bandcamp.com/album/vendetta">vendetta by night fever</a>
+posted by ap on 4/08/16
+swedish heavy metallers sabaton have announced a concert at valby hallen in valby, denmark on march 21st , with german legends accept providing support
+posted by ap on 3/08/16
+copenhagen, denmark’s raw hardcore group halshug has set september 30th  as the official release date for its sophomore album ”sort sind”  on southern lord . the effort comprises the following nine tracks:
+01. “sort sind”
+02. “indre fængsel”
+09. “ensom død”
+the first single, ”udskud” , is available to stream exclusively over at cvltnation.com , whilst the rather unconventional artwork for the album can be viewed below.
+danish fans can catch the band live as soon as this saturday, august 06th  as part of the annual dirty days of summer concert series at beta in copenhagen. stoner rockers bersærk and deathcore miscreants cabal will also play. tickets for the show are, however, completely sold out .
+posted by ap on 3/08/16
+san francisco, ca’s classic doom revivalists castle have premiered the music video for ”flash of the pentagram”  via teamrock.com below. it is taken from the group’s latest album ”welcome to the graveyard” , which came out last month on ván records .
+the band will be touring europe this autumn, with the following dates confirmed thus far:
+october 06th - dürer kert, budapest, hun
+october 07th - old grave fest, bucharest, rom
+october 09th - death disco, athens, gre
+october 11th - titty twister, parma, ita
+october 12th - blue rose saloon, milan, ita
+october 13th - white rabbit, freiburg, ger
+october 15th - little devil, tilburg, net
+october 16th - desertfest, antwerpen, bel
+october 17th - az, aachen, ger
+october 18th - urban spree, berlin, ger
+october 19th - coq d’or, olten, swi
+october 20th - ut connewitz, leipzig, ger
+october 22nd - truckstop alaska, gothenburg, swe
+october 26th - gerber 3, weimar, ger
+according to killtown bookings , there are plenty of shows still to be announced, potentially including one in copenhagen on october 23rd .
+posted by ap on 2/08/16
+chicago, il’s instrumental post-rock trio russian circles has made the entirety of their new album ”guidance”  available for streaming ahead of its official release on sargent house  this friday, august 05th . head over to noisey to hear it.
+the band will be touring europe with helen money this autumn, with the full itinerary found in our earlier news .
+interviews
+music from a fan's point of view - rockfreaks.net
+music from a fan's point of view - rockfreaks.net ☹ yo twitter facebook rockfreaks.net news gigs albums interviews features dates about forum press return for full results. gig reviews defeater beta, copenhagen, denmark - 5/8 red fang @ lille vega, copenhagen, den dopethrone @ kb18, copenhagen, den album reviews it lies within paramount by pp on 3/8 harm/shelter paycheck by mak on 3/8 the fall of troy ok by pp on 2/8 belvedere the revenge of the fifth by pp on 2/8 dear delusion sleep of reason by pp on 2/8 drowning pool hellelujah by pp on 1/8 car seat headrest teens of denial by pp on 1/8 night verses into the vanishing light by tl on 31/7 biffy clyro ellipsis by tl on 31/7 capsize a reintroduction: the essence of all that surrounds me by mak on 29/7 dopethrone hochelaga by ap on 27/7 eat defeat time and tide ep by mak on 27/7 tides from nebula safehaven by lf on 27/7 måneskjold kometen kommer by bv on 27/7 twitter feed tweets about "rockfreaks.net" copenhagen psych fest 2016 i practically can’t believe it. here we are yet again, copenhagen psych fest, for the third time and bigger than ever. sure, there have been all kinds of precursor events like the winter and spring editions and pleasant as they were, nothing quite compares to ‘the real deal’, the ultimate psych gathering in denmark by far, and possibly even scandinavia. the rise has been fast-paced; from starting small at stengade in 2014 with two stages, only to move to huset-kbh and upgrading both capacity and number of stages, to now finally ... latest news danish show for frightened rabbit announced posted by hes on 8/08/16 the angsty alt folk-quintet frightened rabbit has announced a danish show in the fall. the scottish outfit released the dark and moody " painting of a panic attack " to critical acclaim. this will be the band's first appearance in denmark since its release. see more information on the facebook-event . comment avenged sevenfold & more to tour europe in 2017 (incl. denmark) posted by ap on 8/08/16 according to this blog post , avenged sevenfold will shortly confirm the mainland leg of their european tour next year, which features support from disturbed and chevelle . here’s how the trek will pan out: february 12th - festhalle, frankfurt am main, ger february 13th - sporthalle, hamburg, ger february 15th - arena, berlin, ger february 16th - mitsubishi electric halle, düsseldorf, ger february 18th - ziggo dome, amsterdam, net february 20th - schleyerhalle, stuttgart, ger february 21st - forum, milan, ita february 23rd - stadthalle, vienna, aut february 25th - zenith, munich, ger february 26th - halle 622, zürich, swi february 28th - zenith, lille, fra march 01st - rockhal, luxembourg, lux march 02nd - accor hotels arena, paris, fra march 04th - valby hallen, valby, den march 07th - hartwall arena, helsinki, fin march 09th - globe, stockholm, swe march 10th - telenor arena, oslo, nor the already confirmed uk leg has in flames billed as the opening act instead of chevelle , and runs, as follows: january 10th - hydro, glasgow, uk january 12th - metro radio arena, newcastle, uk january 13th - genting arena, birmingham, uk january 15th - arena, sheffield, uk january 16th - arena, manchester, uk january 18th - motorpoint arena, nottingham, uk january 19th - motorpoint arena, cardiff, uk january 21st - o2 arena, london, uk avenged sevenfold are expected to release their seventh studio album later this year. comment kadavar unveils stomping new single: "words of evil" posted by ap on 6/08/16 kadavar have put up a new single dubbed ”words of evil” , which was recorded for scion av / skybound entertainment , and can be streamed below. the german heritage rockers will play at pumpehuset in copenhagen on october 03rd , and at voxhall in århus on october 04th , as main support for blues pills . tickets for the two gigs can be bought here and here , respectively. the respective official facebook events are found here and here . comment devin townsend project debuts new single: "failure" posted by ap on 6/08/16 the devin townsend project have made their new single ”failure” available for streaming below. the group is gearing up to release their new album ”transcendence” on september 09th , with the following tracks included on it: 01. “truth” 02. “stormbending” 03. “failure” 04. “secret sciences” 05. “higher” 06. “stars” 07. “transcendence” 08. “offer your light” 09. “from the heart” 10. “transdermal celebration” danish fans can look forward to watching the band live at voxhall in århus on february 22nd and/or at amager bio in copenhagen on march 05th . the dates are part of a massive european tour with support from between the buried and me and leprous . tickets for the århus gig can be bought here for 270 dkk a piece, whilst its official facebook event is found here . tickets for the copenhagen show cost 300 dkk , and are available to purchase from billetlugen.dk . the official facebook event is found here . comment "dissociation" to be dillinger escape plan's final record posted by ap on 6/08/16 the dillinger escape plan have made the saddening decision that their upcoming album ”dissociation” is going to be their last. the band’s guitar continue reading ▼ comment halcyon hope reveals new single "fawn" + album details posted by tl on 5/08/16 odense-based emo/alt/punk-rock group halcyon hope has revealed a new single called "fawn" . the song comes from the soon to be released album "onward to fracture town" , which is to come out on october 7th . the album will be the band's first new release since their 2014 debut release "northern lights" and it will contain the following tracks: 1. against the wall 2. wear me like a crown 3. marshland 4. once a sleepy backwater 5. clandestine 6. beggars belief 7. fawn 8. mono in stereo 9. bitter rain 10. burning effigy 11. a1 12. tomorrow comment meshuggah reveals details for "the violent sleep of reason" posted by ap on 5/08/16 meshuggah have provided more details regarding the djent pioneers’ upcoming album ”the violent sleep of reason” , which apparently can be bought as an edition that includes a mask . other than that, the effort comes out on october 07th and comprises the following ten tracks: 01. “clockworks” 02. “born in dissonance” 03. “monstrocity” 04. “by the ton” 05. “violent sleep of reason” 06. “ivory tower” 07. “stifled” 08. “nostrum” 09. “our rage won’t die” 10. “into decay” meshuggah will tour europe with high on fire later this year, including two shows in denmark. those take place at amager bio in copenhagen on december 09th and at train in århus on december 10th , with tickets available from ticketmaster.dk . the official facebook events are found here and here , respectively; while the entire itinerary for the tour was detailed in our earlier news item . comment alcest debuts new song: "oiseaux de proie" posted by ap on 5/08/16 french post-metal / shoegaze act alcest has debuted the first song from their upcoming album ”kodama” , which releases on september 30th . the track, available to stream below courtesy of noisey , is called ”oiseaux de proie” , and finds the band in customarily cinematic territory with plenty of exchanges between the heavy and the atmospheric. further details regarding the album itself can be found in our earlier news item . alcest will play at lille vega in copenhagen on november 22nd , as support for japanese post-rockers mono . tickets cost 205 dkk , and can be bought from ticketmaster.dk . for the official facebook event, click here . comment grieved & hexis to tour europe in december (incl. denmark) posted by ap on 4/08/16 swedish dark hardcore crew grieved will team up with danish blackened hardcore act hexis for a european tour late this year, which includes a show at templet in lyngby on december 02nd . tickets for that show cost 90 dkk , and can be bought from ticketmaster.dk . here’s how the entire tour pans out thus far: december 02nd - templet, lyngby, den december 03rd - scherer 8, berlin, ger december 04th - chemiefabrik, dresden, ger december 05th - kafé kult, munich, ger december 06th - venster 99, vienna, aut december 07th - dürer kert, budapest, hun december 08th - il blocco, verona, ita december 09th - babar, crema, ita december 10th - daevacian, bruino, ita december 11th - urgence disk records, genève, swi december 11th - kuzeb, bremgarten, swi december 12th - tba, paris, fra december 13th - hipster café, rouen, fra december 14th - het bos, antwerpen, bel december 15th - jam, koblenz, ger december 17th - az, wuppertal, ger december 18th - alte meierei, kiel, ger you can watch the music video for ”opaque” — one of the songs from grieved ’s newest outing ”grieved” , which came out on january 22nd — right here: comment siamese to play at beta in september posted by ap on 4/08/16 danish alternative rockers siamese have announced a concert at beta in copenhagen on september 10th , with support from h.e.r.o . tickets cost 125 dkk (+ fees), and can be bought from billetlugen.dk . the official facebook event is found here . the band recently premiered a new video single called ”avaritia (greed)” , which you can revisit below. it is taken from their upcoming third album ”sagilia” , the details for which are yet to be revealed. comment subrosa adds danish date to autumn european tour posted by ap on 4/08/16 according to killtown bookings , subrosa ’s european tour with sinistro this autumn now also features a danish show at pumpehuset in copenhagen on october 07th . whilst further information regarding the concert is still pending, you can listen to one of the songs from subrosa ’s forthcoming album ”for this we fought the battle of ages” , which is set to be released on august 26th via profound lore . the track is called ”wound of the warden” , and can be heard below. comment night fever announces headlining copenhagen show posted by ap on 4/08/16 copenhagen, denmark based hardcore punk outfit night fever will play a headlining show at pumpehuset in copenhagen on september 09th , with the support slots filled by smertegrænsens toldere and ruined . tickets cost 100 dkk (+ fees) and can be bought from billetto.dk . for more information, join the official facebook event . you can stream night fever ’s 2015 album ”vendetta” ( review here ) below. <a href="http://nightfeverhc.bandcamp.com/album/vendetta">vendetta by night fever</a> comment sabaton announces massive european tour in 2017 (incl. denmark) posted by ap on 4/08/16 swedish heavy metallers sabaton have announced a concert at valby hallen in valby, denmark on march 21st , with german legends accept providing support continue reading ▼ comment halshug details sophomore album "sort sind" & streams first single posted by ap on 3/08/16 copenhagen, denmark’s raw hardcore group halshug has set september 30th as the official release date for its sophomore album ”sort sind” on southern lord . the effort comprises the following nine tracks: 01. “sort sind” 02. “indre fængsel” 03. “udskud” 04. “vold” 05. “mørket falder” 06. “helvede” 07. “vanvid” 08. “nederlag” 09. “ensom død” the first single, ”udskud” , is available to stream exclusively over at cvltnation.com , whilst the rather unconventional artwork for the album can be viewed below. danish fans can catch the band live as soon as this saturday, august 06th as part of the annual dirty days of summer concert series at beta in copenhagen. stoner rockers bersærk and deathcore miscreants cabal will also play. tickets for the show are, however, completely sold out . comment castle premieres "flash of the pentagram" music video posted by ap on 3/08/16 san francisco, ca’s classic doom revivalists castle have premiered the music video for ”flash of the pentagram” via teamrock.com below. it is taken from the group’s latest album ”welcome to the graveyard” , which came out last month on ván records . the band will be touring europe this autumn, with the following dates confirmed thus far: october 06th - dürer kert, budapest, hun october 07th - old grave fest, bucharest, rom october 09th - death disco, athens, gre october 11th - titty twister, parma, ita october 12th - blue rose saloon, milan, ita october 13th - white rabbit, freiburg, ger october 15th - little devil, tilburg, net october 16th - desertfest, antwerpen, bel october 17th - az, aachen, ger october 18th - urban spree, berlin, ger october 19th - coq d’or, olten, swi october 20th - ut connewitz, leipzig, ger october 22nd - truckstop alaska, gothenburg, swe october 26th - gerber 3, weimar, ger according to killtown bookings , there are plenty of shows still to be announced, potentially including one in copenhagen on october 23rd . comment russian circles streaming new album "guidance" posted by ap on 2/08/16 chicago, il’s instrumental post-rock trio russian circles has made the entirety of their new album ”guidance” available for streaming ahead of its official release on sargent house this friday, august 05th . head over to noisey to hear it. the band will be touring europe with helen money this autumn, with the full itinerary found in our earlier news . comment load more news posts ▼ browse the news archive interviews jeppe nissen molly anti-flag to kill a king taking back sunday supercharger de profundis recent comments info about us the staff privacy policy terms of service contact advertise legal © copyright mmxvi rockfreaks.net.
+☹
+yo
+twitter
+facebook
+rockfreaks.net
+news
+gigs
+albums
+interviews
+features
+dates
+about
+forum
+press return for full results.
+defeater beta, copenhagen, denmark - 5/8
+red fang @ lille vega, copenhagen, den
+dopethrone @ kb18, copenhagen, den
+it lies within paramount
+harm/shelter paycheck
+the fall of troy ok
+belvedere the revenge of the fifth
+dear delusion sleep of reason
+drowning pool hellelujah
+car seat headrest teens of denial
+night verses into the vanishing light
+biffy clyro ellipsis
+capsize a reintroduction: the essence of all that surrounds me
+dopethrone hochelaga
+eat defeat time and tide ep
+tides from nebula safehaven
+måneskjold kometen kommer
+tweets about "rockfreaks.net"
+copenhagen psych fest 2016 i practically can’t believe it. here we are yet again, copenhagen psych fest, for the third time and bigger than ever. sure, there have been all kinds of precursor events like the winter and spring editions and pleasant as they were, nothing quite compares to ‘the real deal’, the ultimate psych gathering in denmark by far, and possibly even scandinavia. the rise has been fast-paced; from starting small at stengade in 2014 with two stages, only to move to huset-kbh and upgrading both capacity and number of stages, to now finally ...
+danish show for frightened rabbit announced
+hes
+frightened rabbit
+painting of a panic attack
+facebook-event
+comment
+avenged sevenfold & more to tour europe in 2017 (incl. denmark)
+ap
+this blog post
+avenged sevenfold
+disturbed
+chevelle
+in flames
+chevelle
+avenged sevenfold
+comment
+kadavar unveils stomping new single: "words of evil"
+ap
+kadavar
+pumpehuset
+voxhall
+blues pills
+here
+here
+here
+here
+comment
+devin townsend project debuts new single: "failure"
+ap
+devin townsend project
+voxhall
+amager bio
+massive european tour
+between the buried and me
+leprous
+here
+here
+billetlugen.dk
+here
+comment
+"dissociation" to be dillinger escape plan's final record
+ap
+the dillinger escape plan
+continue reading ▼
+comment
+halcyon hope reveals new single "fawn" + album details
+tl
+halcyon hope
+"northern lights"
+comment
+meshuggah reveals details for "the violent sleep of reason"
+ap
+meshuggah
+bought
+meshuggah
+high on fire
+amager bio
+train
+ticketmaster.dk
+here
+here
+earlier news item
+comment
+alcest debuts new song: "oiseaux de proie"
+ap
+alcest
+noisey
+earlier news item
+alcest
+lille vega
+mono
+ticketmaster.dk
+click here
+comment
+grieved & hexis to tour europe in december (incl. denmark)
+ap
+grieved
+hexis
+templet
+ticketmaster.dk
+grieved
+comment
+siamese to play at beta in september
+ap
+siamese
+beta
+h.e.r.o
+billetlugen.dk
+here
+comment
+subrosa adds danish date to autumn european tour
+ap
+killtown bookings
+subrosa
+sinistro
+pumpehuset
+subrosa
+comment
+night fever announces headlining copenhagen show
+ap
+night fever
+pumpehuset
+smertegrænsens toldere
+ruined
+billetto.dk
+official facebook event
+night fever
+review here
+<a href="http://nightfeverhc.bandcamp.com/album/vendetta">vendetta by night fever</a>
+comment
+sabaton announces massive european tour in 2017 (incl. denmark)
+ap
+sabaton
+valby hallen
+accept
+continue reading ▼
+comment
+halshug details sophomore album "sort sind" & streams first single
+ap
+halshug
+cvltnation.com
+dirty days of summer
+beta
+bersærk
+cabal
+comment
+castle premieres "flash of the pentagram" music video
+ap
+castle
+teamrock.com
+killtown bookings
+comment
+russian circles streaming new album "guidance"
+ap
+russian circles
+noisey
+helen money
+earlier news
+comment
+browse the news archive
+jeppe nissen
+molly
+anti-flag
+to kill a king
+taking back sunday
+supercharger
+de profundis
+about us
+the staff
+privacy policy
+terms of service
+contact
+advertise
+
+Links: [https]
+
+
+################################################
+Analysis of harvest of seed http://www.orchidaceae.net/?caf&query=Orchid%20plants%20seeds%20bulbs&afdToken=CkgKEwjkyLvr5qnOAhVzIXIKHb54BV4YASADcRVwl4LDU__KggETCJqKvOvmqc4CFekjcgodtTEABo0B5nvUVZEBQeN9uTZRONgSGQBtOoqQWRhz-9fz_lfKJn-3k-upGDhtemU
+################################################
+url:http://www.orchidaceae.net/?caf&query=Orchid%20plants%20seeds%20bulbs&afdToken=CkgKEwjkyLvr5qnOAhVzIXIKHb54BV4YASADcRVwl4LDU__KggETCJqKvOvmqc4CFekjcgodtTEABo0B5nvUVZEBQeN9uTZRONgSGQBtOoqQWRhz-9fz_lfKJn-3k-upGDhtemU,date:null,extSize:667,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:3 to#for#do,C3c:0,C3d:2 to#go,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999997),C5a:,C5b:,C6a:1 by,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:10 bo#ov#ns#or#ore#mark#by#ing#er#ved,C7d:4 bo#ov#or#er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:2 eas#iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-21824
+Text: 2014 copyright. all rights reserved.
+the sponsored listings displayed above are served automatically by a third party. neither parkingcrew nor the domain owner maintain any relationship with the advertisers. in case of trademark issues please contact the domain owner directly (contact information can be found in whois).
+    2014 copyright. all rights reserved. the sponsored listings displayed above are served automatically by a third party. neither parkingcrew nor the domain owner maintain any relationship with the advertisers. in case of trademark issues please contact the domain owner directly (contact information can be found in whois). privacy policy
+ 
+ 
+
+Links: [http]
+
+url:http://www.orchidaceae.net/,date:null,extSize:667,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:3 to#for#do,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999997),C5a:,C5b:,C6a:1 by,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:10 bo#ov#ns#or#ore#mark#by#ing#er#ved,C7d:1 or,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:2 eas#iss,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:y,C15b:net,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:-21824
+Text: 2014 copyright. all rights reserved.
+the sponsored listings displayed above are served automatically by a third party. neither parkingcrew nor the domain owner maintain any relationship with the advertisers. in case of trademark issues please contact the domain owner directly (contact information can be found in whois).
+    2014 copyright. all rights reserved. the sponsored listings displayed above are served automatically by a third party. neither parkingcrew nor the domain owner maintain any relationship with the advertisers. in case of trademark issues please contact the domain owner directly (contact information can be found in whois). privacy policy
+ 
+ 
+
+Links: [http]
+
+

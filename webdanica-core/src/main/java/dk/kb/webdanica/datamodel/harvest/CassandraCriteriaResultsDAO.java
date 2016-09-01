@@ -91,7 +91,8 @@ public class CassandraCriteriaResultsDAO {
 		
 		dao.deleteRecordsByHarvestname("harvestName"); // delete existing records from database
 		
-		File ingestFile = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016/criteria-results/11-08-2016-1470934842/84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
+		File ingestFile = new File("/home/svc/devel/webdanica/webdanica-core/src/test/resources/criteria-results/criteria-test-11-08-2016/11-08-2016-1470934842/"
+				+ "/84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
 		List<SingleCriteriaResult> results 
 			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false).results;
 		System.out.println("Found records: " + results.size());
@@ -100,12 +101,14 @@ public class CassandraCriteriaResultsDAO {
 			System.out.println("record inserted: " + inserted);
 		}
 		List<SingleCriteriaResult> resultsA = dao.getResultsByHarvestname("harvestName");
+			
 		System.out.println("Record found: " +resultsA.size()); 
 		List<SingleCriteriaResult> resultsB = dao.getResultsBySeedurl("Theseed");
 		System.out.println("Record found: " +resultsB.size());
+		System.out.println(dao.getCountByHarvest("harvestName"));
+		System.out.println(dao.getCountByHarvest("harvestName2"));
 		System.exit(0);
 	}
-	
 
 	private static CassandraCriteriaResultsDAO instance;
 	private Session session;
@@ -114,11 +117,13 @@ public class CassandraCriteriaResultsDAO {
 	private PreparedStatement readAllWithUrlstatement;
 	private PreparedStatement readAllWithSeedurlstatement;
 	private PreparedStatement readAllWithHarvestnamestatement;
+	private PreparedStatement readUrlsByharveststatement;
+	private PreparedStatement readWithUrlAndHarvestnamestatement;
 	private PreparedStatement deleteAllWithUrlAndHarvestnamestatement;
-	
+	private PreparedStatement getCountWithHarvestnamestatement;
 	private boolean newSession = false;
 	private final Cassandra db;
-	private PreparedStatement readUrlsByharveststatement;
+	
 	
 	public synchronized static CassandraCriteriaResultsDAO getInstance(){
 		if (instance == null) {
@@ -279,6 +284,13 @@ public class CassandraCriteriaResultsDAO {
 		if (readAllWithHarvestnamestatement == null || newSession) {
 			readAllWithHarvestnamestatement = session.prepare("SELECT * FROM criteria_results WHERE harvestname=? ALLOW FILTERING");
 		}
+		if (getCountWithHarvestnamestatement == null || newSession) {
+			getCountWithHarvestnamestatement = session.prepare("SELECT count(*) FROM criteria_results WHERE harvestname=? ALLOW FILTERING");
+		}
+		
+		if (readWithUrlAndHarvestnamestatement == null || newSession) {
+			readWithUrlAndHarvestnamestatement = session.prepare("SELECT * FROM criteria_results WHERE url=? AND harvestname=?");
+		}
 		
 		if (deleteAllWithUrlAndHarvestnamestatement == null || newSession) {
 			deleteAllWithUrlAndHarvestnamestatement = session.prepare("DELETE FROM criteria_results WHERE url=? AND harvestname=?");
@@ -300,4 +312,31 @@ public class CassandraCriteriaResultsDAO {
 		BoundStatement bStatement = deleteAllWithUrlAndHarvestnamestatement.bind(url, harvestname);
 		session.execute(bStatement);
     }
+
+	public SingleCriteriaResult getSingleResult(String url, String harvest) {
+		init();
+		BoundStatement bStatement = readWithUrlAndHarvestnamestatement.bind(url, harvest);
+		ResultSet rs = session.execute(bStatement);
+		Row row = rs.one(); // What if no record exists?
+	    return getResultFromRow(row);
+    }
+
+	public List<SingleCriteriaResult> getResults() {
+		init();
+		ResultSet results = session.execute("SELECT * FROM criteria_results");
+		List<SingleCriteriaResult> list = new ArrayList<SingleCriteriaResult>();
+		for (Row row: results.all()) {
+			SingleCriteriaResult s = getResultFromRow(row);
+			list.add(s);
+		}
+		return list; 
+    }
+
+	public long getCountByHarvest(String harvestName) {
+		init();
+		BoundStatement bStatement = getCountWithHarvestnamestatement.bind(harvestName);
+		ResultSet rs = session.execute(bStatement);
+		Row row = rs.one();
+		return row.getLong(0);
+	}
 }

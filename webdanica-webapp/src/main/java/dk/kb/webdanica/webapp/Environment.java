@@ -26,6 +26,8 @@ import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.datamodel.SeedCassandraDAO;
+import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
@@ -152,6 +154,10 @@ public class Environment {
 
 	public CassandraBlackListDAO blacklistDao;
 
+	public CassandraCriteriaResultsDAO criteriaResultsDao;
+	
+	public CassandraHarvestDAO harvestDAO;
+	
 	private String blacklistsPath;
 
 	private String blacklistPath;
@@ -165,6 +171,14 @@ public class Environment {
 	private File webdanicaSettingsFile;
 
 	private ResourcesMap resourcesMap;
+
+	private String criteriaResultPath;
+
+	private String criteriaResultsPath;
+
+	private String harvestsPath;
+
+	private String harvestPath;
 	
     /**
      * @param servletContext
@@ -383,6 +397,8 @@ public class Environment {
 
 		seedDao = SeedCassandraDAO.getInstance(); 
 		blacklistDao  = CassandraBlackListDAO.getInstance();
+		criteriaResultsDao = CassandraCriteriaResultsDAO.getInstance();
+		harvestDAO = CassandraHarvestDAO.getInstance();
 		
 		// Read resources and their secured status from settings.
 		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
@@ -552,7 +568,9 @@ public class Environment {
         loginHandler = null;
         templateMaster=null;
         setServletConfig(null);
+        // Should we close all the dao classes independently
         seedDao.close();
+        
     }
 
     public int getDefaultItemsPerPage() {
@@ -665,5 +683,41 @@ public class Environment {
 	public ResourcesMap getResourcesMap() {
 	    return this.resourcesMap;	    
     }
+
+
+	public Object getCriteriaResultPath() {
+	    return this.criteriaResultPath;
+    }
+
+
+	public void setCriteriaResultPath(String string) {
+		this.criteriaResultPath = string;
+    }
+
+
+	public Object getCriteriaResultsPath() {
+		return this.criteriaResultsPath;
+    }
+
+	public void setCriteriaResultsPath(String string) {
+		this.criteriaResultsPath = string;
+    }
+	
+	public void setHarvestsPath(String string) {
+		this.harvestsPath = string;
+    }
+	
+	public String getHarvestsPath() {
+		return this.harvestsPath;
+    }
+	
+	public void setHarvestPath(String string) {
+		this.harvestPath = string;
+    }
+	
+	public String getHarvestPath() {
+		return this.harvestPath;
+    }
+	
 	
 }

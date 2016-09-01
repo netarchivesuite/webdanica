@@ -1,0 +1,56 @@
+Harvestlog for  seedfile /home/test/harvestTrials/nl-urls.txt
+################################################################################
+Seed: http://www.texel-internetcafe.nl/
+HarvestName: webdanica-trial-1471965999032
+Successful: true
+EndState: DONE
+Files harvested: 85-71-20160823152728799-00000-dia-prod-udv-01.kb.dk.warc.gz,85-metadata-1.warc
+################################################################################
+Seed: http://www.kunstpassie2000.nl/2007/frameset.htm
+HarvestName: webdanica-trial-1471966129118
+Successful: true
+EndState: DONE
+Files harvested: 86-72-20160823152922772-00000-dia-prod-udv-01.kb.dk.warc.gz,86-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/0605019%20fitness%20set.html
+HarvestName: webdanica-trial-1471966254913
+Successful: true
+EndState: DONE
+Files harvested: 87-73-20160823153125413-00000-dia-prod-udv-01.kb.dk.warc.gz,87-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/2210513%20kofferset.html
+HarvestName: webdanica-trial-1471966355516
+Successful: true
+EndState: DONE
+Files harvested: 88-74-20160823153322304-00000-dia-prod-udv-01.kb.dk.warc.gz,88-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/2210514%20kofferset.html
+HarvestName: webdanica-trial-1471966486316
+Successful: true
+EndState: DONE
+Files harvested: 89-75-20160823153522265-00000-dia-prod-udv-01.kb.dk.warc.gz,89-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/2210514%20kofferset.html
+HarvestName: webdanica-trial-1471966616728
+Successful: true
+EndState: DONE
+Files harvested: 90-76-20160823153722224-00000-dia-prod-udv-01.kb.dk.warc.gz,90-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/2210517%20kofferset.html
+HarvestName: webdanica-trial-1471966717125
+Successful: true
+EndState: DONE
+Files harvested: 91-77-20160823153852404-00000-dia-prod-udv-01.kb.dk.warc.gz,91-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/2210512%20kofferset.html
+HarvestName: webdanica-trial-1471966817558
+Successful: true
+EndState: DONE
+Files harvested: 92-78-20160823154052336-00000-dia-prod-udv-01.kb.dk.warc.gz,92-metadata-1.warc
+################################################################################
+Seed: http://www.promotiontops.nl/imagepages/0402714a%20reisstekker.html
+HarvestName: webdanica-trial-1471966917898
+Successful: true
+EndState: DONE
+Files harvested: 93-79-20160823154222985-00000-dia-prod-udv-01.kb.dk.warc.gz,93-metadata-1.warc
+################################################################################
