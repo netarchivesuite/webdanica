@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jwat.common.Base64;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -20,7 +22,6 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.utils.UrlUtils;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -151,7 +152,12 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        	sb.append("<td>");
 	        	sb.append("<a href=\"");
 	        	sb.append(Servlet.environment.getCriteriaResultPath());
-	        	sb.append(b.harvestName + "/" + HTMLUtils.encode(b.url));
+	        	String base64Encoded = Base64.encodeString(b.url);
+	        	if (base64Encoded == null) {
+	        		logger.warning("base64 encoding of url '" +  b.url + "' gives null");
+	        		base64Encoded = b.url;
+	        	}
+	        	sb.append(b.harvestName + "/" + HTMLUtils.encode(base64Encoded));
 	        	sb.append("/\">");
 	        	sb.append(StringUtils.makeEllipsis(b.url, 50) + " (harvest: " + b.harvestName + ")");
 	        	sb.append("</a>");

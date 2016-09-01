@@ -17,6 +17,7 @@ import com.antiaction.common.templateengine.Template;
 import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
+import com.rometools.rome.io.impl.Base64;
 
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
@@ -24,7 +25,6 @@ import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
-import dk.netarkivet.common.webinterface.HTMLUtils;
 
 /**
  * 
@@ -40,7 +40,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	public static void main (String[] args) {
 		String pathinfo = "/criteriaresult/webdanica-trial-1470219095233/http%3A%2Fhedgehogs.net%2F/";
 		String[] infoParts = pathinfo.split(CRITERIA_RESULT_PATH);
-		System.out.println(CriteriaResultResource.getCriteriaKeys(infoParts));
+		System.out.println(CriteriaResultResource.getCriteriaKeys(pathinfo));
 /*
 		int count=0;
 		for (String infopart: infoParts) {
@@ -61,7 +61,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	@Override
 	public void resources_init(Environment environment) {
 		this.environment = environment;
-
+		this.dao = environment.criteriaResultsDao;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        SingleCriteriaResult b;
 	        
 	        // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
-	        CriteriaKeys CK = getCriteriaKeys(pathInfo.split(CRITERIA_RESULT_PATH));
+	        CriteriaKeys CK = getCriteriaKeys(pathInfo);
 	        if (CK == null) {
 	        	// create default dummy blacklist
 	        	String errMsg = "No url, and harvestname information found in the path: " + pathInfo;
@@ -265,19 +265,23 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        }
 	    }
 	
-		public static CriteriaKeys getCriteriaKeys(String[] split) {
+		public static CriteriaKeys getCriteriaKeys(String pathInfo) {
+			String[] split = pathInfo.split(CRITERIA_RESULT_PATH);
 			CriteriaKeys resultKeys = null;
 	        if (split.length > 1) {
 	        	String arguments = split[1];
 	            String[] argumentParts = arguments.split("/");
 	            if (argumentParts.length == 2) {
-	            	resultKeys = new CriteriaKeys(argumentParts[0], HTMLUtils.decode(argumentParts[1]));
+	            	resultKeys = new CriteriaKeys(argumentParts[0], Base64.decode(argumentParts[1]));
+	            	logger.info("Found Criteriakeys: " + resultKeys);
+	            } else {
+	            	logger.warning("Unable to find harvestname and url from pathinfo: " + pathInfo);
 	            }
 	        }
 	        return resultKeys;
         }
 		
-	    static class CriteriaKeys {
+	    public static class CriteriaKeys {
 	    	private String url;
 	    	private String harvest;
 
