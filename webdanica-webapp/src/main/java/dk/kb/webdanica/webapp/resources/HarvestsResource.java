@@ -88,7 +88,7 @@ public class HarvestsResource implements ResourceAbstract {
 
 	        Caching.caching_disable_headers(resp);
 
-	        Template template = environment.getTemplateMaster().getTemplate("users_list.html");
+	        Template template = environment.getTemplateMaster().getTemplate("harvests_list.html");
 
 	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
 	        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");

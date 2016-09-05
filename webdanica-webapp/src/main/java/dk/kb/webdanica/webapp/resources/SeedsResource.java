@@ -724,7 +724,7 @@ public class SeedsResource implements ResourceAbstract {
             //urlListSb.append(Servlet.environment.getSeedsPath());
             
             urlListSb.append(urlRecord.getUrl());
-            urlListSb.append("/\">");
+            urlListSb.append("\">");
             urlListSb.append(makeEllipsis(urlRecord.getUrl(), 120));
  
             urlListSb.append("</a>");
