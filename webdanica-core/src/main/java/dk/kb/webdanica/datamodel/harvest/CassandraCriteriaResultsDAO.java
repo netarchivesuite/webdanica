@@ -17,6 +17,8 @@ import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.CassandraSettings;
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
@@ -84,10 +86,10 @@ import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
  * CText
  * CLinks
  */
-public class CassandraCriteriaResultsDAO {
+public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	
 	public static void main(String[] args) throws IOException, SQLException {
-		CassandraCriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
+		CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
 		
 		dao.deleteRecordsByHarvestname("harvestName"); // delete existing records from database
 		
@@ -125,7 +127,7 @@ public class CassandraCriteriaResultsDAO {
 	private final Cassandra db;
 	
 	
-	public synchronized static CassandraCriteriaResultsDAO getInstance(){
+	public synchronized static CriteriaResultsDAO getInstance(){
 		if (instance == null) {
 			instance = new CassandraCriteriaResultsDAO();
 		} 

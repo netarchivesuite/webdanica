@@ -1,6 +1,5 @@
 package dk.kb.webdanica.datamodel.harvest;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,8 +13,8 @@ import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.CassandraSettings;
+import dk.kb.webdanica.datamodel.HarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
-import dk.kb.webdanica.utils.UnitTestUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
 /*
@@ -37,7 +36,7 @@ CREATE TABLE harvests (
     CREATE INDEX harvest_seedurl_idx ON webdanica.harvests (seedurl);
     CREATE INDEX harvest_successful_idx ON webdanica.harvests (successful);
 */
-public class CassandraHarvestDAO implements Closeable{
+public class CassandraHarvestDAO implements HarvestDAO {
 	
 	private static CassandraHarvestDAO instance;
 	private Session session;
@@ -55,7 +54,7 @@ public class CassandraHarvestDAO implements Closeable{
 		File harvestlog = new File(basedir, "nl-urls-harvestlog.txt");
 		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestlog);
 		
-		CassandraHarvestDAO dao = CassandraHarvestDAO.getInstance();
+		HarvestDAO dao = CassandraHarvestDAO.getInstance();
 		int duplicateCount = 0;
 		try {
 			System.out.println("harvest count: " + harvests.size());
@@ -86,7 +85,7 @@ public class CassandraHarvestDAO implements Closeable{
 		}
 	}
 
-	public synchronized static CassandraHarvestDAO getInstance(){
+	public synchronized static HarvestDAO getInstance(){
 		if (instance == null) {
 			instance = new CassandraHarvestDAO();
 		} 
@@ -209,7 +208,7 @@ public class CassandraHarvestDAO implements Closeable{
     }
 
 	@Override
-    public void close() throws IOException {
+    public void close() {
 	    db.close();
     }
 	

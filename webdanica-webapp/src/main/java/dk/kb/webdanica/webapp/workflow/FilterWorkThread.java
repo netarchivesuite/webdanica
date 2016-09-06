@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedCassandraDAO;
+import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.seeds.filtering.ResolveRedirects;
@@ -33,8 +33,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedCassandraDAO seeddao;
-	private CassandraBlackListDAO blacklistDao;
+	private SeedDAO seeddao;
+	private BlackListDAO blacklistDao;
 	
 	private ResolveRedirects resolveRedirects;
 
@@ -71,9 +71,10 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     @Override
 	protected void process_init() {
-    	seeddao = environment.seedDao;
-    	blacklistDao = environment.blacklistDao;
-    	configuration = new Configuration();
+    	configuration = Configuration.getInstance();
+    	seeddao = configuration.getSeedDAO();
+    	blacklistDao = configuration.getBlacklistDao();
+    	
     	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());	
 	}
 

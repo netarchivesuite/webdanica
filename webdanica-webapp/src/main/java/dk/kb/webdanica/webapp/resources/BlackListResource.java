@@ -27,7 +27,7 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
@@ -48,12 +48,12 @@ public class BlackListResource implements ResourceAbstract {
     public static final String BLACKLIST_PATH = "/blacklist/";
     private Environment environment;
 
-    private CassandraBlackListDAO dao;
+    private BlackListDAO dao;
     
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
-        this.dao = environment.blacklistDao;
+        this.dao = environment.getConfig().getBlacklistDao();
     }
 
     @Override

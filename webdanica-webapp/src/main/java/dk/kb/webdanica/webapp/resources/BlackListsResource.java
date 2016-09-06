@@ -19,7 +19,6 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -126,7 +125,7 @@ public class BlackListsResource implements ResourceAbstract {
 	        //Connection conn = null;
 	    
 	            //conn = environment.dataSource.getConnection();
-	            List<BlackList> blacklistList = CassandraBlackListDAO.getInstance().getLists(false);
+	            List<BlackList> blacklistList = environment.getConfig().getBlacklistDao().getLists(false);
 	            for (BlackList b: blacklistList) {
 	                sb.append("<tr>");
 	                sb.append("<td>");

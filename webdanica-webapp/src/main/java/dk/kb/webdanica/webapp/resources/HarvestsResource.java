@@ -18,7 +18,6 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -115,7 +114,7 @@ public class HarvestsResource implements ResourceAbstract {
 	        StringBuffer sb = new StringBuffer();
 
 
-	        List<HarvestReport> blacklistList = CassandraHarvestDAO.getInstance().getAll();
+	        List<HarvestReport> blacklistList = environment.getConfig().getHarvestDAO().getAll();
 	        for (HarvestReport b: blacklistList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");

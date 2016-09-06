@@ -22,7 +22,7 @@ CREATE table blacklists (
  );
  CREATE INDEX on blacklists  (is_active);
 */
-public class CassandraBlackListDAO {
+public class CassandraBlackListDAO implements BlackListDAO {
 
 	public static void main(String args[]) {
 		List<String> list = new ArrayList<String>();
