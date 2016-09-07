@@ -12,7 +12,9 @@ import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.HarvestDAO;
 import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.utils.StreamUtils;
@@ -56,12 +58,18 @@ public class CriteriaIngest {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
-		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(harvestLog);
-		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir,addToDatabase);
+		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestLog);
+		if (addToDatabase) {
+			HarvestDAO hdao = CassandraHarvestDAO.getInstance();
+			for (HarvestReport hp: harvests) {
+				hdao.insertHarvest(hp);
+			}
+		}
+		List<HarvestError> errors = HarvestReport.processCriteriaResults(harvests, baseCriteriaDir,addToDatabase);
 		for (HarvestError e: errors) {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
 		}
-		HarvestReport.printToFile(danicaharvests, harvestLogReport);
+		HarvestReport.printToFile(harvests, harvestLogReport);
 	}
 	
 
