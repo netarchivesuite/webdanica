@@ -14,7 +14,7 @@ import dk.kb.webdanica.datamodel.criteria.CodesResult.Level;
 public class CalcDanishCode {
 
 	public static void main(String[] args) {
-		Set<Integer> set1 = Codes.getCodesForDanishResults();
+		Set<Integer> set1 = Codes.getCodesForLikelyDanishResults();
 		Set<Integer> set2 = Codes.getCodesForFrasorterede();
 		Set<Integer> set3 = Codes.getCodesForMaybees();
 		Set<Integer> set4 = Codes.getCodesForUdgaaede();

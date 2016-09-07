@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jwat.common.Base64;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -18,9 +20,9 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.criteria.Codes;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.utils.UrlUtils;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -43,12 +45,12 @@ public class CriteriaResultsResource implements ResourceAbstract {
 
 		public static final String CRITERIA_RESULTS_PATH = "/criteriaresults/";
 
-		private CassandraCriteriaResultsDAO dao;
+		private CriteriaResultsDAO dao;
 		
 	    @Override
 	    public void resources_init(Environment environment) {
 	        this.environment = environment;
-	        dao = CassandraCriteriaResultsDAO.getInstance();
+	        dao = environment.getConfig().getCriteriaResultsDao();
 	    }
 
 	    @Override
@@ -114,7 +116,7 @@ public class CriteriaResultsResource implements ResourceAbstract {
 
 	        Caching.caching_disable_headers(resp);
 
-	        Template template = environment.getTemplateMaster().getTemplate("users_list.html");
+	        Template template = environment.getTemplateMaster().getTemplate("criteriaresults_list.html");
 
 	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
 	        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -151,7 +153,12 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        	sb.append("<td>");
 	        	sb.append("<a href=\"");
 	        	sb.append(Servlet.environment.getCriteriaResultPath());
-	        	sb.append(b.harvestName + "/" + HTMLUtils.encode(b.url));
+	        	String base64Encoded = Base64.encodeString(b.url);
+	        	if (base64Encoded == null) {
+	        		logger.warning("base64 encoding of url '" +  b.url + "' gives null");
+	        		base64Encoded = b.url;
+	        	}
+	        	sb.append(b.harvestName + "/" + HTMLUtils.encode(base64Encoded));
 	        	sb.append("/\">");
 	        	sb.append(StringUtils.makeEllipsis(b.url, 50) + " (harvest: " + b.harvestName + ")");
 	        	sb.append("</a>");
@@ -160,7 +167,8 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        	sb.append(new Date(b.insertedDate) + "");
 	        	sb.append("</td>");
 	        	sb.append("<td>");
-	        	sb.append(b.calcDanishCode);
+	        	String danishCodeStr = b.calcDanishCode + "(" + Codes.getCategory(b.calcDanishCode) + ")";
+	        	sb.append(danishCodeStr);
 	        	sb.append("</td>");
 	        	sb.append("</tr>\n");
 	        }

@@ -17,14 +17,15 @@ import com.antiaction.common.templateengine.Template;
 import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
+import com.rometools.rome.io.impl.Base64;
 
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.criteria.Codes;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
-import dk.netarkivet.common.webinterface.HTMLUtils;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	public static void main (String[] args) {
 		String pathinfo = "/criteriaresult/webdanica-trial-1470219095233/http%3A%2Fhedgehogs.net%2F/";
 		String[] infoParts = pathinfo.split(CRITERIA_RESULT_PATH);
-		System.out.println(CriteriaResultResource.getCriteriaKeys(infoParts));
+		System.out.println(CriteriaResultResource.getCriteriaKeys(pathinfo));
 /*
 		int count=0;
 		for (String infopart: infoParts) {
@@ -56,12 +57,12 @@ public class CriteriaResultResource implements ResourceAbstract {
 	//public static final String CRITERIA_RESULT_PATH = "/criteriaresult/<string>/<string>/";
 	private Environment environment;
 
-	private CassandraCriteriaResultsDAO dao;
+	private CriteriaResultsDAO dao;
 
 	@Override
 	public void resources_init(Environment environment) {
 		this.environment = environment;
-
+		this.dao = environment.getConfig().getCriteriaResultsDao();
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        SingleCriteriaResult b;
 	        
 	        // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
-	        CriteriaKeys CK = getCriteriaKeys(pathInfo.split(CRITERIA_RESULT_PATH));
+	        CriteriaKeys CK = getCriteriaKeys(pathInfo);
 	        if (CK == null) {
 	        	// create default dummy blacklist
 	        	String errMsg = "No url, and harvestname information found in the path: " + pathInfo;
@@ -141,6 +142,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        TemplatePlaceHolder harvestNamePlace = TemplatePlaceBase.getTemplatePlaceHolder("harvestName");
 	        TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
 	        TemplatePlaceHolder seedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("seed_url");
+	        TemplatePlaceHolder danishcodePlace = TemplatePlaceBase.getTemplatePlaceHolder("danish_code");
 	        TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("error");
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
@@ -158,6 +160,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        placeHolders.add(insertedTimePlace);
 	        placeHolders.add(seedUrlPlace);
 	        placeHolders.add(errorPlace);
+	        placeHolders.add(danishcodePlace);
 	        
 	        
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
@@ -166,7 +169,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        /*
 	         * Heading.
 	         */
-	        String heading = "Information about CriteriaResult for url \"" + b.url + "\", seedUri = \"" + b.seedurl + "\" harvest=\"" 
+	        String heading = "Information about CriteriaResult for url \"" + b.url + "\", seedUri = \"" + b.seedurl + "\", harvest=\"" 
 	         + b.harvestName + "\":";
 	        
 	        /*
@@ -206,9 +209,15 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        
 	        ResourceUtils.insertText(urlPlace, "url",  b.url, templateName, logger);
 	        ResourceUtils.insertText(harvestNamePlace, "harvestName",  b.harvestName, templateName, logger);
-	        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + new Date(b.insertedDate), templateName, logger); 
-	        ResourceUtils.insertText(errorPlace, "error", "" + b.errorMsg, templateName, logger);
+	        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + new Date(b.insertedDate), templateName, logger);
+	        String errStr = b.errorMsg;
+	        if (errStr == null) {
+	        	errStr = "";
+	        }
+	        ResourceUtils.insertText(errorPlace, "error", errStr, templateName, logger);
 	        ResourceUtils.insertText(seedUrlPlace, "seed_url", b.seedurl, templateName, logger);
+	        String danishCodeStr = b.calcDanishCode + "(" + Codes.getCategory(b.calcDanishCode) + ")";
+	        ResourceUtils.insertText(danishcodePlace, "danish_code", danishCodeStr, templateName, logger);
 	        
 	        StringBuilder sb = new StringBuilder();
 	        sb.append("<pre>\r\n");
@@ -265,19 +274,23 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        }
 	    }
 	
-		public static CriteriaKeys getCriteriaKeys(String[] split) {
+		public static CriteriaKeys getCriteriaKeys(String pathInfo) {
+			String[] split = pathInfo.split(CRITERIA_RESULT_PATH);
 			CriteriaKeys resultKeys = null;
 	        if (split.length > 1) {
 	        	String arguments = split[1];
 	            String[] argumentParts = arguments.split("/");
 	            if (argumentParts.length == 2) {
-	            	resultKeys = new CriteriaKeys(argumentParts[0], HTMLUtils.decode(argumentParts[1]));
+	            	resultKeys = new CriteriaKeys(argumentParts[0], Base64.decode(argumentParts[1]));
+	            	logger.info("Found Criteriakeys: " + resultKeys);
+	            } else {
+	            	logger.warning("Unable to find harvestname and url from pathinfo: " + pathInfo);
 	            }
 	        }
 	        return resultKeys;
         }
 		
-	    static class CriteriaKeys {
+	    public static class CriteriaKeys {
 	    	private String url;
 	    	private String harvest;
 

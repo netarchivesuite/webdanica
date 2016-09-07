@@ -1,14 +1,9 @@
 package dk.kb.webdanica.webapp.resources;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -25,7 +20,7 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedCassandraDAO;
+import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -130,7 +125,7 @@ public class SeedsResource implements ResourceAbstract {
     private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
-    	SeedCassandraDAO dao = Servlet.environment.seedDao;
+    	SeedDAO dao = Servlet.environment.getConfig().getSeedDAO();
     	
         int status = 0; //Ordinal for Status.NEW
         if (numerics.size() >= 1) {
@@ -273,7 +268,7 @@ public class SeedsResource implements ResourceAbstract {
             throws IOException {
         String errorStr = null;
         String successStr = null;
-        SeedCassandraDAO dao = Servlet.environment.seedDao;
+        SeedDAO dao = Servlet.environment.getConfig().getSeedDAO();
         /*
         UrlRecords urlRecordsInstance = UrlRecords
                 .getInstance(environment.dataSource);
@@ -724,7 +719,7 @@ public class SeedsResource implements ResourceAbstract {
             //urlListSb.append(Servlet.environment.getSeedsPath());
             
             urlListSb.append(urlRecord.getUrl());
-            urlListSb.append("/\">");
+            urlListSb.append("\">");
             urlListSb.append(makeEllipsis(urlRecord.getUrl(), 120));
  
             urlListSb.append("</a>");
@@ -1022,7 +1017,7 @@ public class SeedsResource implements ResourceAbstract {
         return resultString;
     }
 
-    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedCassandraDAO seedsInstance) {
+    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedDAO dao) {
         /*
          * State menu.
          */
@@ -1037,7 +1032,7 @@ public class SeedsResource implements ResourceAbstract {
         }
         */
 
-    	List<MenuItem> menuStatesArr = makemenuArray(seedsInstance);
+    	List<MenuItem> menuStatesArr = makemenuArray(dao);
         String heading = "N/A";
 
         for (MenuItem item:  menuStatesArr) {
@@ -1062,13 +1057,13 @@ public class SeedsResource implements ResourceAbstract {
         return heading;
     }
 
-	private static List<MenuItem> makemenuArray(SeedCassandraDAO seedsInstance) {
+	private static List<MenuItem> makemenuArray(SeedDAO dao) {
 		
 		List<MenuItem> result = new ArrayList<MenuItem>();
 		I18n i18n = new I18n(dk.kb.webdanica.Constants.WEBDANICA_TRANSLATION_BUNDLE);
 		Locale locDa = new Locale("da");
 		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
-			Long count = seedsInstance.getSeedsCount(Status.fromOrdinal(i));
+			Long count = dao.getSeedsCount(Status.fromOrdinal(i));
 			result.add(new MenuItem(i, count, locDa, i18n));
 		}
 	    return result;

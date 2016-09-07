@@ -15,9 +15,9 @@ import com.datastax.driver.core.Session;
  * @author svc
  *
  */
-public class SeedCassandraDAO {
+public class CassandraSeedDAO implements SeedDAO {
 		
-	static SeedCassandraDAO instance;
+	static CassandraSeedDAO instance;
 	
 	private Database db;
 
@@ -34,14 +34,14 @@ public class SeedCassandraDAO {
 
 	private PreparedStatement preparedUpdateRedirectedUrl;
 	
-	public synchronized static SeedCassandraDAO getInstance(){
+	public synchronized static CassandraSeedDAO getInstance(){
 		if (instance == null) {
-			instance = new SeedCassandraDAO();
+			instance = new CassandraSeedDAO();
 		} 
 		return instance;
 	}
 	
-	public SeedCassandraDAO() {
+	public CassandraSeedDAO() {
 		CassandraSettings settings = CassandraSettings.getDefaultSettings();
 		db = new Cassandra(settings);
 	}

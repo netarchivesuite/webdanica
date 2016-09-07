@@ -25,8 +25,8 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.HarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -42,16 +42,16 @@ public class HarvestResource implements ResourceAbstract {
     protected int R_HARVEST = -1;
     public static final String HARVEST_PATH = "/harvest/"; // TODO change to "/harvest/<String>/" instead of parsing pathInfo
     private Environment environment;
-    private CassandraHarvestDAO hdao;
-	private CassandraCriteriaResultsDAO cdao;
+    private HarvestDAO hdao;
+	private CriteriaResultsDAO cdao;
     
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
-        this.hdao = environment.harvestDAO;
-        this.cdao = environment.criteriaResultsDao;
+        this.hdao = environment.getConfig().getHarvestDAO();
+        this.cdao = environment.getConfig().getCriteriaResultsDao();
     }
-
+    
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
         //R_HARVEST = resourceManager.resource_add(this, "/blacklist/<string>/", true);

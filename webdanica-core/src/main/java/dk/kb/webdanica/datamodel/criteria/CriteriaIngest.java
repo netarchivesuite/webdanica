@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
@@ -160,7 +161,7 @@ public class CriteriaIngest {
 					success = prepareLine(res, DataSource.NETARKIVET);
 					log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
 					if (addToDatabase) {
-						CassandraCriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
+						CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
 						boolean inserted = dao.insertRecord(res);
 						if (!inserted) {
 							log_error("Record not inserted");

@@ -7,6 +7,16 @@ import dk.kb.webdanica.exceptions.WebdanicaException;
 
 public class Codes {
 	
+	public static enum Category {
+		ERROR, // error. should not be used
+		IGNORED, 
+		NOTLIKELY_DK, 
+		UNKNOWN, // values <= 0
+		MAYBE_DK,
+		LIKELY_DK,
+		BUG // Signifies bug in code allocation
+	};
+	
 	/**
 	 * Constants for belonging to different categories.
 	 */
@@ -18,7 +28,7 @@ public class Codes {
     public static final int cat_likely_dk = 9999; //getCodesForDanishResults
 
     //cat_likely_dk
-    public static Set<Integer> getCodesForDanishResults() {
+    public static Set<Integer> getCodesForLikelyDanishResults() {
 		Set<Integer> codeSet = new HashSet<Integer>();
 	    for (int code=20; code<=27; code++) {
 	    	codeSet.add(code);
@@ -132,12 +142,31 @@ public class Codes {
 			codeSet = Codes.getCodesForMaybees();
 			break;
 		case Codes.cat_likely_dk: // = 9999
-			codeSet = Codes.getCodesForDanishResults();
+			codeSet = Codes.getCodesForLikelyDanishResults();
 			break;
 			//case cat_unknown_dk:	not implemented 	//= 9200; Not decided 0 and negative
 		default:	 
 			throw new WebdanicaException("Unkown category: " + category);
 		}
 		return codeSet;
+	}
+	
+	public static Codes.Category getCategory(int code) {
+		if (code <= 0) {
+			return Codes.Category.UNKNOWN;
+		} else if (getCodesForFrasorterede().contains(code)) {
+			return Codes.Category.IGNORED;
+		} else if (getCodesForLikelyDanishResults().contains(code)) {
+			return Codes.Category.LIKELY_DK;
+		} else if (getCodesForMaybees().contains(code)) {
+			return Codes.Category.MAYBE_DK;
+		} else if (getCodesForNOTDanishResults().contains(code)) {
+			return Codes.Category.NOTLIKELY_DK;
+		} else if (getCodesForUdgaaede().contains(code)) {
+			return Codes.Category.ERROR;
+		} else {
+			return Codes.Category.BUG; // Catch-all-the-rest signifying bug in code allocation
+		}
+		
 	}
 }
