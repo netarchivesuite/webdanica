@@ -102,8 +102,8 @@ public class HarvestReport {
 						current.successful = Boolean.valueOf(line.split(successfulPattern)[1]);
 					} else if (line.startsWith(endstatePattern)) {
 						current.finalState = JobStatus.valueOf(line.split(endstatePattern)[1]);
-					} else if (line.startsWith(endstatePattern)) {
-							current.harvestedTime = Long.parseLong(line.split(endstatePattern)[1]);	
+					} else if (line.startsWith(harvestedTimePattern)) {
+						current.harvestedTime = Long.parseLong(line.split(harvestedTimePattern)[1]);	
 					} else if (line.startsWith(filesPattern)) {
 						String files = line.split(filesPattern)[1];
 						current.FilesHarvested = files.split(",");
@@ -210,7 +210,7 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
+	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		for (HarvestReport h: harvests) {
 			Set<String> errs = new HashSet<String>();

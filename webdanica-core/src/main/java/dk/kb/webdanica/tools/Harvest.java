@@ -95,7 +95,11 @@ public class Harvest {
 			}
 		}
 		// Print results to a file in Current Working Directory
-		File harvestLog = new File("harvestlog-" + System.currentTimeMillis() + ".txt");
+		String harvestLogNamePrefix = "harvestlog-";
+		if (argumentIsSeedFile) {
+			harvestLogNamePrefix = argumentAsFile.getName() + "-" + harvestLogNamePrefix;
+		}
+		File harvestLog = new File(harvestLogNamePrefix + System.currentTimeMillis() + ".txt");
 		System.out.println("Writing results of the " + results.size() + " harvests to file '" + harvestLog.getAbsolutePath() 
 				+ "'");
 		

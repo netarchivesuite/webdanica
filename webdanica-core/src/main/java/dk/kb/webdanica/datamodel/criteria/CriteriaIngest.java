@@ -52,7 +52,7 @@ public class CriteriaIngest {
 		//runTest2();
 		System.exit(0);
 	}
-	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
@@ -102,17 +102,15 @@ public class CriteriaIngest {
 	/**
 	 * 
 	 * @param ingestFile
-	 * @param harvestName 
-	 * @param seed 
-	 * @return
+	 * @param seed
+	 * @param harvestName
+	 * @param addToDatabase 
+	 *  
+	 * @return ProcessResult
 	 * @throws IOException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	
 	 */
-	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws IOException, SQLException {
-		boolean listIgnored = true;
+	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws IOException {
 		return process(ingestFile, seed, harvestName, addToDatabase);
 	}
 	
