@@ -12,6 +12,7 @@ public class CriteriaIngestTool {
 		if (args.length != 2) {
 			System.err.println("dk.kb.webdanica.tools.CriteriaIngestTool: Missing arguments");
 			System.err.println("Usage: CriteriaIngestTool <harvestlogfile> <criteria-results-dir>");
+			System.exit(1);
 		}
 		File harvestLogFile = new File(args[0]);
 		File criteriaresultsdir = new File(args[1]);
