@@ -41,7 +41,6 @@ public class HBasePhoenixIngestLogDAO {
 			stm.setLong(6, log.getRejectedcount());
 			stm.setLong(7, log.getDuplicatecount());
 			res = stm.executeUpdate();
-			stm.close();
 			conn.commit();
 		} finally {
 			if (sqlArr != null) {
@@ -75,8 +74,6 @@ public class HBasePhoenixIngestLogDAO {
 					ingestDates.add(rs.getLong("inserted_date"));
 				}
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -119,8 +116,6 @@ public class HBasePhoenixIngestLogDAO {
 					);
 				}
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();

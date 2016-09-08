@@ -30,7 +30,6 @@ public class HBasePhoenixSeedsDAO {
 			stm.setInt(2, singleSeed.getState().ordinal());
 			stm.setTimestamp(3, new Timestamp(insertedDate.getTime()));
 			res = stm.executeUpdate();
-			stm.close();
 			conn.commit();
 		} finally {
 			if (stm != null) {
@@ -58,7 +57,6 @@ public class HBasePhoenixSeedsDAO {
 			stm.setInt(2, singleSeed.getState().ordinal());
 			stm.setString(3, singleSeed.getStatusReason());
 			res = stm.executeUpdate();
-			stm.close();
 			conn.commit();
 		} finally {
 			if (stm != null) {
@@ -84,7 +82,6 @@ public class HBasePhoenixSeedsDAO {
 			stm.setString(1, singleSeed.getUrl());
 			stm.setString(2, singleSeed.getRedirectedUrl());
 			res = stm.executeUpdate();
-			stm.close();
 			conn.commit();
 		} finally {
 			if (stm != null) {
@@ -115,8 +112,6 @@ public class HBasePhoenixSeedsDAO {
 			if (rs != null && rs.next()) {
 				res = rs.getLong(1);
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -162,8 +157,6 @@ public class HBasePhoenixSeedsDAO {
 					seedList.add(seed);
 				}
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();

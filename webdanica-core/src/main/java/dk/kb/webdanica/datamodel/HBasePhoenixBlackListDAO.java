@@ -38,7 +38,6 @@ public class HBasePhoenixBlackListDAO {
 			stm.setLong(5, updated_time);
 			stm.setBoolean(6, aBlackList.isActive());
 			res = stm.executeUpdate();
-			stm.close();
 			conn.commit();
 		} finally {
 			if (sqlArr != null) {
@@ -79,8 +78,6 @@ public class HBasePhoenixBlackListDAO {
 					);
 				}
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -132,8 +129,6 @@ public class HBasePhoenixBlackListDAO {
 					blacklistList.add(blacklist);
 				}
 			}
-			stm.close();
-			conn.commit();
 		} finally {
 			if (rs != null) {
 				rs.close();

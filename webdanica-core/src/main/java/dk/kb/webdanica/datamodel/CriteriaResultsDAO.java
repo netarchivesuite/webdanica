@@ -19,4 +19,5 @@ public interface CriteriaResultsDAO {
 	List<SingleCriteriaResult> getResultsBySeedurl(String string);
 
 	List<SingleCriteriaResult> getResults();	
+
 }
