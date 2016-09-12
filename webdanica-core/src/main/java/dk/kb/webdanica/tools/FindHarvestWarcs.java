@@ -30,7 +30,15 @@ public class FindHarvestWarcs {
 			System.err.println("Filedir '" + filedir.getAbsolutePath() + "' does not exist or is not a directory");
 			System.exit(1);
 		}
-
+		Set<String> filenames = getFilenames(harvestLog);
+		String prefix = filedir.getCanonicalPath();
+		for (String filename: filenames) {
+			System.out.print(prefix + "/" + filename + " ");
+		}
+		
+	}
+	
+	public static Set<String> getFilenames(File harvestLog) throws IOException {
 		List<HarvestReport> results = HarvestReport.readHarvestLog(harvestLog);
 		Set<String> filenames = new HashSet<String>();
 		for (HarvestReport h: results) {
@@ -42,11 +50,8 @@ public class FindHarvestWarcs {
 				//		+ h.seed + "'");
 			}
 		}
-		String prefix = filedir.getCanonicalPath();
-		for (String filename: filenames) {
-			System.out.print(prefix + "/" + filename + " ");
-		}
+		return filenames;
 	}
-
 }
+
 

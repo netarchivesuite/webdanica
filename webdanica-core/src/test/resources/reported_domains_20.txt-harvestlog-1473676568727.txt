@@ -1,0 +1,157 @@
+Harvestlog for  seedfile /home/test/workflow/seeds/reported_domains_20.txt
+################################################################################
+Seed: http://tzenergy.net
+HarvestName: null
+Successful: false
+EndState: null
+HarvestedTime: 0
+Files harvested: null
+Errors: Harvest Failed dk.netarkivet.common.exceptions.PermissionDenied: Somebody else must have updated HD #41: 'webdanica-trial-1473673543245' since edition 1, not updating
+################################################################################
+Seed: http://fastnet.nu
+HarvestName: webdanica-trial-1473673545349
+Successful: true
+EndState: DONE
+HarvestedTime: 1473673644039
+Files harvested: 53-42-20160912094619389-00000-kb-test-webdanica-001.kb.dk.warc.gz,53-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.raaderum.com
+HarvestName: webdanica-trial-1473673645678
+Successful: true
+EndState: DONE
+HarvestedTime: 1473673731698
+Files harvested: 54-43-20160912094747395-00000-kb-test-webdanica-001.kb.dk.warc.gz,54-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.momomoyouth.com
+HarvestName: webdanica-trial-1473673745980
+Successful: true
+EndState: DONE
+HarvestedTime: 1473673850074
+Files harvested: 55-44-20160912094945670-00000-kb-test-webdanica-001.kb.dk.warc.gz,55-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.flimmeren.org
+HarvestName: webdanica-trial-1473673876194
+Successful: true
+EndState: DONE
+HarvestedTime: 1473674531012
+Files harvested: 56-45-20160912095145384-00000-kb-test-webdanica-001.kb.dk.warc.gz,56-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://bodyfir.com
+HarvestName: webdanica-trial-1473674546501
+Successful: true
+EndState: DONE
+HarvestedTime: 1473674631386
+Files harvested: 57-46-20160912100247201-00000-kb-test-webdanica-001.kb.dk.warc.gz,57-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://lissmusic.net
+HarvestName: webdanica-trial-1473674646669
+Successful: true
+EndState: DONE
+HarvestedTime: 1473674749593
+Files harvested: 58-47-20160912100445132-00000-kb-test-webdanica-001.kb.dk.warc.gz,58-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://stx.nu
+HarvestName: webdanica-trial-1473674776886
+Successful: true
+EndState: DONE
+HarvestedTime: 1473674869194
+Files harvested: 59-48-20160912100645049-00000-kb-test-webdanica-001.kb.dk.warc.gz,59-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://kp11.kk.dk/indhold/kommuneplan-11/
+HarvestName: webdanica-trial-1473674877103
+Successful: true
+EndState: DONE
+HarvestedTime: 1473674959338
+Files harvested: 60-49-20160912100815068-00000-kb-test-webdanica-001.kb.dk.warc.gz,60-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://jacobarts.com
+HarvestName: webdanica-trial-1473674977339
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675078985
+Files harvested: 61-50-20160912101014770-00000-kb-test-webdanica-001.kb.dk.warc.gz,61-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.mathildegrafstrom.com
+HarvestName: webdanica-trial-1473675107470
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675199175
+Files harvested: 62-51-20160912101215110-00000-kb-test-webdanica-001.kb.dk.warc.gz,62-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://si.hoejvangskolen.horsens.dk//Pi/Rammeside3.asp
+HarvestName: webdanica-trial-1473675207620
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675289224
+Files harvested: 63-52-20160912101346205-00000-kb-test-webdanica-001.kb.dk.warc.gz,63-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://arbitraryproject.com
+HarvestName: webdanica-trial-1473675307740
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675409229
+Files harvested: 64-53-20160912101544861-00000-kb-test-webdanica-001.kb.dk.warc.gz,64-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://skift-bank.nu
+HarvestName: webdanica-trial-1473675437895
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675529273
+Files harvested: 65-54-20160912101744965-00000-kb-test-webdanica-001.kb.dk.warc.gz,65-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://iceagecopenhagen.blogspot.dk
+HarvestName: webdanica-trial-1473675538030
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675619624
+Files harvested: 66-55-20160912101915120-00000-kb-test-webdanica-001.kb.dk.warc.gz,66-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.aadum.com
+HarvestName: webdanica-trial-1473675638175
+Successful: true
+EndState: DONE
+HarvestedTime: 1473675739193
+Files harvested: 67-56-20160912102115073-00000-kb-test-webdanica-001.kb.dk.warc.gz,67-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.lukasgraham.com
+HarvestName: webdanica-trial-1473675768332
+Successful: true
+EndState: DONE
+HarvestedTime: 1473676439974
+Files harvested: 68-57-20160912102315070-00000-kb-test-webdanica-001.kb.dk.warc.gz,68-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://arkivaren.com
+HarvestName: webdanica-trial-1473676468578
+Successful: true
+EndState: DONE
+HarvestedTime: 1473676549162
+Files harvested: 69-58-20160912103445007-00000-kb-test-webdanica-001.kb.dk.warc.gz,69-metadata-1.warc
+Errors:  
+################################################################################
+Seed: http://www.gardinbussen.gratis
+HarvestName: null
+Successful: false
+EndState: null
+HarvestedTime: 0
+Files harvested: null
+Errors: Harvest Failed dk.netarkivet.common.exceptions.ArgumentNotValid: Unable to create an event harvest.
+The following seeds are invalid:
+http://www.gardinbussen.gratis
+
+################################################################################

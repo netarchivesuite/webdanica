@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -83,12 +82,15 @@ public class HarvestReport {
 
 		//read file add to list
 		try {
+			boolean errorLineWasLast = false;
 			while ((line = fr.readLine()) != null) {
 				trimmedLine = line.trim();
 				if (trimmedLine.isEmpty() || trimmedLine.startsWith("######")) {
 					// Skip line
 				} else {
+					
 					if (line.startsWith(seedPattern)) {
+						errorLineWasLast = false;
 						// add harvestReport if current != null
 						if (current != null) {
 							results.add(current);
@@ -97,21 +99,40 @@ public class HarvestReport {
 						current = new HarvestReport();
 						current.seed = line.split(seedPattern)[1];
 					} else if (line.startsWith(harvestnamePattern)) {
+						errorLineWasLast = false;
 						current.harvestName = line.split(harvestnamePattern)[1];
 					} else if (line.startsWith(successfulPattern)) {
+						errorLineWasLast = false;
 						current.successful = Boolean.valueOf(line.split(successfulPattern)[1]);
 					} else if (line.startsWith(endstatePattern)) {
-						current.finalState = JobStatus.valueOf(line.split(endstatePattern)[1]);
+						errorLineWasLast = false;
+						String finalStateStr = line.split(endstatePattern)[1];
+						if (finalStateStr.equals("null")) {
+							current.finalState = JobStatus.FAILED;
+						} else {
+							current.finalState = JobStatus.valueOf(finalStateStr);
+						}
 					} else if (line.startsWith(harvestedTimePattern)) {
+						errorLineWasLast = false;
 						current.harvestedTime = Long.parseLong(line.split(harvestedTimePattern)[1]);	
 					} else if (line.startsWith(filesPattern)) {
+						errorLineWasLast = false;
 						String files = line.split(filesPattern)[1];
-						current.FilesHarvested = files.split(",");
+						if (files.equals("null")) {
+							current.FilesHarvested = new String[]{};
+						} else {
+							current.FilesHarvested = files.split(",");
+						}
 					} else if (line.startsWith(errorPattern)) {
+						errorLineWasLast = true;
 						String error = line.split(errorPattern)[1];
 						current.error = error;
 					} else {
-						System.err.println("Ignoring line: " + line);
+						if (errorLineWasLast) { // Add to error
+							current.error += line;
+						} else {
+							System.err.println("Ignoring line: " + line);
+						}
 					}
 			
 				}
