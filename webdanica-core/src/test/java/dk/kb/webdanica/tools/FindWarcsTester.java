@@ -26,11 +26,6 @@ public class FindWarcsTester {
 		assertFalse("'null' string should be part of set", filenames.contains("null"));
 		
 		assertTrue("Should be 17 warc.gz files but was " + filenames.size(), filenames.size() == 17);
-		/*
-		List<HarvestReport> reports = HarvestReport.readHarvestLog(f);
-		for (HarvestReport h: reports) {
-			System.out.println(h.error);
-		}*/
 	}
 	
 }

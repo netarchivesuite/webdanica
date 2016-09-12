@@ -67,11 +67,6 @@ public class HarvestReport {
 	public HarvestReport(){
 	}
 	
-	
-	public boolean hasError() {
-		return error != null;
-	}
-	
 	public static List<HarvestReport> readHarvestLog(File harvestlog) throws IOException {
 		List<HarvestReport> results = new ArrayList<HarvestReport>();
 
@@ -125,7 +120,7 @@ public class HarvestReport {
 						}
 					} else if (line.startsWith(errorPattern)) {
 						errorLineWasLast = true;
-						String error = line.split(errorPattern)[1];
+						String error = line.split(errorPattern)[1].trim();
 						current.error = error;
 					} else {
 						if (errorLineWasLast) { // Add to error
@@ -194,13 +189,32 @@ public class HarvestReport {
 		FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
 		BufferedWriter resfile = new BufferedWriter(fw);
 		for (HarvestReport h: harvests) {
-			System.out.println("Printing out: " + h.seed);
+			System.out.println("Printing out report for seed: " + h.seed);
 			printOut(h, resfile);
 		}
 		fw.flush();
 		fw.close();
-
 	}
+	
+	boolean hasErrors() {
+		return ( (error != null && !error.isEmpty()) 
+				|| (errors != null && !errors.isEmpty()));
+	}
+	
+	String getErrorsAsString() {
+		StringBuffer errorsBuffer = new StringBuffer();
+		if (error != null && !error.isEmpty()) {
+			errorsBuffer.append(error);
+		}
+		if (errors != null && !errors.isEmpty()) {
+			errorsBuffer.append(StringUtils.join(errors, ","));
+		}
+		return errorsBuffer.toString();
+	}
+	
+	
+	
+	
 	private static void printOut(final HarvestReport h, final BufferedWriter resfile) throws IOException {
 		resfile.append("################################################");
 		resfile.newLine();
@@ -208,12 +222,12 @@ public class HarvestReport {
 		resfile.newLine();
 		resfile.append("################################################");
 		resfile.newLine();
-		if (!h.errors.isEmpty()) {
-			resfile.append("Errors found: " + StringUtils.join(h.errors, ","));
+		if (h.hasErrors()) {
+			resfile.append("Errors found: '" + h.getErrorsAsString()  + "'");
 			resfile.newLine();
 		}
-		if (h.results.isEmpty()) {
-			resfile.append("No results found for seed");
+		if (h.results == null || h.results.isEmpty()) {
+			resfile.append("No criteria results found for seed");
 			resfile.newLine();
 		} else {
 			for (SingleCriteriaResult scr: h.results) {
