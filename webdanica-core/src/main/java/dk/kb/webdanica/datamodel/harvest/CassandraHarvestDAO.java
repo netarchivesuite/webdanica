@@ -154,6 +154,7 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		}
 		return harvestsFound; 
 	}
+
 	public List<HarvestReport> getAllWithSuccessfulstate(boolean successful) {
 		init();
 		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
@@ -165,11 +166,7 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		}
 		return harvestsFound; 
 	}
-	
-	
-	
-	
-	
+
 	private void init() {
 		if (session == null || session.isClosed()) {			
 			session = db.getSession();
@@ -187,8 +184,7 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		    */
 			preparedInsert = session.prepare("INSERT INTO harvests (harvestname, seedurl, finalState, successful, harvested_time, files, error) VALUES (?,?,?,?,?,?,?) IF NOT EXISTS");
 		}
-		
-		
+
 		if (readAllWithFinalStatestatement == null || newSession) {
 			readAllWithFinalStatestatement = session.prepare("SELECT * FROM harvests WHERE finalState=?");
 		}
