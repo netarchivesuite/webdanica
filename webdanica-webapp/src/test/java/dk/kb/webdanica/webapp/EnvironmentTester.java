@@ -37,6 +37,7 @@ public class EnvironmentTester {
 	public void tearDown() throws Exception {
 	}
 
+	@Test
 	public void testEnvironmentConstruction() throws Exception {
 		ServletContext servletContext = mock (ServletContext.class);
 		ServletConfig theServletConfig = mock (ServletConfig.class);
