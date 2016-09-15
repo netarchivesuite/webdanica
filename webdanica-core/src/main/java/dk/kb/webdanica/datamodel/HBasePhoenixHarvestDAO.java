@@ -12,6 +12,42 @@ import dk.netarkivet.harvester.datamodel.JobStatus;
 
 public class HBasePhoenixHarvestDAO {
 
+	public HarvestReport getHarvestFromResultSet(ResultSet rs) throws SQLException {
+		HarvestReport report = null;
+		if (rs != null) {
+			if (rs.next()) {
+				report = new HarvestReport(
+						rs.getString("harvestname"),
+						rs.getString("seedurl"),
+						rs.getBoolean("successful"),
+						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
+						rs.getString("error"),
+						JobStatus.fromOrdinal(rs.getInt("finalState")),
+						rs.getLong("harvested_time")
+				);
+			}
+		}
+		return report; 
+	}
+
+	public void getHarvestsFromResultSet(ResultSet rs, List<HarvestReport> harvestsFound) throws SQLException {
+		HarvestReport report;
+		if (rs != null) {
+			while (rs.next()) {
+				report = new HarvestReport(
+						rs.getString("harvestname"),
+						rs.getString("seedurl"),
+						rs.getBoolean("successful"),
+						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
+						rs.getString("error"),
+						JobStatus.fromOrdinal(rs.getInt("finalState")),
+						rs.getLong("harvested_time")
+				);
+				harvestsFound.add(report);
+			}
+		}
+	}
+
 	public static final String INSERT_SQL;
 
 	static {
@@ -56,7 +92,7 @@ public class HBasePhoenixHarvestDAO {
 		return res;
 	}
 
-	public static final String SELECT_HARVEST_BY_NAME = "SELECT * FROM harvests WHERE harvestname=?";
+	public static final String SELECT_HARVEST_BY_NAME_SQL = "SELECT * FROM harvests WHERE harvestname=?";
 
 	/**
 	 * @param harvestName a given harvestname
@@ -67,35 +103,17 @@ public class HBasePhoenixHarvestDAO {
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
-			stm = conn.prepareStatement(SELECT_HARVEST_BY_NAME);
+			stm = conn.prepareStatement(SELECT_HARVEST_BY_NAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestName);
 			rs = stm.executeQuery();
-			report = getHarvestObject(rs);
+			report = getHarvestFromResultSet(rs);
 		} finally {
 			if (rs != null) {
 				rs.close();
 			}
 			if (stm != null) {
 				stm.close();
-			}
-		}
-		return report; 
-	}
-
-	public HarvestReport getHarvestObject(ResultSet rs) throws SQLException {
-		HarvestReport report = null;
-		if (rs != null) {
-			if (rs.next()) {
-				report = new HarvestReport(
-						rs.getString("harvestname"),
-						rs.getString("seedurl"),
-						rs.getBoolean("successful"),
-						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
-						rs.getString("error"),
-						JobStatus.fromOrdinal(rs.getInt("finalState")),
-						rs.getLong("harvested_time")
-				);
 			}
 		}
 		return report; 
@@ -111,7 +129,7 @@ public class HBasePhoenixHarvestDAO {
 			stm = conn.prepareStatement(SELECT_ALL_SQL);
 			stm.clearParameters();
 			rs = stm.executeQuery();
-			getHarvestList(rs, harvestsFound);
+			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -134,7 +152,7 @@ public class HBasePhoenixHarvestDAO {
 			stm.clearParameters();
 			stm.setString(1, seedurl);
 			rs = stm.executeQuery();
-			getHarvestList(rs, harvestsFound);
+			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -157,7 +175,7 @@ public class HBasePhoenixHarvestDAO {
 			stm.clearParameters();
 			stm.setBoolean(1, successful);
 			rs = stm.executeQuery();
-			getHarvestList(rs, harvestsFound);
+			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -167,24 +185,6 @@ public class HBasePhoenixHarvestDAO {
 			}
 		}
 		return harvestsFound; 
-	}
-
-	public void getHarvestList(ResultSet rs, List<HarvestReport> harvestsFound) throws SQLException {
-		HarvestReport report;
-		if (rs != null) {
-			while (rs.next()) {
-				report = new HarvestReport(
-						rs.getString("harvestname"),
-						rs.getString("seedurl"),
-						rs.getBoolean("successful"),
-						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
-						rs.getString("error"),
-						JobStatus.fromOrdinal(rs.getInt("finalState")),
-						rs.getLong("harvested_time")
-				);
-				harvestsFound.add(report);
-			}
-		}
 	}
 
 	//readAllWithFinalStatestatement = session.prepare("SELECT * FROM harvests WHERE finalState=?");
