@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -227,9 +229,11 @@ public class CriteriaResultResource implements ResourceAbstract {
 	    		sb.append(listElement);
 	    		sb.append("\r\n");
 	    	}
+	    	sb.append("Ctext: " + b.getCText());
+	    	sb.append("\r\n");
+	    	sb.append("Clinks: " + StringUtils.join(b.getClinks(), ","));
+	    	sb.append("\r\n");
 	    	sb.append("</pre>\r\n");
-	    	
-	    	
 	    	
 	    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
 	        
