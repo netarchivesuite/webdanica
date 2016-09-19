@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import dk.kb.webdanica.datamodel.IngestLog;
+import dk.kb.webdanica.datamodel.JDBCUtils;
 
 public class HBasePhoenixIngestLogDAO {
 

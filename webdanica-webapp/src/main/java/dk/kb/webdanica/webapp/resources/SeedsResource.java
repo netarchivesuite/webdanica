@@ -20,7 +20,7 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -125,7 +125,7 @@ public class SeedsResource implements ResourceAbstract {
     private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
-    	SeedDAO dao = Servlet.environment.getConfig().getSeedDAO();
+    	SeedsDAO dao = Servlet.environment.getConfig().getSeedDAO();
     	
         int status = 0; //Ordinal for Status.NEW
         if (numerics.size() >= 1) {
@@ -268,7 +268,7 @@ public class SeedsResource implements ResourceAbstract {
             throws IOException {
         String errorStr = null;
         String successStr = null;
-        SeedDAO dao = Servlet.environment.getConfig().getSeedDAO();
+        SeedsDAO dao = Servlet.environment.getConfig().getSeedDAO();
         /*
         UrlRecords urlRecordsInstance = UrlRecords
                 .getInstance(environment.dataSource);
@@ -1017,7 +1017,7 @@ public class SeedsResource implements ResourceAbstract {
         return resultString;
     }
 
-    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedDAO dao) {
+    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedsDAO dao) {
         /*
          * State menu.
          */
@@ -1057,7 +1057,7 @@ public class SeedsResource implements ResourceAbstract {
         return heading;
     }
 
-	private static List<MenuItem> makemenuArray(SeedDAO dao) {
+	private static List<MenuItem> makemenuArray(SeedsDAO dao) {
 		
 		List<MenuItem> result = new ArrayList<MenuItem>();
 		I18n i18n = new I18n(dk.kb.webdanica.Constants.WEBDANICA_TRANSLATION_BUNDLE);

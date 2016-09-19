@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import dk.kb.webdanica.datamodel.BlackList;
 import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.seeds.filtering.ResolveRedirects;
@@ -33,7 +33,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedDAO seeddao;
+	private SeedsDAO seeddao;
 	private BlackListDAO blacklistDao;
 	
 	private ResolveRedirects resolveRedirects;

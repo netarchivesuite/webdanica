@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 public class CassandraSettings {
 

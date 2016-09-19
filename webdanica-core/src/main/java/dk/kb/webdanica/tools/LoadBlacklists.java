@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
 
 /**
  * Program to load blacklists into the webdanica database.

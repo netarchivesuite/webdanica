@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,10 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+
+import dk.kb.webdanica.datamodel.BlackList;
+import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.Cassandra;
 
 /*
 CREATE table blacklists (

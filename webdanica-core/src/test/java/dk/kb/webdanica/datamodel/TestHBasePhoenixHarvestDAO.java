@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixHarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 

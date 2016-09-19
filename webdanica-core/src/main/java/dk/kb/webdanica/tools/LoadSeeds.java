@@ -12,12 +12,12 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import dk.kb.webdanica.datamodel.CassandraSeedDAO;
 import dk.kb.webdanica.datamodel.IngestLog;
-import dk.kb.webdanica.datamodel.IngestLogCassandraDAO;
 import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.datamodel.dao.CassandraIngestLogDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraSeedDAO;
 import dk.kb.webdanica.utils.UrlUtils;
 
 /**
@@ -79,7 +79,7 @@ public class LoadSeeds {
 	 * @return the ingestLog for the file just processed
 	 */
 	public IngestLog processSeeds() {
-		SeedDAO dao = CassandraSeedDAO.getInstance();
+		SeedsDAO dao = CassandraSeedDAO.getInstance();
 		String line;
         long linecount=0L;
         long insertedcount=0L;
@@ -185,9 +185,9 @@ public class LoadSeeds {
     }
 
 	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
-		IngestLogCassandraDAO dao = null;
+		CassandraIngestLogDAO dao = null;
 		try {
-			dao = IngestLogCassandraDAO.getInstance();
+			dao = CassandraIngestLogDAO.getInstance();
 			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
 			return log;

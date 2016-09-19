@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixIngestLogDAO;
+
 @RunWith(JUnit4.class)
 public class TestHBasePhoenixIngestLogDAO {
 

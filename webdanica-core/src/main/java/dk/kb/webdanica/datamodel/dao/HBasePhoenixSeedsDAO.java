@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +8,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import dk.kb.webdanica.datamodel.DanicaStatus;
+import dk.kb.webdanica.datamodel.Seed;
+import dk.kb.webdanica.datamodel.Status;
 
 public class HBasePhoenixSeedsDAO {
 

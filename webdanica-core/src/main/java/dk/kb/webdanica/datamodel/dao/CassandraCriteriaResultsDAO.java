@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel.harvest;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,9 +16,8 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.datamodel.Cassandra;
-import dk.kb.webdanica.datamodel.CassandraSettings;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;

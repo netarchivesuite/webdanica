@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +10,11 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
+import dk.kb.webdanica.datamodel.Cassandra;
+import dk.kb.webdanica.datamodel.Database;
+import dk.kb.webdanica.datamodel.IngestLog;
+import dk.kb.webdanica.datamodel.IngestLogDAO;
+
 /**
  * DAO for logging skipped entries during ingest in a single entry.
   
@@ -20,10 +25,10 @@ import com.datastax.driver.core.Session;
    PRIMARY KEY (inserted_date));  
  * 
  */
-public class IngestLogCassandraDAO implements Database {
+public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 	
 	public static void main(String args[]) {
-		IngestLogCassandraDAO dao = IngestLogCassandraDAO.getInstance();
+		CassandraIngestLogDAO dao = CassandraIngestLogDAO.getInstance();
 		List<String> entries = new ArrayList<String>();
 		entries.add("Line one in sample loglist");
 		entries.add("Line two in sample loglist");
@@ -45,7 +50,7 @@ public class IngestLogCassandraDAO implements Database {
 		}
 	}
 
-	static IngestLogCassandraDAO instance;
+	static CassandraIngestLogDAO instance;
 	
 	private Database db;
 
@@ -53,17 +58,18 @@ public class IngestLogCassandraDAO implements Database {
 	
 	private PreparedStatement preparedInsert;
 	
-	public synchronized static IngestLogCassandraDAO getInstance(){
+	public synchronized static CassandraIngestLogDAO getInstance(){
 		if (instance == null) {
-			instance = new IngestLogCassandraDAO();
+			instance = new CassandraIngestLogDAO();
 		} 
 		return instance;
 	}
 	
-	public IngestLogCassandraDAO() {
+	public CassandraIngestLogDAO() {
 		db = new Cassandra(CassandraSettings.getDefaultSettings());
 	}
-	
+
+	@Override
 	public void insertLog(IngestLog log){
 		init();
 		Long insertedDate = System.currentTimeMillis();
@@ -81,7 +87,8 @@ public class IngestLogCassandraDAO implements Database {
 			System.out.println("Insert failed");
 		}
 	}
-	
+
+	@Override
 	public List<Long> getIngestDates() { // as represented as millis from epoch
 		init();
 		ResultSet results = session.execute("SELECT inserted_date from ingestLog");
@@ -91,7 +98,8 @@ public class IngestLogCassandraDAO implements Database {
 		}
 		return ingestDates;
 	}
-	
+
+	@Override
 	public IngestLog readIngestLog(Long timestamp) {
 		PreparedStatement statement = getSession().prepare("SELECT * FROM ingestLog WHERE inserted_date=?");
 		BoundStatement bStatement = statement.bind(timestamp);

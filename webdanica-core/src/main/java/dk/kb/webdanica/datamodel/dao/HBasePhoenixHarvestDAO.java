@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.webdanica.datamodel.JDBCUtils;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 

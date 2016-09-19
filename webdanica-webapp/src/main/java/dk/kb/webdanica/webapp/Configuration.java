@@ -5,13 +5,13 @@ import dk.kb.webdanica.datamodel.WgetSettings;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.datamodel.BlackListDAO;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
-import dk.kb.webdanica.datamodel.CassandraSeedDAO;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.HarvestDAO;
-import dk.kb.webdanica.datamodel.SeedDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraHarvestDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraSeedDAO;
 
 public class Configuration {
 
@@ -30,7 +30,7 @@ public class Configuration {
 	
 	private HarvestDAO harvestDAO;
 	
-	private SeedDAO seedDao;
+	private SeedsDAO seedDao;
     
     private static Configuration config;
 	
@@ -110,7 +110,7 @@ public class Configuration {
 		return this.emailer;
 	}
 	
-	public SeedDAO getSeedDAO() {
+	public SeedsDAO getSeedDAO() {
 		return this.seedDao;
 	}
 

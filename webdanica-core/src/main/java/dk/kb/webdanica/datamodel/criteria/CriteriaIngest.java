@@ -12,7 +12,7 @@ import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.utils.StreamUtils;

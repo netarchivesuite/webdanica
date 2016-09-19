@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,12 +10,19 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
+import dk.kb.webdanica.datamodel.Cassandra;
+import dk.kb.webdanica.datamodel.DanicaStatus;
+import dk.kb.webdanica.datamodel.Database;
+import dk.kb.webdanica.datamodel.Seed;
+import dk.kb.webdanica.datamodel.SeedsDAO;
+import dk.kb.webdanica.datamodel.Status;
+
 /**
  * DAO class for the seeds table.
  * @author svc
  *
  */
-public class CassandraSeedDAO implements SeedDAO {
+public class CassandraSeedDAO implements SeedsDAO {
 		
 	static CassandraSeedDAO instance;
 	
