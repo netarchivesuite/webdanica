@@ -128,7 +128,7 @@ public class BlackListsResource implements ResourceAbstract {
 	        // FIEME better handling
             List<BlackList> blacklistList = null;
             try {
-                blacklistList = environment.getConfig().getBlacklistDao().getLists(false);
+                blacklistList = environment.getConfig().getDAOFactory().getBlackListDAO().getLists(false);
             } catch (Exception e) {
             }
             for (BlackList b: blacklistList) {

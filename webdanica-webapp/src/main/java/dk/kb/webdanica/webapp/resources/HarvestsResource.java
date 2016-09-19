@@ -116,7 +116,7 @@ public class HarvestsResource implements ResourceAbstract {
 	        // FIXME better handling
 	        List<HarvestReport> blacklistList = null;
 	        try {
-		        blacklistList = environment.getConfig().getHarvestDAO().getAll();
+		        blacklistList = environment.getConfig().getDAOFactory().getHarvestDAO().getAll();
 	        } catch (Exception e) {
 	        }
 

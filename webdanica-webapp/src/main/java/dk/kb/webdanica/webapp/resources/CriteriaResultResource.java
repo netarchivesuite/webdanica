@@ -62,7 +62,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	@Override
 	public void resources_init(Environment environment) {
 		this.environment = environment;
-		this.dao = environment.getConfig().getCriteriaResultsDao();
+		this.dao = environment.getConfig().getDAOFactory().getCriteriaResultsDAO();
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class BlackListResource implements ResourceAbstract {
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
-        this.dao = environment.getConfig().getBlacklistDao();
+        this.dao = environment.getConfig().getDAOFactory().getBlackListDAO();
     }
 
     @Override

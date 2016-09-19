@@ -48,8 +48,8 @@ public class HarvestResource implements ResourceAbstract {
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
-        this.hdao = environment.getConfig().getHarvestDAO();
-        this.cdao = environment.getConfig().getCriteriaResultsDao();
+        this.hdao = environment.getConfig().getDAOFactory().getHarvestDAO();
+        this.cdao = environment.getConfig().getDAOFactory().getCriteriaResultsDAO();
     }
     
     @Override

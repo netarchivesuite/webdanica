@@ -2,18 +2,15 @@ package dk.kb.webdanica.webapp;
 
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.WgetSettings;
+import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
-import dk.kb.webdanica.datamodel.BlackListDAO;
-import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.HarvestDAO;
-import dk.kb.webdanica.datamodel.SeedsDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraHarvestDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraSeedDAO;
 
 public class Configuration {
+
+	private static final String DEFAULT_DATABASE_SYSTEM = "cassandra";
 
 	/** Env. (UNITTEST/TEST/STAGING/PROD) **/
     private String env;
@@ -22,19 +19,14 @@ public class Configuration {
     private String smtpHost;
     private String mailAdmin;
     private String[] ignoredSuffixes;
-	private String[] ignoredProtocols;
-	
-	private BlackListDAO blacklistDao;
+    private String[] ignoredProtocols;
 
-	private CriteriaResultsDAO criteriaResultsDao;
-	
-	private HarvestDAO harvestDAO;
-	
-	private SeedsDAO seedDao;
-    
+    private String databaseSystem;
+
+    private DAOFactory daoFactory;
+
     private static Configuration config;
-	
-    
+
     public static synchronized Configuration getInstance() {
     	if (config == null) {
     		config = new Configuration();
@@ -78,16 +70,14 @@ public class Configuration {
 		
 		emailer = Emailer.getInstance(smtpHost, smtpPort, null, null, mailAdmin, dontSendMails);
 
-		initDb();
+		databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
+
+		if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+			daoFactory = new CassandraDAOFactory();
+		} else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+			daoFactory = new HBasePhoenixDAOFactory();
+		}
 	}
-
-	private void initDb() {
-	    seedDao = CassandraSeedDAO.getInstance();
-	    harvestDAO = CassandraHarvestDAO.getInstance();
-	    criteriaResultsDao = CassandraCriteriaResultsDAO.getInstance();
-	    blacklistDao = CassandraBlackListDAO.getInstance();
-    }
-
 
 	public WgetSettings getWgetSettings() {
 		return new WgetSettings();
@@ -110,24 +100,12 @@ public class Configuration {
 		return this.emailer;
 	}
 	
-	public SeedsDAO getSeedDAO() {
-		return this.seedDao;
+	public DAOFactory getDAOFactory() {
+		return daoFactory;
 	}
 
-	public CriteriaResultsDAO getCriteriaResultsDao() {
-	    return this.criteriaResultsDao;
-    }
-
-	public BlackListDAO getBlacklistDao() {
-	    return this.blacklistDao;
-    }
-
-	public HarvestDAO getHarvestDAO() {
-	    return this.harvestDAO;
-    }
-
 	public void close() {
-		seedDao.close();
+		daoFactory.close();
     }
 	
 }

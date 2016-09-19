@@ -72,8 +72,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
     @Override
 	protected void process_init() {
     	configuration = Configuration.getInstance();
-    	seeddao = configuration.getSeedDAO();
-    	blacklistDao = configuration.getBlacklistDao();
+    	seeddao = configuration.getDAOFactory().getSeedsDAO();
+    	blacklistDao = configuration.getDAOFactory().getBlackListDAO();
     	
     	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());	
 	}

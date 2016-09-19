@@ -22,7 +22,6 @@ import com.antiaction.common.templateengine.TemplatePlaceTag;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
-import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.MenuItem;
@@ -126,7 +125,7 @@ public class SeedsResource implements ResourceAbstract {
     private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
-    	SeedsDAO dao = Servlet.environment.getConfig().getSeedDAO();
+    	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
     	
         int status = 0; //Ordinal for Status.NEW
         if (numerics.size() >= 1) {
@@ -275,7 +274,7 @@ public class SeedsResource implements ResourceAbstract {
             throws IOException {
         String errorStr = null;
         String successStr = null;
-        SeedsDAO dao = Servlet.environment.getConfig().getSeedDAO();
+        SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
         /*
         UrlRecords urlRecordsInstance = UrlRecords
                 .getInstance(environment.dataSource);
