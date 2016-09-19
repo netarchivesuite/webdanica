@@ -3,15 +3,15 @@ package dk.kb.webdanica.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import dk.kb.webdanica.datamodel.BlackList;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.JDBCUtils;
 
-public class HBasePhoenixBlackListDAO {
+public class HBasePhoenixBlackListDAO implements BlackListDAO {
 
 	private static final String INSERT_SQL;
 
@@ -21,7 +21,8 @@ public class HBasePhoenixBlackListDAO {
 				+ "VALUES (?, ?, ?, ?, ?, ?) ";
 	}
 
-	public int insertList(Connection conn, BlackList aBlackList) throws SQLException {
+	@Override
+	public boolean insertList(BlackList aBlackList) throws Exception {
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
 		int res = 0;
@@ -31,6 +32,7 @@ public class HBasePhoenixBlackListDAO {
 			List<String> strList = aBlackList.getList();
 			String[] strArr = new String[strList.size()];
 			strArr = strList.toArray(strArr);
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			sqlArr = conn.createArrayOf("VARCHAR", strArr);
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
@@ -50,7 +52,7 @@ public class HBasePhoenixBlackListDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	private static final String GET_BLACKLIST_SQL;
@@ -59,11 +61,13 @@ public class HBasePhoenixBlackListDAO {
 		GET_BLACKLIST_SQL = "SELECT * FROM blacklists WHERE uid=? ";
 	}
 
-	public BlackList readBlackList(Connection conn, UUID uid) throws SQLException {
+	@Override
+	public BlackList readBlackList(UUID uid) throws Exception {
 		BlackList retrievedBlacklist = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_BLACKLIST_SQL);
 			stm.clearParameters();
 			stm.setString(1, uid.toString());
@@ -105,12 +109,14 @@ public class HBasePhoenixBlackListDAO {
 				+ "FROM blacklists ";
 	}
 
-	public List<BlackList> getLists(Connection conn, boolean activeOnly) throws SQLException {
+	@Override
+	public List<BlackList> getLists(boolean activeOnly) throws Exception {
 		List<BlackList> blacklistList = new ArrayList<BlackList>();
 		BlackList blacklist = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			if (activeOnly) {
 				stm = conn.prepareStatement(GET_ACTIVE_SQL);
 			} else {

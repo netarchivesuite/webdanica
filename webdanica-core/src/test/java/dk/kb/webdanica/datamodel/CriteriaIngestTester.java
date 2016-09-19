@@ -3,8 +3,6 @@ package dk.kb.webdanica.datamodel;
 import static dk.kb.webdanica.utils.UnitTestUtils.getTestResourceFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 import org.junit.Test;
 
@@ -30,7 +28,7 @@ public class CriteriaIngestTester {
 	static final String PARSED_TEXT_RESULT = "output/SEQ/431-35-20160317083714655-00000-sb-test-har-001.statsbiblioteket.dk.warc.gz";
 		
 	@Test
-	public void test() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public void test() throws Exception, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
 		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false );
 		ingestFile = getTestResourceFile(COMBO_RESULT);

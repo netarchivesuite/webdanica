@@ -82,7 +82,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	    public void resource_service(ServletContext servletContext, User dab_user,
 	    		HttpServletRequest req, HttpServletResponse resp,
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-	        SingleCriteriaResult b;
+	        SingleCriteriaResult b = null;
 	        
 	        // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
 	        CriteriaKeys CK = getCriteriaKeys(pathInfo);
@@ -92,7 +92,10 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        	logger.warning(errMsg);
 	        	b = SingleCriteriaResult.createErrorResult(errMsg); 
 	        } else {
-	            b = dao.getSingleResult(CK.url, CK.harvest);
+	        	try {
+		            b = dao.getSingleResult(CK.url, CK.harvest);
+	        	} catch (Exception e) {
+	        	}
 	            if (b == null) { // no criteria_result found with given url and harvestname
 	            	String errMsg = "No result found for url='" + CK.url + "', harvest='" 
         			+ CK.harvest + "'.";

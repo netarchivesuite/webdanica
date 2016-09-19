@@ -4,16 +4,16 @@ import java.util.List;
 
 public interface SeedsDAO {
 
-	List<Seed> getSeeds(Status fromOrdinal);
+	boolean insertSeed(Seed singleSeed) throws Exception;
 
-	Long getSeedsCount(Status fromOrdinal);
+	boolean updateRedirectedUrl(Seed s) throws Exception;
 
-	boolean updateRedirectedUrl(Seed s);
+	boolean updateState(Seed s) throws Exception;
 
-	boolean updateState(Seed s);
+	List<Seed> getSeeds(Status fromOrdinal) throws Exception;
+
+	Long getSeedsCount(Status fromOrdinal) throws Exception;
 
 	void close();
-
-	boolean insertSeed(Seed singleSeed);
 
 }

@@ -3,17 +3,17 @@ package dk.kb.webdanica.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.webdanica.datamodel.HarvestDAO;
 import dk.kb.webdanica.datamodel.JDBCUtils;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
-public class HBasePhoenixHarvestDAO {
+public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
-	public HarvestReport getHarvestFromResultSet(ResultSet rs) throws SQLException {
+	public HarvestReport getHarvestFromResultSet(ResultSet rs) throws Exception {
 		HarvestReport report = null;
 		if (rs != null) {
 			if (rs.next()) {
@@ -31,7 +31,7 @@ public class HBasePhoenixHarvestDAO {
 		return report; 
 	}
 
-	public void getHarvestsFromResultSet(ResultSet rs, List<HarvestReport> harvestsFound) throws SQLException {
+	public void getHarvestsFromResultSet(ResultSet rs, List<HarvestReport> harvestsFound) throws Exception {
 		HarvestReport report;
 		if (rs != null) {
 			while (rs.next()) {
@@ -57,7 +57,8 @@ public class HBasePhoenixHarvestDAO {
 				+ "VALUES (?,?,?,?,?,?,?) ";
 	}
 
-	public int insertHarvest(Connection conn, HarvestReport report) throws SQLException {
+	@Override
+	public boolean insertHarvest(HarvestReport report) throws Exception {
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
 		int res = 0;
@@ -70,6 +71,7 @@ public class HBasePhoenixHarvestDAO {
 			List<String> strList = report.getAllFiles();
 			String[] strArr = new String[strList.size()];
 			strArr = strList.toArray(strArr);
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			sqlArr = conn.createArrayOf("VARCHAR", strArr);
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
@@ -90,7 +92,7 @@ public class HBasePhoenixHarvestDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	public static final String SELECT_HARVEST_BY_NAME_SQL = "SELECT * FROM harvests WHERE harvestname=?";
@@ -99,11 +101,13 @@ public class HBasePhoenixHarvestDAO {
 	 * @param harvestName a given harvestname
 	 * @return null, if none found with given harvestname
 	 */
-	public HarvestReport getHarvest(Connection conn, String harvestName) throws SQLException {
+	@Override
+	public HarvestReport getHarvest(String harvestName) throws Exception {
 		HarvestReport report = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(SELECT_HARVEST_BY_NAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestName);
@@ -122,11 +126,13 @@ public class HBasePhoenixHarvestDAO {
 
 	public static final String SELECT_ALL_SQL = "SELECT * FROM harvests";
 
-	public List<HarvestReport> getAll(Connection conn) throws SQLException {
+	@Override
+	public List<HarvestReport> getAll() throws Exception {
 		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(SELECT_ALL_SQL);
 			stm.clearParameters();
 			rs = stm.executeQuery();
@@ -144,11 +150,13 @@ public class HBasePhoenixHarvestDAO {
 
  	public static final String GET_ALL_WITH_SEEDURL_SQL = "SELECT * FROM harvests WHERE seedurl=?";
 
-	public List<HarvestReport> getAllWithSeedurl(Connection conn, String seedurl) throws SQLException {
+	@Override
+	public List<HarvestReport> getAllWithSeedurl(String seedurl) throws Exception {
 		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_ALL_WITH_SEEDURL_SQL);
 			stm.clearParameters();
 			stm.setString(1, seedurl);
@@ -167,11 +175,13 @@ public class HBasePhoenixHarvestDAO {
 
  	public static final String GET_ALL_WITH_SUCCESSFUL_SQL = "SELECT * FROM harvests WHERE successful=?";
 
-	public List<HarvestReport> getAllWithSuccessfulstate(Connection conn, boolean successful) throws SQLException {
+	@Override
+	public List<HarvestReport> getAllWithSuccessfulstate(boolean successful) throws Exception {
 		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_ALL_WITH_SUCCESSFUL_SQL);
 			stm.clearParameters();
 			stm.setBoolean(1, successful);
@@ -186,6 +196,10 @@ public class HBasePhoenixHarvestDAO {
 			}
 		}
 		return harvestsFound; 
+	}
+
+	@Override
+	public void close() {
 	}
 
 	//readAllWithFinalStatestatement = session.prepare("SELECT * FROM harvests WHERE finalState=?");

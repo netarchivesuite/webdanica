@@ -22,6 +22,7 @@ import com.antiaction.common.templateengine.TemplatePlaceTag;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
+import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.MenuItem;
@@ -216,7 +217,13 @@ public class SeedsResource implements ResourceAbstract {
 
         // TODO this does not scale
         // Make an iterator
-        List<Seed> urlRecords = dao.getSeeds(Status.fromOrdinal(online_status));  
+        // FIXME better handling
+        List<Seed> urlRecords = null;
+        try {
+            urlRecords = dao.getSeeds(Status.fromOrdinal(online_status));
+        } catch (Exception e) {
+        }
+
         List<Seed> urlRecordsFiltered = new ArrayList<Seed>(urlRecords.size());
         urlRecordsFiltered = urlRecords;
         Seed urlRecord;
@@ -611,8 +618,13 @@ public class SeedsResource implements ResourceAbstract {
         int ordering = 0;
 
         //getUrlRecords(ordering);
-        
-        List<Seed> urlRecords = dao.getSeeds(Status.fromOrdinal(status));
+
+        // FIXME better handling
+        List<Seed> urlRecords = null;
+        try {
+            urlRecords = dao.getSeeds(Status.fromOrdinal(status));
+        } catch (Exception e) {
+        }
         List<Seed> urlRecordsFiltered = urlRecords;
         Seed urlRecord;
         //urlRecord;
@@ -1032,7 +1044,13 @@ public class SeedsResource implements ResourceAbstract {
         }
         */
 
-    	List<MenuItem> menuStatesArr = makemenuArray(dao);
+        // FIXME better handling
+        List<MenuItem> menuStatesArr =null;
+        try {
+            menuStatesArr = makemenuArray(dao);
+        } catch (Exception e) {
+        }
+
         String heading = "N/A";
 
         for (MenuItem item:  menuStatesArr) {
@@ -1057,8 +1075,7 @@ public class SeedsResource implements ResourceAbstract {
         return heading;
     }
 
-	private static List<MenuItem> makemenuArray(SeedsDAO dao) {
-		
+	private static List<MenuItem> makemenuArray(SeedsDAO dao) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();
 		I18n i18n = new I18n(dk.kb.webdanica.Constants.WEBDANICA_TRANSLATION_BUNDLE);
 		Locale locDa = new Locale("da");

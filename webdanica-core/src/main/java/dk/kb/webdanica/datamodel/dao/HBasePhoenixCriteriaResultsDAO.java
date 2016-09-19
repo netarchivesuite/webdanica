@@ -3,7 +3,6 @@ package dk.kb.webdanica.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,13 +10,14 @@ import java.util.List;
 import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang.StringUtils;
 
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.JDBCUtils;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 
-public class HBasePhoenixCriteriaResultsDAO {
+public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 
-	public SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws SQLException {
+	public SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws Exception {
 		SingleCriteriaResult s = null;
 		if (rs != null) {
 			if (rs.next()) {
@@ -45,7 +45,7 @@ public class HBasePhoenixCriteriaResultsDAO {
 	    return s;
 	}
 
-	public void getResultsFromResultSet(ResultSet rs, List<SingleCriteriaResult> seedList) throws SQLException {
+	public void getResultsFromResultSet(ResultSet rs, List<SingleCriteriaResult> seedList) throws Exception {
 		SingleCriteriaResult s;
 		if (rs != null) {
 			while (rs.next()) {
@@ -93,7 +93,8 @@ public class HBasePhoenixCriteriaResultsDAO {
 	 * @param singleAnalysis A {@link SingleCriteriaResult} object
 	 * @return true, if the insertion was successful, otherwise false
 	 */
-	public boolean insertRecord(Connection conn, SingleCriteriaResult singleAnalysis) throws SQLException {
+	@Override
+	public boolean insertRecord(SingleCriteriaResult singleAnalysis) throws Exception {
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
 		int idx = 1;
@@ -103,6 +104,7 @@ public class HBasePhoenixCriteriaResultsDAO {
 			List<String> strList = singleAnalysis.CLinks;
 			String[] strArr = new String[strList.size()];
 			strArr = strList.toArray(strArr);
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			sqlArr = conn.createArrayOf("VARCHAR", strArr);
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
@@ -163,11 +165,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE url=?";
 	}
 	
-	public List<SingleCriteriaResult> getResultsByUrl(Connection conn, String url) throws SQLException {
+	@Override
+	public List<SingleCriteriaResult> getResultsByUrl(String url) throws Exception {
 		List<SingleCriteriaResult> seedList = new ArrayList<SingleCriteriaResult>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_ALL_WITH_URL_SQL);
 			stm.clearParameters();
 			stm.setString(1, url);
@@ -192,11 +196,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE seedurl=? ALLOW FILTERING";
 	}
 
-	public List<SingleCriteriaResult> getResultsBySeedurl(Connection conn, String seedurl) throws SQLException {
+	@Override
+	public List<SingleCriteriaResult> getResultsBySeedurl(String seedurl) throws Exception {
 		List<SingleCriteriaResult> seedList = new ArrayList<SingleCriteriaResult>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_ALL_WITH_SEEDURL_SQL);
 			stm.clearParameters();
 			stm.setString(1, seedurl);
@@ -221,11 +227,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE harvestname=? ALLOW FILTERING";
 	}
 
-	public List<SingleCriteriaResult> getResultsByHarvestname(Connection conn, String harvestname) throws SQLException {
+	@Override
+	public List<SingleCriteriaResult> getResultsByHarvestname(String harvestname) throws Exception {
 		List<SingleCriteriaResult> seedList = new ArrayList<SingleCriteriaResult>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_ALL_WITH_HARVESTNAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestname);
@@ -250,11 +258,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE harvestname=? ALLOW FILTERING";
 	}
 	
-	public List<String> getHarvestedUrls(Connection conn, String harvestname) throws SQLException {
+	@Override
+	public List<String> getHarvestedUrls(String harvestname) throws Exception {
 		List<String> urlList = new ArrayList<String>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_URLS_BY_HARVESTNAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestname);
@@ -276,10 +286,11 @@ public class HBasePhoenixCriteriaResultsDAO {
 		return urlList; 
 	}
 
-	public void deleteRecordsByHarvestname(Connection conn, String harvestname) throws SQLException {
-		List<String> urls = getHarvestedUrls(conn, harvestname);
+	@Override
+	public void deleteRecordsByHarvestname(String harvestname) throws Exception {
+		List<String> urls = getHarvestedUrls(harvestname);
 		for (String url: urls) {
-			deleteRecordsByHarvestnameAndUrl(conn, harvestname, url);
+			deleteRecordsByHarvestnameAndUrl(harvestname, url);
 		}
     }
 
@@ -291,9 +302,10 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE url=? AND harvestname=?";
 	}
 
-	private void deleteRecordsByHarvestnameAndUrl(Connection conn, String harvestname, String url) throws SQLException {
+	private void deleteRecordsByHarvestnameAndUrl(String harvestname, String url) throws Exception {
 		PreparedStatement stm = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(DELETE_ALL_WIT_HURLANDHARVESTNAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestname);
@@ -314,11 +326,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE url=? AND harvestname=?";
 	}
 
-	public SingleCriteriaResult getSingleResult(Connection conn, String url, String harvest) throws SQLException {
+	@Override
+	public SingleCriteriaResult getSingleResult(String url, String harvest) throws Exception {
 		SingleCriteriaResult s = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_WITH_URLANDHARVESTNAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, url);
@@ -338,11 +352,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 
 	private static final String READ_ALL_SQL = "SELECT * FROM criteria_results";
 
-	public List<SingleCriteriaResult> getResults(Connection conn) throws SQLException {
+	@Override
+	public List<SingleCriteriaResult> getResults() throws Exception {
 		List<SingleCriteriaResult> list = new ArrayList<SingleCriteriaResult>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(READ_ALL_SQL);
 			stm.clearParameters();
 			rs = stm.executeQuery();
@@ -366,11 +382,13 @@ public class HBasePhoenixCriteriaResultsDAO {
 				+ "WHERE harvestname=? ALLOW FILTERING";
 	}
 
-	public long getCountByHarvest(Connection conn, String harvestName) throws SQLException {
+	@Override
+	public long getCountByHarvest(String harvestName) throws Exception {
 		long count = 0;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_COUNT_WITH_HARVESTNAME_SQL);
 			stm.clearParameters();
 			stm.setString(1, harvestName);

@@ -6,18 +6,22 @@ import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 
 public interface CriteriaResultsDAO {
 
-	SingleCriteriaResult getSingleResult(String url, String harvest);
+	boolean insertRecord(SingleCriteriaResult s) throws Exception;
 
-	long getCountByHarvest(String harvestName);
+	SingleCriteriaResult getSingleResult(String url, String harvest) throws Exception;
 
-	void deleteRecordsByHarvestname(String string);
+	List<SingleCriteriaResult> getResultsByHarvestname(String string) throws Exception;
 
-	boolean insertRecord(SingleCriteriaResult s);
+	List<SingleCriteriaResult> getResultsByUrl(String url) throws Exception;
 
-	List<SingleCriteriaResult> getResultsByHarvestname(String string);
+	List<SingleCriteriaResult> getResultsBySeedurl(String string) throws Exception;
 
-	List<SingleCriteriaResult> getResultsBySeedurl(String string);
+	List<SingleCriteriaResult> getResults() throws Exception;
 
-	List<SingleCriteriaResult> getResults();	
+	List<String> getHarvestedUrls(String harvestname) throws Exception;
+
+	long getCountByHarvest(String harvestName) throws Exception;
+
+	void deleteRecordsByHarvestname(String string) throws Exception;
 
 }

@@ -24,7 +24,7 @@ import dk.kb.webdanica.utils.TextUtils;
  */
 public class CriteriaIngest {
 	
-	public static void main(String[] args) throws IOException, SQLException {
+	public static void main(String[] args) throws Exception {
 		//File f = new File("/home/test/criteria-results/03-08-2016-1470237223/68-55-20160803110922385-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
 		//System.out.println(isGzippedFile(f));
 		
@@ -52,7 +52,7 @@ public class CriteriaIngest {
 		//runTest2();
 		System.exit(0);
 	}
-	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws Exception {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
@@ -75,7 +75,7 @@ public class CriteriaIngest {
 	    return harvestLogReport;
     }
 
-	private static void runTest3() throws IOException, SQLException{
+	private static void runTest3() throws Exception {
 		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
 		String harvestLogName = "harvestlog-1470674884515.txt";
 		File HarvestLog = new File(basedir, harvestLogName);
@@ -83,14 +83,14 @@ public class CriteriaIngest {
 		ingest(HarvestLog, baseCriteriaDir, false);
 	}
 
-	private static void runTest2() throws IOException, SQLException { 
+	private static void runTest2() throws Exception { 
 			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
 			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
 			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
 			ingest(HarvestLog, baseCriteriaDir,false);
     }
 
-	private static void runTest1() throws IOException, SQLException {
+	private static void runTest1() throws Exception {
 		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
 		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
 		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
@@ -111,7 +111,7 @@ public class CriteriaIngest {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws IOException, SQLException {
+	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws Exception {
 		boolean listIgnored = true;
 		return process(ingestFile, seed, harvestName, addToDatabase);
 	}
@@ -127,7 +127,7 @@ public class CriteriaIngest {
 	 * @throws IOException
 	 */
 	public static ProcessResult process(File ingestFile, String seed, String harvestName, 
-				boolean addToDatabase) throws IOException {
+				boolean addToDatabase) throws Exception {
 		long linecount=0L;
 		long skippedCount=0L;
 		long ignoredCount=0L;

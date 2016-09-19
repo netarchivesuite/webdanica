@@ -1,8 +1,6 @@
 package dk.kb.webdanica.datamodel.dao;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +15,6 @@ import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
@@ -87,7 +84,7 @@ import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
  */
 public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	
-	public static void main(String[] args) throws IOException, SQLException {
+	public static void main(String[] args) throws Exception {
 		CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
 		
 		dao.deleteRecordsByHarvestname("harvestName"); // delete existing records from database

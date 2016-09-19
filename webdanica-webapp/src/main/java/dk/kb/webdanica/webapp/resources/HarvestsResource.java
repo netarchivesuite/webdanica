@@ -113,8 +113,13 @@ public class HarvestsResource implements ResourceAbstract {
 	        // Primary textarea
 	        StringBuffer sb = new StringBuffer();
 
+	        // FIXME better handling
+	        List<HarvestReport> blacklistList = null;
+	        try {
+		        blacklistList = environment.getConfig().getHarvestDAO().getAll();
+	        } catch (Exception e) {
+	        }
 
-	        List<HarvestReport> blacklistList = environment.getConfig().getHarvestDAO().getAll();
 	        for (HarvestReport b: blacklistList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");

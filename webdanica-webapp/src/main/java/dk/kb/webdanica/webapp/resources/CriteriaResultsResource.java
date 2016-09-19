@@ -142,11 +142,16 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        // Primary textarea
 	        StringBuffer sb = new StringBuffer();
 	        String harvestName = getHarvestName(pathInfo);
-	        List<SingleCriteriaResult> blacklistList;
-	        if (harvestName == null) {
-	        	blacklistList = dao.getResults();
-	        } else {
-	        	blacklistList = dao.getResultsByHarvestname(harvestName);
+	        List<SingleCriteriaResult> blacklistList = null;
+	        // FIXME better handling
+	        try {
+		        if (harvestName == null) {
+		        	blacklistList = dao.getResults();
+		        } else {
+		        	blacklistList = dao.getResultsByHarvestname(harvestName);
+		        }
+	        } catch (Exception e) {
+	        	
 	        }
 	        for (SingleCriteriaResult b: blacklistList) {
 	        	sb.append("<tr>");

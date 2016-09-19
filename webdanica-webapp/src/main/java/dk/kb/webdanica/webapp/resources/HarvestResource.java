@@ -76,7 +76,10 @@ public class HarvestResource implements ResourceAbstract {
         }
         
         if (!isError){ // Try to fetch harvest
-        	b = hdao.getHarvest(harvestName);
+        	try {
+            	b = hdao.getHarvest(harvestName);
+        	} catch (Exception e) {
+        	}
         	if (b == null) {
         		harvestName = "ERROR: unable to show harvest with name '" + harvestName + "'. It doesn't exist";
             	isError = true;
@@ -239,7 +242,15 @@ public class HarvestResource implements ResourceAbstract {
         }
         ResourceUtils.insertText(errorPlace, "errors",  error, HARVEST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(endStatePlace, "endState",  b.finalState + "", HARVEST_SHOW_TEMPLATE, logger);
-        long critCount = cdao.getCountByHarvest(b.harvestName);
+
+        // FIXME better handling
+        long critCount = 0;
+        try {
+            critCount = cdao.getCountByHarvest(b.harvestName);
+        } catch (Exception e) {
+        	
+        }
+
         String linkToCriteriaresults = "No criteriaresults found for this harvest";
         if (critCount > 0) {
         	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.harvestName + "/>" + "</a>";

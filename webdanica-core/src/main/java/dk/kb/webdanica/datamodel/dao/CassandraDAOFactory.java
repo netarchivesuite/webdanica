@@ -23,7 +23,7 @@ public class CassandraDAOFactory implements DAOFactory {
 	    harvestDAO = CassandraHarvestDAO.getInstance();
 	    criteriaResultsDao = CassandraCriteriaResultsDAO.getInstance();
 	    blacklistDao = CassandraBlackListDAO.getInstance();
-	    ingestLogDAO = CassandraIngestLogDAO.getInstance();;
+	    ingestLogDAO = CassandraIngestLogDAO.getInstance();
 	}
 
 	@Override

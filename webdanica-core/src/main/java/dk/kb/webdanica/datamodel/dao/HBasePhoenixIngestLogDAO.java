@@ -3,15 +3,15 @@ package dk.kb.webdanica.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.datamodel.IngestLog;
+import dk.kb.webdanica.datamodel.IngestLogDAO;
 import dk.kb.webdanica.datamodel.JDBCUtils;
 
-public class HBasePhoenixIngestLogDAO {
+public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 
 	private static final String INSERT_SQL;
 
@@ -21,7 +21,8 @@ public class HBasePhoenixIngestLogDAO {
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?) ";
 	}
 
-	public int insertLog(Connection conn, IngestLog log) throws SQLException {
+	@Override
+	public boolean insertLog(IngestLog log) throws Exception {
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
 		int res = 0;
@@ -33,6 +34,7 @@ public class HBasePhoenixIngestLogDAO {
 			List<String> strList = log.getLogEntries();
 			String[] strArr = new String[strList.size()];
 			strArr = strList.toArray(strArr);
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			sqlArr = conn.createArrayOf("VARCHAR", strArr);
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
@@ -53,7 +55,7 @@ public class HBasePhoenixIngestLogDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	private static final String GET_INGEST_DATES_SQL;
@@ -64,11 +66,13 @@ public class HBasePhoenixIngestLogDAO {
 				+ "from ingestLog";
 	}
 
-	public List<Long> getIngestDates(Connection conn) throws SQLException { // as represented as millis from epoch
+	@Override
+	public List<Long> getIngestDates() throws Exception { // as represented as millis from epoch
 		List<Long> ingestDates = new ArrayList<Long>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_INGEST_DATES_SQL);
 			stm.clearParameters();
 			rs = stm.executeQuery();
@@ -97,11 +101,13 @@ public class HBasePhoenixIngestLogDAO {
 				+ "WHERE inserted_date=?";
 	}
 
-	public IngestLog readIngestLog(Connection conn, Long timestamp) throws SQLException {
+	@Override
+	public IngestLog readIngestLog(Long timestamp) throws Exception {
 		IngestLog retrievedLog = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(GET_INGEST_BY_DATE_SQL);
 			stm.clearParameters();
 			stm.setLong(1, timestamp);

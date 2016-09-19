@@ -80,13 +80,13 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
 	@Override
 	protected void process_run() {
-		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW); // limit this 
-		enqueue(seedsNeedFiltering);
-		if (seedsNeedFiltering.size() > 0) {
-			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");
-		}
         try {
+    		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
+    		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW); // limit this 
+    		enqueue(seedsNeedFiltering);
+    		if (seedsNeedFiltering.size() > 0) {
+    			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");
+    		}
             synchronized (queueList) {
             	for (int i=0; i<queueList.size(); ++i) { // FIXME Possibly have a limit to how much is processed at a time?
             		Seed urlRecord = queueList.get(i);
@@ -114,7 +114,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
         }
 	}
 
-	private void filter(List<Seed> workList) {
+	private void filter(List<Seed> workList) throws Exception {
 		List<BlackList> activeBlackLists = blacklistDao.getLists(true); // only retrieve the active lists 
 	    for (Seed s: workList) {
 	    	String url = s.getUrl();

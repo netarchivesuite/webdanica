@@ -3,7 +3,6 @@ package dk.kb.webdanica.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
@@ -11,9 +10,10 @@ import java.util.List;
 
 import dk.kb.webdanica.datamodel.DanicaStatus;
 import dk.kb.webdanica.datamodel.Seed;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
 
-public class HBasePhoenixSeedsDAO {
+public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
 	private static final String INSERT_SQL;
 
@@ -23,11 +23,13 @@ public class HBasePhoenixSeedsDAO {
 				+ "VALUES (?,?,?) ";
 	}
 
-	public int insertSeed(Connection conn, Seed singleSeed) throws SQLException {
+	@Override
+	public boolean insertSeed(Seed singleSeed) throws Exception {
 		PreparedStatement stm = null;
 		int res = 0;
 		try {
 			Date insertedDate = new Date();
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
@@ -40,7 +42,7 @@ public class HBasePhoenixSeedsDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	private static final String UPDATE_STATUS_SQL;
@@ -51,10 +53,12 @@ public class HBasePhoenixSeedsDAO {
 				+ "VALUES (?, ?, ?)";
 	}
 
-	public int updateState(Connection conn, Seed singleSeed) throws SQLException {
+	@Override
+	public boolean updateState(Seed singleSeed) throws Exception {
 		PreparedStatement stm = null;
 		int res = 0;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(UPDATE_STATUS_SQL);
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
@@ -67,7 +71,7 @@ public class HBasePhoenixSeedsDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	private static final String UPDATE_REDIRECTED_URL_SQL;
@@ -77,10 +81,12 @@ public class HBasePhoenixSeedsDAO {
 				+ "VALUES (?, ?) ";
 	}
 
-	public int updateRedirectedUrl(Connection conn, Seed singleSeed) throws SQLException {
+	@Override
+	public boolean updateRedirectedUrl(Seed singleSeed) throws Exception {
 		PreparedStatement stm = null;
 		int res = 0;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(UPDATE_REDIRECTED_URL_SQL);
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
@@ -92,7 +98,7 @@ public class HBasePhoenixSeedsDAO {
 				stm.close();
 			}
 		}
-		return res;
+		return res != 0;
 	}
 
 	private static final String SEEDS_COUNT_SQL;
@@ -104,11 +110,13 @@ public class HBasePhoenixSeedsDAO {
 				+ "WHERE status=? ";
 	}
 
-	public Long getSeedsCount(Connection conn, Status status) throws SQLException {
+	@Override
+	public Long getSeedsCount(Status status) throws Exception {
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		long res = 0;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(SEEDS_COUNT_SQL);
 			stm.clearParameters();
 			stm.setInt(1, status.ordinal());
@@ -135,12 +143,14 @@ public class HBasePhoenixSeedsDAO {
 				+ "WHERE status=? ";
 	}
 
-	public List<Seed> getSeeds(Connection conn, Status status) throws SQLException {
+	@Override
+	public List<Seed> getSeeds(Status status) throws Exception {
 		List<Seed> seedList = new LinkedList<Seed>();
 		Seed seed;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);
 			stm.clearParameters();
 			stm.setInt(1, status.ordinal());
@@ -170,6 +180,10 @@ public class HBasePhoenixSeedsDAO {
 			}
 		}
 		return seedList; 
-	}	
+	}
+
+	@Override
+	public void close() {
+	}
 
 }

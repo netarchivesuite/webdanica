@@ -76,7 +76,7 @@ public class BlackListResource implements ResourceAbstract {
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
     	logger.info("pathInfo: " + pathInfo);
         logger.info("resource_id: " + resource_id);
-        BlackList b;
+        BlackList b = null;
         // FIXME when the uid can be retrieved from the List argument
         // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
         String[] pathInfoParts  = pathInfo.split(BLACKLIST_PATH);
@@ -87,7 +87,10 @@ public class BlackListResource implements ResourceAbstract {
             if (UUIDString.endsWith("/")) {
             	UUIDString = UUIDString.substring(0, UUIDString.length()-1);
             }
-            b = dao.readBlackList(UUID.fromString(UUIDString));
+            try {
+                b = dao.readBlackList(UUID.fromString(UUIDString));
+            } catch (Exception e) {
+            }
             if (b == null) { // no blacklist found with UID=UUIDString
             	logger.warning("No blacklist found with uid=" + UUIDString);
             	b = new BlackList(dummyUUID, "dummyUUD", "No blacklist found with UUID=" + UUIDString, dummyList, System.currentTimeMillis() , false);

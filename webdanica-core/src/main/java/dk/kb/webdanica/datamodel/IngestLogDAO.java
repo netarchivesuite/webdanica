@@ -4,10 +4,10 @@ import java.util.List;
 
 public interface IngestLogDAO {
 
-	public void insertLog(IngestLog log);
+	public boolean insertLog(IngestLog log) throws Exception;
 	
-	public List<Long> getIngestDates();
+	public List<Long> getIngestDates() throws Exception;
 	
-	public IngestLog readIngestLog(Long timestamp);
+	public IngestLog readIngestLog(Long timestamp) throws Exception;
 
 }

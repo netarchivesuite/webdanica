@@ -125,26 +125,30 @@ public class BlackListsResource implements ResourceAbstract {
 	        //Connection conn = null;
 	    
 	            //conn = environment.dataSource.getConnection();
-	            List<BlackList> blacklistList = environment.getConfig().getBlacklistDao().getLists(false);
-	            for (BlackList b: blacklistList) {
-	                sb.append("<tr>");
-	                sb.append("<td>");
-	                sb.append("<a href=\"");
-	                sb.append(Servlet.environment.getBlacklistPath());
-	                sb.append(b.getUid());
-	                sb.append("/\">");
-	                sb.append(b.getName());
-	                sb.append("</a>");
-	                sb.append("</td>");
-	                sb.append("<td>");
-	                sb.append(new Date(b.getLastUpdate()));
-	                sb.append("</td>");
-	                sb.append("<td>");
-	                sb.append(b.isActive()?"Ja": "Nej");
-	                sb.append("</td>");
-	                sb.append("</tr>\n");
-	            }
-	       
+	        // FIEME better handling
+            List<BlackList> blacklistList = null;
+            try {
+                blacklistList = environment.getConfig().getBlacklistDao().getLists(false);
+            } catch (Exception e) {
+            }
+            for (BlackList b: blacklistList) {
+                sb.append("<tr>");
+                sb.append("<td>");
+                sb.append("<a href=\"");
+                sb.append(Servlet.environment.getBlacklistPath());
+                sb.append(b.getUid());
+                sb.append("/\">");
+                sb.append(b.getName());
+                sb.append("</a>");
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(new Date(b.getLastUpdate()));
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(b.isActive()?"Ja": "Nej");
+                sb.append("</td>");
+                sb.append("</tr>\n");
+            }
 
 	        /*
 	         * Menu.

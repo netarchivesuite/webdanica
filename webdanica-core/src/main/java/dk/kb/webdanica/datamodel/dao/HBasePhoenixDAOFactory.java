@@ -8,39 +8,51 @@ import dk.kb.webdanica.datamodel.SeedsDAO;
 
 public class HBasePhoenixDAOFactory implements DAOFactory {
 
+	private BlackListDAO blacklistDao;
+
+	private CriteriaResultsDAO criteriaResultsDao;
+	
+	private HarvestDAO harvestDAO;
+	
+	private SeedsDAO seedDao;
+
+	private IngestLogDAO ingestLogDAO;
+
+	public HBasePhoenixDAOFactory() {
+	    blacklistDao = new HBasePhoenixBlackListDAO();
+	    criteriaResultsDao = new HBasePhoenixCriteriaResultsDAO();
+	    harvestDAO = new HBasePhoenixHarvestDAO();
+	    ingestLogDAO = new HBasePhoenixIngestLogDAO();
+		seedDao = new HBasePhoenixSeedsDAO();
+	}
+
 	@Override
 	public BlackListDAO getBlackListDAO() {
-		//return new HBasePhoenixBlackListDAO();
-		return null;
+		return blacklistDao;
 	}
 
 	@Override
 	public CriteriaResultsDAO getCriteriaResultsDAO() {
-		//return new HBasePhoenixCriteriaResultsDAO();
-		return null;
+		return criteriaResultsDao;
 	}
 
 	@Override
 	public HarvestDAO getHarvestDAO() {
-		//return new HBasePhoenixHarvestDAO();
-		return null;
+		return harvestDAO;
 	}
 
 	@Override
 	public IngestLogDAO getIngestLogDAO() {
-		//return new HBasePhoenixIngestLogDAO();
-		return null;
+		return ingestLogDAO;
 	}
 
 	@Override
 	public SeedsDAO getSeedsDAO() {
-		//return new HBasePhoenixSeedsDAO();
-		return null;
+		return seedDao;
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
 	}
 
 }

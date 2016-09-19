@@ -70,7 +70,7 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 	}
 
 	@Override
-	public void insertLog(IngestLog log){
+	public boolean insertLog(IngestLog log){
 		init();
 		Long insertedDate = System.currentTimeMillis();
 		if (log.getDate() != null) {
@@ -86,6 +86,7 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 		if (insertFailed){
 			System.out.println("Insert failed");
 		}
+		return !insertFailed;
 	}
 
 	@Override

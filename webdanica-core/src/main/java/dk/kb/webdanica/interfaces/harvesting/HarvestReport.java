@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -210,7 +209,7 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException, SQLException {
+	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws Exception {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		for (HarvestReport h: harvests) {
 			Set<String> errs = new HashSet<String>();

@@ -75,7 +75,7 @@ public class CassandraBlackListDAO implements BlackListDAO {
 		}
 	}
 	
-	public void insertList(BlackList aBlackList) { // generates a uid value when inserted
+	public boolean insertList(BlackList aBlackList) { // generates a uid value when inserted
 		init();
 		Long updated_time = System.currentTimeMillis();
 		
@@ -89,6 +89,7 @@ public class CassandraBlackListDAO implements BlackListDAO {
 		if (insertFailed){
 			System.out.println("Insert failed");
 		}
+		return !insertFailed;
 	}
 
 	public void deleteList(BlackList aBlackList) {

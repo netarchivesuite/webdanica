@@ -6,16 +6,16 @@ import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 
 public interface HarvestDAO {
 
-	HarvestReport getHarvest(String harvestName);
+	boolean insertHarvest(HarvestReport h) throws Exception;
 
-	boolean insertHarvest(HarvestReport h);
+	HarvestReport getHarvest(String harvestName) throws Exception;
 
-	List<HarvestReport> getAll();
+	List<HarvestReport> getAll() throws Exception;
+
+	List<HarvestReport> getAllWithSeedurl(String seed) throws Exception;
+
+	List<HarvestReport> getAllWithSuccessfulstate(boolean b) throws Exception;
 
 	void close();
-
-	List<HarvestReport> getAllWithSeedurl(String seed);
-
-	List<HarvestReport> getAllWithSuccessfulstate(boolean b);
 
 }

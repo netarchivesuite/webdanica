@@ -5,9 +5,11 @@ import java.util.UUID;
 
 public interface BlackListDAO {
 
-	BlackList readBlackList(UUID fromString);
+	boolean insertList(BlackList aBlackList) throws Exception;
 
-	List<BlackList> getLists(boolean b);
+	BlackList readBlackList(UUID fromString) throws Exception;
+
+	List<BlackList> getLists(boolean b) throws Exception;
 
 	//List<HarvestReport> getAll();
 
