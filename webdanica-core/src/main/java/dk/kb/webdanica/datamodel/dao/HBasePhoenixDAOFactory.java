@@ -19,6 +19,7 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	private IngestLogDAO ingestLogDAO;
 
 	public HBasePhoenixDAOFactory() {
+		HBasePhoenixConnectionManager.register();
 	    blacklistDao = new HBasePhoenixBlackListDAO();
 	    criteriaResultsDao = new HBasePhoenixCriteriaResultsDAO();
 	    harvestDAO = new HBasePhoenixHarvestDAO();

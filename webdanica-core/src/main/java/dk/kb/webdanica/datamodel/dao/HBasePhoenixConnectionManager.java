@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -36,10 +37,19 @@ public class HBasePhoenixConnectionManager {
 		}
 	}
 
-	protected static Map<Thread, Connection> threadConnectionMap = new TreeMap<Thread, Connection>();
+	protected static Map<Thread, Connection> threadConnectionMap = new TreeMap<Thread, Connection>(new Comparator<Thread>() {
+		@Override
+		public int compare(Thread o1, Thread o2) {
+			return o1.getId() == o2.getId() ? 0 : (o1.getId() > o2.getId() ? 1 : -1);
+		}
+	});
 
 	public static synchronized Connection getThreadLocalConnection() throws SQLException {
 		Connection conn = threadConnectionMap.get(Thread.currentThread());
+		if (conn != null && conn.isClosed()) {
+			threadConnectionMap.remove(Thread.currentThread());
+			conn = null;
+		}
 		if (conn == null) {
 			Properties connprops = new Properties();
 			conn = DriverManager.getConnection( "jdbc:phoenix:localhost", connprops );
