@@ -135,5 +135,11 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 		}
 		return retrievedLog;
 	}
+
+    @Override
+    public void close() {
+        // TODO Auto-generated method stub
+        
+    }
 	
 }

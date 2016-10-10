@@ -147,6 +147,12 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 			}
 		}
 		return blacklistList; 
-	}	
+	}
+
+    @Override
+    public void close() {
+        // TODO Auto-generated method stub
+        
+    }	
 
 }

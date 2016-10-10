@@ -10,4 +10,5 @@ public interface IngestLogDAO {
 	
 	public IngestLog readIngestLog(Long timestamp) throws Exception;
 
+	public void close();
 }

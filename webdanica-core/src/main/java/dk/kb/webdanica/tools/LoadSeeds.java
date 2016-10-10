@@ -12,12 +12,16 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.IngestLog;
+import dk.kb.webdanica.datamodel.IngestLogDAO;
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.URL_REJECT_REASON;
-import dk.kb.webdanica.datamodel.dao.CassandraIngestLogDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraSeedDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.utils.UrlUtils;
 
 /**
@@ -37,49 +41,57 @@ import dk.kb.webdanica.utils.UrlUtils;
  */
 public class LoadSeeds {
 
-	private File seedsfile;
+public static void main(String[] args) throws Exception {
+        
+        if (args.length != 1) {
+            System.err.println("Need seedsfile as argument");
+            System.exit(1);
+        }
+        File seedsfile = new File(args[0]);
+        if (!seedsfile.isFile()){
+            System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
+            System.exit(1);
+        }
+        
+        System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+        
+        System.out.println();
+        LoadSeeds loadseeds = new LoadSeeds(seedsfile);
+        loadseeds.writeAcceptLog = true;
+        loadseeds.writeRejectLog = true;
+        
+        IngestLog res = loadseeds.processSeeds();
+        System.out.println(res.getStatistics());
+        File acceptLog = loadseeds.getAcceptLog();
+        File rejectLog = loadseeds.getRejectLog();
+        System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
+        System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath()));   
+    }
+ 	private File seedsfile;
     private boolean writeAcceptLog = false;
     private boolean writeRejectLog = false;
 	private File rejectLog = null;
 	private File acceptLog = null;
 	private List<String> acceptedList = new ArrayList<String>();
+    private DAOFactory daoFactory;
 	
 	public LoadSeeds(File seedsfile) {
 	   this.seedsfile = seedsfile;
+	   final String DEFAULT_DATABASE_SYSTEM = "cassandra";
+	   String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
+       if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+           daoFactory = new CassandraDAOFactory();
+       } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+           daoFactory = new HBasePhoenixDAOFactory();
+       }
     }
-
-	public static void main(String[] args) {
-		
-		if (args.length != 1) {
-			System.err.println("Need seedsfile as argument");
-			System.exit(1);
-		}
-		File seedsfile = new File(args[0]);
-		if (!seedsfile.isFile()){
-			System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
-			System.exit(1);
-		}
-		
-		System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
-		
-		System.out.println();
-		LoadSeeds loadseeds = new LoadSeeds(seedsfile);
-		loadseeds.writeAcceptLog = true;
-		loadseeds.writeRejectLog = true;
-		
-		IngestLog res = loadseeds.processSeeds();
-		System.out.println(res.getStatistics());
-		File acceptLog = loadseeds.getAcceptLog();
-		File rejectLog = loadseeds.getRejectLog();
-		System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
-		System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath()));
-		
-	}
+	
 	/**
 	 * @return the ingestLog for the file just processed
+	 * @throws Exception 
 	 */
-	public IngestLog processSeeds() {
-		SeedsDAO dao = CassandraSeedDAO.getInstance();
+	public IngestLog processSeeds() throws Exception {
+		SeedsDAO dao = daoFactory.getSeedsDAO();
 		String line;
         long linecount=0L;
         long insertedcount=0L;
@@ -184,10 +196,10 @@ public class LoadSeeds {
 	    }
     }
 
-	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
-		CassandraIngestLogDAO dao = null;
+	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) throws Exception {
+		IngestLogDAO dao = null;
 		try {
-			dao = CassandraIngestLogDAO.getInstance();
+			dao = daoFactory.getIngestLogDAO();
 			IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
 			dao.insertLog(log);
 			return log;

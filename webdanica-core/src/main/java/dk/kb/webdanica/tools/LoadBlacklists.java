@@ -8,8 +8,14 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.BlackList;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.utils.SettingsUtilities;
 
 /**
  * Program to load blacklists into the webdanica database.
@@ -28,12 +34,20 @@ import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
 public class LoadBlacklists {
 
 	private File blacklistfile;
+    private DAOFactory daoFactory;
 	
 	public LoadBlacklists(File blacklistfile) {
 	   this.blacklistfile = blacklistfile;
+	   final String DEFAULT_DATABASE_SYSTEM = "cassandra";
+       String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
+       if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+           daoFactory = new CassandraDAOFactory();
+       } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+           daoFactory = new HBasePhoenixDAOFactory();
+       }
     }
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		if (args.length != 1) {
 			System.err.println("Need blacklist file as argument");
@@ -50,7 +64,7 @@ public class LoadBlacklists {
 		LoadBlacklists loadseeds = new LoadBlacklists(seedsfile);
 		loadseeds.insertList();
 		
-		CassandraBlackListDAO dao = CassandraBlackListDAO.getInstance();
+		BlackListDAO dao = getDao().getBlackListDAO();
 		System.out.println("Showing all existing blacklists:");
 		List<BlackList> allLists = dao.getLists(false);
 		for (BlackList b: allLists) {
@@ -63,6 +77,18 @@ public class LoadBlacklists {
 		}
 		dao.close();
 	}
+	    static DAOFactory getDao() {
+	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, "cassandra");
+	        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+	            return new CassandraDAOFactory();
+	        } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+	            return new HBasePhoenixDAOFactory();
+	        } else {
+	            return new CassandraDAOFactory();
+	        }
+	    }
+	
+	
 	
 	/**
 	 * 
