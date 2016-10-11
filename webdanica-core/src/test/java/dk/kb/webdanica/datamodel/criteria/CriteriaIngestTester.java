@@ -29,7 +29,6 @@ public class CriteriaIngestTester {
 	static final String COMBONOV_V5_RESULT = "output/COMBONOV-V5/1/part-m-00000";
 	static final String PARSED_TEXT_RESULT = "output/SEQ/431-35-20160317083714655-00000-sb-test-har-001.statsbiblioteket.dk.warc.gz";
 		
-	@Test
 	public void test() throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
 		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false );
