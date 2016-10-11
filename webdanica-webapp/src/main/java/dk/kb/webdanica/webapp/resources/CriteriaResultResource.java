@@ -19,10 +19,10 @@ import com.antiaction.common.templateengine.Template;
 import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
-import com.rometools.rome.io.impl.Base64;
 
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.criteria.Codes;
+import dk.kb.webdanica.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -285,7 +285,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        	String arguments = split[1];
 	            String[] argumentParts = arguments.split("/");
 	            if (argumentParts.length == 2) {
-	            	resultKeys = new CriteriaKeys(argumentParts[0], Base64.decode(argumentParts[1]));
+	            	resultKeys = new CriteriaKeys(argumentParts[0], CriteriaUtils.fromBase64(argumentParts[1]));
 	            	logger.info("Found Criteriakeys: " + resultKeys);
 	            } else {
 	            	logger.warning("Unable to find harvestname and url from pathinfo: " + pathInfo);

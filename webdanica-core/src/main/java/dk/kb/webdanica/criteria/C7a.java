@@ -1,6 +1,8 @@
 package dk.kb.webdanica.criteria;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.pig.EvalFunc;
@@ -28,5 +30,13 @@ public class C7a extends EvalFunc<String>{
     public static Set<String> computeC7a(String text) {
         return TextUtils.SearchPattern(text, 
                 Words.danishMajorCities);
-    }    
+    }
+    
+    public static Set<String> computeC7aOnCasedTokens(Set<String> tokens) {
+            Set<String> words = WordsArrayGenerator.getCityNames(); 
+            tokens.retainAll(words);
+            return tokens; 
+    }
+    
+    
 }

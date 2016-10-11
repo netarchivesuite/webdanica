@@ -54,6 +54,8 @@ public class CriteriaIngest {
 		//runTest2();
 		System.exit(0);
 	}
+	
+	
 	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";

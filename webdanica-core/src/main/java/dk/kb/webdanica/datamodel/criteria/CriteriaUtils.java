@@ -1,16 +1,17 @@
 package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.utils.TextUtils;
+
 import org.jwat.common.Base64;
 
 public class CriteriaUtils {
@@ -223,7 +224,12 @@ public class CriteriaUtils {
 		return Base64.encodeString(text);
     }
 	
-	public static String fromBase64(String text) throws IOException {
+	public static String fromBase64(String text) {
 		return Base64.decodeToString(text, false);
+    }
+
+	public static Date getHeritrixDateFormat() {
+	    // TODO Auto-generated method stub
+	    return null;
     }
 }

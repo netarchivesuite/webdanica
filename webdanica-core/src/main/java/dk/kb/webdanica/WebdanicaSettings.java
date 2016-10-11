@@ -21,6 +21,7 @@ public class WebdanicaSettings {
 	public static String HARVESTING_PREFIX = "settings.harvesting.prefix";
 	public static String HARVESTING_MAX_BYTES = "settings.harvesting.maxbytes";
 	public static String HARVESTING_MAX_OBJECTS = "settings.harvesting.maxobjects";
+	public static String HARVESTING_MAX_HARVESTS = "settings.harvesting.maxharvests";
 
 	
 	/** webapp settings */
@@ -28,6 +29,9 @@ public class WebdanicaSettings {
 	public static String WEBAPP_RESOURCE_PATH = "settings.webapp.resources.resource.path";
 	public static String WEBAPP_RESOURCE_SECURED = "settings.webapp.resources.resource.secured";
 	public static String WEBAPP_DEFAULT_SECURED_SETTING = "settings.webapp.resources.defaultsecuredsetting";
+	
+	/** Pig related settings */
+	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";
 	
 }
 

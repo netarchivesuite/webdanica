@@ -2,9 +2,14 @@ package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
 
 
 public class SingleCriteriaResult {
@@ -25,6 +30,18 @@ public class SingleCriteriaResult {
 		"C17a",
 		"C18a"
 	};
+
+	private static Object CRITERIA_CEXT1;
+
+	private static Object CRITERIA_CEXT2;
+
+	private static Object CRITERIA_CEXT3;
+
+	private static Object CRITERIA_URL;
+
+	private static Object CRITERIA_CTEXT;
+
+	private static Object CRITERIA_CLINKS;
 	
     public String url;
     public String urlOrig; //only set if != url
@@ -65,18 +82,23 @@ public class SingleCriteriaResult {
     public SingleCriteriaResult(String trimmedLine, String harvestName, String seedurl) {
     	this.harvestName = harvestName;
     	this.seedurl = seedurl;
+    	
+    	/*
     	String[] resultParts = trimmedLine.split(",");   
     	for (String resultPart: resultParts) {
     		String trimmedResultPart = resultPart.trim();
     		//System.out.println(trimmedResultPart);
     		parseString(trimmedResultPart); // Assigns Values to criteria
     	}
+    	*/
+    	parseJson(trimmedLine, this);
+    	
     	/*** url hack in order to have PK size < 1000 bytes ***/
     	if (url.length() > 900) {
     		urlOrig = url;
     		url = url.substring(0, 900); // TODO should not be necessary
     	} else {
-    		urlOrig =""; //only set if != url
+    		urlOrig = ""; //only set if != url
     	}
     	
     	/*** date/time hack in order to have efficient PK ***/
@@ -84,10 +106,49 @@ public class SingleCriteriaResult {
     		System.err.println("no date for url: " + url + " --- got: " + Cext3Orig);
     	}
     	
-    	//Cext3 = findDateFromString(Cext3Orig);
+    	Cext3 = findDateFromString(Cext3Orig);
     }
     
-    /**
+    private Long findDateFromString(String cext3Orig2) {
+    	Date readDate = null;
+    	try {
+    		readDate = DateConverter.getHeritrixDateFormat().parse(cext3Orig2);
+    	} catch (java.text.ParseException e) {
+    		return new Long(0L);
+    	}
+	    return readDate.getTime();
+
+    }
+	public static void parseJson(String trimmedLine, SingleCriteriaResult result) {
+    	JSONObject o = new JSONObject(trimmedLine);
+		Iterator i = o.keys();
+		List<String> CriteriaList = Arrays.asList(StringCriteria);
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			if (CriteriaList.contains(key)) {
+				result.C.put(key, (String) o.get(key));
+			} else if (key.equals(CRITERIA_CEXT1)){
+				result.Cext1 = Long.valueOf((String) o.get(key));
+			} else if (key.equals(CRITERIA_CEXT2)) {
+				result.Cext2 = Long.valueOf((String) o.get(key));
+			} else if (key.equals(CRITERIA_CEXT3)) {
+				result.Cext3Orig = (String) o.get(key);
+			} else if (key.equals(CRITERIA_URL)) {
+				String value = (String) o.get(key);
+				result.url = CriteriaUtils.fromBase64(value);
+			} else if (key.equals(CRITERIA_CTEXT)) {
+				String value = (String) o.get(key);
+				result.CText = CriteriaUtils.fromBase64(value);
+			} else if (key.equals(CRITERIA_CLINKS)) {
+				String value = CriteriaUtils.fromBase64((String) o.get(key));
+				result.CLinks = splitLinks(value);
+			} else {
+				System.err.println("Ignoring key '" +  key + "' with value: " + (String) o.get(key));
+			}
+		}
+    }
+		
+	/**
      * Default constructor.
      */
     public SingleCriteriaResult() {
@@ -97,7 +158,6 @@ public class SingleCriteriaResult {
         Cext2 =0L;
         Cext3Orig="20140901000000"; //date //FIXME shouldn't this changed
         //Cext3 = findDateFromString(Cext3Orig);
-        C = new HashMap<String,String>();
         for (String criteria: StringCriteria) {
         	C.put(criteria, "");
         }
@@ -109,131 +169,9 @@ public class SingleCriteriaResult {
         harvestName = "";
     }
 
-    /** Parse a criteria for a single url. 
-     * 
-     * @param trimmedResultPart
-     * @param ingestMode
-     */
-    private void parseString(String trimmedResultPart) {
-    	//There may be ',' in URL, therefore unexpected text will be part of Url
-    	//Although a criteria cannot be part of an URL
-        if (trimmedResultPart.startsWith("http")) {
-        	this.url = trimmedResultPart;
-        }
-        else if (trimmedResultPart.startsWith("C")) 
-    {
-            String[] valueparts = trimmedResultPart.split(":");
-            if (valueparts.length > 1) {
-            	String criteriaContent = valueparts[1].trim();
-                if (trimmedResultPart.startsWith("Cext1")) {
-                    this.Cext1 = Long.parseLong(criteriaContent);
-                } else if (trimmedResultPart.startsWith("Cext2")) {
-                    this.Cext2 = Long.parseLong(criteriaContent);
-                } else if (trimmedResultPart.startsWith("Cext3")) {
-                    this.Cext3Orig = criteriaContent;
-                    System.out.println("Date: " + this.Cext3Orig);
-                } else if (trimmedResultPart.startsWith("C4a")) {
-                    C.put("C4a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C4b")) {
-                	C.put("C4b", trimmedResultPart.split("C4b:")[1].trim());  
-                	System.out.println("C4b: " + C.get("C4b"));
-                } else if (trimmedResultPart.startsWith("C1a")) {
-                	C.put("C1a",criteriaContent);
-                } else if (trimmedResultPart.startsWith("C2a")) {
-                	C.put("C2a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C2b")) {
-                	C.put("C2b", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C3a")) {
-                	C.put("C3a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C3b")) {
-                	C.put("C3b",criteriaContent);
-                } else if (trimmedResultPart.startsWith("C3c")) {
-                	C.put("C3c", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C3d")) {
-                	C.put("C3d", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C3g")) {
-                	C.put("C3g", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C5a")) {
-                	C.put("C5a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C5b")) {
-                	C.put("C5b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C6a")) {
-                	C.put("C6a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C6b")) {
-                	C.put("C6b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C6c")) {
-                	C.put("C6c", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C6d")) {
-                	C.put("C6d", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C7a")) {
-                	C.put("C7a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7b")) {
-                	C.put("C7b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7c")) {
-                	C.put("C7c", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7d")) {
-                	C.put("C7d", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7e")) {
-                	C.put("C7e", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7f")) {
-                	C.put("C7f", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C7g")) {
-                	C.put("C7g", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C7h")) {
-                	C.put("C7h", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C8a")) {
-                	C.put("C8a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C8b")) {
-                	C.put("C8b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C8c")) {
-                	C.put("C8c", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C9a")) {
-                	C.put("C9a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C9b")) {
-                	C.put("C9b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C9c")) {
-                	C.put("C9c", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C9d")) {
-                	C.put("C9d", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C9e")) {
-                	C.put("C9e", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C9f")) {
-                	C.put("C9f", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C10a")) {
-                	C.put("C10a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C10b")) {
-                	C.put("C10b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C10c")) {
-                	C.put("C10c", criteriaContent); 				
-                } else if (trimmedResultPart.startsWith("C15a")) {
-                	C.put("C15a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C15b")) {
-                	C.put("C15b", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C16a")) {
-                	C.put("C16a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C17a")) {
-                	C.put("C17a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("C18a")) {
-                	C.put("C18a", criteriaContent);
-                } else if (trimmedResultPart.startsWith("CText")) {
-                	this.CText = criteriaContent;
-                } else if (trimmedResultPart.startsWith("CLinks")) {
-                	this.CLinks = splitLinks(criteriaContent);
-                } else {
-                	//not abbr. for criteria thus it is not a criteria, and therefore must be part of Url
-                	this.url = this.url + "," + trimmedResultPart.trim();
-                }
-            } else {
-            	//no ":" thus it is not a criteria, and therefore must be part of Url
-            	this.url = this.url + "," + trimmedResultPart.trim();
-            }
-        } else {
-            //System.out.println("Starts not with c: " + trimmedResultPart);
-        	this.url = this.url + "," + trimmedResultPart.trim();
-        }   
-    }
     
-    private List<String> splitLinks(String criteriaContent) {
+     
+    private static List<String> splitLinks(String criteriaContent) {
     	List<String> linkSet = new ArrayList<String>();
 		String[] resultParts = criteriaContent.split("##");
 		for (String link: resultParts) {
@@ -241,6 +179,7 @@ public class SingleCriteriaResult {
 		}	
 		return linkSet;
     }
+    /*
 	public static java.sql.Timestamp findDateFromString(String dateString) {
     	java.sql.Timestamp t;
     	t = java.sql.Timestamp.valueOf(//yyyy-[m]m-[d]d hh:mm:ss 
@@ -252,7 +191,8 @@ public class SingleCriteriaResult {
         		+ dateString.substring(12, 14)
         ); 
     	return t;
-    }
+    } */
+    
     /**
      *  A sort of toString method for this class
      *  

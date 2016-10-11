@@ -3,6 +3,7 @@ package dk.kb.webdanica.datamodel;
 import java.util.List;
 
 public interface SeedDAO {
+	List<Seed> getSeeds(Status fromOrdinal, int limit);
 
 	List<Seed> getSeeds(Status fromOrdinal);
 

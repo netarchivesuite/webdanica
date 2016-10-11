@@ -39,9 +39,10 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	private ResolveRedirects resolveRedirects;
 
 	private Configuration configuration;
+	
     /**
-     * Constructor for the NAS thread worker object.
-     * @param environment DAB environment object
+     * Constructor for the Filter thread worker object.
+     * @param environment The Webdanica webapp environment object
      */
     public FilterWorkThread(Environment environment, String threadName) {
         this.environment = environment;

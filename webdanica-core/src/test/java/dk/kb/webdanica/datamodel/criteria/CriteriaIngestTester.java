@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel;
+package dk.kb.webdanica.datamodel.criteria;
 
 import static dk.kb.webdanica.utils.UnitTestUtils.getTestResourceFile;
 

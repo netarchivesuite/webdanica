@@ -25,6 +25,8 @@ public class CassandraSeedDAO implements SeedDAO {
 	private PreparedStatement preparedInsert;
 	
 	private PreparedStatement readAllWithStatestatement;
+	
+	private PreparedStatement readAllWithStateAndLimitstatement;
 
 	private PreparedStatement preparedUpdateState;
 	
@@ -45,6 +47,19 @@ public class CassandraSeedDAO implements SeedDAO {
 		CassandraSettings settings = CassandraSettings.getDefaultSettings();
 		db = new Cassandra(settings);
 	}
+	
+	public List<Seed> getSeeds(Status status, int limit) {
+		init();
+		BoundStatement bStatement = readAllWithStateAndLimitstatement.bind(status.ordinal(), limit);
+		ResultSet results = session.execute(bStatement);
+		List<Seed> seedList = new ArrayList<Seed>();
+		
+		for (Row row: results.all()) {
+			Seed s = getSeedFromRow(row);
+			seedList.add(s);
+		}
+		return seedList; 
+	}	
 	
 	public List<Seed> getSeeds(Status status) {
 		init();
@@ -105,6 +120,10 @@ public class CassandraSeedDAO implements SeedDAO {
 		if (readAllWithStatestatement == null || newSession) {
 			readAllWithStatestatement = session.prepare("SELECT * FROM seeds WHERE status=?");
 		}
+		if (readAllWithStateAndLimitstatement == null || newSession) {
+			readAllWithStateAndLimitstatement = session.prepare("SELECT * FROM seeds WHERE status=? LIMIT ?");
+		}
+		
 		if (getSeedsCountStatement == null || newSession) {
 			getSeedsCountStatement = session.prepare("SELECT count(*) FROM seeds WHERE status=?");
 		}
