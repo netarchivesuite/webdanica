@@ -90,7 +90,7 @@ public static void main(String[] args) throws Exception {
 	 * @return the ingestLog for the file just processed
 	 * @throws Exception 
 	 */
-	public IngestLog processSeeds() throws Exception {
+	public IngestLog processSeeds() {
 		SeedsDAO dao = daoFactory.getSeedsDAO();
 		String line;
         long linecount=0L;
@@ -109,19 +109,28 @@ public static void main(String[] args) throws Exception {
 	         
 	            linecount++;
 	            URL_REJECT_REASON rejectreason = UrlUtils.isRejectableURL(trimmedLine);
+	            String errMsg = "";
 	            if (rejectreason == URL_REJECT_REASON.NONE) {
 	            	Seed singleSeed = new Seed(trimmedLine);
-	            	boolean inserted = dao.insertSeed(singleSeed);
-	            	if (!inserted) { // assume duplicate url 
+	            	boolean inserted = false;
+	            	boolean isError = false;
+	            	try {
+	            	    inserted = dao.insertSeed(singleSeed);
+	            	} catch (Throwable e) {
+	            	    rejectreason = URL_REJECT_REASON.BAD_URL;
+	            	    errMsg = "Insertion of url failed: " + e.toString();
+	            	}
+	            	
+	            	if (!inserted && !isError) { // assume duplicate url 
 	            		rejectreason = URL_REJECT_REASON.DUPLICATE;
 	            		duplicatecount++;
-	            	} else {
+	            	} else if(inserted) { 
 	            		insertedcount++;
 	            		acceptedList.add(trimmedLine);
 	            	}
 	            }
 	            if (rejectreason != URL_REJECT_REASON.NONE) {
-	            	logentries.add(rejectreason + ": " + trimmedLine);
+	            	logentries.add(rejectreason + ": " + trimmedLine + " " + errMsg);
 	            	rejectedcount++;
 	            }
 	            
@@ -183,7 +192,13 @@ public static void main(String[] args) throws Exception {
         	dao.close();
         }
         
-	    IngestLog logresult = logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount); 
+	    IngestLog logresult = null;
+        try {
+            logresult = logIngestStats(logentries, linecount, insertedcount, rejectedcount, duplicatecount);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 
 	    return logresult;
 	}
 

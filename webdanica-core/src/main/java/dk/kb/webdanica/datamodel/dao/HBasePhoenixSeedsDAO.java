@@ -17,14 +17,23 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
 	private static final String INSERT_SQL;
 
+	private static final String EXISTS_SQL;
+	
 	static {
 		INSERT_SQL = ""
 				+ "UPSERT INTO seeds (url, status, inserted_time) "
 				+ "VALUES (?,?,?) ";
+		EXISTS_SQL = ""
+		        + "SELECT count(*) "
+                + "FROM seeds "
+                + "WHERE url=? ";	
 	}
 
 	@Override
 	public boolean insertSeed(Seed singleSeed) throws Exception {
+	    if (existsUrl(singleSeed.getUrl())) {
+	        return false;
+	    }
 		PreparedStatement stm = null;
 		int res = 0;
 		try {
@@ -45,6 +54,31 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		return res != 0;
 	}
 
+	public boolean existsUrl(String url) throws Exception {
+	    PreparedStatement stm = null;
+        ResultSet rs = null;
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(EXISTS_SQL);
+            stm.clearParameters();
+            stm.setString(1, url);
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+        return res != 0L;
+	}
+	
+	
 	private static final String UPDATE_STATUS_SQL;
 
 	static {
