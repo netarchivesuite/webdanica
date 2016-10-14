@@ -1,4 +1,4 @@
-package dk.kb.webdanica.datamodel.harvest;
+package dk.kb.webdanica.datamodel;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.parser.ParseException;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -18,7 +19,6 @@ import com.datastax.driver.core.Session;
 import dk.kb.webdanica.datamodel.Cassandra;
 import dk.kb.webdanica.datamodel.CassandraSettings;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.SeedDAO;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
@@ -88,7 +88,7 @@ import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
  */
 public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	
-	public static void main(String[] args) throws IOException, SQLException {
+	public static void main(String[] args) throws IOException, SQLException, ParseException {
 		CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
 		
 		dao.deleteRecordsByHarvestname("harvestName"); // delete existing records from database
@@ -146,8 +146,11 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	 */
 	public boolean insertRecord(SingleCriteriaResult singleAnalysis) {
 		SingleCriteriaResult s = singleAnalysis;
+		if (s.seedurl.isEmpty() || s.harvestName.isEmpty()) {	
+			System.err.println("One of seedurl, harvestName is empty: " + s.getValuesInString(",", ":"));
+			return false;
+		}
 		init();	
-		//s.C ,
 		Date insertedDate = new Date();
 		BoundStatement bound = preparedInsert.bind(
 				s.url, s.urlOrig, s.seedurl, s.harvestName, s.Cext1, s.Cext2, s.Cext3, // 1-7 
@@ -242,7 +245,7 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 		s.intDanish = row.getFloat("intDanish");
 	    s.source = DataSource.fromOrdinal(row.getInt("source"));
 	    s.calcDanishCode = row.getInt("calcDanishCode");
-	    s.CText = row.getString("CText");
+	    s.setCText(row.getString("CText"));
 	    s.CLinks = row.getList("CLinks", String.class);
 		s.insertedDate = row.getLong("inserted_time");
 		s.updatedDate = row.getLong("updated_time");

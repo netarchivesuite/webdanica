@@ -1,5 +1,6 @@
 package dk.kb.webdanica.criteria;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 import org.json.simple.JSONObject;
 
+import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.utils.Constants;
 import dk.kb.webdanica.utils.TextUtils;
@@ -83,7 +85,7 @@ import dk.kb.webdanica.utils.TextUtils;
  * C10c
  * 
  */
-public class CombinedComboJson extends EvalFunc<String> {
+public class CombinedComboJsonAlt extends EvalFunc<String> {
 	@SuppressWarnings("unchecked")
     @Override
 	public String exec(Tuple input) throws IOException {
@@ -99,20 +101,43 @@ public class CombinedComboJson extends EvalFunc<String> {
 		DataBag links = (DataBag)(input.get(3));
 		String hostname = (String) input.get(4);
 		boolean debugMode = false;
-		if (input.size() == 6) {
+		if (input.size() > 5) {
 			debugMode = (Boolean) input.get(5);
 		}
+		String cityfilePathAsArg = null;
+		if (input.size() == 7) {
+			cityfilePathAsArg = (String) input.get(6); 
+		}
+		
 		Set<String> tokens = TextUtils.tokenizeText(text);
+		Set<String> tokensUncased = TextUtils.tokenizeText(textNormal);
+		
 		int Cext2 = 0;
-
+		
+		StringBuilder errorSb = new StringBuilder();
+		
 		//calc Cext1 '- Size of web-page'
-		int Cext1 =  text.length();
-
+		int Cext1 = text.length();
+		String cityfilePath = null;
+		if (cityfilePathAsArg == null) {
+			cityfilePath = getCityfilePath(errorSb);
+		} else {
+			cityfilePath = cityfilePathAsArg;
+		}
+		File cityFile = null;
+		boolean useStandardC7ATest = true;
+		if (cityfilePath != null) {
+			cityFile = new File(cityfilePath);
+			if (cityFile.isFile()) {
+				useStandardC7ATest = false;
+			} else {
+				errorSb.append("The given file '" +  cityFile.getAbsolutePath() + "' does not exist. Reverting to old test");
+			}
+		}
 		JSONObject object = new JSONObject();
 		object.put("url", CriteriaUtils.toBase64(url));
 		object.put("Cext1", Cext1 + "");
 		object.put("Cext3", timestamp);
-		//array.add(object);
 
 		//result.append(url + ", Cext1:" + Cext1);
 		//result.append(", Cext3:" + timestamp);
@@ -193,7 +218,13 @@ public class CombinedComboJson extends EvalFunc<String> {
 				
 				
 				//Calc C7a         'towns in htm (input: lowercase tezt)
-				Set<String> C7amatches = C7a.computeC7a(text);
+				Set<String> C7amatches = null;
+				if (useStandardC7ATest) {
+					C7amatches = C7a.computeC7a(text);
+				} else {
+					C7amatches = C7a.computeC7aOnCasedTokens(copyTokens(tokensUncased), cityFile, errorSb);
+				}
+				
 				addResultForCriterie(object, "C7a", C7amatches);
 				//Calc C7b         'towns in url (input: lowercase url)
 				Set<String> C7bmatches = C7b.computeC7b(urlLower);
@@ -267,13 +298,16 @@ public class CombinedComboJson extends EvalFunc<String> {
 				if (debugMode) {
 					String ctext = CriteriaUtils.toBase64(text);
 					if (ctext == null) {
-						object.put("CError", "Error: Unable to convert text of size " + text.length() 
+						errorSb.append("Error: Unable to convert text of size " + text.length() 
 								+ " to base64");
 					} 
 					object.put("CText", ctext + "");
 					String clinks = TextUtils.conjoin("##", C17.getLinks(links));
 					object.put("CLinks", CriteriaUtils.toBase64(clinks));
 				}
+			}
+			if (!errorSb.toString().isEmpty()) {
+				object.put("CError", errorSb.toString());
 			}
 		}
 		return object.toJSONString();
@@ -299,6 +333,15 @@ public class CombinedComboJson extends EvalFunc<String> {
 		res.addAll(tokens);
 		return res;
 	}
-    
+	
+	private String getCityfilePath(StringBuilder error) {
+		try {
+			String citynamesFilePath = dk.kb.webdanica.utils.Settings.get(WebdanicaSettings.PIG_CITYNAMES_FILEPATH);
+			return citynamesFilePath;
+		} catch (Throwable e) {
+			error.append("Unable to retrieve Cityfilepath: " + e);
+		}
+		return null;
+	}
 }
 

@@ -386,9 +386,9 @@ public class Environment {
 		filterThread.start();
 		
 		harvesterThread = new HarvestWorkThread(this, "Harvest worker");
+		harvesterThread.start();
 		
-		
-		workthreads = new WorkThreadAbstract[]{workflow,filterThread};
+		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread};
 		
 		/*
         monitoring = new MonitoringWorkThread(this, "Monitoring");
@@ -444,11 +444,19 @@ public class Environment {
 		if (filterThread != null) {
 			filterThread.stop();
 		}
+		
+		if (harvesterThread != null) {
+			harvesterThread.stop();
+		}
+		
 		if (workflow != null) {
             workflow.stop();
         }
-	
+		
+		
+		
 		// Closing down working threads
+		
 		while (workflow.bRunning || filterThread.bRunning || harvesterThread.bRunning) {
 			String threads = (
 					//monitoring.bRunning? " Monitoring": "") + 

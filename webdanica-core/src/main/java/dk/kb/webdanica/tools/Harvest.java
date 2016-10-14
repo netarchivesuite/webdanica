@@ -89,7 +89,7 @@ public class Harvest {
 				results.add(result);
 			} else {
 				String errMsg = "No harvesting done. The argument '" + argument + "' is not a valid url";
-				System.out.println(errMsg);
+				System.err.println(errMsg);
 				SingleSeedHarvest s = SingleSeedHarvest.getErrorObject(argument, errMsg, null);
 	        	results.add(s);
 			}

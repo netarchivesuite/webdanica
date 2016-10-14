@@ -149,7 +149,7 @@ public class SingleSeedHarvest {
 		return this.seed;
 	}
 	
-	public String getHarvestName() {
+	public String getHarvestName() {  // TODO This should never be null
 		return this.evName;
 	}
 	

@@ -10,7 +10,7 @@ import dk.kb.webdanica.datamodel.CassandraSeedDAO;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.HarvestDAO;
 import dk.kb.webdanica.datamodel.SeedDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 
 public class Configuration {

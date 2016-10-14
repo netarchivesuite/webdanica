@@ -39,6 +39,12 @@
     <artifactId>json-simple</artifactId>
    <version>1.1.1</version>
   </dependency>
+         <dependency>
+        <groupId>com.antiaction</groupId>
+        <artifactId>common-json</artifactId>
+        <version>0.7.0-SNAPSHOT</version>
+      </dependency>
+
     <dependency>
       <groupId>org.apache.pig</groupId>
       <artifactId>pig</artifactId>

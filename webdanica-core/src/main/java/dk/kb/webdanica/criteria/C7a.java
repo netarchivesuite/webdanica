@@ -1,8 +1,8 @@
 package dk.kb.webdanica.criteria;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.pig.EvalFunc;
@@ -32,11 +32,17 @@ public class C7a extends EvalFunc<String>{
                 Words.danishMajorCities);
     }
     
-    public static Set<String> computeC7aOnCasedTokens(Set<String> tokens) {
-            Set<String> words = WordsArrayGenerator.getCityNames(); 
-            tokens.retainAll(words);
-            return tokens; 
+    public static Set<String> computeC7aOnCasedTokens(Set<String> tokens, File cityFile, StringBuilder error){
+    	Set<String> emptyResultset = new HashSet<String>();
+    	Set<String> words;
+        try {
+	        words = WordsArrayGenerator.generateWordSetFromFile(cityFile, "UTF-16", "\t", true, false);
+	        tokens.retainAll(words);
+        } catch (IOException e) {
+        	error.append("Error during computeC7aOnCasedToken: " + e);
+        	return emptyResultset;
+        }
+    	
+    	return tokens; 
     }
-    
-    
 }

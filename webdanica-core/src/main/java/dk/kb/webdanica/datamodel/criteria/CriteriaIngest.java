@@ -3,17 +3,18 @@ package dk.kb.webdanica.datamodel.criteria;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.simple.parser.ParseException;
+
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.HarvestDAO;
-import dk.kb.webdanica.datamodel.harvest.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
@@ -26,37 +27,7 @@ import dk.kb.webdanica.utils.TextUtils;
  */
 public class CriteriaIngest {
 	
-	public static void main(String[] args) throws IOException, SQLException {
-		//File f = new File("/home/test/criteria-results/03-08-2016-1470237223/68-55-20160803110922385-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
-		//System.out.println(isGzippedFile(f));
-		
-		// Read a harvestlog, and look for the associated criteria-results in the criteria-results folder. 
-		// a parameter: get all, get the latest
-
-		// TEST2: Nyt sample fra fredag d. 
-		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
-		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		File HarvestLogTest1 = new File(basedir, "harvestlog-1470674884515.txt");
-		File HarvestLogTest2 = new File(basedir, "test_danica_urls.txt.harvestlog");
-		File HarvestLogTest3 = new File(basedir, "test_non_danica_urls.txt.harvestlog");
-		
-		//doTest(HarvestLogTest1, baseCriteriaDir, true);
-		//doTest(HarvestLogTest2, baseCriteriaDir, true);
-		//doTest(HarvestLogTest3, baseCriteriaDir, true);
-		File basedir1 = new File("/home/svc/devel/webdanica/criteria-test-23-08-2016");
-		File baseCriteriaDir1 = new File(basedir1, "23-08-2016-1471968184");
-		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt"); 
-		ingest(HarvestLogTest4, baseCriteriaDir1,false);
-
-		//runTest3();
-		
-		//runTest1();
-		//runTest2();
-		System.exit(0);
-	}
-	
-	
-	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws IOException, ParseException {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
@@ -85,30 +56,6 @@ public class CriteriaIngest {
 	    return harvestLogReport;
     }
 
-	private static void runTest3() throws IOException, SQLException{
-		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
-		String harvestLogName = "harvestlog-1470674884515.txt";
-		File HarvestLog = new File(basedir, harvestLogName);
-		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		ingest(HarvestLog, baseCriteriaDir, false);
-	}
-
-	private static void runTest2() throws IOException, SQLException { 
-			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
-			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
-			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
-			ingest(HarvestLog, baseCriteriaDir,false);
-    }
-
-	private static void runTest1() throws IOException, SQLException {
-		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
-		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
-		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		ingest(danicaHarvestLog, baseCriteriaDir, false);
-		ingest(notdanicaHarvestLog, baseCriteriaDir, false);	
-	}
-
-
 	/**
 	 * 
 	 * @param ingestFile
@@ -118,9 +65,10 @@ public class CriteriaIngest {
 	 *  
 	 * @return ProcessResult
 	 * @throws IOException
+	 * @throws ParseException 
 	
 	 */
-	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws IOException {
+	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws IOException, ParseException {
 		return process(ingestFile, seed, harvestName, addToDatabase);
 	}
 	
@@ -133,9 +81,10 @@ public class CriteriaIngest {
 	 * @param addToDatabase 
 	 * @return ProcessResult object
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
 	public static ProcessResult process(File ingestFile, String seed, String harvestName, 
-				boolean addToDatabase) throws IOException {
+				boolean addToDatabase) throws IOException, ParseException {
 		long linecount=0L;
 		long skippedCount=0L;
 		long ignoredCount=0L;

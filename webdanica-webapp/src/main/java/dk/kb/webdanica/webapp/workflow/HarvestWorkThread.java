@@ -59,7 +59,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
    		List<Seed> seedsReadyForHarvesting = seeddao.getSeeds(Status.READY_FOR_HARVESTING, 10); // Only take 10 at a time 
    		enqueue(seedsReadyForHarvesting);
    		if (seedsReadyForHarvesting.size() > 0) {
-   			logger.log(Level.INFO, "Found '" + seedsReadyForHarvesting.size() + "' seeds ready for harvesting");
+   			//logger.log(Level.INFO, "Found '" + seedsReadyForHarvesting.size() + "' seeds ready for harvesting");
    		}
            try {
                synchronized (queueList) {
@@ -74,7 +74,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                    queueList.clear();
                }
            	if (workList.size() > 0) {
-                   logger.log(Level.INFO, "Harvest queue: " + workList.size());
+                   //logger.log(Level.INFO, "Harvest queue: " + workList.size());
                    lastWorkRun = System.currentTimeMillis();
                    //harvest(workList); // implement this method 
                    startProgress(workList.size());

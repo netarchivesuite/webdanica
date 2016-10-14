@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.ProcessResult;
@@ -245,7 +246,7 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException {
+	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws IOException, ParseException {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		for (HarvestReport h: harvests) {
 			Set<String> errs = new HashSet<String>();
@@ -301,7 +302,11 @@ public class HarvestReport {
 				return name.startsWith("part-m-");
 			}
 		});
-	    return Arrays.asList(parts);
+		if (parts != null) {
+			return Arrays.asList(parts);
+		} else {
+			return Arrays.asList(new String[]{});
+		}
     }
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

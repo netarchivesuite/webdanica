@@ -169,7 +169,7 @@ public class CriteriaUtils {
 	            Words.frequentwordsWithDanishLettersCodedNew);
 	} */   
 
-	public static boolean getBoleanSetting(String string) {
+	public static boolean getBooleanSetting(String string) {
 	    String[] parts = string.split("=");
 	    if (parts[1].equalsIgnoreCase("true")) {
 	        return true;
@@ -220,16 +220,36 @@ public class CriteriaUtils {
 		return s;
 	}
 
-	public static String toBase64(String text) throws UnsupportedEncodingException {
-		return Base64.encodeString(text);
+	/**
+	 * @param text A given sample of text to convert to base64
+	 * @return the given text in Base64 encoding after first retrieving the bytes of the given String.
+	 */
+	public static String toBase64(String text) {
+		byte[] in = text.getBytes();
+		return Base64.encodeArray(in);
     }
 	
 	public static String fromBase64(String text) {
-		return Base64.decodeToString(text, false);
+		byte[] bytes = Base64.decodeToArray(text, false);
+		try {
+	        return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		return null;
     }
 
-	public static Date getHeritrixDateFormat() {
-	    // TODO Auto-generated method stub
-	    return null;
+	
+	public static Long findDateFromString(String cext3Orig) {
+    	Date readDate = null;
+    	try {
+    		readDate = DateConverter.getArcDateFormat().parse(cext3Orig);
+    	} catch (java.text.ParseException e) {
+    		e.printStackTrace();
+    		return new Long(0L);
+    	}
+	    return readDate.getTime();
     }
+	
 }

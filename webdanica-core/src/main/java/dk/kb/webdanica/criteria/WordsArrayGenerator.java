@@ -19,8 +19,6 @@ import dk.netarkivet.common.utils.Settings;
 
 public class WordsArrayGenerator {
 
-    private static Set<String> cityNames;
-
 	/**
      * Program for generating String arrays from files. Assumes one entry pr line. 
      * @param args Not used
@@ -80,12 +78,6 @@ public class WordsArrayGenerator {
         }
         return resultSet;
     }
-
-	public synchronized static Set<String> getCityNames() {
-	    if (cityNames == null) {
-	    	Settings.get(WebdanicaSettings.PIG_CITYNAMES_FILEPATH);
-	    }
-	    return null;
-    }    
+    
 }
 

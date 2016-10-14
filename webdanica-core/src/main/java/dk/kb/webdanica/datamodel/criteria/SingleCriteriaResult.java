@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.json.JSONObject;
+import org.json.simple.parser.*;
+
+import dk.kb.webdanica.exceptions.WebdanicaException;
 
 
 public class SingleCriteriaResult {
@@ -31,24 +33,26 @@ public class SingleCriteriaResult {
 		"C18a"
 	};
 
-	private static Object CRITERIA_CEXT1;
+	private static final String CRITERIA_CEXT1 = "Cext1";
 
-	private static Object CRITERIA_CEXT2;
+	private static final String CRITERIA_CEXT2 = "Cext2";
 
-	private static Object CRITERIA_CEXT3;
+	private static final String CRITERIA_CEXT3 = "Cext3";
 
-	private static Object CRITERIA_URL;
+	private static final String CRITERIA_URL = "url";
 
-	private static Object CRITERIA_CTEXT;
+	private static final String CRITERIA_CTEXT = "CText";
 
-	private static Object CRITERIA_CLINKS;
+	private static final String CRITERIA_CLINKS = "CLinks";
+
+	private static final String CRITERIA_CERROR = "CError";
 	
     public String url;
     public String urlOrig; //only set if != url
     public Long Cext1;
     public Long Cext2;
     public Long Cext3;
-    public String Cext3Orig; //date
+    public String Cext3Orig; //date not currently saved in database
     public Map<String,String> C = new HashMap<String,String>();
     public float intDanish;    
     public DataSource source;
@@ -69,28 +73,24 @@ public class SingleCriteriaResult {
 	}
 	public String getCText() throws IOException {
 		if (CText != null && !CText.isEmpty()) {
-			return CriteriaUtils.fromBase64(CText);
+			if (!CText.equals("null")) {
+				return CriteriaUtils.fromBase64(CText);
+			} else {
+				return CText;
+			}
 		} else {
 			return "";
 		}
 	}
     
-	public SingleCriteriaResult(String trimmedLine) {
+	public SingleCriteriaResult(String trimmedLine) throws ParseException {
 		this(trimmedLine, "Unknown", "N/A");
 	}
 	
-    public SingleCriteriaResult(String trimmedLine, String harvestName, String seedurl) {
+    public SingleCriteriaResult(String trimmedLine, String harvestName, String seedurl) throws ParseException {
     	this.harvestName = harvestName;
     	this.seedurl = seedurl;
-    	
-    	/*
-    	String[] resultParts = trimmedLine.split(",");   
-    	for (String resultPart: resultParts) {
-    		String trimmedResultPart = resultPart.trim();
-    		//System.out.println(trimmedResultPart);
-    		parseString(trimmedResultPart); // Assigns Values to criteria
-    	}
-    	*/
+ 
     	parseJson(trimmedLine, this);
     	
     	/*** url hack in order to have PK size < 1000 bytes ***/
@@ -105,49 +105,52 @@ public class SingleCriteriaResult {
     	if (Cext3Orig==null || Cext3Orig.isEmpty()) {
     		System.err.println("no date for url: " + url + " --- got: " + Cext3Orig);
     	}
-    	
-    	Cext3 = findDateFromString(Cext3Orig);
     }
     
-    private Long findDateFromString(String cext3Orig2) {
-    	Date readDate = null;
-    	try {
-    		readDate = DateConverter.getHeritrixDateFormat().parse(cext3Orig2);
-    	} catch (java.text.ParseException e) {
-    		return new Long(0L);
-    	}
-	    return readDate.getTime();
-
-    }
-	public static void parseJson(String trimmedLine, SingleCriteriaResult result) {
-    	JSONObject o = new JSONObject(trimmedLine);
-		Iterator i = o.keys();
+    
+	public synchronized static void parseJson(String trimmedLine, SingleCriteriaResult result) throws WebdanicaException {
+		CriteriaJson json = new CriteriaJson(trimmedLine);
+    	
+		Set<String> keys = json.getKeys();
 		List<String> CriteriaList = Arrays.asList(StringCriteria);
-		while (i.hasNext()) {
-			String key = (String) i.next();
+		for (String key: keys) {
 			if (CriteriaList.contains(key)) {
-				result.C.put(key, (String) o.get(key));
+				result.C.put(key, json.getValue(key));
 			} else if (key.equals(CRITERIA_CEXT1)){
-				result.Cext1 = Long.valueOf((String) o.get(key));
+				result.Cext1 = Long.valueOf(json.getValue(key));
 			} else if (key.equals(CRITERIA_CEXT2)) {
-				result.Cext2 = Long.valueOf((String) o.get(key));
+				result.Cext2 = Long.valueOf(json.getValue(key));
 			} else if (key.equals(CRITERIA_CEXT3)) {
-				result.Cext3Orig = (String) o.get(key);
+				result.Cext3Orig = json.getValue(key);
+				//System.out.println("Set Cext3orig to " + result.Cext3Orig);
+				result.Cext3 = CriteriaUtils.findDateFromString(result.Cext3Orig);
+			} else if (key.equals(CRITERIA_CERROR)) {
+				result.errorMsg = json.getValue(key);
 			} else if (key.equals(CRITERIA_URL)) {
-				String value = (String) o.get(key);
+				String value = json.getValue(key);
 				result.url = CriteriaUtils.fromBase64(value);
 			} else if (key.equals(CRITERIA_CTEXT)) {
-				String value = (String) o.get(key);
-				result.CText = CriteriaUtils.fromBase64(value);
+				result.CText = json.getValue(key);
+				/*
+				if (value != null) {
+					result.CText = CriteriaUtils.fromBase64(value);
+				} else {
+					System.err.println("Ignoring key '" +  key + "' with null value");
+				}*/
 			} else if (key.equals(CRITERIA_CLINKS)) {
-				String value = CriteriaUtils.fromBase64((String) o.get(key));
-				result.CLinks = splitLinks(value);
+				String value = CriteriaUtils.fromBase64(json.getValue(key));
+				if (value != null) {
+					result.CLinks = splitLinks(value);
+				} else {
+					System.err.println("Ignoring key '" +  key + "' with null value");
+				}
+				
 			} else {
-				System.err.println("Ignoring key '" +  key + "' with value: " + (String) o.get(key));
+				System.err.println("Ignoring key '" +  key + "' with value: " + json.getValue(key));
 			}
 		}
     }
-		
+	
 	/**
      * Default constructor.
      */
@@ -157,7 +160,6 @@ public class SingleCriteriaResult {
         Cext1 =0L;
         Cext2 =0L;
         Cext3Orig="20140901000000"; //date //FIXME shouldn't this changed
-        //Cext3 = findDateFromString(Cext3Orig);
         for (String criteria: StringCriteria) {
         	C.put(criteria, "");
         }
@@ -179,19 +181,6 @@ public class SingleCriteriaResult {
 		}	
 		return linkSet;
     }
-    /*
-	public static java.sql.Timestamp findDateFromString(String dateString) {
-    	java.sql.Timestamp t;
-    	t = java.sql.Timestamp.valueOf(//yyyy-[m]m-[d]d hh:mm:ss 
-    			dateString.substring(0, 4) + "-"
-        		+ dateString.substring(4, 6) + "-"
-        		+ dateString.substring(6, 8) + " "
-        		+ dateString.substring(8, 10) + ":"
-        		+ dateString.substring(10, 12) + ":"
-        		+ dateString.substring(12, 14)
-        ); 
-    	return t;
-    } */
     
     /**
      *  A sort of toString method for this class
@@ -220,7 +209,7 @@ public class SingleCriteriaResult {
     public List<String> getValuesAsStringList(String row_delim, String keyval_delim) {
     	List<String> list = new ArrayList<String>();
     	list.add("url" + keyval_delim + this.url);
-    	list.add("date" + keyval_delim + this.Cext3); 
+    	list.add("date" + keyval_delim + new Date(this.Cext3) + " - in millis from epoch: "+ this.Cext3); 
     	list.add("Cext1/extsize" + keyval_delim + this.Cext1); //3
     	list.add("Cext2/extDblChar" + keyval_delim + this.Cext2); //4
     	
@@ -246,4 +235,7 @@ public class SingleCriteriaResult {
 	public boolean isError() {
 		return errorMsg != null;
 	}
+	public void setCText(String string) {
+	    this.CText = string;
+    }
 }
