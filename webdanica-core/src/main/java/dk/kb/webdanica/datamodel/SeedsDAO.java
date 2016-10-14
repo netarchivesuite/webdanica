@@ -13,7 +13,7 @@ public interface SeedsDAO {
 	List<Seed> getSeeds(Status fromOrdinal) throws Exception;
 
 	Long getSeedsCount(Status fromOrdinal) throws Exception;
-
+	
 	void close();
 
 }

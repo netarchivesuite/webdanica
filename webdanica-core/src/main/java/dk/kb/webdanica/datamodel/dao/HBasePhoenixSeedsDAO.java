@@ -135,13 +135,16 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		return res != 0;
 	}
 
-	private static final String SEEDS_COUNT_SQL;
-
+	private static final String SEEDS_COUNT_BY_STATUS_SQL;
+	private static final String SEEDS_COUNT_ALL_SQL;
 	static {
-		SEEDS_COUNT_SQL = ""
+		SEEDS_COUNT_BY_STATUS_SQL = ""
 				+ "SELECT count(*) "
 				+ "FROM seeds "
 				+ "WHERE status=? ";
+		SEEDS_COUNT_ALL_SQL = ""
+                + "SELECT count(*) "
+                + "FROM seeds ";
 	}
 
 	@Override
@@ -151,9 +154,14 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		long res = 0;
 		try {
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			stm = conn.prepareStatement(SEEDS_COUNT_SQL);
-			stm.clearParameters();
-			stm.setInt(1, status.ordinal());
+			if (status != null) {
+			    stm = conn.prepareStatement(SEEDS_COUNT_BY_STATUS_SQL);
+			    stm.clearParameters();
+			    stm.setInt(1, status.ordinal());
+			} else {
+			    stm = conn.prepareStatement(SEEDS_COUNT_ALL_SQL);
+                stm.clearParameters();
+			}
 			rs = stm.executeQuery();
 			if (rs != null && rs.next()) {
 				res = rs.getLong(1);
