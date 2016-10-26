@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.exceptions.WebdanicaException;
 import dk.kb.webdanica.utils.StreamUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
@@ -57,7 +58,11 @@ public class HarvestReport {
 		this.harvestName = harvestname;
 		this.seed = seedurl;
 		this.successful = successful;
-		this.FilesHarvested = files.toArray(new String[0]);
+		if (files != null) {
+		    this.FilesHarvested = files.toArray(new String[0]);
+		} else {
+		    this.FilesHarvested = new String[]{};
+		}
 		this.error = error;
 		this.finalState = finalState;
 		this.harvestedTime = harvestedTime;
@@ -209,7 +214,7 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase) throws Exception {
+	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		for (HarvestReport h: harvests) {
 			Set<String> errs = new HashSet<String>();
@@ -226,7 +231,7 @@ public class HarvestReport {
 					} else {
 						for (String partfile: partfiles) {
 							File ingest = new File(ingestDir, partfile);
-							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase);
+							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase, daofactory );
 							if (pr.results.isEmpty()) {
 								errs.add("Partfile '" + ingest.getAbsolutePath() 
 										+ "' contained no results.original warc: " + filename);

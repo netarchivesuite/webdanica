@@ -206,5 +206,17 @@ public class CassandraHarvestDAO implements HarvestDAO {
     public void close() {
 	    db.close();
     }
+
+    @Override
+    public Long getCount() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllNames() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
 }

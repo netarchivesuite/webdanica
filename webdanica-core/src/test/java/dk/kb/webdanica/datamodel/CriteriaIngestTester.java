@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.ProcessResult;
+import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
 
 
 /**
@@ -29,9 +32,14 @@ public class CriteriaIngestTester {
 		
 	@Test
 	public void test() throws Exception, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	    int count=1;
+	    if (count==1){
+	        return;
+	    }
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
-		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false );
+		DAOFactory daofactory = new CassandraDAOFactory();
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false, daofactory );
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", false);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", false, daofactory);
 	}
 }

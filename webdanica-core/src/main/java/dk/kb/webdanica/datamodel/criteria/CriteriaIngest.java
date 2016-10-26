@@ -12,7 +12,8 @@ import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.utils.StreamUtils;
@@ -43,8 +44,9 @@ public class CriteriaIngest {
 		//doTest(HarvestLogTest3, baseCriteriaDir, true);
 		File basedir1 = new File("/home/svc/devel/webdanica/criteria-test-23-08-2016");
 		File baseCriteriaDir1 = new File(basedir1, "23-08-2016-1471968184");
-		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt"); 
-		ingest(HarvestLogTest4, baseCriteriaDir1,false);
+		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt");
+		DAOFactory daofactory = new HBasePhoenixDAOFactory();
+		ingest(HarvestLogTest4, baseCriteriaDir1,false, daofactory);
 
 		//runTest3();
 		
@@ -52,12 +54,12 @@ public class CriteriaIngest {
 		//runTest2();
 		System.exit(0);
 	}
-	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase) throws Exception {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
 		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(harvestLog);
-		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir,addToDatabase);
+		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir,addToDatabase, daofactory);
 		for (HarvestError e: errors) {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
 		}
@@ -80,22 +82,25 @@ public class CriteriaIngest {
 		String harvestLogName = "harvestlog-1470674884515.txt";
 		File HarvestLog = new File(basedir, harvestLogName);
 		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		ingest(HarvestLog, baseCriteriaDir, false);
+		DAOFactory daofactory = new HBasePhoenixDAOFactory();
+		ingest(HarvestLog, baseCriteriaDir, false, daofactory);
 	}
 
 	private static void runTest2() throws Exception { 
 			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
 			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
 			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
-			ingest(HarvestLog, baseCriteriaDir,false);
+			DAOFactory daofactory = new HBasePhoenixDAOFactory();
+			ingest(HarvestLog, baseCriteriaDir,false, daofactory);
     }
 
 	private static void runTest1() throws Exception {
 		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
 		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
 		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		ingest(danicaHarvestLog, baseCriteriaDir, false);
-		ingest(notdanicaHarvestLog, baseCriteriaDir, false);	
+		DAOFactory daofactory = new HBasePhoenixDAOFactory();
+		ingest(danicaHarvestLog, baseCriteriaDir, false, daofactory);
+		ingest(notdanicaHarvestLog, baseCriteriaDir, false, daofactory);	
 	}
 
 
@@ -111,9 +116,9 @@ public class CriteriaIngest {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase) throws Exception {
+	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		boolean listIgnored = true;
-		return process(ingestFile, seed, harvestName, addToDatabase);
+		return process(ingestFile, seed, harvestName, addToDatabase, daofactory);
 	}
 	
 	/**
@@ -127,7 +132,7 @@ public class CriteriaIngest {
 	 * @throws IOException
 	 */
 	public static ProcessResult process(File ingestFile, String seed, String harvestName, 
-				boolean addToDatabase) throws Exception {
+				boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		long linecount=0L;
 		long skippedCount=0L;
 		long ignoredCount=0L;
@@ -159,9 +164,10 @@ public class CriteriaIngest {
 				}
 				if (success && doInsert) {
 					success = prepareLine(res, DataSource.NETARKIVET);
-					log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
+					// REMOVED log for loadTest FIXME
+					//log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
 					if (addToDatabase) {
-						CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
+						CriteriaResultsDAO dao = daofactory.getCriteriaResultsDAO();
 						boolean inserted = dao.insertRecord(res);
 						if (!inserted) {
 							log_error("Record not inserted");
@@ -181,13 +187,16 @@ public class CriteriaIngest {
 			}
 		}
 		fr.close();
-
+		boolean verbose = false;
+		if (verbose) { //FIXME
 		log("Processed " + linecount + " lines");
 		log("Skipped " + skippedCount + " lines");
 		log("Ignored " + ignoredCount + " lines");
 		log("Inserted " + insertedCount + " records");
+		
 		for(String ignored: ignoredSet) {
 			log(" - " + ignored);
+		}
 		}
 		
 		pr.results = results;
@@ -213,7 +222,8 @@ public class CriteriaIngest {
 	private static boolean prepareLine(SingleCriteriaResult res, DataSource source) {
 		/*** set source ***/
 		res.source = source;
-        log("Set source to: " + source);
+		// Remove because of noise FIXME
+        //log("Set source to: " + source);
 		/*** pre-calculate calcDanishCode and other fields ***/
 		// See CalcDanishCode.getCalcDkCodeText for explanations
         

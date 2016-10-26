@@ -130,12 +130,12 @@ public class SingleCriteriaResult {
                     this.Cext2 = Long.parseLong(criteriaContent);
                 } else if (trimmedResultPart.startsWith("Cext3")) {
                     this.Cext3Orig = criteriaContent;
-                    System.out.println("Date: " + this.Cext3Orig);
+                    //System.out.println("Date: " + this.Cext3Orig);
                 } else if (trimmedResultPart.startsWith("C4a")) {
                     C.put("C4a", criteriaContent);
                 } else if (trimmedResultPart.startsWith("C4b")) {
                 	C.put("C4b", trimmedResultPart.split("C4b:")[1].trim());  
-                	System.out.println("C4b: " + C.get("C4b"));
+                	//System.out.println("C4b: " + C.get("C4b"));
                 } else if (trimmedResultPart.startsWith("C1a")) {
                 	C.put("C1a",criteriaContent);
                 } else if (trimmedResultPart.startsWith("C2a")) {

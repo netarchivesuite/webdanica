@@ -13,6 +13,8 @@ import dk.netarkivet.harvester.datamodel.JobStatus;
 
 public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
+    public static long LIMIT = 100000L;
+    
 	public HarvestReport getHarvestFromResultSet(ResultSet rs) throws Exception {
 		HarvestReport report = null;
 		if (rs != null) {
@@ -97,6 +99,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
 	public static final String SELECT_HARVEST_BY_NAME_SQL = "SELECT * FROM harvests WHERE harvestname=?";
 
+	public static final String SELECT_HARVEST_COUNT_SQL = "SELECT COUNT(*) FROM harvests";
+	
 	/**
 	 * @param harvestName a given harvestname
 	 * @return null, if none found with given harvestname
@@ -150,6 +154,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
  	public static final String GET_ALL_WITH_SEEDURL_SQL = "SELECT * FROM harvests WHERE seedurl=?";
 
+ 	public static final String GET_ALL_NAMES_LIMIT_SQL = "SELECT harvestname FROM harvests LIMIT ?";
+ 	
 	@Override
 	public List<HarvestReport> getAllWithSeedurl(String seedurl) throws Exception {
 		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
@@ -201,6 +207,63 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 	@Override
 	public void close() {
 	}
+
+    @Override
+    public Long getCount() throws Exception {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(SELECT_HARVEST_COUNT_SQL);
+            stm.clearParameters();
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> getAllNames() throws Exception { // Limit currently hardwired to 100K
+        List<String> harvests = new ArrayList<String>();
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(GET_ALL_NAMES_LIMIT_SQL);
+            stm.clearParameters();
+            stm.setLong(1, LIMIT);
+            rs = stm.executeQuery();
+            getHarvestNamesFromResultSet(rs, harvests);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+        return harvests; 
+    }
+
+    private void getHarvestNamesFromResultSet(ResultSet rs, List<String> harvests) throws Exception {
+        String name;
+        if (rs != null) {
+            while (rs.next()) { 
+                name = rs.getString("harvestname");
+                harvests.add(name);
+            }
+        }
+    }
 
 	//readAllWithFinalStatestatement = session.prepare("SELECT * FROM harvests WHERE finalState=?");
 

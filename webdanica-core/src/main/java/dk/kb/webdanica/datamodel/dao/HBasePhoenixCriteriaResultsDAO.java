@@ -193,7 +193,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	static {
 		READ_ALL_WITH_SEEDURL_SQL = ""
 				+ "SELECT * FROM criteria_results "
-				+ "WHERE seedurl=? ALLOW FILTERING";
+				+ "WHERE seedurl=?";
 	}
 
 	@Override
@@ -224,7 +224,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	static {
 		READ_ALL_WITH_HARVESTNAME_SQL = ""
 				+ "SELECT * FROM criteria_results "
-				+ "WHERE harvestname=? ALLOW FILTERING";
+				+ "WHERE harvestname=?";
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	static {
 		READ_URLS_BY_HARVESTNAME_SQL = ""
 				+ "SELECT url FROM criteria_results "
-				+ "WHERE harvestname=? ALLOW FILTERING";
+				+ "WHERE harvestname=?";
 	}
 	
 	@Override
@@ -375,11 +375,15 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
     }
 
 	public static final String GET_COUNT_WITH_HARVESTNAME_SQL;
+	public static final String GET_COUNT_SQL;
 
 	static {
 		GET_COUNT_WITH_HARVESTNAME_SQL = ""
 				+ "SELECT count(*) FROM criteria_results "
-				+ "WHERE harvestname=? ALLOW FILTERING";
+				+ "WHERE harvestname=?";
+		
+		 GET_COUNT_SQL = ""
+	                + "SELECT count(*) FROM criteria_results";
 	}
 
 	@Override
@@ -389,15 +393,18 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 		ResultSet rs = null;
 		try {
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			stm = conn.prepareStatement(GET_COUNT_WITH_HARVESTNAME_SQL);
-			stm.clearParameters();
-			stm.setString(1, harvestName);
-			rs = stm.executeQuery();
-			if (rs != null) {
-				while (rs.next()) {
-					count = rs.getLong(0);
-				}
+			if (harvestName == null) {
+			    stm = conn.prepareStatement(GET_COUNT_SQL);
+			    stm.clearParameters();
+			} else {
+			    stm = conn.prepareStatement(GET_COUNT_WITH_HARVESTNAME_SQL);
+			    stm.clearParameters();
+			    stm.setString(1, harvestName);
 			}
+			rs = stm.executeQuery();
+			if (rs != null && rs.next()) {
+                count = rs.getLong(1);
+            }
 		} finally {
 			if (rs != null) {
 				rs.close();

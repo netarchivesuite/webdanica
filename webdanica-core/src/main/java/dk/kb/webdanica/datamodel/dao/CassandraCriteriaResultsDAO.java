@@ -91,8 +91,9 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 		
 		File ingestFile = new File("/home/svc/devel/webdanica/webdanica-core/src/test/resources/criteria-results/criteria-test-11-08-2016/11-08-2016-1470934842/"
 				+ "/84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
+		DAOFactory daofactory = new CassandraDAOFactory();
 		List<SingleCriteriaResult> results 
-			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false).results;
+			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false, daofactory).results;
 		System.out.println("Found records: " + results.size());
 		for (SingleCriteriaResult s: results) {
 			boolean inserted = dao.insertRecord(s);

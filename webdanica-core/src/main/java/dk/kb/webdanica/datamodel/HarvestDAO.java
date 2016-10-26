@@ -11,10 +11,14 @@ public interface HarvestDAO {
 	HarvestReport getHarvest(String harvestName) throws Exception;
 
 	List<HarvestReport> getAll() throws Exception;
+	
+	List<String> getAllNames() throws Exception;
 
 	List<HarvestReport> getAllWithSeedurl(String seed) throws Exception;
 
 	List<HarvestReport> getAllWithSuccessfulstate(boolean b) throws Exception;
+	
+	Long getCount() throws Exception;
 
 	void close();
 
