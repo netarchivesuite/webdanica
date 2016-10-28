@@ -67,7 +67,7 @@ public class IngestLog {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " entries\n");
+		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " Logentries\n");
 		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
 		sb.append("loglines: \n");
 		int count=0;
@@ -81,7 +81,7 @@ public class IngestLog {
 	
 	public String getStatistics() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " entries\n");
+		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " log-entries\n");
 		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
 		return sb.toString();
 	}
