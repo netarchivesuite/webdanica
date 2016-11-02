@@ -2,18 +2,14 @@ package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-
-import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.datamodel.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.utils.StreamUtils;
-import dk.netarkivet.harvester.datamodel.dao.DAOProviderFactory;
 
 public class JsonIngester {
 	
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws Exception {
 		String dirName = "85-71-20160823152728799-00000-dia-prod-udv-01.kb.dk.warc.gz";
 		String dirName1 = "43-31-20160907115118139-00000-kb-test-webdanica-001.kb.dk.warc.gz";
 		File basedir1 = new File("/home/svc/devel/webdanica/06-10-2016-1475765948/" + dirName);

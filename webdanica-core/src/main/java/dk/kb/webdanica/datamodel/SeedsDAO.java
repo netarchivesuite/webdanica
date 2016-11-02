@@ -10,7 +10,7 @@ public interface SeedsDAO {
 
 	boolean updateState(Seed s) throws Exception;
 
-	List<Seed> getSeeds(Status fromOrdinal) throws Exception;
+	List<Seed> getSeeds(Status fromOrdinal, int limit) throws Exception;
 
 	Long getSeedsCount(Status fromOrdinal) throws Exception;
 	

@@ -186,7 +186,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 	}
 
 	@Override
-	public List<Seed> getSeeds(Status status) throws Exception {
+	public List<Seed> getSeeds(Status status, int limit) throws Exception {
 		List<Seed> seedList = new LinkedList<Seed>();
 		Seed seed;
 		PreparedStatement stm = null;

@@ -83,7 +83,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	protected void process_run() {
         try {
     		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-    		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW); // limit this 
+    		List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW, 1000); // TODO read this limit from a setting  
     		enqueue(seedsNeedFiltering);
     		if (seedsNeedFiltering.size() > 0) {
     			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");

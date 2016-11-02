@@ -16,7 +16,7 @@ public class SeedsDaoTester {
 
 	public static void main(String[] args) throws Exception {
 		SeedsDAO dao = CassandraSeedDAO.getInstance();
-		List<Seed> seeds = dao.getSeeds(Status.NEW);
+		List<Seed> seeds = dao.getSeeds(Status.NEW,100000);
 		System.out.println("Found '" +  seeds.size() + "' size with status NEW before filtering out urls with ignored suffixes");
 		for (Seed s: seeds) {
 	    	String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(s.getUrl());
@@ -29,11 +29,10 @@ public class SeedsDaoTester {
 	    	}
 	    	dao.updateState(s);
 	    }
-		seeds = dao.getSeeds(Status.NEW);
+		seeds = dao.getSeeds(Status.NEW,100000);
 		System.out.println("Found '" +  seeds.size() + "' size with status NEW after filtering out urls with ignored suffixes");
-		seeds = dao.getSeeds(Status.REJECTED);
+		seeds = dao.getSeeds(Status.REJECTED,100000);
 		System.out.println("Found '" +  seeds.size() + "' size with status REJECTED after filtering out urls with ignored suffixes");
-		seeds = dao.getSeeds(Status.READY_FOR_HARVESTING);
 		System.out.println("Found '" +  seeds.size() + "' size with status READY_FOR_HARVESTING after filtering out urls with ignored suffixes");
 
 		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {

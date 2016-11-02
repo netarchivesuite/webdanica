@@ -45,7 +45,7 @@ public class TestHBasePhoenixSeedsDAO {
 			// debug
 			System.out.println(cnt);
 
-			List<Seed> seedList = dao.getSeeds(Status.NEW);
+			List<Seed> seedList = dao.getSeeds(Status.NEW, 100000);
 			for (int i=0; i<seedList.size(); ++i) {
 				seed = seedList.get(i);
 				System.out.println(seed.getUrl());

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import dk.kb.webdanica.datamodel.Seed;
 import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.SeedsDAO;
 import dk.kb.webdanica.datamodel.Status;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
@@ -22,7 +23,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedDAO seeddao;
+	private SeedsDAO seeddao;
 
 	private Configuration configuration;
 	
@@ -50,13 +51,21 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	@Override
     protected void process_init() {
        	configuration = Configuration.getInstance();
-       	seeddao = configuration.getSeedDAO();	    
+       	seeddao = configuration.getDAOFactory().getSeedsDAO();	    
     }
 
 	@Override
     protected void process_run() {
 		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-   		List<Seed> seedsReadyForHarvesting = seeddao.getSeeds(Status.READY_FOR_HARVESTING, 10); // Only take 10 at a time 
+		List<Seed> seedsReadyForHarvesting = null;
+		try {
+		    seedsReadyForHarvesting = seeddao.getSeeds(Status.READY_FOR_HARVESTING, 10); // Only take 10 at a time
+		} catch (Throwable e) {
+		    logger.log(Level.WARNING, 
+		            "Exception thrown during method HarvestWorkThread.process_run:" + e);
+		    return;
+		}
+		
    		enqueue(seedsReadyForHarvesting);
    		if (seedsReadyForHarvesting.size() > 0) {
    			//logger.log(Level.INFO, "Found '" + seedsReadyForHarvesting.size() + "' seeds ready for harvesting");

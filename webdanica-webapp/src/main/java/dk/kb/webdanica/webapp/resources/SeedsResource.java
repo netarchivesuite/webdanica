@@ -219,8 +219,10 @@ public class SeedsResource implements ResourceAbstract {
         // FIXME better handling
         List<Seed> urlRecords = null;
         try {
-            urlRecords = dao.getSeeds(Status.fromOrdinal(online_status));
+            // This needs to be further limited (e.g. by domain, and tld)
+            urlRecords = dao.getSeeds(Status.fromOrdinal(online_status), 10000);  
         } catch (Exception e) {
+            
         }
 
         List<Seed> urlRecordsFiltered = new ArrayList<Seed>(urlRecords.size());
@@ -619,10 +621,12 @@ public class SeedsResource implements ResourceAbstract {
         //getUrlRecords(ordering);
 
         // FIXME better handling
-        List<Seed> urlRecords = null;
+        List<Seed> urlRecords = new ArrayList<Seed>();
+        Status wantedStatus = Status.fromOrdinal(status);
         try {
-            urlRecords = dao.getSeeds(Status.fromOrdinal(status));
+            urlRecords = dao.getSeeds(wantedStatus, 10000);
         } catch (Exception e) {
+            logger.warning("Exception on retrieving max 10000 seeds with status " + wantedStatus + ": " + e); 
         }
         List<Seed> urlRecordsFiltered = urlRecords;
         Seed urlRecord;

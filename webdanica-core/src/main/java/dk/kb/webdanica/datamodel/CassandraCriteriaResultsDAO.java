@@ -1,7 +1,6 @@
 package dk.kb.webdanica.datamodel;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +16,9 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.datamodel.Cassandra;
-import dk.kb.webdanica.datamodel.CassandraSettings;
+import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.datamodel.dao.CassandraSettings;
+import dk.kb.webdanica.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.DataSource;
@@ -88,7 +89,9 @@ import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
  */
 public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	
-	public static void main(String[] args) throws IOException, SQLException, ParseException {
+	public static void main(String[] args) throws Exception, SQLException, ParseException {
+	    DAOFactory daofactory = new CassandraDAOFactory();
+	    
 		CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
 		
 		dao.deleteRecordsByHarvestname("harvestName"); // delete existing records from database
@@ -96,7 +99,7 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 		File ingestFile = new File("/home/svc/devel/webdanica/webdanica-core/src/test/resources/criteria-results/criteria-test-11-08-2016/11-08-2016-1470934842/"
 				+ "/84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
 		List<SingleCriteriaResult> results 
-			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false).results;
+			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false, daofactory).results;
 		System.out.println("Found records: " + results.size());
 		for (SingleCriteriaResult s: results) {
 			boolean inserted = dao.insertRecord(s);
