@@ -7,6 +7,14 @@ import dk.kb.webdanica.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
+import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.CassandraSeedDAO;
+import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.HarvestDAO;
+import dk.kb.webdanica.datamodel.SeedDAO;
+import dk.kb.webdanica.datamodel.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 
 public class Configuration {
 

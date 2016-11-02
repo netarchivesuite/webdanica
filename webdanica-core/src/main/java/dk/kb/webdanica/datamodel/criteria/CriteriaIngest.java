@@ -3,17 +3,21 @@ package dk.kb.webdanica.datamodel.criteria;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.simple.parser.ParseException;
+
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.datamodel.HarvestDAO;
+import dk.kb.webdanica.datamodel.CassandraCriteriaResultsDAO;
+import dk.kb.webdanica.datamodel.harvest.CassandraHarvestDAO;
 import dk.kb.webdanica.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.utils.StreamUtils;
@@ -58,12 +62,19 @@ public class CriteriaIngest {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
-		List<HarvestReport> danicaharvests = HarvestReport.readHarvestLog(harvestLog);
+		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestLog);
+		if (addToDatabase) {
+			HarvestDAO hdao = daofactory.getInstance();
+			for (HarvestReport hp: harvests) {
+				hdao.insertHarvest(hp);
+			}
+		}
 		List<HarvestError> errors = HarvestReport.processCriteriaResults(danicaharvests, baseCriteriaDir,addToDatabase, daofactory);
+		
 		for (HarvestError e: errors) {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
 		}
-		HarvestReport.printToFile(danicaharvests, harvestLogReport);
+		HarvestReport.printToFile(harvests, harvestLogReport);
 	}
 	
 
@@ -107,14 +118,14 @@ public class CriteriaIngest {
 	/**
 	 * 
 	 * @param ingestFile
-	 * @param harvestName 
-	 * @param seed 
-	 * @return
+	 * @param seed
+	 * @param harvestName
+	 * @param addToDatabase 
+	 *  
+	 * @return ProcessResult
 	 * @throws IOException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * @throws ParseException 
+	
 	 */
 	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		boolean listIgnored = true;
@@ -130,6 +141,7 @@ public class CriteriaIngest {
 	 * @param addToDatabase 
 	 * @return ProcessResult object
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
 	public static ProcessResult process(File ingestFile, String seed, String harvestName, 
 				boolean addToDatabase, DAOFactory daofactory) throws Exception {

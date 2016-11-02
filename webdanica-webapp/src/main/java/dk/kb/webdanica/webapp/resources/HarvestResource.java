@@ -92,11 +92,16 @@ public class HarvestResource implements ResourceAbstract {
         }
         
         if (Servlet.environment.getHarvestPath() == null) {
-        	Servlet.environment.setHarvestPath(Servlet.environment.getContextPath() + "/harvest/");
+        	Servlet.environment.setHarvestPath(Servlet.environment.getContextPath() + HARVEST_PATH);
         }
         if (Servlet.environment.getHarvestsPath() == null) {
-        	Servlet.environment.setHarvestsPath(Servlet.environment.getContextPath() + "/harvests/");
+        	Servlet.environment.setHarvestsPath(Servlet.environment.getContextPath() + HarvestsResource.HARVEST_LIST_PATH);
         }
+        
+        if (Servlet.environment.getCriteriaResultsPath() == null) {
+        	Servlet.environment.setCriteriaResultsPath(Servlet.environment.getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH);
+        }
+        
         if (resource_id == R_HARVEST) {
             harvest_show(dab_user, req, resp, b);
         } 
@@ -253,7 +258,7 @@ public class HarvestResource implements ResourceAbstract {
 
         String linkToCriteriaresults = "No criteriaresults found for this harvest";
         if (critCount > 0) {
-        	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.harvestName + "/>" + "</a>";
+        	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.harvestName + "/\">" + critCount + "</a>";
         }
         ResourceUtils.insertText(criteriaresultsPlace, "criteria_results",  linkToCriteriaresults, HARVEST_SHOW_TEMPLATE, logger);
          

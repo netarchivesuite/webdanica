@@ -1,9 +1,0 @@
- tar -zxf /mda2/Java-Backup/\[Java-Tools\]/Hadoop/hbase-1.1.5-bin.tar.gz 
- ln -s hbase-1.1.5 hbase
- chown -R hduser:hadoop hbase hbase-1.1.5
- 
-edit conf/hbase-env.sh
-edit conf/hbase-site.xml
-
-tar -zxf /mda2/Java-Backup/\[Java-Tools\]/Hadoop/phoenix-4.7.0-HBase-1.1-bin.tar.gz
-chown -R hduser:hadoop phoenix-4.7.0-HBase-1.1-bin

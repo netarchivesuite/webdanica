@@ -27,6 +27,7 @@ import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
@@ -92,6 +93,8 @@ public class Environment {
 
     private FilterWorkThread filterThread;
     
+    private HarvestWorkThread harvesterThread;
+    
     /*
     public MonitoringWorkThread monitoring;
 
@@ -113,10 +116,11 @@ public class Environment {
      * Schedules.
      */
 
-    public ScheduleAbstract lookupSchedule;
+    public ScheduleAbstract filterSchedule;
 
-    public ScheduleAbstract pidSchedule;
+    public ScheduleAbstract harvestSchedule;
 
+ /*
     public ScheduleAbstract aliveCheckSchedule;
 
     public ScheduleAbstract fetchSchedule;
@@ -126,6 +130,7 @@ public class Environment {
     public ScheduleAbstract archiveCheckSchedule;
 
     public ScheduleAbstract emailSchedule;
+    */
 
     /*
      * Log.
@@ -343,6 +348,7 @@ public class Environment {
 		} else {
 			logger.info("Using 'email-crontab' value of '" + emailCrontab + "'.");
 		}
+		/*
 		lookupSchedule = CrontabSchedule.crontabFactory(lookupCrontab);
 		pidSchedule = CrontabSchedule.crontabFactory(pidCrontab);
 		aliveCheckSchedule = CrontabSchedule.crontabFactory(aliveCheckCrontab);
@@ -350,6 +356,7 @@ public class Environment {
 		waybackCheckSchedule = CrontabSchedule.crontabFactory(waybackCheckCrontab);
 		archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
 		emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
+		*/
 		
 		// Read resources and their secured status from settings.
 		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
@@ -377,7 +384,11 @@ public class Environment {
 		workflow.start();
 		filterThread = new FilterWorkThread(this, "Seeds filtering");
 		filterThread.start();
-		workthreads = new WorkThreadAbstract[]{workflow,filterThread};
+		
+		harvesterThread = new HarvestWorkThread(this, "Harvest worker");
+		harvesterThread.start();
+		
+		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread};
 		
 		/*
         monitoring = new MonitoringWorkThread(this, "Monitoring");
@@ -403,12 +414,11 @@ public class Environment {
 		theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
 	}
 	
-	
 	private String getStartMailContents(String subject) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(subject);
 	    sb.append(System.lineSeparator());
-	    sb.append("Webdanica Webapp (version  " + getVersion() + ") started on server " + getServer() + " at '" + new Date() + "'");
+	    sb.append("Webdanica Webapp (version " + getVersion() + ") started on server " + getServer() + " at '" + new Date() + "'");
 	    
 	    return sb.toString();
     }
@@ -421,7 +431,7 @@ public class Environment {
     	StringBuilder sb = new StringBuilder();
    	    sb.append(subject);
    	    sb.append(System.lineSeparator());
-   	    sb.append("Webdanica Webapp (version  " + getVersion() + ") stopped on server " + getServer() + " at '" + new Date() + "'");
+   	    sb.append("Webdanica Webapp (version " + getVersion() + ") stopped on server " + getServer() + " at '" + new Date() + "'");
    	    return sb.toString();
     }
 
@@ -434,16 +444,26 @@ public class Environment {
 		if (filterThread != null) {
 			filterThread.stop();
 		}
+		
+		if (harvesterThread != null) {
+			harvesterThread.stop();
+		}
+		
 		if (workflow != null) {
             workflow.stop();
         }
-	
+		
+		
+		
 		// Closing down working threads
-		while (workflow.bRunning || filterThread.bRunning) {
+		
+		while (workflow.bRunning || filterThread.bRunning || harvesterThread.bRunning) {
 			String threads = (
 					//monitoring.bRunning? " Monitoring": "") + 
 					(workflow.bRunning? " Workflow": "")
 					+ (filterThread.bRunning? " FilterThread": "")
+					+ (harvesterThread.bRunning? " HarvesterThread": "")
+					
 					/*
                     + (pid.bRunning? " PID": "")
                     + (alive.bRunning? " Alive": "")

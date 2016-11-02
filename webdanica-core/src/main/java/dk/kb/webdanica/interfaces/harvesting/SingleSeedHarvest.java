@@ -17,6 +17,7 @@ import dk.netarkivet.common.distribute.arcrepository.BitarchiveRecord;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.common.utils.StreamUtils;
+import dk.netarkivet.common.utils.TimeUtils;
 import dk.netarkivet.common.utils.cdx.CDXRecord;
 import dk.netarkivet.harvester.datamodel.HarvestDefinition;
 import dk.netarkivet.harvester.datamodel.HarvestDefinitionDAO;
@@ -58,6 +59,7 @@ public class SingleSeedHarvest {
 	private long maxBytes;
 	private int maxObjects;
 	private long harvestedTime;
+	private Long hid;
 	
 	/**
 	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
@@ -101,7 +103,9 @@ public class SingleSeedHarvest {
 		}
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
 		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed= " + seed, "Webdanica Curators");
-		HarvestDefinitionDAO.getInstance().create(hd);
+		HarvestDefinitionDAO dao = HarvestDefinitionDAO.getInstance();
+		hid = dao.create(hd);
+		
 		Map<String,String> attributeValues = new HashMap<String,String>(); // Empty attributeset
 
 		PartialHarvest eventHarvest = (PartialHarvest) HarvestDefinitionDAO.getInstance().getHarvestDefinition(eventHarvestName);
@@ -129,9 +133,7 @@ public class SingleSeedHarvest {
 	 * @return JobStatus of the job in progress (expects only one job to be created)
 	 */
 	private JobStatusInfo getHarvestStatus() {
-		HarvestDefinition hd = HarvestDefinitionDAO.getInstance().getHarvestDefinition(evName);
-		Long oid = hd.getOid();
-		HarvestStatusQuery hsq = new HarvestStatusQuery(oid, 0); 
+		HarvestStatusQuery hsq = new HarvestStatusQuery(hid, 0); 
 		HarvestStatus hs = JobDAO.getInstance().getStatusInfo(hsq);
 		List<JobStatusInfo> jobs = hs.getJobStatusInfo();
 		if (jobs.size() == 0) { // No jobs yet created (What can go wrong here??)
@@ -139,7 +141,7 @@ public class SingleSeedHarvest {
 		} else if (jobs.size() == 1) {
 			return jobs.get(0);
 		} else {
-			throw new WebdanicaException("Should be either 0 or 1 jobs generated, but there are  " + jobs.size() + " jobs for harvestId " + oid + " and harvestRun 0");   
+			throw new WebdanicaException("Should be either 0 or 1 jobs generated, but there are  " + jobs.size() + " jobs for harvestId " + hid + " and harvestRun 0");   
 		}
 	} 
 	
@@ -147,7 +149,7 @@ public class SingleSeedHarvest {
 		return this.seed;
 	}
 	
-	public String getHarvestName() {
+	public String getHarvestName() {  // TODO This should never be null
 		return this.evName;
 	}
 	
@@ -198,7 +200,7 @@ public class SingleSeedHarvest {
 		}
 		long endtime = System.currentTimeMillis();
 		long usedtimeSecs = (endtime-starttime)/1000;
-		System.out.println("After " + usedtimeSecs + "secs the job " + jobId + " now has finished state " + status );
+		System.out.println("After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status );
 		this.finishedState = status;
 		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);

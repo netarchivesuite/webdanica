@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.datamodel.criteria.ProcessResult;
@@ -72,11 +73,6 @@ public class HarvestReport {
 	public HarvestReport(){
 	}
 	
-	
-	public boolean hasError() {
-		return error != null;
-	}
-	
 	public static List<HarvestReport> readHarvestLog(File harvestlog) throws IOException {
 		List<HarvestReport> results = new ArrayList<HarvestReport>();
 
@@ -87,12 +83,15 @@ public class HarvestReport {
 
 		//read file add to list
 		try {
+			boolean errorLineWasLast = false;
 			while ((line = fr.readLine()) != null) {
 				trimmedLine = line.trim();
 				if (trimmedLine.isEmpty() || trimmedLine.startsWith("######")) {
 					// Skip line
 				} else {
+					
 					if (line.startsWith(seedPattern)) {
+						errorLineWasLast = false;
 						// add harvestReport if current != null
 						if (current != null) {
 							results.add(current);
@@ -101,21 +100,40 @@ public class HarvestReport {
 						current = new HarvestReport();
 						current.seed = line.split(seedPattern)[1];
 					} else if (line.startsWith(harvestnamePattern)) {
+						errorLineWasLast = false;
 						current.harvestName = line.split(harvestnamePattern)[1];
 					} else if (line.startsWith(successfulPattern)) {
+						errorLineWasLast = false;
 						current.successful = Boolean.valueOf(line.split(successfulPattern)[1]);
 					} else if (line.startsWith(endstatePattern)) {
-						current.finalState = JobStatus.valueOf(line.split(endstatePattern)[1]);
-					} else if (line.startsWith(endstatePattern)) {
-							current.harvestedTime = Long.parseLong(line.split(endstatePattern)[1]);	
+						errorLineWasLast = false;
+						String finalStateStr = line.split(endstatePattern)[1];
+						if (finalStateStr.equals("null")) {
+							current.finalState = JobStatus.FAILED;
+						} else {
+							current.finalState = JobStatus.valueOf(finalStateStr);
+						}
+					} else if (line.startsWith(harvestedTimePattern)) {
+						errorLineWasLast = false;
+						current.harvestedTime = Long.parseLong(line.split(harvestedTimePattern)[1]);	
 					} else if (line.startsWith(filesPattern)) {
+						errorLineWasLast = false;
 						String files = line.split(filesPattern)[1];
-						current.FilesHarvested = files.split(",");
+						if (files.equals("null")) {
+							current.FilesHarvested = new String[]{};
+						} else {
+							current.FilesHarvested = files.split(",");
+						}
 					} else if (line.startsWith(errorPattern)) {
-						String error = line.split(errorPattern)[1];
+						errorLineWasLast = true;
+						String error = line.split(errorPattern)[1].trim();
 						current.error = error;
 					} else {
-						System.err.println("Ignoring line: " + line);
+						if (errorLineWasLast) { // Add to error
+							current.error += line;
+						} else {
+							System.err.println("Ignoring line: " + line);
+						}
 					}
 			
 				}
@@ -177,13 +195,32 @@ public class HarvestReport {
 		FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
 		BufferedWriter resfile = new BufferedWriter(fw);
 		for (HarvestReport h: harvests) {
-			System.out.println("Printing out: " + h.seed);
+			System.out.println("Printing out report for seed: " + h.seed);
 			printOut(h, resfile);
 		}
 		fw.flush();
 		fw.close();
-
 	}
+	
+	boolean hasErrors() {
+		return ( (error != null && !error.isEmpty()) 
+				|| (errors != null && !errors.isEmpty()));
+	}
+	
+	String getErrorsAsString() {
+		StringBuffer errorsBuffer = new StringBuffer();
+		if (error != null && !error.isEmpty()) {
+			errorsBuffer.append(error);
+		}
+		if (errors != null && !errors.isEmpty()) {
+			errorsBuffer.append(StringUtils.join(errors, ","));
+		}
+		return errorsBuffer.toString();
+	}
+	
+	
+	
+	
 	private static void printOut(final HarvestReport h, final BufferedWriter resfile) throws IOException {
 		resfile.append("################################################");
 		resfile.newLine();
@@ -191,12 +228,12 @@ public class HarvestReport {
 		resfile.newLine();
 		resfile.append("################################################");
 		resfile.newLine();
-		if (!h.errors.isEmpty()) {
-			resfile.append("Errors found: " + StringUtils.join(h.errors, ","));
+		if (h.hasErrors()) {
+			resfile.append("Errors found: '" + h.getErrorsAsString()  + "'");
 			resfile.newLine();
 		}
-		if (h.results.isEmpty()) {
-			resfile.append("No results found for seed");
+		if (h.results == null || h.results.isEmpty()) {
+			resfile.append("No criteria results found for seed");
 			resfile.newLine();
 		} else {
 			for (SingleCriteriaResult scr: h.results) {
@@ -270,7 +307,11 @@ public class HarvestReport {
 				return name.startsWith("part-m-");
 			}
 		});
-	    return Arrays.asList(parts);
+		if (parts != null) {
+			return Arrays.asList(parts);
+		} else {
+			return Arrays.asList(new String[]{});
+		}
     }
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

@@ -89,13 +89,17 @@ public class Harvest {
 				results.add(result);
 			} else {
 				String errMsg = "No harvesting done. The argument '" + argument + "' is not a valid url";
-				System.out.println(errMsg);
+				System.err.println(errMsg);
 				SingleSeedHarvest s = SingleSeedHarvest.getErrorObject(argument, errMsg, null);
 	        	results.add(s);
 			}
 		}
 		// Print results to a file in Current Working Directory
-		File harvestLog = new File("harvestlog-" + System.currentTimeMillis() + ".txt");
+		String harvestLogNamePrefix = "harvestlog-";
+		if (argumentIsSeedFile) {
+			harvestLogNamePrefix = argumentAsFile.getName() + "-" + harvestLogNamePrefix;
+		}
+		File harvestLog = new File(harvestLogNamePrefix + System.currentTimeMillis() + ".txt");
 		System.out.println("Writing results of the " + results.size() + " harvests to file '" + harvestLog.getAbsolutePath() 
 				+ "'");
 		
