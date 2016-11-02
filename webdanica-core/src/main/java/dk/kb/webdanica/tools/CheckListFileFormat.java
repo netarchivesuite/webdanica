@@ -28,10 +28,13 @@ public class CheckListFileFormat {
 			charset = "UTF-16";
 		}
 		 */
+		String defaultCharset =  "UTF-16";
 		
 		Set<String> words = new HashSet<String>();
+		Set<String> wordsDefault = new HashSet<String>();
 		try {
-			words = WordsArrayGenerator.generateWordSetFromFile(listfile, charset, "\t", true, false);   
+			words = WordsArrayGenerator.generateWordSetFromFile(listfile, charset, "\t", true, false);
+			wordsDefault = WordsArrayGenerator.generateWordSetFromFile(listfile, defaultCharset, "\t", true, false);
 		} catch (Throwable e) {
 			System.err.println("Exception while parsing the file " + listfile.getAbsolutePath() + ": " + e);
 			System.exit(1);
@@ -41,6 +44,11 @@ public class CheckListFileFormat {
 		for (String word: words) {
 			count++;
 			System.out.println("word #" +  count + ": '" + word + "'");
+		}
+		words.removeAll(wordsDefault);
+		if (words.size() != 0) {
+			System.out.println("Removing all words also in the set read with UTF-16 charset gives a set of size " + words.size());
+			System.out.println("This means that the file '" +  listfile.getAbsolutePath() + "' is not a '" + defaultCharset + "' file");
 		}
 	}
 

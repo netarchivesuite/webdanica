@@ -1,4 +1,4 @@
-DROP TABLE ingestlog;
+DROP TABLE IF EXISTS ingestlog;
 
 CREATE TABLE ingestlog (
     inserted_date BIGINT PRIMARY KEY,

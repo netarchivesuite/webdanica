@@ -1,6 +1,6 @@
-DROP INDEX seeds_inserted_time_idx ON seeds;
-DROP INDEX seeds_status_idx ON seeds;
-DROP TABLE seeds;
+DROP INDEX IF EXISTS seeds_inserted_time_idx ON seeds;
+DROP INDEX IF EXISTS seeds_status_idx ON seeds;
+DROP TABLE IF EXISTS seeds;
 
 CREATE TABLE seeds (
     url VARCHAR(256) PRIMARY KEY,

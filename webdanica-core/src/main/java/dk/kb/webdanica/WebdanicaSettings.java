@@ -3,8 +3,8 @@ package dk.kb.webdanica;
 public class WebdanicaSettings {
 
 	public static String ENVIRONMENT = "settings.env";
-	public static String DATABASE_CLASS = "settings.database.class"; // not yet used
 	public static String DATABASE_SYSTEM = "settings.database.system";
+	public static String DATABASE_CONNECTION = "settings.database.connection";
 
 	/** mail settings. */
 	public static String MAIL_SERVER = "settings.mail.host";

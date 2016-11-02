@@ -10,8 +10,7 @@ import dk.kb.webdanica.utils.SettingsUtilities;
 
 public class Configuration {
 
-	private static final String DEFAULT_DATABASE_SYSTEM = "cassandra";
-
+	
 	/** Env. (UNITTEST/TEST/STAGING/PROD) **/
     private String env;
     private Emailer emailer;
@@ -70,11 +69,11 @@ public class Configuration {
 		
 		emailer = Emailer.getInstance(smtpHost, smtpPort, null, null, mailAdmin, dontSendMails);
 
-		databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
-
-		if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+		databaseSystem = SettingsUtilities.getStringSetting(
+				WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
+		if (Constants.CASSANDRA.equalsIgnoreCase(databaseSystem)) {
 			daoFactory = new CassandraDAOFactory();
-		} else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+		} else if (Constants.HBASE_PHOENIX.equalsIgnoreCase(databaseSystem)) {
 			daoFactory = new HBasePhoenixDAOFactory();
 		}
 	}

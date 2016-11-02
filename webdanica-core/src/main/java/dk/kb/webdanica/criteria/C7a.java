@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.data.Tuple;
 
+import dk.kb.webdanica.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.utils.Constants;
 import dk.kb.webdanica.utils.TextUtils;
 
@@ -35,8 +36,14 @@ public class C7a extends EvalFunc<String>{
     public static Set<String> computeC7aOnCasedTokens(Set<String> tokens, File cityFile, StringBuilder error){
     	Set<String> emptyResultset = new HashSet<String>();
     	Set<String> words;
+    	String defaultCharset = "UTF-16";
         try {
-	        words = WordsArrayGenerator.generateWordSetFromFile(cityFile, "UTF-16", "\t", true, false);
+        	String charset = CriteriaUtils.findCharsetFromName(cityFile.getName());
+        	if (charset==null){
+        		error.append("Error during computeC7aOnCasedToken: Unable to deduce charset from filename '" +  cityFile.getName() + "'. Assuming default charset '"+ defaultCharset + "'");
+        		charset = defaultCharset;
+        	}
+	        words = WordsArrayGenerator.generateWordSetFromFile(cityFile, charset, "\t", true, false);
 	        tokens.retainAll(words);
         } catch (IOException e) {
         	error.append("Error during computeC7aOnCasedToken: " + e);

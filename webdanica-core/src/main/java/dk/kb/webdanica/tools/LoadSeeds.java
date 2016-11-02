@@ -77,7 +77,7 @@ public static void main(String[] args) throws Exception {
 	
 	public LoadSeeds(File seedsfile) {
 	   this.seedsfile = seedsfile;
-	   final String DEFAULT_DATABASE_SYSTEM = "cassandra";
+	   final String DEFAULT_DATABASE_SYSTEM = "hbase-phoenix";
 	   String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
            daoFactory = new CassandraDAOFactory();

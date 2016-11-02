@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import dk.kb.webdanica.WebdanicaSettings;
 import dk.kb.webdanica.datamodel.BlackList;
 import dk.kb.webdanica.datamodel.BlackListDAO;
-import dk.kb.webdanica.datamodel.dao.CassandraBlackListDAO;
 import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
@@ -38,7 +37,7 @@ public class LoadBlacklists {
 	
 	public LoadBlacklists(File blacklistfile) {
 	   this.blacklistfile = blacklistfile;
-	   final String DEFAULT_DATABASE_SYSTEM = "cassandra";
+	   final String DEFAULT_DATABASE_SYSTEM = "hbase-phoenix";
        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
            daoFactory = new CassandraDAOFactory();
@@ -78,7 +77,7 @@ public class LoadBlacklists {
 		dao.close();
 	}
 	    static DAOFactory getDao() {
-	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, "cassandra");
+	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, "hbase-phoenix");
 	        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
 	            return new CassandraDAOFactory();
 	        } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
@@ -88,21 +87,15 @@ public class LoadBlacklists {
 	        }
 	    }
 	
-	
-	
 	/**
-	 * 
+	 * Insert a blacklist
 	 */
 	public void insertList() {
-		CassandraBlackListDAO dao = CassandraBlackListDAO.getInstance();
+		BlackListDAO bdao = daoFactory.getBlackListDAO();
 		String line;
         long linecount=0L;
-        long insertedcount=0L;
-        long rejectedcount=0L;
-        long duplicatecount=0L;
         String trimmedLine = null;
         BufferedReader fr = null;
-        List<String> logentries = new ArrayList<String>();
         String name = blacklistfile.getName();
         List<String> blackListRegexp = new ArrayList<String>();
         try {
@@ -113,8 +106,8 @@ public class LoadBlacklists {
 	            blackListRegexp.add(trimmedLine);
 	        }
 	      BlackList b = new BlackList(name, "", blackListRegexp, true);  
-	      dao.insertList(b);
-	      System.out.println("Created blacklist with name name=" + name);
+	      bdao.insertList(b);
+	      System.out.println("Created blacklist with name='" + name + "' and #entries=" + linecount);
         } catch (Throwable e) {
 	        e.printStackTrace();
         } finally {

@@ -1,6 +1,6 @@
-DROP INDEX criteria_results_harvestname_idx ON criteria_results;
-DROP INDEX criteria_results_seedurl_idx ON criteria_results;
-DROP TABLE criteria_results;
+DROP INDEX IF EXISTS criteria_results_harvestname_idx ON criteria_results;
+DROP INDEX IF EXISTS criteria_results_seedurl_idx ON criteria_results;
+DROP TABLE IF EXISTS criteria_results;
 
 CREATE TABLE criteria_results (
     url VARCHAR,

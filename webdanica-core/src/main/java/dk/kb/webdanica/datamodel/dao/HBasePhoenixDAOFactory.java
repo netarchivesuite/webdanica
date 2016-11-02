@@ -54,6 +54,7 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 
 	@Override
 	public void close() {
+		HBasePhoenixConnectionManager.deregister();
 	}
 
 }

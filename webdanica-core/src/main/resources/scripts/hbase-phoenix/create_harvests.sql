@@ -1,7 +1,7 @@
-DROP INDEX harvest_finalstate_idx ON harvests;
-DROP INDEX harvest_seedurl_idx ON harvests;
-DROP INDEX harvest_successful_idx ON harvests;
-DROP TABLE harvests;
+DROP INDEX IF EXISTS harvest_finalstate_idx ON harvests;
+DROP INDEX IF EXISTS harvest_seedurl_idx ON harvests;
+DROP INDEX IF EXISTS harvest_successful_idx ON harvests;
+DROP TABLE IF EXISTS harvests;
 
 CREATE TABLE harvests (
     harvestname VARCHAR PRIMARY KEY,

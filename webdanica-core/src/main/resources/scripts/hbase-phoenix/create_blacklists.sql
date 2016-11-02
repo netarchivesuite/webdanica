@@ -1,5 +1,5 @@
-DROP INDEX blacklists_is_active_idx ON blacklists;
-DROP TABLE blacklists;
+DROP INDEX IF EXISTS blacklists_is_active_idx ON blacklists;
+DROP TABLE IF EXISTS blacklists;
 
 CREATE TABLE blacklists (
     uid VARCHAR(64) PRIMARY KEY,

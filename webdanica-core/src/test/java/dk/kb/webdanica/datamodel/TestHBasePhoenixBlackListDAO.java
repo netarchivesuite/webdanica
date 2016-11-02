@@ -20,12 +20,13 @@ public class TestHBasePhoenixBlackListDAO {
 	@Test
 	public void test_hbasephoenix_blacklist_dao() {
 		HBasePhoenixConnectionManager.register();
-
+		
 		Connection conn = null;
 		Properties connprops = new Properties();
 
 		try {
-			conn = DriverManager.getConnection( "jdbc:phoenix:localhost", connprops );
+			// This reads the connectionString from settings WebdanicaSettings.DATABASE_CONNECTION
+			conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 
 			List<String> aList = new ArrayList<String>(3);
 			aList.add("One");
@@ -36,13 +37,16 @@ public class TestHBasePhoenixBlackListDAO {
 
 			HBasePhoenixBlackListDAO dao = new HBasePhoenixBlackListDAO();
 			dao.insertList(aBlackList);
-
-			UUID uid = UUID.fromString("cbd23b95-6951-4136-ad26-e609928adc22");
+			String uidAsString = "cbd23b95-6951-4136-ad26-e609928adc22";
+			UUID uid = UUID.fromString(uidAsString);
 			aBlackList = dao.readBlackList(uid);
-
-			aList = aBlackList.getList();
-			for (int i=0; i<aList.size(); ++i) {
-				System.out.println(aList.get(i));
+			if (aBlackList != null) {
+				aList = aBlackList.getList();
+				for (int i=0; i<aList.size(); ++i) {
+					System.out.println(aList.get(i));
+				}
+			} else {
+				System.err.println("No blacklist w/ uid=" + uidAsString);  
 			}
 
 			List<BlackList> blacklistList = dao.getLists(true);

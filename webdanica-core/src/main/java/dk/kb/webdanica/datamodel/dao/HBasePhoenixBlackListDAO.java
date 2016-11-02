@@ -78,7 +78,6 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 							uid,
 							rs.getString("name"),
 							rs.getString("description"),
-							//JDBCUtils.sqlArrayRecordSetToList(rs.getArray("blacklist"), String.class),
 							JDBCUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
 							rs.getLong("last_update"),
 							rs.getBoolean("is_active")

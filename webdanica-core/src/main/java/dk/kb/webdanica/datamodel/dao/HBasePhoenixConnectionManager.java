@@ -10,12 +10,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.utils.Settings;
+
 public class HBasePhoenixConnectionManager {
 
 	protected HBasePhoenixConnectionManager() {
 	}
 
 	protected static Object driver;
+	protected static String connectionString;
 
 	public static void register() {
 		if (driver == null) {
@@ -35,6 +39,16 @@ public class HBasePhoenixConnectionManager {
 				e.printStackTrace();
 			}
 		}
+		String defaultConnectionString = "jdbc:phoenix:localhost:2181:/hbase";
+		if (Settings.hasKey(WebdanicaSettings.DATABASE_CONNECTION)) {
+			connectionString = Settings.get(WebdanicaSettings.DATABASE_CONNECTION);
+			if (connectionString.isEmpty())  {
+				connectionString = defaultConnectionString;
+			}
+		} else {
+			connectionString = defaultConnectionString;
+		}
+		
 	}
 
 	protected static Map<Thread, Connection> threadConnectionMap = new TreeMap<Thread, Connection>(new Comparator<Thread>() {
@@ -52,7 +66,8 @@ public class HBasePhoenixConnectionManager {
 		}
 		if (conn == null) {
 			Properties connprops = new Properties();
-			conn = DriverManager.getConnection( "jdbc:phoenix:localhost", connprops );
+			
+			conn = DriverManager.getConnection(connectionString, connprops );
 			threadConnectionMap.put(Thread.currentThread(), conn);
 		}
 		return conn;

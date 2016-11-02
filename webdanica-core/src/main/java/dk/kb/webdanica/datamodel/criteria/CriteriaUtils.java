@@ -252,4 +252,20 @@ public class CriteriaUtils {
 	    return readDate.getTime();
     }
 	
+	public static String findCharsetFromName(String name) {
+	    int index = name.lastIndexOf(".");
+	    if (index == -1) {
+	    	System.err.println("Unable to deduce the charset from the filename '" + name + "': No suffix found");
+	    	return null;
+	    }
+	    String udenSuffix = name.substring(0, index);
+	    index = udenSuffix.lastIndexOf("_");
+	    if (index == -1) {
+	    	System.err.println("Unable to deduce the charset from the filenamepart '" + udenSuffix + "': missing correct separator (_)");
+	    	return null;
+	    }
+	    
+	    return udenSuffix.substring(index+1, udenSuffix.length());
+    }
+	
 }
