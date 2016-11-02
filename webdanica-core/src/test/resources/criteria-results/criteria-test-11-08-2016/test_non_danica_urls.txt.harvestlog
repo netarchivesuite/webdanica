@@ -1,0 +1,44 @@
+Harvestlog for  seedfile /home/test/harvestTrials/test_non_danica_urls.txt
+################################################################################
+Seed: https://www.nrk.no/mat/stekt-flesk-med-persillesaus-1.13053532
+HarvestName: webdanica-trial-1470217803884
+Successful: true
+EndState: DONE
+Files harvested: 53-40-20160803095022540-00000-dia-prod-udv-01.kb.dk.warc.gz,53-metadata-1.warc
+################################################################################
+Seed: https://www.nrk.no/vestfold/fortsatt-preget-av-22.juli-terror-1.13054557
+HarvestName: webdanica-trial-1470217905742
+Successful: true
+EndState: DONE
+Files harvested: 54-41-20160803095223149-00000-dia-prod-udv-01.kb.dk.warc.gz,54-metadata-1.warc
+################################################################################
+Seed: http://www.deutsch-tuerkische-nachrichten.de/2016/07/527070/merkel-haelt-an-fluechtlings-deal-mit-der-tuerkei-fest/
+HarvestName: webdanica-trial-1470218036468
+Successful: true
+EndState: DONE
+Files harvested: 55-42-20160803095422217-00000-dia-prod-udv-01.kb.dk.warc.gz,55-42-20160803095437086-00001-dia-prod-udv-01.kb.dk.warc.gz,55-42-20160803095437337-00002-dia-prod-udv-01.kb.dk.warc.gz,55-metadata-1.warc
+################################################################################
+Seed: http://www.discovergreekislands.net/meganisi.html
+HarvestName: webdanica-trial-1470218768750
+Successful: true
+EndState: DONE
+Files harvested: 56-43-20160803100622848-00000-dia-prod-udv-01.kb.dk.warc.gz,56-metadata-1.warc
+################################################################################
+Seed: http://www.aol.com/article/2016/05/11/cannes-2016-stars-shine-in-fabulous-frocks-at-arrivals/21375295/
+HarvestName: webdanica-trial-1470218864450
+Successful: true
+EndState: DONE
+Files harvested: 57-44-20160803100822357-00000-dia-prod-udv-01.kb.dk.warc.gz,57-metadata-1.warc
+################################################################################
+Seed: https://meta.wikimedia.org/wiki/Translation_requests
+HarvestName: webdanica-trial-1470218994855
+Successful: true
+EndState: DONE
+Files harvested: 58-45-20160803101022368-00000-dia-prod-udv-01.kb.dk.warc.gz,58-metadata-1.warc
+################################################################################
+Seed: http://myth-games.com/news5631.htm
+HarvestName: webdanica-trial-1470219095233
+Successful: true
+EndState: DONE
+Files harvested: 59-46-20160803101152127-00000-dia-prod-udv-01.kb.dk.warc.gz,59-metadata-1.warc
+################################################################################

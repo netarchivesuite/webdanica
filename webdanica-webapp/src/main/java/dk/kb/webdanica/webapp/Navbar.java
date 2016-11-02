@@ -32,15 +32,17 @@ public class Navbar {
 
     public static final int N_USERS = 3;
 
-    public static int N_BLACKLISTS = 3;
+    public static final int N_BLACKLISTS = 3;
     
     
     private static Map<Integer, String> navbarMap = new TreeMap<Integer, String>();
 
     private static String[][] items  = new String[][] {
     			//{ Servlet.environment.contextPath + "/ingest/", "Ingest" },
-                { Servlet.environment.getContextPath() + "/seeds/", "Seeds" },
-                { Servlet.environment.getContextPath() + "/blacklists/", "Blacklists" },                 
+                { Servlet.environment.getContextPath() + "/seeds/", "Seeds" }, 
+                { Servlet.environment.getContextPath() + "/blacklists/", "Blacklists" },
+                { Servlet.environment.getContextPath() + "/harvests/", "Høstninger" },
+                { Servlet.environment.getContextPath() + "/criteriaresults/", "Kriterie resultater" },
                 // { Servlet.environment.contextPath + "/search/", "Søg" },
                 // { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
                 // { Servlet.environment.getContextPath() + "/users/", "Brugere" },

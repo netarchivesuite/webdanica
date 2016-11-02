@@ -177,93 +177,97 @@ public static CodesResult setcodes_oldPhone(String C2a, String C5a, String C5b, 
 public static int findNegativBitmapCalcCode(SingleCriteriaResult res) {
 	int code = 0;
 	boolean setbit = false;
+	String C1a = res.C.get("C1a");
+	String C2a = res.C.get("C2a");
 	
-    setbit = ((res.C1a!=null) && (res.C1a.length()>2)); // include country’s TLD email address 
-    setbit = setbit || ((res.C2a!=null) &&  (res.C2a.length()>2)); // include national phone number 
+    setbit = ((C1a!=null) && (C1a.length()>2)); // include country’s TLD email address 
+    setbit = setbit || ((C2a!=null) && (C2a.length()>2)); // include national phone number 
 	if (setbit) code = setBit(1, code); //ph or mail
 
-    setbit = ((res.C3a!=null) && (res.C3a.length()>2));  
-    setbit = setbit || ((res.C3c!=null) &&  (res.C3c.length()>2)); 
+    setbit = ((res.C.get("C3a") !=null) && (res.C.get("C3a").length()>2));  
+    setbit = setbit || ((res.C.get("C3c") !=null) && (res.C.get("C3c").length()>2)); 
 	if (setbit) code = setBit(2, code); //æøå in html or url
 
-    if (res.C4a!=null) {
-    	setbit = (res.C4a.equals("da") || res.C4a.equals("no") || res.C4a.equals("sv"));
+	String C4a = res.C.get("c4a");
+    if (C4a!=null) {
+    	setbit = (C4a.equals("da") || C4a.equals("no") || C4a.equals("sv"));
     	if (setbit) code = setBit(3, code); //language like danish
     }
 
-	setbit = ((res.C6b!=null) && (res.C6b.length()>2));  
-    setbit = setbit || ((res.C6c!=null) &&  (res.C6c.length()>2)); 
+	setbit = ((res.C.get("C6b")!=null) && (res.C.get("C6b").length()>2));  
+    setbit = setbit || ((res.C.get("C6c")!=null) &&  (res.C.get("C6c").length()>2)); 
 	if (setbit) code = setBit(4, code); //frequently used selected Danish words
 
-	setbit = ((res.C7a!=null) && (res.C7a.length()>2));  
-    setbit = setbit || ((res.C7b!=null) &&  (res.C7b.length()>2)); 
-    setbit = setbit || ((res.C7e!=null) &&  (res.C7e.length()>2)); 
-    setbit = setbit || ((res.C7f!=null) &&  (res.C7f.length()>2)); 
-	if (setbit) code =setBit(5, code); //largest Danish towns
+	setbit = ((res.C.get("C7a") !=null) && (res.C.get("C7a").length()>2));  
+    setbit = setbit || ((res.C.get("C7b") !=null) &&  (res.C.get("C7b").length()>2)); 
+    setbit = setbit || ((res.C.get("C7e") !=null) &&  (res.C.get("C7e").length()>2)); 
+    setbit = setbit || ((res.C.get("C7f") !=null) &&  (res.C.get("C7f").length()>2)); 
+	if (setbit) code = setBit(5, code); //largest Danish towns
 
-    setbit = ((res.C9a!=null) &&  (res.C9a.length()>2)); 
-    setbit = setbit || ((res.C9d!=null) &&  (res.C9d.length()>2)); 
+    setbit = ((res.C.get("C9a")!=null) &&  (res.C.get("C9a").length()>2)); 
+    setbit = setbit || ((res.C.get("C9d")!=null) &&  (res.C.get("C9d").length()>2)); 
 	if (setbit) code = setBit(6, code); //A/S… or CVR
-    if (res.C15a!=null) {
-    	setbit = (res.C15a.equals("y"));
+    if (res.C.get("C15a")!=null) {
+    	setbit = (res.C.get("C15a").equals("y"));
     	if (setbit) code = setBit(7, code); //neighboring countries
     }
-    setbit = ((res.C16a!=null) && (!res.C16a.isEmpty()) && (Long.parseLong(res.C16a) > 0L)); 
-    setbit =  setbit || ((res.C17a!=null) && (!res.C17a.isEmpty()) &&  (Long.parseLong(res.C17a) > 0L)); 
+    setbit = ((res.C.get("C16a")!=null) && (!res.C.get("C16a").isEmpty()) && (Long.parseLong(res.C.get("C16a")) > 0L)); 
+    setbit =  setbit || ((res.C.get("C17a")!=null) && (!res.C.get("C17a").isEmpty()) && (Long.parseLong(res.C.get("C17a")) > 0L)); 
 	if (setbit) code = setBit(8, code); //links
 
-    setbit = ((res.C3b!=null) &&  (res.C3b.length()>2)); 
-    setbit = setbit || ((res.C3d!=null) &&  (res.C3d.length()>2)); 
+    setbit = ((res.C.get("C3b")!=null) &&  (res.C.get("C3b").length()>2)); 
+    setbit = setbit || ((res.C.get("C3d")!=null) &&  (res.C.get("C3d").length()>2)); 
 	if (setbit) code = setBit(9, code); //words including ae, oe, aa in html or url
 
-    setbit = (res.C6d!=null) && ( (!res.C6d.startsWith("0")) && (!res.C6d.isEmpty()) ); //setbit = ((res.C6a!=null) &&  (res.C6a.length()>2));
+    setbit = (res.C.get("C6d")!=null) && ( (!res.C.get("C6d").startsWith("0")) && (!res.C.get("C6d").isEmpty()) ); //setbit = ((res.C6a!=null) &&  (res.C6a.length()>2));
 	if (setbit) code = setBit(10, code); //frequently used Danish words NEW
 
-    setbit = ((res.C7c!=null) &&  (res.C7c.length()>2)); 
-    setbit = setbit || ((res.C7d!=null) &&  (res.C7d.length()>2)); 
+    setbit = ((res.C.get("C7c")!=null) &&  (res.C.get("C7c").length()>2)); 
+    setbit = setbit || ((res.C.get("C7d")!=null) &&  (res.C.get("C7d").length()>2)); 
 	if (setbit) code = setBit(11, code); //suffixes in town in html and url
 
-    setbit = ((res.C8a!=null) &&  (res.C8a.length()>2)); 
-    setbit = setbit || ((res.C8b!=null) &&  (res.C8b.length()>2)); 
+    setbit = ((res.C.get("C8a")!=null) &&  (res.C.get("C8a").length()>2)); 
+    setbit = setbit || ((res.C.get("C8b")!=null) &&  (res.C.get("C8b").length()>2)); 
 	if (setbit) code = setBit(12, code); //union and asscociation in htm and url
 
-    setbit = ((res.C9b!=null) &&  (res.C9b.length()>2)); 
-    setbit = setbit || ((res.C9c!=null) &&  (res.C9c.length()>2)); 
+    setbit = ((res.C.get("C9b")!=null) &&  (res.C.get("C9b").length()>2)); 
+    setbit = setbit || ((res.C.get("C9c")!=null) &&  (res.C.get("C9c").length()>2)); 
 	if (setbit) code = setBit(13, code); //company names in htm and url
 
-    setbit = ((res.C10c!=null) &&  (!res.C10c.startsWith("0")) && (!res.C10c.isEmpty())); //((res.C10a!=null) &&  (res.C10a.length()>2)) || ((res.C10b!=null) &&  (res.C10b.length()>2)); 
+    setbit = ((res.C.get("C10c")!=null) &&  (!res.C.get("C10c").startsWith("0")) 
+    		&& (!res.C.get("C10c").isEmpty())); //((res.C10a!=null) &&  (res.C10a.length()>2)) || ((res.C10b!=null) &&  (res.C10b.length()>2)); 
 	if (setbit) code = setBit(14, code); //danish surnames NEW
 
     setbit = ((res.Cext1!=null) &&  (res.Cext1>250)); //size is considrable for language check
     if (setbit) code = setBit(15, code);  //
 
 	// changed from 1/8 2014 now code is int     	
-    setbit = ((res.C10a!=null) &&  (res.C10a.length()>2)); 
+    setbit = ((res.C.get("C10a")!=null) &&  (res.C.get("C10a").length()>2)); 
     if (setbit) code = setBit(16, code);  //
     
     //NEW  new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limmited union or companies
-    setbit = (res.C8c!=null) && ( (!res.C8c.startsWith("0")) && (!res.C8c.isEmpty()) ); 
-    setbit = setbit || (res.C9e!=null) && ( (!res.C9e.startsWith("0")) && (!res.C9e.isEmpty()) ); 
+    setbit = (res.C.get("C8c")!=null) && ( (!res.C.get("C8c").startsWith("0")) && (!res.C.get("C8c").isEmpty()) ); 
+    setbit = setbit || (res.C.get("C9e")!=null) && ( (!res.C.get("C9e").startsWith("0")) && (!res.C.get("C9e").isEmpty()) ); 
     if (setbit) code = setBit(17, code);
     
-    //NEW  C7g[1]<>0 | C7h[1]<>0 (as 7e,7a)" : "new limmited largest dk towns (incl. translations)"); //Reset 
-    setbit = (res.C7g!=null) && ( (!res.C7g.startsWith("0")) && (!res.C7g.isEmpty()) ); 
-    setbit = setbit || (res.C7h!=null) && ( (!res.C7h.startsWith("0")) && (!res.C7h.isEmpty()) ); 
+    //NEW  C7g[1]<>0 | C7h[1]<>0 (as 7e,7a)" : "new limited largest dk towns (incl. translations)"); //Reset 
+    setbit = (res.C.get("C7g")!=null) && ( (!res.C.get("C7g").startsWith("0")) && (!res.C.get("C7g").isEmpty()) ); 
+    setbit = setbit || (res.C.get("C7h")!=null) && ( (!res.C.get("C7h").startsWith("0")) && (!res.C.get("C7h").isEmpty()) ); 
     if (setbit) code = setBit(18, code);  //
 
     //Cext2>=150 (<200), likely chinese or the like         
     setbit = ((res.Cext2!=null) &&  (res.Cext2>=150)); 
     if (setbit) code = setBit(19, code);  //
 
-    setbit = (res.C3e!=null) && ( (!res.C3e.startsWith("0")) && (!res.C3e.isEmpty()) ); 
-    setbit = setbit || ( (res.C3f!=null) && ( (!res.C3f.startsWith("0")) && (!res.C3f.isEmpty()) ) ); 
+    setbit = (res.C.get("C3e")!=null) && ( (!res.C.get("C3e").startsWith("0")) && (!res.C.get("C3e").isEmpty()) ); 
+    setbit = setbit || ( (res.C.get("C3f")!=null) && ( (!res.C.get("C3f").startsWith("0")) && (!res.C.get("C3f").isEmpty()) ) ); 
     if (setbit) code = setBit(20, code);  //
     
-    setbit = (res.C3g!=null) && ( (!res.C3g.startsWith("0")) && (!res.C3g.isEmpty()) ); 
+    setbit = (res.C.get("C3g") !=null) && ( (!res.C.get("C3g").startsWith("0")) && (!res.C.get("C3g").isEmpty()) ); 
     if (setbit) code = setBit(21, code);  //
     
-    setbit = (res.C2b!=null) && ( res.C2b.equals("y") ); 
-    setbit = setbit || (res.C9f!=null) && ( res.C9f.equals("y") ); 
+    setbit = (res.C.get("C2b")!=null) && ( res.C.get("C2b").equals("y") ); 
+    setbit = setbit || (res.C.get("C9f")!=null) && ( res.C.get("C9f").equals("y") ); 
     if (setbit) code = setBit(22, code);  //
 
     return code;
@@ -275,28 +279,29 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
 	boolean bigSize = (res.Cext1>250); //40 for size 200-250 -
     int interval = (bigSize ? 20 : 40);
 
-	boolean inclTld = (res.C15a!=null);
-	inclTld = inclTld && (res.C15a.equals("y"));  // The URL belongs to a TLD often used by Danes
-	boolean inclToLinks = (res.C16a!=null);
-	inclToLinks = inclToLinks && (Long.parseLong(res.C16a)>0L);  // There are .dk sites that points to the webpage
-	boolean inclFromLinks = (res.C17a!=null);
-	inclFromLinks = inclFromLinks && (Long.parseLong(res.C17a)>0L);  // <The webpage points to other .dk sites>
+	boolean inclTld = (res.C.get("C15a") != null);
+	inclTld = inclTld && (res.C.get("C15a").equals("y"));  // The URL belongs to a TLD often used by Danes
+	boolean inclToLinks = (res.C.get("C16a")!=null);
+	inclToLinks = inclToLinks && (Long.parseLong(res.C.get("C16a"))>0L);  // There are .dk sites that points to the webpage
+	boolean inclFromLinks = (res.C.get("C17a")!=null);
+	inclFromLinks = inclFromLinks && (Long.parseLong(res.C.get("C17a"))>0L);  // <The webpage points to other .dk sites>
 	int calcCode = interval + (inclTld ? 4 : 0) + (inclToLinks ? 2 : 0) + (inclFromLinks ? 1 : 0);
     int startsize = (interval == 20 ? 250 : 200);
     int endsize = (interval == 20 ?   0 : 250);
 
-    ok = (res.C3a!=null && res.C4a!=null && res.C5a!=null && res.C5b!=null && res.C6a!=null); 
+    ok = (res.C.get("C3a")!=null && res.C.get("C4a")!=null && res.C.get("C5a")!=null 
+    		&& res.C.get("C5b")!=null && res.C.get("C6a")!=null); 
     if (ok) {
     	ok = res.Cext1 > startsize //only consider when there are lots of text for n-gram
     		&& (endsize==0 ? true : (res.Cext1 <= endsize) )
-			&& res.C3a.length()>2 //includes æ,ø or å
-			&& res.C4a.equals("da")
-			&& res.C5a.length() >2 //includes typical and distingisable Danish words
-			&& res.C5b.startsWith("0") //do not include typical Norwegain words
-			&& res.C6a.length()>2 //includes frequently used Danish words"
-			&& res.C15a.equals(inclTld ? "y":"n") //The URL belongs to a TLD often used by Danes
-			&& (inclToLinks? Long.parseLong(res.C16a)>0 : Long.parseLong(res.C16a)==0) //There are .dk sites that points to the webpage 
-			&& (inclFromLinks? Long.parseLong(res.C17a)>0 : Long.parseLong(res.C17a)==0); 
+			&& res.C.get("C3a").length()>2 //includes æ,ø or å
+			&& res.C.get("C4a").equals("da")
+			&& res.C.get("C5a").length() >2 //includes typical and distingisable Danish words
+			&& res.C.get("C5b").startsWith("0") //do not include typical Norwegain words
+			&& res.C.get("C6a").length()>2 //includes frequently used Danish words"
+			&& res.C.get("C15a").equals(inclTld ? "y":"n") //The URL belongs to a TLD often used by Danes
+			&& (inclToLinks? Long.parseLong(res.C.get("C16a"))>0 : Long.parseLong(res.C.get("C16a"))==0) //There are .dk sites that points to the webpage 
+			&& (inclFromLinks? Long.parseLong(res.C.get("C17a"))>0 : Long.parseLong(res.C.get("C17a"))==0); 
     }
 	if (ok) { //set code and calculate intDanish 
 		float sizeFactor=1;
@@ -312,10 +317,10 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
     	/* *********************** */
     	/* includes æ,ø or å  	   */
     	/* *********************** */
-        String[] c3aParts = res.C3a.split(" ");
+        String[] c3aParts = res.C.get("C3a").split(" ");
         float c3aFactor=1;
         if (c3aParts.length != 2) {
-        	System.out.println("WARNING: wrong C3a value: " + res.C3a);
+        	System.out.println("WARNING: wrong C3a value: " + res.C.get("C3a"));
         	c3aFactor=0;
         } else {
         	int num = Integer.parseInt(c3aParts[0]);
@@ -333,10 +338,10 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
 		/* ******************************************** */
     	/* includes frequently used Danish words 		*/
     	/* ******************************************** */
-        String[] c6aParts = res.C6a.split(" ");
+        String[] c6aParts = res.C.get("C6a").split(" ");
         float c6aFactor=1;
         if (c6aParts.length != 2) {
-        	System.out.println("WARNING: wrong C6a value: " + res.C6a);
+        	System.out.println("WARNING: wrong C6a value: " + res.C.get("C6a"));
         	c6aFactor=0;
         } else {
             // C6a factor 0.90-1 where (<number of words>/<size>) > 8 is very good (based on calc. on 20 danish sites)
@@ -403,36 +408,38 @@ public static CodesResult setcodes_notDkLanguageVeryLikelyNewFields(SingleCriter
 	CodesResult cr = new CodesResult(); 
 	
     boolean bigSize = (res.Cext1>250); // 50 for size 200-250
-	boolean inclTld = (res.C15a!=null);
-	inclTld = inclTld && (res.C15a.equals("y"));     // The URL belongs to a TLD often used by Danes
+	boolean inclTld = (res.C.get("C15a")!=null);
+	inclTld = inclTld && (res.C.get("C15a").equals("y"));     // The URL belongs to a TLD often used by Danes
 
-	boolean incl7g = (res.C7g!=null);
-	incl7g = incl7g && !res.C7g.startsWith("0");
-	incl7g = incl7g && !res.C7g.isEmpty();
+	boolean incl7g = (res.C.get("C7g")!=null);
+	incl7g = incl7g && !res.C.get("C7g").startsWith("0");
+	incl7g = incl7g && !res.C.get("C7g").isEmpty();
 	
-	boolean incl7h = (res.C7g!=null);
-	incl7h = incl7h && !res.C7g.startsWith("0");
-	incl7h = incl7h && !res.C7g.isEmpty();
+	boolean incl7h = (res.C.get("C7h")!=null);
+	incl7h = incl7h && !res.C.get("C7h").startsWith("0");
+	incl7h = incl7h && !res.C.get("C7h").isEmpty();
 
 	boolean ok = true;
-    ok = ok && ((res.C1a==null) || (res.C1a.isEmpty()) || (res.C1a.startsWith("0"))); //Do NOT include country’s TLD email address 
-    ok = ok && ((res.C2b==null) || (res.C2b.isEmpty()) || (res.C2b.startsWith("n"))); //Do NOT include national phone number 
-    ok = ok && ((res.C3a==null) || (res.C3a.isEmpty()) || (res.C3a.startsWith("0"))); //Do NOT include æ,ø or å
-    ok = ok && ((res.C3g==null) || (res.C3g.isEmpty()) || (res.C3g.startsWith("0"))); //Do NOT include frequently used Danish words with coded æ, ø, å on form ae, oe/o, aa 
-    ok = ok && ((res.C4a==null) || (res.C4a.isEmpty()) || ((!res.C4a.equals("da")) && (!res.C4a.equals("no")) && (!res.C4a.equals("sv"))));	//n-gram does NOT points at Scandinavian language
-    ok = ok && ((res.C5a==null) || (res.C5a.isEmpty()) || (res.C5a.startsWith("0"))); //do NOT includes typical and distingisable Danish words
-    ok = ok && ((res.C7g==null) || (res.C7g.isEmpty()) || (res.C7g.startsWith("0"))); // NOT list of 45 largest Danish towns (http://wwwC4a=="dnavneudvalget.ku.dk/) 
-    ok = ok && ((res.C7h==null) || (res.C7h.isEmpty()) || (res.C7h.startsWith("0"))); // NOT København (Copenhagen) and Danmark (Denmark) translated to English, German, French and other European languages as well as Turkish, Somali and Romanian.
+	
+    ok = ok && ((res.C.get("C1a")==null) || (res.C.get("C1a").isEmpty()) || (res.C.get("C1a").startsWith("0"))); //Do NOT include country’s TLD email address 
+    ok = ok && ((res.C.get("C2b")==null) || (res.C.get("C2b").isEmpty()) || (res.C.get("C2b").startsWith("n"))); //Do NOT include national phone number 
+    ok = ok && ((res.C.get("C3a")==null) || (res.C.get("C3a").isEmpty()) || (res.C.get("C3a").startsWith("0"))); //Do NOT include æ,ø or å
+    ok = ok && ((res.C.get("C3g")==null) || (res.C.get("C3g").isEmpty()) || (res.C.get("C3g").startsWith("0"))); //Do NOT include frequently used Danish words with coded æ, ø, å on form ae, oe/o, aa 
+    ok = ok && ((res.C.get("C4a")==null) || (res.C.get("C4a").isEmpty()) || ((!res.C.get("C4a").equals("da")) 
+    		&& (!res.C.get("C4a").equals("no")) && (!res.C.get("C4a").equals("sv"))));	//n-gram does NOT points at Scandinavian language
+    ok = ok && ((res.C.get("C5a")==null) || (res.C.get("C5a").isEmpty()) || (res.C.get("C5a").startsWith("0"))); //do NOT includes typical and distingisable Danish words
+    ok = ok && ((res.C.get("C7g")==null) || (res.C.get("C7g").isEmpty()) || (res.C.get("C7g").startsWith("0"))); // NOT list of 45 largest Danish towns (http://wwwC4a=="dnavneudvalget.ku.dk/) 
+    ok = ok && ((res.C.get("C7h")==null) || (res.C.get("C7h").isEmpty()) || (res.C.get("C7h").startsWith("0"))); // NOT København (Copenhagen) and Danmark (Denmark) translated to English, German, French and other European languages as well as Turkish, Somali and Romanian.
     if (e!=NotDkExceptions.unions) {
-        ok = ok && ((res.C8c==null) || (res.C8c.isEmpty()) || (res.C8c.startsWith("0"))); // unions
+        ok = ok && ((res.C.get("C8c")==null) || (res.C.get("C8c").isEmpty()) || (res.C.get("C8c").startsWith("0"))); // unions
     }
     if (e!=NotDkExceptions.companies) {
-        ok = ok && ((res.C9e==null) || (res.C9e.isEmpty()) || (res.C9e.startsWith("0"))); // companies
-        ok = ok && ((res.C9f==null) || (res.C9f.isEmpty()) || (res.C9f.startsWith("n"))); // companies
+        ok = ok && ((res.C.get("C9e")==null) || (res.C.get("C9e").isEmpty()) || (res.C.get("C9e").startsWith("0"))); // companies
+        ok = ok && ((res.C.get("C9f")==null) || (res.C.get("C9f").isEmpty()) || (res.C.get("C9f").startsWith("n"))); // companies
     }
-    ok = ok && ((res.C10c==null) || (res.C10c.isEmpty()) || (res.C10c.startsWith("0"))); // NOT look for typical patterns in Danish surnames like names ending in 'sen' (for son)
-    ok = ok && ((res.C16a==null) || (Long.parseLong(res.C16a)==0));   //The URL does NOT belong to a TLD often used by Danes
-    ok = ok && ((res.C17a==null) || (Long.parseLong(res.C17a)==0));   //The URL does NOT belong to a TLD often used by Danes
+    ok = ok && ((res.C.get("C10c")==null) || (res.C.get("C10c").isEmpty()) || (res.C.get("C10c").startsWith("0"))); // NOT look for typical patterns in Danish surnames like names ending in 'sen' (for son)
+    ok = ok && ((res.C.get("C16a")==null) || (Long.parseLong(res.C.get("C16a"))==0));   //The URL does NOT belong to a TLD often used by Danes
+    ok = ok && ((res.C.get("C17a")==null) || (Long.parseLong(res.C.get("C17a"))==0));   //The URL does NOT belong to a TLD often used by Danes
 
     if (ok) { // Candidate
    	 	if (e==NotDkExceptions.noException) {
@@ -456,21 +463,21 @@ public static CodesResult setcodes_notDkLanguageVeryLikely(SingleCriteriaResult 
 	boolean bigSize = (res.Cext1>250); // 50 for size 200-250
     int interval = (bigSize ? 30 : 50);
     
-	boolean inclTld = (res.C15a!=null);
-	inclTld = inclTld && (res.C15a.equals("y"));     // The URL belongs to a TLD often used by Danes
+	boolean inclTld = (res.C.get("C15a")!=null);
+	inclTld = inclTld && (res.C.get("C15a").equals("y"));     // The URL belongs to a TLD often used by Danes
 
-	boolean incl6a = (res.C6a!=null);
-	incl6a = incl6a && !res.C6a.startsWith("0");
-	incl6a = incl6a && !res.C6a.isEmpty();
+	boolean incl6a = (res.C.get("C6a") !=null);
+	incl6a = incl6a && !res.C.get("C6a").startsWith("0");
+	incl6a = incl6a && !res.C.get("C6a").isEmpty();
 	//System.out.println("incl6a: " + incl6a + " - 6a: " + res.C6a);
 	
-	boolean incl7c = (res.C7c!=null);
-	incl7c = incl7c && !res.C7c.startsWith("0");
-	incl7c = incl7c && !res.C7c.isEmpty();
+	boolean incl7c = (res.C.get("C7c")!=null);
+	incl7c = incl7c && !res.C.get("C7c").startsWith("0");
+	incl7c = incl7c && !res.C.get("C7c").isEmpty();
 	
-	boolean incl7d = (res.C7d!=null);
-	incl7d = incl7d && !res.C7d.startsWith("0");
-	incl7d = incl7d && !res.C7d.isEmpty();
+	boolean incl7d = (res.C.get("C7d")!=null);
+	incl7d = incl7d && !res.C.get("C7d").startsWith("0");
+	incl7d = incl7d && !res.C.get("C7d").isEmpty();
 	
 	/*boolean incl8a = (res.C8a!=null);
 	incl8a = incl8a && !res.C8a.startsWith("0");
@@ -488,31 +495,33 @@ public static CodesResult setcodes_notDkLanguageVeryLikely(SingleCriteriaResult 
     //int endsize = (interval == 30 ?   0 : 250);
     
     boolean ok = true;
-    ok = ok && ((res.C1a==null) || (res.C1a.isEmpty()) || (res.C1a.startsWith("0"))); //Do NOT include country’s TLD email address 
-    ok = ok && ((res.C2a==null) || (res.C2a.isEmpty()) || (res.C2a.startsWith("0"))); //Do NOT include national phone number 
-    ok = ok && ((res.C3a==null) || (res.C3a.isEmpty()) || (res.C3a.startsWith("0"))); //Do NOT include æ,ø or å
-    ok = ok && ((res.C3b==null) || (res.C3b.isEmpty()) || (res.C3b.startsWith("0"))); //Do NOT include frequently used Danish words with coded æ, ø, å on form ae, oe/o, aa 
-    ok = ok && ((res.C3c==null) || (res.C3c.isEmpty()) || (res.C3c.startsWith("0"))); //Do NOT include same as C3a, but on the URL in uft8 URL encoding
-    ok = ok && ((res.C3d==null) || (res.C3d.isEmpty()) || (res.C3d.startsWith("0"))); //Do NOT include same as C3c, but on the URL in uft8 URL encoding
-    ok = ok && ((res.C4a==null) || (res.C4a.isEmpty()) || ((!res.C4a.equals("da")) && (!res.C4a.equals("no")) && (!res.C4a.equals("sv"))));	//n-gram does NOT points at Scandinavian language
-    ok = ok && ((res.C5a==null) || (res.C5a.isEmpty()) || (res.C5a.startsWith("0"))); //do NOT includes typical and distingisable Danish words
-    ok = ok && ((res.C6b==null) || (res.C6b.isEmpty()) || (res.C6b.startsWith("0"))); // NOT typical Danish words like 'dansk', 'Danmark' and 'forening'
-    ok = ok && ((res.C6c==null) || (res.C6c.isEmpty()) || (res.C6c.startsWith("0"))); // NOT same as C6b, but on the URL, plus typical Danish notions '/dk/' or '/da/' 
-    ok = ok && ((res.C7a==null) || (res.C7a.isEmpty()) || (res.C7a.startsWith("0"))); // NOT list of 45 largest Danish towns (http://wwwC4a=="dnavneudvalget.ku.dk/) 
-    ok = ok && ((res.C7b==null) || (res.C7b.isEmpty()) || (res.C7b.startsWith("0"))); // NOT same as C7a, but on the URL 
-    ok = ok && ((res.C7e==null) || (res.C7e.isEmpty()) || (res.C7e.startsWith("0"))); // NOT København (Copenhagen) and Danmark (Denmark) translated to English, German, French and other European languages as well as Turkish, Somali and Romanian.
-    ok = ok && ((res.C7f==null) || (res.C7f.isEmpty()) || (res.C7f.startsWith("0"))); // NOT same as C7e, but on the URL 
-    ok = ok && ((res.C8a==null) || (res.C8a.isEmpty()) || (res.C8a.startsWith("0"))); // unions
-    ok = ok && ((res.C8b==null) || (res.C8b.isEmpty()) || (res.C8b.startsWith("0"))); // unions
-    ok = ok && ((res.C9a==null) || (res.C9a.isEmpty()) || (res.C9a.startsWith("0"))); // NOT same as C9b, but on the URL
-    ok = ok && ((res.C9b==null) || (res.C9b.isEmpty()) || (res.C9b.startsWith("0"))); // companies
-    ok = ok && ((res.C9c==null) || (res.C9c.isEmpty()) || (res.C9c.startsWith("0"))); // companies
-    ok = ok && ((res.C9d==null) || (res.C9d.isEmpty()) || (res.C9d.startsWith("0"))); // NOT search for CVR + 8 digits for registered Danish company number 
-    ok = ok && ((res.C10a==null) || (res.C10a.isEmpty()) || (res.C10a.startsWith("0"))); // NOT look for typical patterns in Danish surnames like names ending in 'sen' (for son)
-    ok = ok && ((res.C10b==null) || (res.C10b.isEmpty()) || (res.C10b.startsWith("0"))); // NOT look in list of 150 frequently used Danish first names and surnames
-    ok = ok && ((res.C15a==null) || (res.C15a.isEmpty()) || (res.C15a.equals(inclTld ? "y":"n")));   //The URL does NOT belong to a TLD often used by Danes
-    ok = ok && ((res.C16a==null) || (Long.parseLong(res.C16a)==0));   //The URL does NOT belong to a TLD often used by Danes
-    ok = ok && ((res.C17a==null) || (Long.parseLong(res.C17a)==0));   //The URL does NOT belong to a TLD often used by Danes
+    // look at res.C1a
+    ok = ok && ((res.C.get("C1a")==null) || (res.C.get("C1a").isEmpty()) || (res.C.get("C1a").startsWith("0"))); //Do NOT include country’s TLD email address 
+    ok = ok && ((res.C.get("C2a")==null) || (res.C.get("C2a").isEmpty()) || (res.C.get("C2a").startsWith("0"))); //Do NOT include national phone number 
+    ok = ok && ((res.C.get("C3a")==null) || (res.C.get("C3a").isEmpty()) || (res.C.get("C3a").startsWith("0"))); //Do NOT include æ,ø or å
+    ok = ok && ((res.C.get("C3b")==null) || (res.C.get("C3b").isEmpty()) || (res.C.get("C3b").startsWith("0"))); //Do NOT include frequently used Danish words with coded æ, ø, å on form ae, oe/o, aa 
+    ok = ok && ((res.C.get("C3c")==null) || (res.C.get("C3c").isEmpty()) || (res.C.get("C3c").startsWith("0"))); //Do NOT include same as C3a, but on the URL in uft8 URL encoding
+    ok = ok && ((res.C.get("C3d")==null) || (res.C.get("C3d").isEmpty()) || (res.C.get("C3d").startsWith("0"))); //Do NOT include same as C3c, but on the URL in uft8 URL encoding
+    ok = ok && ((res.C.get("C4a")==null) || (res.C.get("C4a").isEmpty()) || ((!res.C.get("C4a").equals("da"))
+    			&& (!res.C.get("C4a").equals("no")) && (!res.C.get("C4a").equals("sv"))));	//n-gram does NOT points at Scandinavian language
+    ok = ok && ((res.C.get("C5a")==null) || (res.C.get("C5a").isEmpty()) || (res.C.get("C5a").startsWith("0"))); //do NOT includes typical and distingisable Danish words
+    ok = ok && ((res.C.get("C6b")==null) || (res.C.get("C6b").isEmpty()) || (res.C.get("C6b").startsWith("0"))); // NOT typical Danish words like 'dansk', 'Danmark' and 'forening'
+    ok = ok && ((res.C.get("C6c")==null) || (res.C.get("C6c").isEmpty()) || (res.C.get("C6c").startsWith("0"))); // NOT same as C6b, but on the URL, plus typical Danish notions '/dk/' or '/da/' 
+    ok = ok && ((res.C.get("C7a")==null) || (res.C.get("C7a").isEmpty()) || (res.C.get("C7a").startsWith("0"))); // NOT list of 45 largest Danish towns (http://wwwC4a=="dnavneudvalget.ku.dk/) 
+    ok = ok && ((res.C.get("C7b")==null) || (res.C.get("C7b").isEmpty()) || (res.C.get("C7b").startsWith("0"))); // NOT same as C7a, but on the URL 
+    ok = ok && ((res.C.get("C7e")==null) || (res.C.get("C7e").isEmpty()) || (res.C.get("C7e").startsWith("0"))); // NOT København (Copenhagen) and Danmark (Denmark) translated to English, German, French and other European languages as well as Turkish, Somali and Romanian.
+    ok = ok && ((res.C.get("C7f")==null) || (res.C.get("C7f").isEmpty()) || (res.C.get("C7f").startsWith("0"))); // NOT same as C7e, but on the URL 
+    ok = ok && ((res.C.get("C8a")==null) || (res.C.get("C8a").isEmpty()) || (res.C.get("C8a").startsWith("0"))); // unions
+    ok = ok && ((res.C.get("C8b")==null) || (res.C.get("C8b").isEmpty()) || (res.C.get("C8b").startsWith("0"))); // unions
+    ok = ok && ((res.C.get("C9a")==null) || (res.C.get("C9a").isEmpty()) || (res.C.get("C9a").startsWith("0"))); // NOT same as C9b, but on the URL
+    ok = ok && ((res.C.get("C9b")==null) || (res.C.get("C9b").isEmpty()) || (res.C.get("C9b").startsWith("0"))); // companies
+    ok = ok && ((res.C.get("C9c")==null) || (res.C.get("C9c").isEmpty()) || (res.C.get("C9c").startsWith("0"))); // companies
+    ok = ok && ((res.C.get("C9d")==null) || (res.C.get("C9d").isEmpty()) || (res.C.get("C9d").startsWith("0"))); // NOT search for CVR + 8 digits for registered Danish company number 
+    ok = ok && ((res.C.get("C10a")==null) || (res.C.get("C10a").isEmpty()) || (res.C.get("C10a").startsWith("0"))); // NOT look for typical patterns in Danish surnames like names ending in 'sen' (for son)
+    ok = ok && ((res.C.get("C10b")==null) || (res.C.get("C10b").isEmpty()) || (res.C.get("C10b").startsWith("0"))); // NOT look in list of 150 frequently used Danish first names and surnames
+    ok = ok && ((res.C.get("C15a")==null) || (res.C.get("C15a").isEmpty()) || (res.C.get("C15a").equals(inclTld ? "y":"n")));   //The URL does NOT belong to a TLD often used by Danes
+    ok = ok && ((res.C.get("C16a")==null) || (Long.parseLong(res.C.get("C16a"))==0));   //The URL does NOT belong to a TLD often used by Danes
+    ok = ok && ((res.C.get("C17a")==null) || (Long.parseLong(res.C.get("C17a"))==0));   //The URL does NOT belong to a TLD often used by Danes
 
     if (ok) { // Candidate
     	if (!incl6a && !incl7c && !incl7d) { // && !incl8a && !incl8b && !incl9b && !incl9c) {

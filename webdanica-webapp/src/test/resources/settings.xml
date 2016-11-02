@@ -43,7 +43,7 @@
 </seeds>
 
 <webapp><resources>
-
+<defaultsecuredsetting>false</defaultsecuredsetting>
 <resource>
 <path>/blacklists/</path>
 <secured>false</secured>

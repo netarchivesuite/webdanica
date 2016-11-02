@@ -1,0 +1,128 @@
+################################################
+Analysis of harvest of seed http://www.texel-internetcafe.nl/
+################################################
+url:http://www.texel-internetcafe.nl/,date:null,extSize:28,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: MEDIUM (0.434447)#en: MEDIUM (0.429974),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:104
+Text: @ IU Reserver
+@ IU Reserver
+
+Links: [http]
+
+url:http://www.texel-internetcafe.nl/index.html,date:null,extSize:28,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: MEDIUM (0.434447)#en: MEDIUM (0.429974),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:104
+Text: @ IU Reserver
+@ IU Reserver
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.kunstpassie2000.nl/2007/frameset.htm
+################################################
+url:http://www.kunstpassie2000.nl/2007/frameset.htm,date:null,extSize:51,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999995),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:2 bo#or,C7d:2 ns#ie,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:100
+Text: Frameset
+Frameset <body bgcolor="#FFFFFF"> </body>
+
+Links: [http]
+
+url:http://www.kunstpassie2000.nl/2007/logoframe.htm,date:null,extSize:36,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 go,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: MEDIUM (0.857140)#ro: MEDIUM (0.142858),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 um,C7d:2 ns#ie,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:102
+Text: Untitled Document
+Untitled Document
+
+Links: [http]
+
+url:http://www.kunstpassie2000.nl/2007/titelframe.htm,CLinks:,date:null,extSize:62,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:lv,C4b:lv: MEDIUM (0.857138)#af: MEDIUM (0.142861),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:3 ns#ie#er,C7d:2 ns#ie,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:100
+Text: Kunstpassie2000vier
+Kunstpassie2000vier Kunstpassie 2000 vijf
+
+Links: []
+
+url:http://www.kunstpassie2000.nl/2007/menu.htm,date:null,extSize:166,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:3 aar#naar#naa,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:nl,C4b:nl: MEDIUM (0.714283)#de: MEDIUM (0.285715),C5a:,C5b:,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:3 ns#aa#er,C7d:2 ns#ie,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:102
+Text: Menu2003
+Menu2003 Agenda Programma Kunstenaars Kunstwerken Muzikanten Diashow Contact Â  Home
+Agenda
+Programma
+Kunstenaars
+Kunstwerken
+Muzikanten
+Diashow
+Contact
+Home
+
+Links: [http]
+
+url:http://www.kunstpassie2000.nl/2007/welkom.htm,date:null,extSize:106,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:0,C3e:0,C3f:0,C3g:0,C4a:en,C4b:en: HIGH (0.999996),C5a:,C5b:,C6a:1 i,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 ing,C7d:2 ns#ie,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:101
+Text: JavaScript: Creating Simple Slide Show
+JavaScript: Creating Simple Slide Show K u n s t i n h e t B o s Â 
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/0605019%20fitness%20set.html
+################################################
+url:http://www.promotiontops.nl/imagepages/0605019%20fitness%20set.html,date:null,extSize:60,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999994),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:0,C7d:0,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 0605019 fitness set
+0605019 fitness set 0605019 fitness set
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/2210513%20kofferset.html
+################################################
+url:http://www.promotiontops.nl/imagepages/2210513%20kofferset.html,date:null,extSize:54,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999993),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 2210513 kofferset
+2210513 kofferset 2210513 kofferset
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/2210514%20kofferset.html
+################################################
+url:http://www.promotiontops.nl/imagepages/2210514%20kofferset.html,date:null,extSize:54,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999993),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 2210514 kofferset
+2210514 kofferset 2210514 kofferset
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/2210514%20kofferset.html
+################################################
+url:http://www.promotiontops.nl/imagepages/2210514%20kofferset.html,date:null,extSize:54,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999993),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 2210514 kofferset
+2210514 kofferset 2210514 kofferset
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/2210517%20kofferset.html
+################################################
+url:http://www.promotiontops.nl/imagepages/2210517%20kofferset.html,date:null,extSize:54,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999993),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 2210517 kofferset
+2210517 kofferset 2210517 kofferset
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/2210512%20kofferset.html
+################################################
+url:http://www.promotiontops.nl/imagepages/2210512%20kofferset.html,date:null,extSize:54,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999993),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:1 er,C7d:1 er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:0,C9c:0,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 2210512 kofferset
+2210512 kofferset 2210512 kofferset
+
+Links: [http]
+
+
+################################################
+Analysis of harvest of seed http://www.promotiontops.nl/imagepages/0402714a%20reisstekker.html
+################################################
+url:http://www.promotiontops.nl/imagepages/0402714a%20reisstekker.html,date:null,extSize:63,extDblChar:100,C1a:0,C2a:0,C2b:n,C3a:0,C3b:0,C3c:0,C3d:1 to,C3e:0,C3f:0,C3g:0,C4a:no,C4b:no: HIGH (0.999994),C5a:0,C5b:0,C6a:0,C6b:0,C6c:0,C6d:0,C7a:0,C7b:0,C7c:2 ker#er,C7d:2 ker#er,C7e:0,C7f:0,C7g:0,C7h:0,C8a:0,C8b:0,C8c:0,C9a:0,C9b:1 iss,C9c:1 iss,C9d:0,C9e:0,C9f:n,C10a:0,C10b:0,C10c:0,C15a:n,C15b:nl,C16a:,C17a:0,C18a:,intDanish:0.0,Source:NETARKIVET,calcDanishCode:106
+Text: 0402714a reisstekker
+0402714a reisstekker 0402714a reisstekker
+
+Links: [http]
+
+

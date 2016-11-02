@@ -23,9 +23,6 @@ import com.antiaction.common.templateengine.TemplateMaster;
 import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
-import dk.kb.webdanica.WebdanicaSettings;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
-import dk.kb.webdanica.datamodel.SeedCassandraDAO;
 import dk.kb.webdanica.utils.Settings;
 import dk.kb.webdanica.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
@@ -58,8 +55,6 @@ public class Environment {
 
 	private String version = null;
 	
-	/** Env. (UNITTEST/TEST/STAGING/PROD) **/
-    private String env;
 
     private WorkThreadAbstract[] workthreads;
     
@@ -112,7 +107,7 @@ public class Environment {
 
     public ArchiveWorkThread archive;
 */
-    public Emailer emailer;
+   
 
     /*
      * Schedules.
@@ -140,18 +135,10 @@ public class Environment {
 
     public List<LogRecord> logRecords = new LinkedList<LogRecord>();
     
-	private String mail_admin;
-	private int smtp_port;
-	private String smtp_host;
-
 	private int defaultItemsPerPage = 25; // create settings
 
-	public SeedCassandraDAO seedDao;
-
 	private ServletContext servletContext;
-
-	public CassandraBlackListDAO blacklistDao;
-
+	
 	private String blacklistsPath;
 
 	private String blacklistPath;
@@ -165,6 +152,16 @@ public class Environment {
 	private File webdanicaSettingsFile;
 
 	private ResourcesMap resourcesMap;
+
+	private String criteriaResultPath;
+
+	private String criteriaResultsPath;
+
+	private String harvestsPath;
+
+	private String harvestPath;
+
+	private Configuration theconfig;
 	
     /**
      * @param servletContext
@@ -270,39 +267,16 @@ public class Environment {
 			throw new ServletException("The parameter 'webdanica-settings' refers to non-existing file: " 
 					+ webdanicaSettingsFile.getAbsolutePath());
 		}
-
-		/*
-		 * Env. (UNITTEST/TEST/STAGING/PROD)
-		 */
-		env = "UNKNOWN";
-		if (Settings.hasKey(WebdanicaSettings.ENVIRONMENT)) {
-			String envString = Settings.get(WebdanicaSettings.ENVIRONMENT);
-			if (!envString.isEmpty()) {
-				env = envString.toUpperCase();
-			}
-		}
-
-		/*
-		 * Read SMTP settings (smtp-host, smtp-port, mail-admin ).
-		 */
-		final int default_smtp_port = 25;// TODO move to constants class
-		final String default_smtp_host = "localhost";// TODO move to constants class
-		final String defaultMailAdmin = "svc@kb.dk"; // TODO move to constants class
-	
-		smtp_port = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
-		smtp_host = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
-		mail_admin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
-
+		
 		logger.info("Connected to NetarchiveSuite system with environmentname: " + 
 				dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
 		
-		String[] ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
-		String[] ignoredProtocols = Settings.getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
+		theconfig = Configuration.getInstance();
 		
 		logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
-				ignoredSuffixes));
+				theconfig.getIgnoredSuffixes()));
 		logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
-				ignoredProtocols));
+				theconfig.getIgnoredProtocols()));
 
 		/*
 		 * Templates.
@@ -315,8 +289,6 @@ public class Environment {
 		} else {
 			throw new ServletException("'The property 'login-template' must be configured in the web.xml");
 		}
-
-
 
 		/*
 		 * Crontabs.
@@ -378,27 +350,12 @@ public class Environment {
 		waybackCheckSchedule = CrontabSchedule.crontabFactory(waybackCheckCrontab);
 		archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
 		emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
-
-		//db = new Cassandra(); // TODO make a Connect class that hides away the DB specifics.
-
-		seedDao = SeedCassandraDAO.getInstance(); 
-		blacklistDao  = CassandraBlackListDAO.getInstance();
 		
 		// Read resources and their secured status from settings.
 		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
 		// if the resource is not found, it sets the secure-status as false, later it will be true (login required)
 		resourcesMap = new ResourcesMap();
 		
-		
-		/*
-		 * Initialize emailer
-		 */
-		boolean dontSendMails = false;
-		if (env.equals("UNKNOWN") || env.equals("UNITTEST")) {
-			dontSendMails = true;	
-		}
-		emailer = Emailer.getInstance(smtp_host, smtp_port, null, null, mail_admin, dontSendMails);
-
 		/*
 		 * Initialize template master.
 		 */
@@ -442,8 +399,8 @@ public class Environment {
         archive.start();
 		 */
 		/** Send a mail to the mailAdmin that the system has started */
-		String subject = "[Webdanica-"  + env + "] started";
-		emailer.sendAdminEmail(subject, getStartMailContents(subject));
+		String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
+		theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
 	}
 	
 	
@@ -472,8 +429,8 @@ public class Environment {
      * Do some cleanup. This waits for the different workflow threads to stop running.
      */
     public void cleanup() {
-		String subject = "[Webdanica-"  + env + "] stopping";
-		emailer.sendAdminEmail(subject, getStopMailContents(subject));
+		String subject = "[Webdanica-"  + theconfig.getEnv() + "] stopping";
+		theconfig.getEmailer().sendAdminEmail(subject, getStopMailContents(subject));
 		if (filterThread != null) {
 			filterThread.stop();
 		}
@@ -483,24 +440,25 @@ public class Environment {
 	
 		// Closing down working threads
 		while (workflow.bRunning || filterThread.bRunning) {
-            String threads = (
-            		//monitoring.bRunning? " Monitoring": "") + 
-            		(workflow.bRunning? " Workflow": "")
-            		+ (filterThread.bRunning? " FilterThread": "")
-            		/*
+			String threads = (
+					//monitoring.bRunning? " Monitoring": "") + 
+					(workflow.bRunning? " Workflow": "")
+					+ (filterThread.bRunning? " FilterThread": "")
+					/*
                     + (pid.bRunning? " PID": "")
                     + (alive.bRunning? " Alive": "")
                     + (fetch.bRunning? " Fetch": "")
                     + (wayback.bRunning? " Wayback": "")
-                    */
-                    )
-            		;
-            logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
-            try {
-                Thread.sleep(5000); // Wait 5 seconds before trying again.
-            } catch (InterruptedException e) {
-            }
-        }
+					 */
+					)
+					;
+			logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
+			try {
+				Thread.sleep(5000); // Wait 5 seconds before trying again.
+			} catch (InterruptedException e) {
+				//
+			}
+		}
 
 		/*
     	if (wayback != null) {
@@ -546,13 +504,16 @@ public class Environment {
         workflow = null;
         monitoring = null;
         */
+		
 		filterThread = null;
 		workflow = null;
-        emailer = null;
         loginHandler = null;
         templateMaster=null;
         setServletConfig(null);
-        seedDao.close();
+        // Should we close all the dao classes independently
+        theconfig.close();
+        
+        
     }
 
     public int getDefaultItemsPerPage() {
@@ -577,7 +538,6 @@ public class Environment {
 	public String getVersion() {
 	    return version;
     }
-
 
 	public ServletConfig getServletConfig() {
 	    return servletConfig;
@@ -665,5 +625,44 @@ public class Environment {
 	public ResourcesMap getResourcesMap() {
 	    return this.resourcesMap;	    
     }
+
+
+	public Object getCriteriaResultPath() {
+	    return this.criteriaResultPath;
+    }
+
+
+	public void setCriteriaResultPath(String string) {
+		this.criteriaResultPath = string;
+    }
+
+
+	public Object getCriteriaResultsPath() {
+		return this.criteriaResultsPath;
+    }
+
+	public void setCriteriaResultsPath(String string) {
+		this.criteriaResultsPath = string;
+    }
 	
+	public void setHarvestsPath(String string) {
+		this.harvestsPath = string;
+    }
+	
+	public String getHarvestsPath() {
+		return this.harvestsPath;
+    }
+	
+	public void setHarvestPath(String string) {
+		this.harvestPath = string;
+    }
+	
+	public String getHarvestPath() {
+		return this.harvestPath;
+    }
+
+
+	public Configuration getConfig() {
+	    return this.theconfig;
+    }
 }

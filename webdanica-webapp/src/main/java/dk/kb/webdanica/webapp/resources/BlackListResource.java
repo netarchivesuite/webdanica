@@ -27,7 +27,7 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.CassandraBlackListDAO;
+import dk.kb.webdanica.datamodel.BlackListDAO;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
@@ -48,12 +48,12 @@ public class BlackListResource implements ResourceAbstract {
     public static final String BLACKLIST_PATH = "/blacklist/";
     private Environment environment;
 
-    private CassandraBlackListDAO dao;
+    private BlackListDAO dao;
     
     @Override
     public void resources_init(Environment environment) {
         this.environment = environment;
-        this.dao = environment.blacklistDao;
+        this.dao = environment.getConfig().getDAOFactory().getBlackListDAO();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BlackListResource implements ResourceAbstract {
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
     	logger.info("pathInfo: " + pathInfo);
         logger.info("resource_id: " + resource_id);
-        BlackList b;
+        BlackList b = null;
         // FIXME when the uid can be retrieved from the List argument
         // Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
         String[] pathInfoParts  = pathInfo.split(BLACKLIST_PATH);
@@ -87,7 +87,10 @@ public class BlackListResource implements ResourceAbstract {
             if (UUIDString.endsWith("/")) {
             	UUIDString = UUIDString.substring(0, UUIDString.length()-1);
             }
-            b = dao.readBlackList(UUID.fromString(UUIDString));
+            try {
+                b = dao.readBlackList(UUID.fromString(UUIDString));
+            } catch (Exception e) {
+            }
             if (b == null) { // no blacklist found with UID=UUIDString
             	logger.warning("No blacklist found with uid=" + UUIDString);
             	b = new BlackList(dummyUUID, "dummyUUD", "No blacklist found with UUID=" + UUIDString, dummyList, System.currentTimeMillis() , false);

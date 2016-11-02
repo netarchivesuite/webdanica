@@ -6,9 +6,10 @@
 
 ## bash scripts/$callscript \'$prefix$J'/*gz'\' $basedir/$dirname /home/hadoop/scripts/criteriaRun-combo-v1.pig &> $basedir/error-$dirname.log
 
-export PIG_VERSION=0.12.1
+export PIG_VERSION=0.16.0
 #export PIG_HOME=$HOME/pig-$PIG_VERSION
 export PIG_HOME=/usr/java/pig-$PIG_VERSION
+#export PIG_OPTS=-verbose:class
 export LOG4J_CONFIG=/home/svc-admin/conf/log4j_pig.properties
 
 export LOG4J="-Dlog4j.configuration=file:${LOG4J_CONFIG}"

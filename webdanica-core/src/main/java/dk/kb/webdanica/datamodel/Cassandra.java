@@ -4,6 +4,8 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 
+import dk.kb.webdanica.datamodel.dao.CassandraSettings;
+
 public class Cassandra implements Database {
 
 	private Session session;

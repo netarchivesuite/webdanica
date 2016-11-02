@@ -1,7 +1,8 @@
 package dk.kb.webdanica.datamodel.criteria;
 
 import java.io.File;
-import java.math.BigInteger;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,8 +11,10 @@ import java.util.Set;
 
 import dk.kb.webdanica.criteria.Words;
 import dk.kb.webdanica.utils.TextUtils;
+import org.jwat.common.Base64;
 
 public class CriteriaUtils {
+	
 	public static String findC9eval(String c9b, String c9e)  {
 		String s = "";
 		if (c9b!=null && (!c9b.isEmpty() && !c9b.startsWith("0"))) {
@@ -216,6 +219,11 @@ public class CriteriaUtils {
 		return s;
 	}
 
+	public static String toBase64(String text) throws UnsupportedEncodingException {
+		return Base64.encodeString(text);
+    }
 	
-	
+	public static String fromBase64(String text) throws IOException {
+		return Base64.decodeToString(text, false);
+    }
 }

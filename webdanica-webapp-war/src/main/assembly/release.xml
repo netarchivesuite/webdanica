@@ -24,6 +24,13 @@
       <outputDirectory>/WEB-INF/lib/</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/../webdanica-core/lib/</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory>/WEB-INF/lib/</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/../webdanica-webapp/lib/netarkivet-dependencies/</directory>
       <includes>
         <include>*.jar</include>

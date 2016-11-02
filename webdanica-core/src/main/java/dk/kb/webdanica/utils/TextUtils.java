@@ -194,7 +194,28 @@ public class TextUtils {
         }
         return tokens;
     }
-
+    
+    public static Set<String> tokenizeUrl(String text) {	
+        String words[] = text.split("/");
+        
+        Set<String> tokens = new HashSet<String>(); 
+        for (String word: words) {
+            String wordTrimmed = word.trim(); 
+            if (wordTrimmed.endsWith(",")) {
+                //System.out.println("Token before: '" + wordTrimmed + "'");
+                wordTrimmed = wordTrimmed.substring(0, wordTrimmed.length() - 1);
+                //System.out.println("Token after: '" + wordTrimmed + "'");
+            }
+            if (wordTrimmed.endsWith(".")) {
+                wordTrimmed = wordTrimmed.substring(0, wordTrimmed.length() - 1);
+            }
+            if (wordTrimmed.length() > 0) {
+                tokens.add(wordTrimmed);
+            }
+        }
+        return tokens;
+    }
+    
     public static Set<String> findMatches(String text,
             String[] wordsToFind) {
         List<String> words = Arrays.asList(wordsToFind);
@@ -206,5 +227,5 @@ public class TextUtils {
         Set<String> tokens = TextUtils.tokenizeText(text);
         tokens.retainAll(wordsToFind);
         return tokens;
-    }    
+    }  
 }

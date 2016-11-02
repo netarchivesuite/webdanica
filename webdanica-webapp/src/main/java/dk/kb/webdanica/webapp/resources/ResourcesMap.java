@@ -19,12 +19,14 @@ public class ResourcesMap {
 	
 	
 	private static final Logger logger = Logger.getLogger(ResourcesMap.class.getName());
+	private boolean defaultSecuredValue;
 	
 	public ResourcesMap() {
 		String[] paths = new String[]{};
 		String[] bools = new String[]{};
 		map = new HashMap<String, ResourceDescription>();
 		try {
+			defaultSecuredValue = Settings.getBoolean(WebdanicaSettings.WEBAPP_DEFAULT_SECURED_SETTING);
 			paths = Settings.getAll(WebdanicaSettings.WEBAPP_RESOURCE_PATH);
 			bools = Settings.getAll(WebdanicaSettings.WEBAPP_RESOURCE_SECURED);
 		} catch (UnknownID e) {
@@ -51,8 +53,8 @@ public class ResourcesMap {
 		ResourceDescription rd = map.get(path);
 		if (rd == null) {
 			logger.warning("No resource found in settings with path '" + path 
-					+ "'. Returning dummy resourcedescription with secured=true");
-			rd = new ResourceDescription("dummypath", true);
+					+ "'. Returning dummy resourcedescription with secured=" + defaultSecuredValue);
+			rd = new ResourceDescription("dummypath", defaultSecuredValue);
 		}
 		return rd;
 	}

@@ -1,0 +1,80 @@
+Harvestlog for  seedfile /home/test/harvestTrials/test_danica_urls.txt
+################################################################################
+Seed: https://changecoachdk.com/resources/
+HarvestName: webdanica-trial-1470219964356
+Successful: true
+EndState: DONE
+Files harvested: 60-47-20160803102623295-00000-dia-prod-udv-01.kb.dk.warc.gz,60-metadata-1.warc
+################################################################################
+Seed: https://noerrebro.wordpress.com/
+HarvestName: webdanica-trial-1470220066063
+Successful: true
+EndState: DONE
+Files harvested: 61-48-20160803102822184-00000-dia-prod-udv-01.kb.dk.warc.gz,61-metadata-1.warc
+################################################################################
+Seed: http://www.baungaard-holmelin.com/
+HarvestName: webdanica-trial-1470220737277
+Successful: true
+EndState: DONE
+Files harvested: 62-49-20160803103922115-00000-dia-prod-udv-01.kb.dk.warc.gz,62-metadata-1.warc
+################################################################################
+Seed: http://www.bakkenbears.com/nyhedsarkiv/305-fem-unge-i-bearstruppen/
+HarvestName: webdanica-trial-1470220837623
+Successful: true
+EndState: DONE
+Files harvested: 63-50-20160803104052021-00000-dia-prod-udv-01.kb.dk.warc.gz,63-metadata-1.warc
+################################################################################
+Seed: http://www.kompangroup.com/corporate-responsibility/
+HarvestName: webdanica-trial-1470221478572
+Successful: true
+EndState: DONE
+Files harvested: 64-51-20160803105152480-00000-dia-prod-udv-01.kb.dk.warc.gz,64-metadata-1.warc
+################################################################################
+Seed: http://juul.blogg.se/category/sprog.html
+HarvestName: webdanica-trial-1470221603949
+Successful: true
+EndState: DONE
+Files harvested: 65-52-20160803105352215-00000-dia-prod-udv-01.kb.dk.warc.gz,65-metadata-1.warc
+################################################################################
+Seed: http://www.handball-world.com/o.red.c/news-1-1-29-54789.html
+HarvestName: webdanica-trial-1470221704305
+Successful: true
+EndState: DONE
+Files harvested: 66-53-20160803105522425-00000-dia-prod-udv-01.kb.dk.warc.gz,66-metadata-1.warc
+################################################################################
+Seed: http://www.deutsch-tuerkische-nachrichten.de/2015/07/516131/meuterei-in-daenemark-soldaten-wollen-nicht-mehr-gegen-den-is-kaempfen/
+HarvestName: webdanica-trial-1470221804641
+Successful: true
+EndState: DONE
+Files harvested: 67-54-20160803105722321-00000-dia-prod-udv-01.kb.dk.warc.gz,67-54-20160803105735474-00001-dia-prod-udv-01.kb.dk.warc.gz,67-metadata-1.warc
+################################################################################
+Seed: http://theidiomaticorchestra.net/6-active-harmony/
+HarvestName: webdanica-trial-1470222536028
+Successful: true
+EndState: DONE
+Files harvested: 68-55-20160803110922385-00000-dia-prod-udv-01.kb.dk.warc.gz,68-metadata-1.warc
+################################################################################
+Seed: http://bordtennis.spilleland.com/
+HarvestName: webdanica-trial-1470222636439
+Successful: true
+EndState: DONE
+Files harvested: 69-56-20160803111052093-00000-dia-prod-udv-01.kb.dk.warc.gz,69-metadata-1.warc
+################################################################################
+Seed: https://issuu.com/videbaek/docs/1-2016_7c76a988e33407/6
+HarvestName: webdanica-trial-1470222736737
+Successful: true
+EndState: DONE
+Files harvested: 70-57-20160803111252352-00000-dia-prod-udv-01.kb.dk.warc.gz,70-metadata-1.warc
+################################################################################
+Seed: http://www.reuters.com/article/denmark-consumersentiment-idUSEONG7D0U8
+HarvestName: webdanica-trial-1470222837041
+Successful: true
+EndState: DONE
+Files harvested: 71-58-20160803111422261-00000-dia-prod-udv-01.kb.dk.warc.gz,71-metadata-1.warc
+################################################################################
+Seed: https://twitter.com/Heunicke
+HarvestName: webdanica-trial-1470223507777
+Successful: true
+EndState: DONE
+Files harvested: 72-59-20160803112522487-00000-dia-prod-udv-01.kb.dk.warc.gz,72-metadata-1.warc
+################################################################################
