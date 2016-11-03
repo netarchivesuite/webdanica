@@ -2,7 +2,7 @@ package dk.kb.webdanica.webapp;
 
 import java.util.Locale;
 
-import dk.kb.webdanica.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.Status;
 import dk.netarkivet.common.utils.I18n;
 
 public class MenuItem {

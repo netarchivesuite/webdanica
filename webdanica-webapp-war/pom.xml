@@ -6,7 +6,7 @@
   <parent>
     <groupId>dk.netarkivet</groupId>
     <artifactId>webdanica</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>webdanica-webapp-war</artifactId>

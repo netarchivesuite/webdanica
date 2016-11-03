@@ -26,8 +26,8 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.BlackList;
+import dk.kb.webdanica.core.datamodel.BlackListDAO;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;

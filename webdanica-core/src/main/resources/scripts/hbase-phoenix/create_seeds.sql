@@ -3,12 +3,13 @@ DROP INDEX IF EXISTS seeds_status_idx ON seeds;
 DROP TABLE IF EXISTS seeds;
 
 CREATE TABLE seeds (
-    url VARCHAR(256) PRIMARY KEY,
+    url VARCHAR PRIMARY KEY,
     danica INTEGER,
     exported BOOLEAN,
-    hostname VARCHAR(256),
+    host VARCHAR(256),
+    domain VARCHAR(256),
     inserted_time TIMESTAMP,
-    redirected_url VARCHAR(256),
+    redirected_url VARCHAR,
     status INTEGER,
     status_reason VARCHAR(256),
     tld VARCHAR(64)

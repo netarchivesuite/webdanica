@@ -19,9 +19,9 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
-import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedsDAO;
-import dk.kb.webdanica.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.SeedsDAO;
+import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.MenuItem;
@@ -1080,7 +1080,7 @@ public class SeedsResource implements ResourceAbstract {
 
 	private static List<MenuItem> makemenuArray(SeedsDAO dao) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();
-		I18n i18n = new I18n(dk.kb.webdanica.Constants.WEBDANICA_TRANSLATION_BUNDLE);
+		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
 		Locale locDa = new Locale("da");
 		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
 			Long count = dao.getSeedsCount(Status.fromOrdinal(i));

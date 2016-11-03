@@ -1,0 +1,46 @@
+package dk.kb.webdanica.core.datamodel;
+
+import java.util.List;
+
+import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.SeedsDAO;
+import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.CassandraSeedDAO;
+import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
+
+/**
+ * This depends on the Cassandra webdanica keyspace existing 
+ * at localhost (127.0.0.1) on port 9042, and open for all users
+ * To run, it requires a WebdanicaSettingsfile containing a list of ignored suffixes
+ */
+public class SeedsDaoTester {
+
+	public static void main(String[] args) throws Exception {
+		SeedsDAO dao = CassandraSeedDAO.getInstance();
+		List<Seed> seeds = dao.getSeeds(Status.NEW,100000);
+		System.out.println("Found '" +  seeds.size() + "' size with status NEW before filtering out urls with ignored suffixes");
+		for (Seed s: seeds) {
+	    	String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(s.getUrl());
+	    	if (ignoredSuffix != null) {
+	    		s.setState(Status.REJECTED);
+	    		s.setStatusReason("REJECTED because it matches ignored suffix '" + ignoredSuffix + "'");
+	    	} else {
+	    		s.setState(Status.READY_FOR_HARVESTING);
+	    		s.setStatusReason("");
+	    	}
+	    	dao.updateState(s);
+	    }
+		seeds = dao.getSeeds(Status.NEW,100000);
+		System.out.println("Found '" +  seeds.size() + "' size with status NEW after filtering out urls with ignored suffixes");
+		seeds = dao.getSeeds(Status.REJECTED,100000);
+		System.out.println("Found '" +  seeds.size() + "' size with status REJECTED after filtering out urls with ignored suffixes");
+		System.out.println("Found '" +  seeds.size() + "' size with status READY_FOR_HARVESTING after filtering out urls with ignored suffixes");
+
+		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
+			Long longvalue = dao.getSeedsCount(Status.fromOrdinal(i));
+			System.out.println("Found at status " + Status.fromOrdinal(i) +  ": " + longvalue);
+		}
+		dao.close();
+	}
+
+}

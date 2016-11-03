@@ -2,7 +2,7 @@ import java.io.IOException;
 
 import org.jwat.common.Base64;
 
-import dk.kb.webdanica.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 
 
 public class TestBase64Conversion {

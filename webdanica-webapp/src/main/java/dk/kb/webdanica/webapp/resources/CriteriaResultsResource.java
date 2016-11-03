@@ -20,9 +20,9 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.criteria.Codes;
-import dk.kb.webdanica.datamodel.criteria.SingleCriteriaResult;
+import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.criteria.Codes;
+import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;

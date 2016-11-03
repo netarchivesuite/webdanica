@@ -23,8 +23,8 @@ import com.antiaction.common.templateengine.TemplateMaster;
 import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
-import dk.kb.webdanica.utils.Settings;
-import dk.kb.webdanica.utils.SettingsUtilities;
+import dk.kb.webdanica.core.utils.Settings;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;

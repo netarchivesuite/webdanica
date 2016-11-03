@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import dk.kb.webdanica.exceptions.WebdanicaException;
-import dk.kb.webdanica.utils.Settings;
-import dk.kb.webdanica.WebdanicaSettings;
+import dk.kb.webdanica.core.WebdanicaSettings;
+import dk.kb.webdanica.core.exceptions.WebdanicaException;
+import dk.kb.webdanica.core.utils.Settings;
 import dk.netarkivet.common.exceptions.UnknownID;
 
 public class ResourcesMap {

@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import dk.kb.webdanica.datamodel.BlackList;
-import dk.kb.webdanica.datamodel.BlackListDAO;
-import dk.kb.webdanica.datamodel.Seed;
-import dk.kb.webdanica.datamodel.SeedsDAO;
-import dk.kb.webdanica.datamodel.Status;
-import dk.kb.webdanica.seeds.filtering.IgnoredSuffixes;
-import dk.kb.webdanica.seeds.filtering.ResolveRedirects;
+import dk.kb.webdanica.core.datamodel.BlackList;
+import dk.kb.webdanica.core.datamodel.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.SeedsDAO;
+import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
+import dk.kb.webdanica.core.seeds.filtering.ResolveRedirects;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
 

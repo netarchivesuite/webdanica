@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dk.kb.webdanica.utils.Settings;
+import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.webapp.resources.BlackListResource;
 import dk.kb.webdanica.webapp.resources.BlackListsResource;
 import dk.kb.webdanica.webapp.resources.IndexResource;

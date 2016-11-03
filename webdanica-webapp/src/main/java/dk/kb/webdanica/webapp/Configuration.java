@@ -1,12 +1,12 @@
 package dk.kb.webdanica.webapp;
 
-import dk.kb.webdanica.WebdanicaSettings;
-import dk.kb.webdanica.datamodel.WgetSettings;
-import dk.kb.webdanica.datamodel.dao.CassandraDAOFactory;
-import dk.kb.webdanica.datamodel.dao.DAOFactory;
-import dk.kb.webdanica.datamodel.dao.HBasePhoenixDAOFactory;
-import dk.kb.webdanica.utils.Settings;
-import dk.kb.webdanica.utils.SettingsUtilities;
+import dk.kb.webdanica.core.WebdanicaSettings;
+import dk.kb.webdanica.core.datamodel.WgetSettings;
+import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.utils.Settings;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 
 public class Configuration {
 

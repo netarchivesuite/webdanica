@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dk.kb.webdanica.utils.UnitTestUtils;
+import dk.kb.webdanica.core.utils.UnitTestUtils;
 
 public class EnvironmentTester {
 

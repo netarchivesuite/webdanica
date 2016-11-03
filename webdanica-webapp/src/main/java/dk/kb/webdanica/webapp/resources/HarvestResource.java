@@ -25,9 +25,9 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.datamodel.HarvestDAO;
-import dk.kb.webdanica.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.HarvestDAO;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
