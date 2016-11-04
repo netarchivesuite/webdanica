@@ -12,7 +12,6 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.core.datamodel.Cassandra;
-import dk.kb.webdanica.core.datamodel.HarvestDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 

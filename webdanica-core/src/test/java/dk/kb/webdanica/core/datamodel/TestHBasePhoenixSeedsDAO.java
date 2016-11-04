@@ -32,7 +32,7 @@ public class TestHBasePhoenixSeedsDAO {
 			HBasePhoenixSeedsDAO dao = new HBasePhoenixSeedsDAO();
 			dao.insertSeed(seed);
 
-			seed.setState(Status.NEW);
+			seed.setStatus(Status.NEW);
 			seed.setStatusReason("Just added.");
 			dao.updateState(seed);
 

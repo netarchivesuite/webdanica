@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.BlackList;
-import dk.kb.webdanica.core.datamodel.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
 import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;

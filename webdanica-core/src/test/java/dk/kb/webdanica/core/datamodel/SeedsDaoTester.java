@@ -3,9 +3,9 @@ package dk.kb.webdanica.core.datamodel;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.CassandraSeedDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 
 /**
@@ -22,10 +22,10 @@ public class SeedsDaoTester {
 		for (Seed s: seeds) {
 	    	String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(s.getUrl());
 	    	if (ignoredSuffix != null) {
-	    		s.setState(Status.REJECTED);
+	    		s.setStatus(Status.REJECTED);
 	    		s.setStatusReason("REJECTED because it matches ignored suffix '" + ignoredSuffix + "'");
 	    	} else {
-	    		s.setState(Status.READY_FOR_HARVESTING);
+	    		s.setStatus(Status.READY_FOR_HARVESTING);
 	    		s.setStatusReason("");
 	    	}
 	    	dao.updateState(s);

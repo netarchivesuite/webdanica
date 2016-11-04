@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.core.datamodel.HarvestDAO;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 
 public class DatabaseUtils {
 	public static Long parseLongFromString(String value) {

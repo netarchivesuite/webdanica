@@ -13,7 +13,6 @@ import com.datastax.driver.core.Session;
 import dk.kb.webdanica.core.datamodel.Cassandra;
 import dk.kb.webdanica.core.datamodel.Database;
 import dk.kb.webdanica.core.datamodel.IngestLog;
-import dk.kb.webdanica.core.datamodel.IngestLogDAO;
 
 /**
  * DAO for logging skipped entries during ingest in a single entry.

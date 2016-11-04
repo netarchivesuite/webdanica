@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.IngestLog;
-import dk.kb.webdanica.core.datamodel.IngestLogDAO;
 import dk.kb.webdanica.core.datamodel.JDBCUtils;
 
 public class HBasePhoenixIngestLogDAO implements IngestLogDAO {

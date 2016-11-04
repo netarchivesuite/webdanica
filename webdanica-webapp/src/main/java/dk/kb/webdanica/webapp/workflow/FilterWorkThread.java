@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.datamodel.BlackList;
-import dk.kb.webdanica.core.datamodel.BlackListDAO;
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.core.seeds.filtering.ResolveRedirects;
 import dk.kb.webdanica.webapp.Configuration;
@@ -144,7 +144,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 		// Test 1: test for ignored suffixes
 		String ignoredSuffix = IgnoredSuffixes.matchesIgnoredExtension(urlInvestigated);
 		if (ignoredSuffix != null) {
-			s.setState(Status.REJECTED);
+			s.setStatus(Status.REJECTED);
 			s.setStatusReason("REJECTED because it matches ignored suffix '" + ignoredSuffix + "'");
 			return;
 		} 
@@ -152,7 +152,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 		for (BlackList blackList: blacklists) {
 			String result = blackList.evaluateUrl(urlInvestigated);
 			if (result != null) {
-				s.setState(Status.REJECTED);
+				s.setStatus(Status.REJECTED);
 				s.setStatusReason("REJECTED because it matches regular expression '" + result + "' in blacklist '" + blackList.getName() + "'");
 				return;
 			}
@@ -160,15 +160,15 @@ public class FilterWorkThread extends WorkThreadAbstract {
 		
 		// Test 3: test that url is not from the .DK top level domain.
 		if (belongsToDK(urlInvestigated)) {
-			s.setState(Status.REJECTED);
+			s.setStatus(Status.REJECTED);
 			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
 					+ "' belongs to the .dk toplevel and by default is part of legal deposit"); 
 			return;
 		}
 		
 		// Otherwise set status to READY_FOR_HARVESTING and status_reason to the empty String
-		s.setState(Status.READY_FOR_HARVESTING);
-		s.setStatusReason("");
+		s.setStatus(Status.READY_FOR_HARVESTING);
+		s.setStatusReason("Ready for harvesting");
 	}
 
 	private boolean belongsToDK(String urlInvestigated) {

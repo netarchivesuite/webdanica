@@ -103,6 +103,13 @@ public class CalcDanishCode {
 		return urlSet;
 	}
 	
+	/**
+	 * Used by the getCalcDkCodeText() method to describe which criteria if any finds anything for a certain url.
+	 * @param bit
+	 * @param codesOut
+	 * @param viaFields
+	 * @return
+	 */
 	public static String getBitCalcDkCodeText(short bit, Display codesOut, boolean viaFields) {
 	    //text for codes
 		String s = "";
@@ -117,18 +124,18 @@ public class CalcDanishCode {
 	        else if (bit==7) s = (viaFields? "C15a='y'" : "neighboring tld");
 	        else if (bit==8) s = (viaFields? "C16a>0 or C17a>0" : "links");
 	        else if (bit==9) s = (viaFields? "C3b[1]<>0 or C3d[1]<>0"  : "incl ae, oe, aa");
-	        else if (bit==10) s = (viaFields? "new C6d[1]<>0 (as 6a)" : "new limmited freq. used dk word"); //(viaFields? "C6a[1]<>0" : "freq. used dk word");
+	        else if (bit==10) s = (viaFields? "new C6d[1]<>0 (as 6a)" : "new limited freq. used dk word"); //(viaFields? "C6a[1]<>0" : "freq. used dk word");
 	        else if (bit==11) s = (viaFields? "C7c[1]<>0 or C7d[1]<>0" : "suffixes in town");
 	        else if (bit==12) s = (viaFields? "C8a[1]<>0 or C8b[1]<>0" : "union and asscociation");
 	        else if (bit==13) s = (viaFields? "C9b[1]<>0 or C9c[1]<>0" : "company names");
-	        else if (bit==14) s = (viaFields? "new C10c[1]<>0 (as 10b)" : "new limmited danish names"); //(viaFields? "C10a[1]<>0 or C10b[1]<>0" : "danish surnames & endings");
+	        else if (bit==14) s = (viaFields? "new C10c[1]<>0 (as 10b)" : "new limited danish names"); //(viaFields? "C10a[1]<>0 or C10b[1]<>0" : "danish surnames & endings");
 	        else if (bit==15) s = (viaFields? "Cext1>250" : "size>250");
 	        else if (bit==16) s = (viaFields? "C10a[1]<>0" : "danish names (no endings)");
-	        else if (bit==17) s = (viaFields? "new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limmited union or companies"); //Reset
-	        else if (bit==18) s = (viaFields? "new C7g[1]<>0 | C7h[1]<>0 (as 7e,7a)" : "new limmited largest dk towns (incl. translations)"); //Reset 
+	        else if (bit==17) s = (viaFields? "new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limited union or companies"); //Reset
+	        else if (bit==18) s = (viaFields? "new C7g[1]<>0 | C7h[1]<>0 (as 7e,7a)" : "new limited largest dk towns (incl. translations)"); //Reset 
 	        else if (bit==19) s = (viaFields? "Cext2>=120 (<200)" : "maybe chinese (Charsize>150)");
-	        else if (bit==20) s = (viaFields? "C3e[1]<>0 (from 3b) and C3f[1]<>0  (from 3d)" : "limmited wordlist o,oe,ae,aa");
-	        else if (bit==21) s = (viaFields? "new C3g[1]<>0 (as 3b)" : "new limmited wordlist o,oe,ae,aa");
+	        else if (bit==20) s = (viaFields? "C3e[1]<>0 (from 3b) and C3f[1]<>0  (from 3d)" : "limited wordlist o,oe,ae,aa");
+	        else if (bit==21) s = (viaFields? "new C3g[1]<>0 (as 3b)" : "new limited wordlist o,oe,ae,aa");
 	        else if (bit==22) s = (viaFields? "new C2b[1]='y' | C9f[1]='y'" : "ph. or cvr from reg. exp");
 	        else s="UNKNOWN BIT" + bit;
 	    }
@@ -213,7 +220,7 @@ public class CalcDanishCode {
 		        	}
 	        	}
 	        } else if (code>=120 && code<=128) { //(code>=70 && code<=79) { //  danish language indications
-	            s = "dk language tikka";  //replaces 71, 72 - only html not URL
+	            s = "dk language identified by Apache Tika";  //replaces 71, 72 - only html not URL
 	        	if (level!=Level.intervals) {
 	        		int dif = 0;
 	        		if (code>=120 && code<=122) {
@@ -243,7 +250,7 @@ public class CalcDanishCode {
 		        	boolean inclc4a = (bit1==1);     // The URL belongs to a TLD often used by Danes
 		        	boolean inclc3abcd = (bit2==1); // There are .dk sites that points to the webpage
 		        	boolean inclc6abc = (bit3==1);	 // <The webpage points to other .dk sites>
-		            s = s + " - " + (inclc4a ? (viaFields?"C4a='da'/'no'/'sv'":"scandi language") : (viaFields?"NOT C4a='da'/'no'/'sv'":"NOT scandi language" ));
+		            s = s + " - " + (inclc4a ? (viaFields?"C4a='da'/'no'/'sv'":"scandinavian language") : (viaFields?"NOT C4a='da'/'no'/'sv'":"NOT scandinavian language" ));
 		            s = s + " - " + (inclc3abcd ? (viaFields?"incl min. 1 C3abcd>0":"incl min. 1 æøå (C3*)") : (viaFields?"NO C3abcd>0)":"has NO æøå (C3*)" ));
 		            s = s + " - " + (inclc6abc ? (viaFields?"incl min. 1 C6abc>0":"incl min. 1 dk words (C6*)") : (viaFields?"NO C6abc>0)":"has NO dk words (C6*)" ));
 	        	}
@@ -315,10 +322,10 @@ public class CalcDanishCode {
 	    	} else if (code<0)  { //  codes for which fields are set (in xls doc)	=> calcDanishCode <0
 	    		s = "";
 	    		String txt = "";
-	        	String seperator = "++";
+	        	String separator = "++";
 	        	for (int b=1; b<=maxbit; b++) {
 	        		txt = (BitUtils.getBit((short)b, code)==1 ? getBitCalcDkCodeText((short)b, codesOut, viaFields) : "");
-	        		s = s + (s.isEmpty() || txt.isEmpty() ? txt : seperator  + txt);
+	        		s = s + (s.isEmpty() || txt.isEmpty() ? txt : separator  + txt);
 	        	}
 	    		s = "Not decided - but has: " + s;
 	    	} else {

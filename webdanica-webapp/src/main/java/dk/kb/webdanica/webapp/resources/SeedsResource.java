@@ -20,8 +20,8 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.MenuItem;

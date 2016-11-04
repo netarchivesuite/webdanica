@@ -14,7 +14,6 @@ import dk.kb.webdanica.core.datamodel.Cassandra;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Database;
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
 
 /**
@@ -80,32 +79,28 @@ public class CassandraSeedDAO implements SeedsDAO {
 		}
 		return seedList; 
 	}	
-	//String url, String redirectedUrl, Status state, String stateReason, String hostname, String tld, 
-	//DanicaStatus danicastate, long insertedTime, boolean exported
-	private Seed getSeedFromRow(Row row) {
-		/* rl text, 
-		redirected_url text, 
-		status int,  
-		hostname text, 
-		status_reason text, 
-		tld text, 
-		danica int, 
-		inserted_time timestamp,
-		exported boolean,
-  		*/
 
-		return new Seed(row.getString("url"),row.getString("redirected_url"), 
-				Status.fromOrdinal(row.getInt("status")), row.getString("status_reason"),
-				row.getString("hostname"),row.getString("tld"), DanicaStatus.fromOrdinal(row.getInt("danica")),
-				0, // dummy value
-				false // dummy value
+	private Seed getSeedFromRow(Row row) {
+		//Seed(String url, String redirectedUrl, String hostname, String domain, String tld, Long insertedTime, Long updatedTime, DanicaStatus danicastate, 
+		//		Status state, String stateReason) 
+		return new Seed(
+				row.getString("url"),
+				row.getString("redirected_url"), 
+				row.getString("host"),
+				row.getString("domain"),
+				row.getString("tld"),
+				row.getLong("inserted_time"),
+				row.getLong("updated_time"),
+				DanicaStatus.fromOrdinal(row.getInt("danica")),
+				Status.fromOrdinal(row.getInt("status")), 
+				row.getString("status_reason")
 				);
     }
 
 	public boolean insertSeed(Seed singleSeed) {
 		init();	
 		Date insertedDate = new Date();
-		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getState().ordinal(), insertedDate);
+		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getStatus().ordinal(), insertedDate);
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		boolean insertFailed = row.getColumnDefinitions().contains("url");
@@ -118,6 +113,7 @@ public class CassandraSeedDAO implements SeedsDAO {
 			newSession = true;
 		}
 		if (preparedInsert == null || newSession) {
+			//FIXME This is no longer valid 
 			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?,?) IF NOT EXISTS");
 		}
 		
@@ -143,7 +139,7 @@ public class CassandraSeedDAO implements SeedsDAO {
 	
 	public boolean updateState(Seed singleSeed) {
 		init();
-		BoundStatement bound = preparedUpdateState.bind(singleSeed.getState().ordinal(), 
+		BoundStatement bound = preparedUpdateState.bind(singleSeed.getStatus().ordinal(), 
 				singleSeed.getStatusReason(), singleSeed.getUrl());
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();

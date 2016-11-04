@@ -9,7 +9,9 @@ CREATE TABLE domains (
     updated_time TIMESTAMP,
     danicastatus_reason VARCHAR(256),
     tld VARCHAR(64),
-    danica_parts VARCHAR[]
+    danica_parts VARCHAR[],
+    analyzed INTEGER,
+    danicacount INTEGER
 );
 
 CREATE INDEX domains_updated_time_idx ON domains (updated_time);

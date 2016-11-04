@@ -14,7 +14,6 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.core.datamodel.Cassandra;
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;

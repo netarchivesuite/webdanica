@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang.StringUtils;
 
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.JDBCUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;

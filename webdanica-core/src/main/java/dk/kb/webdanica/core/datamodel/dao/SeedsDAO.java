@@ -1,6 +1,9 @@
-package dk.kb.webdanica.core.datamodel;
+package dk.kb.webdanica.core.datamodel.dao;
 
 import java.util.List;
+
+import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.Status;
 
 public interface SeedsDAO {
 
@@ -17,3 +20,6 @@ public interface SeedsDAO {
 	void close();
 
 }
+	
+	
+

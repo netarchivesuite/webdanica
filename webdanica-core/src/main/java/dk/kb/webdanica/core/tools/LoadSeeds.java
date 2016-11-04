@@ -14,13 +14,13 @@ import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.IngestLog;
-import dk.kb.webdanica.core.datamodel.IngestLogDAO;
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.IngestLogDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.UrlUtils;
 

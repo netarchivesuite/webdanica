@@ -7,9 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedDAO;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
 

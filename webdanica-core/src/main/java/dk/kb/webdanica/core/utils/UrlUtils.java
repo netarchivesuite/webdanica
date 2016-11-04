@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.core.utils.UrlInfo;
 import dk.netarkivet.common.utils.DomainUtils;
 
 public class UrlUtils {
@@ -52,4 +53,40 @@ public class UrlUtils {
 	    validSchemesSet.add("ftp");
 	    return scheme != null && validSchemesSet.contains(scheme.toLowerCase());  
     }
+
+
+	public static UrlInfo getInfo(String url) {
+		String hostname = "N/A";
+		String domain = "N/A";
+		String tld = "N/A";
+		try {
+	        URI Url = new URI(url);
+	        hostname = Url.getHost();
+	        domain = DomainUtils.domainNameFromHostname(hostname);
+	        tld = findTld(domain);
+        } catch (Throwable e) {
+	       // TODO log this exception
+        }
+		
+		return new UrlInfo(hostname, domain, tld);
+    }
+
+
+	public static String findTld(String domain) {
+	    if (domain == null || domain.isEmpty()) {
+	    	return "N/A";
+	    }
+	    String[] domainParts = domain.split(".");
+	    int length = domainParts.length;
+	    // Try single dot tld
+	    String singlePartTld = domainParts[length-1];
+	    String doublePartTld = domainParts[length-2] + "." + domainParts[length-1];
+	    if (DomainUtils.isValidDomainName("X." + singlePartTld)) {
+	    	return singlePartTld;
+	    } else if (DomainUtils.isValidDomainName("X." + doublePartTld)) {
+	    	return doublePartTld;
+	    }
+	    return "N/A";
+    }
+	
 }

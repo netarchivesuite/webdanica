@@ -12,10 +12,10 @@ import java.util.Set;
 import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.core.criteria.Words;
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.core.datamodel.HarvestDAO;
+import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.core.utils.StreamUtils;

@@ -10,7 +10,6 @@ import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
 
 public class HBasePhoenixSeedsDAO implements SeedsDAO {
@@ -19,10 +18,22 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
 	private static final String EXISTS_SQL;
 	
+	/*
+			url VARCHAR PRIMARY KEY,
+		    redirected_url VARCHAR,
+		    host VARCHAR(256),
+		    domain VARCHAR(256),
+		    tld VARCHAR(64) // Top level domain for this seed
+		    inserted_time TIMESTAMP,
+		    updated_time TIMESTAMP,
+   		    danica INTEGER, // see dk.kb.webdanica.datamodel.DanicaStatus enum class
+		    status INTEGER, // see dk.kb.webdanica.datamodel.Status enum class
+		    status_reason VARCHAR, // textual explanation behind its state
+	*/
 	static {
 		INSERT_SQL = ""
-				+ "UPSERT INTO seeds (url, status, inserted_time) "
-				+ "VALUES (?,?,?) ";
+				+ "UPSERT INTO seeds (url, redirected_url, host, domain, tld, inserted_time, updated_time, danica, status, status_reason) "
+				+ "VALUES (?,?,?,?,?,?,?,?,?,?) ";
 		EXISTS_SQL = ""
 		        + "SELECT count(*) "
                 + "FROM seeds "
@@ -42,8 +53,15 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
-			stm.setInt(2, singleSeed.getState().ordinal());
-			stm.setTimestamp(3, new Timestamp(insertedDate.getTime()));
+			stm.setString(2, singleSeed.getRedirectedUrl());
+			stm.setString(3, singleSeed.getHostname());
+			stm.setString(4, singleSeed.getDomain());
+			stm.setString(5, singleSeed.getTld());
+			stm.setTimestamp(6, new Timestamp(insertedDate.getTime()));
+			stm.setTimestamp(7, new Timestamp(insertedDate.getTime()));
+			stm.setInt(8, singleSeed.getDanicaStatus().ordinal());
+			stm.setInt(9, singleSeed.getStatus().ordinal());
+			stm.setString(10, singleSeed.getStatusReason());
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -83,8 +101,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
 	static {
 		UPDATE_STATUS_SQL = ""
-				+ "UPSERT INTO seeds (url, status, status_reason) "
-				+ "VALUES (?, ?, ?)";
+				+ "UPSERT INTO seeds (url, status, status_reason, updated_time) "
+				+ "VALUES (?, ?, ?, ?)";
 	}
 
 	@Override
@@ -92,12 +110,14 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		PreparedStatement stm = null;
 		int res = 0;
 		try {
+			Date newDate = new Date();
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
 			stm = conn.prepareStatement(UPDATE_STATUS_SQL);
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
-			stm.setInt(2, singleSeed.getState().ordinal());
+			stm.setInt(2, singleSeed.getStatus().ordinal());
 			stm.setString(3, singleSeed.getStatusReason());
+			stm.setTimestamp(4, new Timestamp(newDate.getTime()));
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -111,8 +131,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 	private static final String UPDATE_REDIRECTED_URL_SQL;
 
 	static {
-		UPDATE_REDIRECTED_URL_SQL = "UPSERT INTO seeds (url, redirected_url) "
-				+ "VALUES (?, ?) ";
+		UPDATE_REDIRECTED_URL_SQL = "UPSERT INTO seeds (url, redirected_url, updated_time) "
+				+ "VALUES (?, ?, ?) ";
 	}
 
 	@Override
@@ -125,6 +145,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 			stm.clearParameters();
 			stm.setString(1, singleSeed.getUrl());
 			stm.setString(2, singleSeed.getRedirectedUrl());
+			stm.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -202,14 +223,15 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 					seed = new Seed(
 							rs.getString("url"),
 							rs.getString("redirected_url"), 
-							Status.fromOrdinal(rs.getInt("status")),
-							rs.getString("status_reason"),
-							rs.getString("hostname"),
+							rs.getString("host"),
+							rs.getString("domain"),
 							rs.getString("tld"),
+							rs.getLong("inserted_time"),
+							rs.getLong("updated_time"),
 							DanicaStatus.fromOrdinal(rs.getInt("danica")),
-							0, // dummy value
-							false // dummy value
-					);
+							Status.fromOrdinal(rs.getInt("status")), 
+							rs.getString("status_reason")
+							);
 					seedList.add(seed);
 				}
 			}

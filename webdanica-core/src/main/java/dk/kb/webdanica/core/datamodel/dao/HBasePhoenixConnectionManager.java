@@ -9,11 +9,18 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.Settings;
 
+
 public class HBasePhoenixConnectionManager {
+	
+	protected static Logger logger;
+	static {
+		logger = Logger.getLogger(HBasePhoenixConnectionManager.class.getName());
+	}
 
 	protected HBasePhoenixConnectionManager() {
 	}
@@ -43,9 +50,11 @@ public class HBasePhoenixConnectionManager {
 		if (Settings.hasKey(WebdanicaSettings.DATABASE_CONNECTION)) {
 			connectionString = Settings.get(WebdanicaSettings.DATABASE_CONNECTION);
 			if (connectionString.isEmpty())  {
+				logger.warning("ConnectionString empty in setting '" + WebdanicaSettings.DATABASE_CONNECTION + ". Using default connectionstring '" +  defaultConnectionString + "'.");
 				connectionString = defaultConnectionString;
 			}
 		} else {
+			logger.warning("ConnectionString setting '" + WebdanicaSettings.DATABASE_CONNECTION + "' not set. Using default connectionstring '" +  defaultConnectionString + "'.");
 			connectionString = defaultConnectionString;
 		}
 		

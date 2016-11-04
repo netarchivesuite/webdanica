@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import dk.kb.webdanica.core.datamodel.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.JDBCUtils;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
 import dk.netarkivet.harvester.datamodel.JobStatus;

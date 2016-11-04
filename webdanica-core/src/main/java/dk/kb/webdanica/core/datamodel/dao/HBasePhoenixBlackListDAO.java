@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import dk.kb.webdanica.core.datamodel.BlackList;
-import dk.kb.webdanica.core.datamodel.BlackListDAO;
 import dk.kb.webdanica.core.datamodel.JDBCUtils;
 
 public class HBasePhoenixBlackListDAO implements BlackListDAO {

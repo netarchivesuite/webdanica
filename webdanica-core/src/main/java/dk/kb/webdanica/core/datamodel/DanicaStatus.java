@@ -3,11 +3,12 @@ package dk.kb.webdanica.core.datamodel;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
 
 public enum DanicaStatus {
-   BEING_INVESTIGATED, 
+   UNDECIDED, 
    NO,
    IMPROBABLE,
    PROBABLE,
-   YES;
+   YES,
+   PARTIALLY;
    
    /**
 	 * Helper method that gives a proper object from e.g. a DB-stored value.
@@ -19,7 +20,7 @@ public enum DanicaStatus {
 	public static DanicaStatus fromOrdinal(int status) {
 		switch (status) {
 		case 0:
-			return BEING_INVESTIGATED; // OR UNKNOWN / UNDECIDED
+			return UNDECIDED;  
 		case 1:
 			return NO;
 		case 2:
@@ -28,6 +29,8 @@ public enum DanicaStatus {
 			return PROBABLE;
 		case 4:
 			return YES;
+		case 5:	
+			return PARTIALLY;
 		default:
 			throw new WebdanicaException("Unknown DanicaStatus value: " + status);
 		}

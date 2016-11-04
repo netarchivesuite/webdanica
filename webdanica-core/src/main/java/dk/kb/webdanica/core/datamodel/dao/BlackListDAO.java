@@ -1,7 +1,9 @@
-package dk.kb.webdanica.core.datamodel;
+package dk.kb.webdanica.core.datamodel.dao;
 
 import java.util.List;
 import java.util.UUID;
+
+import dk.kb.webdanica.core.datamodel.BlackList;
 
 public interface BlackListDAO {
 

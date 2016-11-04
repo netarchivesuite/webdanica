@@ -7,20 +7,20 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
-import dk.kb.webdanica.core.datamodel.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.IngestLog;
-import dk.kb.webdanica.core.datamodel.IngestLogDAO;
 import dk.kb.webdanica.core.datamodel.Seed;
-import dk.kb.webdanica.core.datamodel.SeedsDAO;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
+import dk.kb.webdanica.core.datamodel.dao.IngestLogDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
@@ -125,7 +125,7 @@ public static void main(String[] args) throws Exception {
  	      long millisStarted = System.currentTimeMillis();
  	      SeedsDAO dao = daoFactory.getSeedsDAO();
  	      dao.insertSeed(s);
- 	      s.setState(Status.ANALYSIS_COMPLETED);
+ 	      s.setStatus(Status.ANALYSIS_COMPLETED);
  	      dao.updateState(s);
  	      // TODO should be able to verify that it has changed
  	      long millisEnded = System.currentTimeMillis(); 

@@ -206,7 +206,11 @@ public class SingleCriteriaResult {
     public List<String> getValuesAsStringList(String row_delim, String keyval_delim) {
     	List<String> list = new ArrayList<String>();
     	list.add("url" + keyval_delim + this.url);
-    	list.add("date" + keyval_delim + new Date(this.Cext3) + " - in millis from epoch: "+ this.Cext3); 
+    	if (Cext3 != null) {
+    		list.add("date" + keyval_delim + new Date(this.Cext3) + " - in millis from epoch: "+ this.Cext3);
+    	} else {
+    		list.add("date" + keyval_delim + "N/A" + " - in millis from epoch: "+ "N/A");
+    	}
     	list.add("Cext1/extsize" + keyval_delim + this.Cext1); //3
     	list.add("Cext2/extDblChar" + keyval_delim + this.Cext2); //4
     	

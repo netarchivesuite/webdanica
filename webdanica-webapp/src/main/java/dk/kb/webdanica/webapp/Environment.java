@@ -532,8 +532,6 @@ public class Environment {
         setServletConfig(null);
         // Should we close all the dao classes independently
         theconfig.close();
-        
-        
     }
 
     public int getDefaultItemsPerPage() {

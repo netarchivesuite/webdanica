@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 
 import dk.kb.webdanica.core.datamodel.dao.CassandraCriteriaResultsDAO;
-import dk.kb.webdanica.core.datamodel.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.utils.StreamUtils;
 

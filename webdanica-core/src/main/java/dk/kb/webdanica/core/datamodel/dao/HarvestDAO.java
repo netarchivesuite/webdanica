@@ -1,4 +1,4 @@
-package dk.kb.webdanica.core.datamodel;
+package dk.kb.webdanica.core.datamodel.dao;
 
 import java.util.List;
 

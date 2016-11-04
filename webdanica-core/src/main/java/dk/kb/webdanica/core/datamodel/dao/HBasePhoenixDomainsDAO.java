@@ -1,0 +1,222 @@
+package dk.kb.webdanica.core.datamodel.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.LinkedList;
+import java.util.List;
+
+import dk.kb.webdanica.core.datamodel.DanicaStatus;
+import dk.kb.webdanica.core.datamodel.Domain;
+import dk.kb.webdanica.core.datamodel.JDBCUtils;
+
+public class HBasePhoenixDomainsDAO implements DomainsDAO {
+/*
+	CREATE TABLE domains (
+		    domain VARCHAR PRIMARY KEY,
+		    notes VARCHAR,
+		    danicastatus INTEGER,
+		    updated_time TIMESTAMP,
+		    danicastatus_reason VARCHAR(256),
+		    tld VARCHAR(64),
+		    danica_parts VARCHAR[]
+		);
+*/
+	
+	private static final String INSERT_SQL;
+
+	private static final String EXISTS_SQL;
+	
+	static {
+		INSERT_SQL = ""
+				+ "UPSERT INTO domains (domain, danicastatus, danicastatus_reason, updated_time, tld) "
+				+ "VALUES (?,?,?,?,?)";
+		EXISTS_SQL = ""
+		        + "SELECT count(*) "
+                + "FROM domains "
+                + "WHERE domain=? ";	
+	}
+
+	@Override
+	public boolean insertDomain(Domain domain) throws Exception {
+	    if (existsDomain(domain.getDomain())) {
+	        return false;
+	    }
+		PreparedStatement stm = null;
+		int res = 0;
+		try {
+			Long updatedTime = System.currentTimeMillis(); 
+			if (domain.getUpdatedTime() != null) {
+				updatedTime = domain.getUpdatedTime();
+			}
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			stm = conn.prepareStatement(INSERT_SQL);
+			stm.clearParameters();
+			stm.setString(1, domain.getDomain());
+			stm.setInt(2, domain.getDanicaStatus().ordinal());
+			stm.setString(3, domain.getDanicaStatusReason());
+			stm.setTimestamp(4, new Timestamp(updatedTime));
+			stm.setString(5, domain.getTld());
+			
+			
+			res = stm.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return res != 0;
+	}
+
+	public boolean existsDomain(String domain) throws Exception {
+	    PreparedStatement stm = null;
+        ResultSet rs = null;
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(EXISTS_SQL);
+            stm.clearParameters();
+            stm.setString(1, domain);
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+        return res != 0L;
+	}
+	
+	
+	private static final String DOMAINS_COUNT_BY_STATUS_SQL;
+	private static final String DOMAINS_COUNT_BY_TLD_SQL;
+	private static final String DOMAINS_COUNT_BY_TLD_AND_STATUS_SQL;
+	private static final String  DOMAINS_COUNT_ALL_SQL;
+	static {
+		DOMAINS_COUNT_BY_STATUS_SQL = ""
+				+ "SELECT count(*) "
+				+ "FROM domains "
+				+ "WHERE danicastatus=? ";
+		DOMAINS_COUNT_BY_TLD_SQL = ""
+				+ "SELECT count(*) "
+				+ "FROM domains "
+				+ "WHERE tld=? ";
+		DOMAINS_COUNT_BY_TLD_AND_STATUS_SQL = ""
+				+ "SELECT count(*) "
+				+ "FROM domains "
+				+ "WHERE danicastatus=? AND tld=? ";
+		
+		DOMAINS_COUNT_ALL_SQL = ""
+                + "SELECT count(*) "
+                + "FROM domains ";
+	}
+
+	@Override
+	public Long getDomainsCount(DanicaStatus status, String tld) throws Exception {
+		
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		long res = 0;
+		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			if (status != null && tld != null) {
+			    stm = conn.prepareStatement(DOMAINS_COUNT_BY_TLD_AND_STATUS_SQL);
+			    stm.clearParameters();
+			    stm.setInt(1, status.ordinal());
+			    stm.setString(2, tld);
+			} else if (tld != null) { // ie. status==null
+			    stm = conn.prepareStatement(DOMAINS_COUNT_BY_TLD_SQL);
+                stm.clearParameters();
+                stm.setString(2, tld);
+			} else if (status != null) {  // ie. tld==null
+				stm = conn.prepareStatement(DOMAINS_COUNT_BY_STATUS_SQL);
+				stm.clearParameters();
+                stm.setInt(2, status.ordinal());
+			} else { // tld == null && status == null
+				stm = conn.prepareStatement(DOMAINS_COUNT_ALL_SQL);
+			}
+			rs = stm.executeQuery();
+			if (rs != null && rs.next()) {
+				res = rs.getLong(1);
+			}
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return res;
+	}	
+
+	private static final String SEEDS_BY_STATUS_SQL;
+
+	static {
+		SEEDS_BY_STATUS_SQL = "SELECT * "
+				+ "FROM domains "
+				+ "WHERE danicastatus=? ";
+	}
+
+	@Override
+	public List<Domain> getDomains(DanicaStatus status, String tld, int limit) throws Exception {
+		List<Domain> seedList = new LinkedList<Domain>();
+		Domain domain;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);
+			stm.clearParameters();
+			stm.setInt(1, status.ordinal());
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					
+					domain = getDomain(rs);
+							
+					seedList.add(domain);
+				}
+			}
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return seedList; 
+	}
+
+	private Domain getDomain(ResultSet rs) throws SQLException {
+		return new Domain(
+				rs.getString("domain"),
+				rs.getString("notes"),
+				DanicaStatus.fromOrdinal(rs.getInt("danicastatus")),
+				rs.getTimestamp("updated_time"),
+				rs.getString("danicastatus_reason"),
+				rs.getString("tld"),
+				JDBCUtils.sqlArrayToArrayList(rs.getArray("danica_parts"))
+				);
+    }
+
+	@Override
+	public void close() {
+	}
+
+	@Override
+    public Domain getDomain(String domain) throws Exception {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+}
