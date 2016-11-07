@@ -226,8 +226,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 							rs.getString("host"),
 							rs.getString("domain"),
 							rs.getString("tld"),
-							rs.getLong("inserted_time"),
-							rs.getLong("updated_time"),
+							rs.getTimestamp("inserted_time").getTime(),
+							rs.getTimestamp("updated_time").getTime(),
 							DanicaStatus.fromOrdinal(rs.getInt("danica")),
 							Status.fromOrdinal(rs.getInt("status")), 
 							rs.getString("status_reason")
@@ -249,5 +249,40 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 	@Override
 	public void close() {
 	}
+
+	private static final String SELECT_COUNT_DANICA_SQL;
+
+	static {
+		SELECT_COUNT_DANICA_SQL = ""
+				+ "SELECT COUNT(*) FROM seeds WHERE danica=?";
+	}
+
+	@Override
+    public Long getSeedsDanicaCount(DanicaStatus s) throws Exception {
+		if (s == null)  {
+			return 0L;
+		}
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		long res = 0;
+		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			stm = conn.prepareStatement(SELECT_COUNT_DANICA_SQL);
+			stm.clearParameters();
+			stm.setInt(1, s.ordinal());
+			rs = stm.executeQuery();
+			if (rs != null && rs.next()) {
+				res = rs.getLong(1);
+			}
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return res;
+    }
 
 }

@@ -90,6 +90,7 @@ public class BlackListResource implements ResourceAbstract {
             try {
                 b = dao.readBlackList(UUID.fromString(UUIDString));
             } catch (Exception e) {
+            	logger.warning("Exception thrown during read of blacklist with UUID '" +  UUIDString + "': " + e);
             }
             if (b == null) { // no blacklist found with UID=UUIDString
             	logger.warning("No blacklist found with uid=" + UUIDString);
@@ -212,8 +213,8 @@ public class BlackListResource implements ResourceAbstract {
         
         ResourceUtils.insertText(uidPlace, "uid",  b.getUid().toString(), BLACKLIST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(namePlace, "name",  b.getName(), BLACKLIST_SHOW_TEMPLATE, logger);
-        ResourceUtils.insertText(descriptionPlace, "description",  b.getDescription(), BLACKLIST_SHOW_TEMPLATE, logger);
-        ResourceUtils.insertText(lastupdatetimePlace, "last_update_time",  blackListLastUpdatedTime.toString(), BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(descriptionPlace, "description",  b.getDescription() + "", BLACKLIST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(lastupdatetimePlace, "last_update_time",  blackListLastUpdatedTime + "", BLACKLIST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(listsizePlace, "list_size",  blackListSize + "", BLACKLIST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(activePlace, "activeStatus",  b.isActive() + "", BLACKLIST_SHOW_TEMPLATE, logger);
          

@@ -170,4 +170,10 @@ public class CassandraSeedDAO implements SeedsDAO {
 		boolean updateFailed = row.getColumnDefinitions().contains("url");
 		return !updateFailed;
     }
+
+	@Override
+    public Long getSeedsDanicaCount(DanicaStatus s) {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
 }

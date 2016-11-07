@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.BlackList;
 import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
@@ -37,8 +38,7 @@ public class LoadBlacklists {
 	
 	public LoadBlacklists(File blacklistfile) {
 	   this.blacklistfile = blacklistfile;
-	   final String DEFAULT_DATABASE_SYSTEM = "hbase-phoenix";
-       String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
+       String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
            daoFactory = new CassandraDAOFactory();
        } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
@@ -77,7 +77,8 @@ public class LoadBlacklists {
 		dao.close();
 	}
 	    static DAOFactory getDao() {
-	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, "hbase-phoenix");
+	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, 
+	        		Constants.DEFAULT_DATABASE_SYSTEM);
 	        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
 	            return new CassandraDAOFactory();
 	        } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
@@ -93,7 +94,8 @@ public class LoadBlacklists {
 	public void insertList() {
 		BlackListDAO bdao = daoFactory.getBlackListDAO();
 		String line;
-        long linecount=0L;
+        long entries=0L;
+        long empty=0L;
         String trimmedLine = null;
         BufferedReader fr = null;
         String name = blacklistfile.getName();
@@ -102,12 +104,16 @@ public class LoadBlacklists {
         	fr = new BufferedReader(new FileReader(blacklistfile));
 	        while ((line = fr.readLine()) != null) {
 	            trimmedLine = line.trim();
-	            linecount++;
-	            blackListRegexp.add(trimmedLine);
+	            if (trimmedLine.isEmpty()) {
+	            	empty++;
+	            } else {
+	            	entries++;
+	            	blackListRegexp.add(trimmedLine);
+	            }
 	        }
 	      BlackList b = new BlackList(name, "", blackListRegexp, true);  
 	      bdao.insertList(b);
-	      System.out.println("Created blacklist with name='" + name + "' and #entries=" + linecount);
+	      System.out.println("Created blacklist with name='" + name + "' and #entries=" + entries + ", ignored empty lines: " + empty);
         } catch (Throwable e) {
 	        e.printStackTrace();
         } finally {

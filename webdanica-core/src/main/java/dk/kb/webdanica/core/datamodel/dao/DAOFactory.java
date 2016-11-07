@@ -14,5 +14,7 @@ public interface DAOFactory {
 	public IngestLogDAO getIngestLogDAO();
 
 	public void close();
+
+	public CacheDAO getCacheDAO();
 	
 }

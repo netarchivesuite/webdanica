@@ -49,5 +49,11 @@ public class CassandraDAOFactory implements DAOFactory {
 	public void close() {
 		seedDao.close();
     }
+
+	@Override
+    public CacheDAO getCacheDAO() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
 	
 }

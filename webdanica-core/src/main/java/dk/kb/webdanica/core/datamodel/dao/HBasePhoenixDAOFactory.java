@@ -13,6 +13,8 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 
 	private IngestLogDAO ingestLogDAO;
 
+	private CacheDAO cacheDao;
+
 	public HBasePhoenixDAOFactory() {
 		HBasePhoenixConnectionManager.register();
 	    blacklistDao = new HBasePhoenixBlackListDAO();
@@ -20,6 +22,8 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	    harvestDAO = new HBasePhoenixHarvestDAO();
 	    ingestLogDAO = new HBasePhoenixIngestLogDAO();
 		seedDao = new HBasePhoenixSeedsDAO();
+		cacheDao = new HBasePhoenixCacheDAO();
+		
 	}
 
 	@Override
@@ -51,5 +55,10 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	public void close() {
 		HBasePhoenixConnectionManager.deregister();
 	}
+
+	@Override
+    public CacheDAO getCacheDAO() {
+		return cacheDao;
+    }
 
 }

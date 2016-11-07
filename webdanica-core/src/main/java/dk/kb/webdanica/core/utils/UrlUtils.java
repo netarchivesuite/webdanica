@@ -54,7 +54,6 @@ public class UrlUtils {
 	    return scheme != null && validSchemesSet.contains(scheme.toLowerCase());  
     }
 
-
 	public static UrlInfo getInfo(String url) {
 		String hostname = "N/A";
 		String domain = "N/A";
@@ -65,26 +64,37 @@ public class UrlUtils {
 	        domain = DomainUtils.domainNameFromHostname(hostname);
 	        tld = findTld(domain);
         } catch (Throwable e) {
-	       // TODO log this exception
+        	
+	       
         }
 		
 		return new UrlInfo(hostname, domain, tld);
     }
 
-
+	/**
+	 * Find tld from the given domain by testing 
+	 * either if "X." plus the last two parts of the domain or "X." plus the last part of the domain results in a valid domain.
+	 * If both is valid, then the two-part tld has precedence. If neither is found, then "N/A" is returned 
+	 *  
+	 * @param domain a given domain
+	 * @return the found tld or "N/A" if non found
+	 */
 	public static String findTld(String domain) {
 	    if (domain == null || domain.isEmpty()) {
 	    	return "N/A";
 	    }
-	    String[] domainParts = domain.split(".");
+	    String[] domainParts = domain.split("\\.");
 	    int length = domainParts.length;
-	    // Try single dot tld
+	    // Try single part tlds
 	    String singlePartTld = domainParts[length-1];
+	    // Try double part tlds
 	    String doublePartTld = domainParts[length-2] + "." + domainParts[length-1];
-	    if (DomainUtils.isValidDomainName("X." + singlePartTld)) {
-	    	return singlePartTld;
-	    } else if (DomainUtils.isValidDomainName("X." + doublePartTld)) {
+	    boolean validSinglepart = DomainUtils.isValidDomainName("X." + singlePartTld);
+	    boolean validDoublepart = DomainUtils.isValidDomainName("X." + doublePartTld);
+	    if (validDoublepart) {
 	    	return doublePartTld;
+	    } else if (validSinglepart) {
+	    	return singlePartTld;
 	    }
 	    return "N/A";
     }
