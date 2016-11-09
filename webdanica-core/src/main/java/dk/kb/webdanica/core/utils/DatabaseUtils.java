@@ -1,15 +1,22 @@
 package dk.kb.webdanica.core.utils;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import dk.kb.webdanica.core.Constants;
+import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 
@@ -64,4 +71,59 @@ public class DatabaseUtils {
 	       System.out.println("Time spent computing the stats in secs: " + ((millisEnded - millisStarted)/1000));
 	}
 	
+	public static DAOFactory getDao() {
+		String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, 
+				Constants.DEFAULT_DATABASE_SYSTEM);
+		if ("cassandra".equalsIgnoreCase(databaseSystem)) {
+			return new CassandraDAOFactory();
+		} else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+			return new HBasePhoenixDAOFactory();
+		} else {
+			return new CassandraDAOFactory();
+		}
+	}
+	
+	public static List<String> sqlArrayToArrayList(java.sql.Array sqlArr) throws SQLException {
+		List<String> lst = null;
+		try {
+			if (sqlArr != null) {
+				String[] arr = (String[])(sqlArr.getArray());
+				lst = new ArrayList<String>();
+				for (int i=0; i<arr.length; ++i) {
+					lst.add(arr[i]);
+				}
+			}
+		} finally {
+			if (sqlArr != null) {
+				sqlArr.free();
+			}
+		}
+		return lst;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> sqlArrayRecordSetToArrayList(java.sql.Array sqlArr, Class<T> clazz) throws SQLException {
+		List<T> lst = null;
+		ResultSet rs = null;
+		try {
+			if (sqlArr != null) {
+				rs = sqlArr.getResultSet();
+				if (rs != null) {
+					lst = new ArrayList<T>();
+					while (rs.next()) {
+						lst.add((T)rs.getObject(1, clazz.getClass()));
+					}
+				}
+			}
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (sqlArr != null) {
+				sqlArr.free();
+			}
+		}
+		return lst;
+	}
+
 }

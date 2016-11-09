@@ -88,6 +88,14 @@ public class HBasePhoenixConnectionManager {
 			conn.close();
 		}
 	}
+	
+	public static void closeAllConnections() throws SQLException {
+		for (Connection conn: threadConnectionMap.values()) {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
 
 	public static void deregister() {
 		// Now deregister JDBC drivers in this context's ClassLoader:

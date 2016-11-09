@@ -55,5 +55,16 @@ public class CassandraDAOFactory implements DAOFactory {
 	    // TODO Auto-generated method stub
 	    return null;
     }
+
+	@Override
+    public DomainsDAO getDomainsDAO() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	@Override
+    public String describe() {
+	    return "Apache Cassandra database interface";
+    }
 	
 }

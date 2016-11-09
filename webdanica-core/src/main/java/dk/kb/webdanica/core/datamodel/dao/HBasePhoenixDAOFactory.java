@@ -14,6 +14,8 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	private IngestLogDAO ingestLogDAO;
 
 	private CacheDAO cacheDao;
+	
+	private DomainsDAO domainsDao;
 
 	public HBasePhoenixDAOFactory() {
 		HBasePhoenixConnectionManager.register();
@@ -23,6 +25,7 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	    ingestLogDAO = new HBasePhoenixIngestLogDAO();
 		seedDao = new HBasePhoenixSeedsDAO();
 		cacheDao = new HBasePhoenixCacheDAO();
+		domainsDao = new HBasePhoenixDomainsDAO();
 		
 	}
 
@@ -59,6 +62,16 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 	@Override
     public CacheDAO getCacheDAO() {
 		return cacheDao;
+    }
+
+	@Override
+    public DomainsDAO getDomainsDAO() {
+	    return domainsDao;
+    }
+
+	@Override
+    public String describe() {
+	    return "Apache phoenix database interface";
     }
 
 }

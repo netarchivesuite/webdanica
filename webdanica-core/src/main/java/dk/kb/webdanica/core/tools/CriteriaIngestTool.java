@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class CriteriaIngestTool {
 
@@ -29,12 +30,13 @@ public class CriteriaIngestTool {
 					+ "' does not exist or is not a proper directory");
 			System.exit(1);
 		}
-		DAOFactory daofactory = new HBasePhoenixDAOFactory();
+		DAOFactory daofactory = DatabaseUtils.getDao();
 		try {
 			CriteriaIngest.ingest(harvestLogFile, criteriaresultsdir, true, daofactory);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		} finally {
+			daofactory.close();
 			System.exit(0);
 		}
 		

@@ -20,12 +20,13 @@ public class CalcDanishCode {
 		Set<Integer> set4 = Codes.getCodesForUdgaaede();
 		Set<Integer> set5 = Codes.getCodesForNOTDanishResults();
 		Level level = Level.none;
-		Display codesOut = Display.inText;
+		Display codesOut = Display.noCodes;
 		boolean viaFields = false;
 		System.out.println("Describing codes for cat_likely_dk");
 		for (Integer code: set1){
 			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
 		}
+/*		
 		System.out.println("-----------------------------------");
 		System.out.println("Describing codes for cat_ignored_dk:");
 		for (Integer code: set2){
@@ -46,7 +47,7 @@ public class CalcDanishCode {
 		for (Integer code: set5){
 			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
 		}
-		
+	*/	
 	}	
 	
 	public static int maxbit = 22;

@@ -4,6 +4,8 @@ package dk.kb.webdanica.core.datamodel.dao;
 public interface DAOFactory {
 
 	public SeedsDAO getSeedsDAO();
+	
+	public DomainsDAO getDomainsDAO();
 
 	public CriteriaResultsDAO getCriteriaResultsDAO();
 
@@ -13,8 +15,9 @@ public interface DAOFactory {
 
 	public IngestLogDAO getIngestLogDAO();
 
-	public void close();
-
 	public CacheDAO getCacheDAO();
 	
+	public String describe();
+	
+	public void close();
 }

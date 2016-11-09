@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import dk.kb.webdanica.core.datamodel.BlackList;
-import dk.kb.webdanica.core.datamodel.JDBCUtils;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixBlackListDAO implements BlackListDAO {
 
@@ -77,7 +77,7 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 							uid,
 							rs.getString("name"),
 							rs.getString("description"),
-							JDBCUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
+							DatabaseUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
 							rs.getLong("last_update"),
 							rs.getBoolean("is_active")
 					);
@@ -128,8 +128,7 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 							UUID.fromString(rs.getString("uid")),
 							rs.getString("name"),
 							rs.getString("description"),
-							//JDBCUtils.sqlArrayRecordSetToList(rs.getArray("blacklist"), String.class),
-							JDBCUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
+							DatabaseUtils.sqlArrayToArrayList(rs.getArray("blacklist")),
 							rs.getLong("last_update"),
 							rs.getBoolean("is_active")
 					);

@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import dk.kb.webdanica.core.datamodel.JDBCUtils;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
 public class HBasePhoenixHarvestDAO implements HarvestDAO {
@@ -22,7 +22,7 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 						rs.getString("harvestname"),
 						rs.getString("seedurl"),
 						rs.getBoolean("successful"),
-						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
+						DatabaseUtils.sqlArrayToArrayList(rs.getArray("files")),
 						rs.getString("error"),
 						JobStatus.fromOrdinal(rs.getInt("finalState")),
 						rs.getLong("harvested_time")
@@ -40,7 +40,7 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 						rs.getString("harvestname"),
 						rs.getString("seedurl"),
 						rs.getBoolean("successful"),
-						JDBCUtils.sqlArrayToArrayList(rs.getArray("files")),
+						DatabaseUtils.sqlArrayToArrayList(rs.getArray("files")),
 						rs.getString("error"),
 						JobStatus.fromOrdinal(rs.getInt("finalState")),
 						rs.getLong("harvested_time")

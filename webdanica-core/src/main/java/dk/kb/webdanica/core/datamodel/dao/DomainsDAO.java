@@ -16,4 +16,8 @@ public interface DomainsDAO {
 	void close();
 
 	Long getDomainsCount(DanicaStatus status, String tld) throws Exception;
+
+	boolean existsDomain(String domain) throws Exception;
+
+	boolean update(Domain d) throws Exception;
 }

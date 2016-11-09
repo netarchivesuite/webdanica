@@ -20,7 +20,10 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
+import dk.kb.webdanica.core.datamodel.criteria.CalcDanishCode;
 import dk.kb.webdanica.core.datamodel.criteria.Codes;
+import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Display;
+import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Level;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
@@ -39,19 +42,6 @@ public class CriteriaResultResource implements ResourceAbstract {
 	
 	private static final Logger logger = Logger.getLogger(CriteriaResultResource.class.getName());
 	private static final String CRITERIA_RESULT_SHOW_TEMPLATE = "criteriaresult_master.html";
-
-	public static void main (String[] args) {
-		String pathinfo = "/criteriaresult/webdanica-trial-1470219095233/http%3A%2Fhedgehogs.net%2F/";
-		String[] infoParts = pathinfo.split(CRITERIA_RESULT_PATH);
-		System.out.println(CriteriaResultResource.getCriteriaKeys(pathinfo));
-/*
-		int count=0;
-		for (String infopart: infoParts) {
-			System.out.println("i=" + count + ", infopart: " + infopart);
-			count++;
-		}
-		*/
-	}
 
 	protected int R_CRITERIA_RESULT = -1;
 
@@ -77,8 +67,6 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        R_USER_NOTIFICATION_SUBSCRIPTIONS = resourceManager.resource_add(this, "/user/<numeric>/notification_subscriptions/", true);
 		 */       
 	}
-
-	//private String servicePath;
 
 	    @Override
 	    public void resource_service(ServletContext servletContext, User dab_user,
@@ -148,6 +136,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
 	        TemplatePlaceHolder seedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("seed_url");
 	        TemplatePlaceHolder danishcodePlace = TemplatePlaceBase.getTemplatePlaceHolder("danish_code");
+	        TemplatePlaceHolder danishcodeExplanationPlace = TemplatePlaceBase.getTemplatePlaceHolder("danish_code_explanation");
 	        TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("error");
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
@@ -166,7 +155,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        placeHolders.add(seedUrlPlace);
 	        placeHolders.add(errorPlace);
 	        placeHolders.add(danishcodePlace);
-	        
+	        placeHolders.add(danishcodeExplanationPlace);
 	        
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 	        
@@ -222,7 +211,9 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        ResourceUtils.insertText(errorPlace, "error", errStr, templateName, logger);
 	        ResourceUtils.insertText(seedUrlPlace, "seed_url", b.seedurl, templateName, logger);
 	        String danishCodeStr = b.calcDanishCode + "(" + Codes.getCategory(b.calcDanishCode) + ")";
+	        String danishCodeExplanation = CalcDanishCode.getCalcDkCodeText(b.calcDanishCode, Display.noCodes, Level.none, false);
 	        ResourceUtils.insertText(danishcodePlace, "danish_code", danishCodeStr, templateName, logger);
+	        ResourceUtils.insertText(danishcodeExplanationPlace, "danish_code_explanation", danishCodeExplanation, templateName, logger);
 	        
 	        StringBuilder sb = new StringBuilder();
 	        sb.append("<pre>\r\n");

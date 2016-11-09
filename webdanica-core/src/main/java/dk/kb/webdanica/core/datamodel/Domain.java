@@ -1,7 +1,10 @@
 package dk.kb.webdanica.core.datamodel;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import dk.kb.webdanica.core.utils.UrlUtils;
 
 public class Domain {
 	
@@ -14,7 +17,7 @@ public class Domain {
 	private DanicaStatus status;
 
 	public Domain(String domain, String notes, DanicaStatus status,
-            Timestamp updatedTime, String statusReason, String tld,
+            Long updatedTime, String statusReason, String tld,
             List<String> danicaParts) {
 		this.domain = domain;
 		this.notes = notes;
@@ -22,9 +25,25 @@ public class Domain {
 		this.statusReason = statusReason;
 		this.tld = tld;
 		this.danicaParts = danicaParts;
-		this.updatedTime = updatedTime.getTime();
-		
+		this.updatedTime = updatedTime;
     }
+	
+	public static Domain createNewAcceptedDomain(String domain) {
+		String tld = UrlUtils.findTld(domain);
+		String notes = "[" +  new Date() + "]: Domain accepted as Danica domain by user";
+		String danicaReason = "Domain accepted as Danica domain by user";
+		List<String> parts = new ArrayList<String>();
+		return new Domain(domain, notes, DanicaStatus.YES, null, danicaReason, tld, parts);
+	}
+	
+	public static Domain createNewUndecidedDomain(String domain) {
+		String tld = UrlUtils.findTld(domain);
+		String danicaReason = "Domain is ingested with danicastatus undecided";
+		List<String> parts = new ArrayList<String>();
+		String notes = "[" +  new Date() + "]: Domain inserted into table domains with status UNDECIDED";
+		return new Domain(domain, notes, DanicaStatus.UNDECIDED, null, danicaReason, tld, parts);
+	}
+	
 
 	public String getDomain() {
 	   return domain;
@@ -34,7 +53,7 @@ public class Domain {
 	    return updatedTime;
     }
 
-	public Enum<DanicaStatus> getDanicaStatus() {
+	public DanicaStatus getDanicaStatus() {
 	    return status;
     }
 
@@ -46,4 +65,24 @@ public class Domain {
 		return tld;
 	}
 
+	public List<String> getDanicaParts() {
+		return this.danicaParts;
+	}
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String newnotes) {
+		this.notes = newnotes;
+	    
+    }
+
+	public void setDanicaStatus(DanicaStatus newstate) {
+	    this.status = newstate;    
+    }
+	
+	public void setDanicaStatusReason(String newReason) {
+		this.statusReason = newReason;
+	}
+	
 }

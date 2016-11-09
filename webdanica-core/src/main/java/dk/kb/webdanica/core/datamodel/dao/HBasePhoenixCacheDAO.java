@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import dk.kb.webdanica.core.datamodel.Cache;
-import dk.kb.webdanica.core.datamodel.JDBCUtils;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixCacheDAO implements CacheDAO {
 	
@@ -24,9 +24,9 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 			rs = stm.executeQuery();
 			if (rs != null && rs.next()) {
 					// Lists of "status-ordinal:count" pairs
-					List<String> seedStatusCounts = JDBCUtils.sqlArrayToArrayList(rs.getArray("seedStatusCounts"));
+					List<String> seedStatusCounts = DatabaseUtils.sqlArrayToArrayList(rs.getArray("seedStatusCounts"));
 					Map<Integer, Long> seedStatusCountsMap = makeMapFromCountList(seedStatusCounts);
-					List<String> seedDanicaStatusCounts = JDBCUtils.sqlArrayToArrayList(rs.getArray("seedDanicaStatusCounts"));
+					List<String> seedDanicaStatusCounts = DatabaseUtils.sqlArrayToArrayList(rs.getArray("seedDanicaStatusCounts"));
 					Map<Integer, Long> seedDanicaStatusCountsMap = makeMapFromCountList(seedDanicaStatusCounts);
 
 					cache = new Cache(rs.getLong("totalSeedsCount"), 

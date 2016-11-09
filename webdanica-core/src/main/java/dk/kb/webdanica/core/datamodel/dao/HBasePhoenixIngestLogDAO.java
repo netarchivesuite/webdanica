@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.IngestLog;
-import dk.kb.webdanica.core.datamodel.JDBCUtils;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 
@@ -114,7 +114,7 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 			if (rs != null) {
 				while (rs.next()) {
 					retrievedLog = new IngestLog(
-							JDBCUtils.sqlArrayToArrayList(rs.getArray("logLines")),
+							DatabaseUtils.sqlArrayToArrayList(rs.getArray("logLines")),
 							rs.getString("filename"),
 							new Date(rs.getLong("inserted_date")),
 							rs.getLong("linecount"),

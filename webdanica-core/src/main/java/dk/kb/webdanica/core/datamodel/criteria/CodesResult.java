@@ -683,7 +683,7 @@ public static String statustext_delim = ",";
 // All code beneath this line is probably to be ignored
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-enum Level {
+public enum Level {
 	intervals, //=0; //make lagkage where e.g. 20-27 is in 20 etc.
 	positive,  //=1 make lagkage for all positive codes, and put 0 and negitive in o
 	allcodes,  //=2 make lagkage for all codes
@@ -714,7 +714,7 @@ public static String getLevelName(Level level) {
 	return s;
 }
 
-enum Display {
+public enum Display {
 	onlyCodes,  //only display of codes
 	noCodes,  //no display of codes
 	inText,  //display codes as (<code>) in end of text

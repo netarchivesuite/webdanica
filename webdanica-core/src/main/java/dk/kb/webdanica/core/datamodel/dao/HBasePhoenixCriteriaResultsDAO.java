@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang.StringUtils;
 
-import dk.kb.webdanica.core.datamodel.JDBCUtils;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
@@ -36,7 +36,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			    s.source = DataSource.fromOrdinal(rs.getInt("source"));
 			    s.calcDanishCode = rs.getInt("calcDanishCode");
 			    s.CText = rs.getString("CText");
-			    s.CLinks = JDBCUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
+			    s.CLinks = DatabaseUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
 				s.insertedDate = rs.getLong("inserted_time");
 				s.updatedDate = rs.getLong("updated_time");
 			}
@@ -64,7 +64,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			    s.source = DataSource.fromOrdinal(rs.getInt("source"));
 			    s.calcDanishCode = rs.getInt("calcDanishCode");
 			    s.CText = rs.getString("CText");
-			    s.CLinks = JDBCUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
+			    s.CLinks = DatabaseUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
 			    s.insertedDate = rs.getLong("inserted_time");
 				s.updatedDate = rs.getLong("updated_time");
 				seedList.add(s);

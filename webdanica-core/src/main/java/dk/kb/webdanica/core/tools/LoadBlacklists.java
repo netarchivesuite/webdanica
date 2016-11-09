@@ -15,6 +15,7 @@ import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
 import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 
 /**
@@ -63,7 +64,7 @@ public class LoadBlacklists {
 		LoadBlacklists loadseeds = new LoadBlacklists(seedsfile);
 		loadseeds.insertList();
 		
-		BlackListDAO dao = getDao().getBlackListDAO();
+		BlackListDAO dao = DatabaseUtils.getDao().getBlackListDAO();
 		System.out.println("Showing all existing blacklists:");
 		List<BlackList> allLists = dao.getLists(false);
 		for (BlackList b: allLists) {
@@ -76,17 +77,7 @@ public class LoadBlacklists {
 		}
 		dao.close();
 	}
-	    static DAOFactory getDao() {
-	        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, 
-	        		Constants.DEFAULT_DATABASE_SYSTEM);
-	        if ("cassandra".equalsIgnoreCase(databaseSystem)) {
-	            return new CassandraDAOFactory();
-	        } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
-	            return new HBasePhoenixDAOFactory();
-	        } else {
-	            return new CassandraDAOFactory();
-	        }
-	    }
+	   
 	
 	/**
 	 * Insert a blacklist

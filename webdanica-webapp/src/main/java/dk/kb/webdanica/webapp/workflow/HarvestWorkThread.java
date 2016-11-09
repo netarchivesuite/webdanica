@@ -1,5 +1,7 @@
 package dk.kb.webdanica.webapp.workflow;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +52,21 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	@Override
     protected void process_init() {
        	configuration = Configuration.getInstance();
-       	seeddao = configuration.getDAOFactory().getSeedsDAO();	    
+       	seeddao = configuration.getDAOFactory().getSeedsDAO();
+       	File harvestLogDir = new File("/home/harvestlogs/");
+       	File testFile = new File(harvestLogDir, System.currentTimeMillis() + ".txt");
+       	System.out.println("Trying to write harvestlog to dir '" + harvestLogDir.getAbsolutePath() + "'");
+       	try {
+	        testFile.createNewFile(); //"Currently these permissions on file: -rw-r--r--"
+	        boolean success = testFile.setWritable(true, false);
+	        // TODO verify permissions
+	        if (!success) {
+	        	// TODO write logs
+	        }
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
     }
 
 	@Override

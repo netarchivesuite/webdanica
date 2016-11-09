@@ -21,8 +21,9 @@ public class WebdanicaSettings {
 	public static String HARVESTING_PREFIX = "settings.harvesting.prefix";
 	public static String HARVESTING_MAX_BYTES = "settings.harvesting.maxbytes";
 	public static String HARVESTING_MAX_OBJECTS = "settings.harvesting.maxobjects";
-	public static String HARVESTING_MAX_HARVESTS = "settings.harvesting.maxharvests";
-
+	public static String HARVESTING_MAX_SINGLESEEDHARVESTS = "settings.harvesting.maxSingleSeedHarvests";
+	public static String HARVESTING_HARVESTLOGDIR = "settings.harvesting.harvestlogDir";
+	
 	/** webapp settings */
 	public static String WEBAPP_RESOURCE_PATH = "settings.webapp.resources.resource.path";
 	public static String WEBAPP_RESOURCE_SECURED = "settings.webapp.resources.resource.secured";
