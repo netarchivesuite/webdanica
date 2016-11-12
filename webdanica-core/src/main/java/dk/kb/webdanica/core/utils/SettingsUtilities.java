@@ -54,13 +54,13 @@ public class SettingsUtilities {
 	    return returnValue;
     }
     
-
 	public static int getIntegerSetting(String settingsName, int default_int_value) {
 	 	int returnValue = default_int_value;
 	    if (Settings.hasKey(settingsName)) {
 	    	String settingsValueAsString = Settings.get(settingsName);  
 	    	if (settingsValueAsString == null || settingsValueAsString.isEmpty()) {
 	    		logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
+	    	} else { // Try to parse the settingsValueAsString as a valid Integer
 	    		int intValue;
 	    		try {
 	            	intValue = Integer.parseInt(settingsValueAsString);
@@ -69,8 +69,6 @@ public class SettingsUtilities {
 	            	logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value '" + settingsValueAsString 
 	            			+ "'  in the settings is not a valid integer");
 	            }
-	    	} else {
-	    		returnValue = default_int_value;
 	    	}
 	    } else {
 	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_int_value);
@@ -78,37 +76,69 @@ public class SettingsUtilities {
 	    return returnValue;
     }
 
+	public static boolean getBooleanSetting(String settingsName, boolean default_bool_value) {
+		boolean returnValue = default_bool_value;
+	    if (Settings.hasKey(settingsName)) {
+	    	String settingsValueAsString = Settings.get(settingsName);  
+	    	if (settingsValueAsString == null || settingsValueAsString.isEmpty()) {
+	    		logger.warning("Using default value '" + default_bool_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
+	    	} else {
+	    		boolean boolValue = Boolean.parseBoolean(settingsValueAsString);
+	            returnValue = boolValue;
+	    	}
+	    } else {
+	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_bool_value);
+	    }
+	    return returnValue;
+    }
+	
 	/**
 	 * test if property file is defined by the given propertyKey. If not call
 	 * System.exit(1);
 	 * @param propertyKey a key for a property
 	 */
-	public static void testPropertyFile(String propertyKey){
+	public static boolean testPropertyFile(String propertyKey, boolean exitIfCheckFails){
 		String setting = System.getProperty(propertyKey);
 		if (setting == null) {
-			System.err.println("Required java property '" + propertyKey + "' is undefined");
-			System.exit(1);
+			if (exitIfCheckFails) {
+				System.err.println("Required java property '" + propertyKey + "' is undefined");
+				System.exit(1);
+			} else {
+				logger.warning("Required java property '" + propertyKey + "' is undefined");
+				return false;
+			}
 		}
 		File settingsFile = new File(setting);
 	
 		if (!settingsFile.exists()) {
-			System.err.println("The settings file defined by property '" + propertyKey + "' does not exist: " 
-					+ settingsFile.getAbsolutePath() + "' does not exist");
-			System.exit(1);
+			String errMsg = "The settings file defined by property '" + propertyKey + "' does not exist: " 
+					+ settingsFile.getAbsolutePath() + "' does not exist";
+			if (exitIfCheckFails) {
+				System.err.println(errMsg);
+				System.exit(1);
+			} else {
+				logger.warning(errMsg);
+				return false;
+			}
 		}
+		return true;
 	}
 
-	public static void verifyClassOrExit(String dbdriver) {
+	public static boolean verifyClass(String dbdriver, boolean exitIfcheckFails) {
 		try {
 			Class.forName(dbdriver);
 		} catch (ClassNotFoundException e) {
-			System.out.println("Required class '" + dbdriver + "' not found in classpath");
-			System.out.println("Program terminated");
-			System.exit(1);
+			if (exitIfcheckFails) {
+				System.out.println("Required class '" + dbdriver + "' not found in classpath");
+				System.out.println("Program terminated");
+				System.exit(1);
+			}
+			return false;
 		}
+		return true;
     }
 
-	public static void verifyWebdanicaSettings(Set<String> requiredSettings) {
+	public static boolean verifyWebdanicaSettings(Set<String> requiredSettings, boolean exitIfCheckFails) {
 	    boolean exit = false;
 	    for (String key: requiredSettings){
 	    	if (!Settings.hasKey(key)) {
@@ -116,11 +146,13 @@ public class SettingsUtilities {
 	    		System.err.println("Missing setting '" + key + "' in settingsfile");
 	    	}
 	    }
-	    if (exit) {
+	    if (exit && exitIfCheckFails) {
 	    	System.err.println("Exiting program prematurely because of missing settings");
 	    	System.exit(1);
+	    } else if (exit) {
+	    	return false;
 	    }
-	    
+	    return true;
     }
 	
 }

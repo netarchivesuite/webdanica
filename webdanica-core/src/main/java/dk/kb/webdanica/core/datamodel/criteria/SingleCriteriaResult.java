@@ -29,7 +29,7 @@ public class SingleCriteriaResult {
 		"C15a", "C15b",
 		"C16a",
 		"C17a",
-		"C18a"
+		"C18a",
 	};
 
 	private static final String CRITERIA_CEXT1 = "Cext1";
@@ -60,13 +60,14 @@ public class SingleCriteriaResult {
 	public List<String> CLinks = new ArrayList<String>();
 	public String seedurl;
 	public String harvestName;
+	public String domainName; // Note: The tld is present in the C15b criteria
+	public String hostname;
 
 	// Database fields
 	public long insertedDate;
 	public long updatedDate;
-
 	public String errorMsg;
-    
+	
 	public List<String> getClinks() {
 		return CLinks;
 	}

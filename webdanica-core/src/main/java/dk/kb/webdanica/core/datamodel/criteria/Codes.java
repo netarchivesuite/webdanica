@@ -30,6 +30,7 @@ public class Codes {
     //cat_likely_dk
     public static Set<Integer> getCodesForLikelyDanishResults() {
 		Set<Integer> codeSet = new HashSet<Integer>();
+		codeSet.add(4); // language is 'da' with 90 % certainty
 	    for (int code=20; code<=27; code++) {
 	    	codeSet.add(code);
 	    }

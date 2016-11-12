@@ -14,17 +14,24 @@ public class UnitTestUtils {
 	/**
 	 * Find a test resource for a given path.
 	 * @param path the path relative to resources directory eg. path is mypackage/YourFile.csv if file is <project>/src/test/resources/mypackage/YourFile.csv
-	 * @return the file corresponding to the given path 
+	 * @return the file corresponding to the given path or null if not found 
 	 */
 	public static File getTestResourceFile(String path) {
 		URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-		File file = new File(url.getPath());
-		return file;
+		if (url != null) {
+			File file = new File(url.getPath());
+			return file;
+		} 
+		return null;
 	}
 	
 	public static String getTestResourceFileAsString(String path) throws IOException {
 		File file = getTestResourceFile(path);
-		return FileUtils.readFileToString(file);
+		if (file != null && file.isFile()) {
+			return FileUtils.readFileToString(file);
+		} else {
+			return null;
+		}
 	}
 	
 	public static void setEnv(Map<String, String> newenv) {

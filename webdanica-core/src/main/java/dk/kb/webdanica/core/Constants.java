@@ -5,4 +5,6 @@ public class Constants {
 	public static final String CASSANDRA = "cassandra";
 	public static final String HBASE_PHOENIX = "hbase-phoenix";
 	public static final String DEFAULT_DATABASE_SYSTEM = HBASE_PHOENIX;
+	public static final String DUMMY_HARVESTNAME = "DUMMY-HARVESTNAME";
+	
 }

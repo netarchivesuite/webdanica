@@ -13,6 +13,7 @@ import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.core.datamodel.Cassandra;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
 /*
@@ -221,5 +222,10 @@ public class CassandraHarvestDAO implements HarvestDAO {
         // TODO Auto-generated method stub
         return null;
     }
-	
+
+	@Override
+    public boolean insertHarvest(SingleSeedHarvest report) throws Exception {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 }

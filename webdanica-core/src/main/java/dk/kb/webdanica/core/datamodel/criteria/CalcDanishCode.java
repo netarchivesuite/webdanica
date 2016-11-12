@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import dk.kb.webdanica.core.datamodel.criteria.CodesFraction;
 import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Display;
@@ -19,6 +20,17 @@ public class CalcDanishCode {
 		Set<Integer> set3 = Codes.getCodesForMaybees();
 		Set<Integer> set4 = Codes.getCodesForUdgaaede();
 		Set<Integer> set5 = Codes.getCodesForNOTDanishResults();
+		
+		Set<Integer> allsets = new TreeSet<Integer>();
+		allsets.addAll(set1);
+		allsets.addAll(set2);
+		allsets.addAll(set3);
+		allsets.addAll(set4);
+		allsets.addAll(set5);
+		for (Integer i: allsets) {
+			System.out.println(i);
+		}
+		
 		Level level = Level.none;
 		Display codesOut = Display.noCodes;
 		boolean viaFields = false;
@@ -26,7 +38,6 @@ public class CalcDanishCode {
 		for (Integer code: set1){
 			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
 		}
-/*		
 		System.out.println("-----------------------------------");
 		System.out.println("Describing codes for cat_ignored_dk:");
 		for (Integer code: set2){
@@ -47,7 +58,7 @@ public class CalcDanishCode {
 		for (Integer code: set5){
 			System.out.println(getCalcDkCodeText(code, codesOut, level, viaFields));
 		}
-	*/	
+		
 	}	
 	
 	public static int maxbit = 22;
@@ -138,6 +149,7 @@ public class CalcDanishCode {
 	        else if (bit==20) s = (viaFields? "C3e[1]<>0 (from 3b) and C3f[1]<>0  (from 3d)" : "limited wordlist o,oe,ae,aa");
 	        else if (bit==21) s = (viaFields? "new C3g[1]<>0 (as 3b)" : "new limited wordlist o,oe,ae,aa");
 	        else if (bit==22) s = (viaFields? "new C2b[1]='y' | C9f[1]='y'" : "ph. or cvr from reg. exp");
+	        else if (bit==23) s = (viaFields? "C4b says da": "Tika says language is danish with over 90% certainty");
 	        else s="UNKNOWN BIT" + bit;
 	    }
 	    if (codesOut==Display.onlyCodes) s = String.valueOf(bit) ; //text before count
@@ -158,6 +170,7 @@ public class CalcDanishCode {
 	        else if (code==1) s = (viaFields ? "Cext1=0" : "size of html=0");
 	        else if (code==2) s = (viaFields ? "Cext2>= 200" : "bytes per char > 2");
 	        else if (code==3) s = (viaFields ? "C15b='dk'" : "tld=dk");
+	        else if (code==4) s = (viaFields ? "C4a,C4b=da": "Language is Danish with over 90% certainty over 90%");
 	        else if (code==5) s = "UDGÅET"; //(viaFields ? "C1a>0" : "dk mail address");
 	        else if (code==6) s = "UDGÅET - WRONG ph.";
 	        else if (code==7) s = "UDGÅET"; // (viaFields ? "C2a incl. +45 & tlf. + C5a>0 C5b=0" : "ph. and dk + NOT no. words");
@@ -167,7 +180,7 @@ public class CalcDanishCode {
 	        	else if (code==10) s = (viaFields ? "C4a='zh'/'ja'/'ko'" : "chinese like languages");
 	            else if (code==11) s = (viaFields ? "C4a = 'bo'/'hi'/'mn'/'my'/'ne'/'ta'/'th'/'vi'" : "asian languages");
 	            else if (code==12) s = (viaFields ? "C4a='he'/'fa'/'ur'/'yi'/'ar'" : "arabic languages");
-	        } else  if ((code>=20 && code<=27) || (code>=40 && code<=47)) { //many dk indications 
+	        } else if ((code>=20 && code<=27) || (code>=40 && code<=47)) { //many dk indications 
 	    	    int interval = ((code >=20 && code <=27) ? 20 : 40 ); 
 	            s = "likely dk";
 	            s = s + (interval == 20 ? " (size>250)" : " (200<=size<250)" );

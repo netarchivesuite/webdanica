@@ -1,5 +1,7 @@
 package dk.kb.webdanica.core.datamodel.dao;
 
+import java.sql.SQLException;
+
 
 public class HBasePhoenixDAOFactory implements DAOFactory {
 
@@ -26,7 +28,6 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 		seedDao = new HBasePhoenixSeedsDAO();
 		cacheDao = new HBasePhoenixCacheDAO();
 		domainsDao = new HBasePhoenixDomainsDAO();
-		
 	}
 
 	@Override
@@ -56,6 +57,11 @@ public class HBasePhoenixDAOFactory implements DAOFactory {
 
 	@Override
 	public void close() {
+		try {
+	        HBasePhoenixConnectionManager.closeAllConnections();
+        } catch (SQLException e) {
+        	
+        }
 		HBasePhoenixConnectionManager.deregister();
 	}
 

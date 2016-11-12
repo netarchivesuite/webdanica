@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
@@ -299,7 +298,10 @@ public class HarvestReport {
     }
 
 
-	private static List<String> findPartFiles(File ingestDir) {
+	public static List<String> findPartFiles(File ingestDir) {
+		if (ingestDir == null) {
+			return null;
+		}
 		String[] parts = ingestDir.list(new FilenameFilter() {
 			
 			@Override

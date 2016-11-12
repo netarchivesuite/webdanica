@@ -189,7 +189,7 @@ public static int findNegativBitmapCalcCode(SingleCriteriaResult res) {
     setbit = setbit || ((res.C.get("C3c") !=null) && (res.C.get("C3c").length()>2)); 
 	if (setbit) code = setBit(2, code); //æøå in html or url
 
-	String C4a = res.C.get("c4a");
+	String C4a = res.C.get("C4a");
     if (C4a!=null) {
     	setbit = (C4a.equals("da") || C4a.equals("no") || C4a.equals("sv"));
     	if (setbit) code = setBit(3, code); //language like danish
@@ -239,14 +239,14 @@ public static int findNegativBitmapCalcCode(SingleCriteriaResult res) {
     		&& (!res.C.get("C10c").isEmpty())); //((res.C10a!=null) &&  (res.C10a.length()>2)) || ((res.C10b!=null) &&  (res.C10b.length()>2)); 
 	if (setbit) code = setBit(14, code); //danish surnames NEW
 
-    setbit = ((res.Cext1!=null) &&  (res.Cext1>250)); //size is considrable for language check
+    setbit = ((res.Cext1!=null) &&  (res.Cext1>250)); //size is considerable for language check
     if (setbit) code = setBit(15, code);  //
 
 	// changed from 1/8 2014 now code is int     	
     setbit = ((res.C.get("C10a")!=null) &&  (res.C.get("C10a").length()>2)); 
     if (setbit) code = setBit(16, code);  //
     
-    //NEW  new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limmited union or companies
+    //NEW  new C8c[1]<>0 | C9e[1]<>0 (as 8a,9a)" : "new limited union or companies
     setbit = (res.C.get("C8c")!=null) && ( (!res.C.get("C8c").startsWith("0")) && (!res.C.get("C8c").isEmpty()) ); 
     setbit = setbit || (res.C.get("C9e")!=null) && ( (!res.C.get("C9e").startsWith("0")) && (!res.C.get("C9e").isEmpty()) ); 
     if (setbit) code = setBit(17, code);
@@ -297,8 +297,8 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
     		&& (endsize==0 ? true : (res.Cext1 <= endsize) )
 			&& res.C.get("C3a").length()>2 //includes æ,ø or å
 			&& res.C.get("C4a").equals("da")
-			&& res.C.get("C5a").length() >2 //includes typical and distingisable Danish words
-			&& res.C.get("C5b").startsWith("0") //do not include typical Norwegain words
+			&& res.C.get("C5a").length() >2 //includes typical and distinguishable Danish words
+			&& res.C.get("C5b").startsWith("0") //do not include typical Norwegian words
 			&& res.C.get("C6a").length()>2 //includes frequently used Danish words"
 			&& res.C.get("C15a").equals(inclTld ? "y":"n") //The URL belongs to a TLD often used by Danes
 			&& (inclToLinks? Long.parseLong(res.C.get("C16a"))>0 : Long.parseLong(res.C.get("C16a"))==0) //There are .dk sites that points to the webpage 
@@ -387,10 +387,6 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
 	}
     return ok;
 }
-
-
-
-
 
 
 enum NotDkExceptions{

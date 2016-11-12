@@ -10,13 +10,16 @@ public enum Status {
 	READY_FOR_ANALYSIS,
 	ANALYSIS_COMPLETED,
 	REJECTED,
-	AWAITS_CURATOR_FINALAPPROVAL;
+	AWAITS_CURATOR_FINALAPPROVAL,
+	HARVESTING_FAILED,
+	DONE, // The seed is now either danica or not danica
+	ANALYSIS_FAILURE;
 
 	/**
 	 * The max valid int value to use in the fromOrdinal(), getInternationalizationHeaderLabel(), 
 	 * and getInternationalizationDescriptionLabel() methods.
 	 */
-	private static final int MAX_VALID_ORDINAL = 7;
+	private static final int MAX_VALID_ORDINAL = 10;
 	
 	
 	/**
@@ -44,6 +47,12 @@ public enum Status {
 			return REJECTED;
 		case 7:
 			return AWAITS_CURATOR_FINALAPPROVAL;
+		case 8:
+			return HARVESTING_FAILED;
+		case 9:
+			return DONE;
+		case 10:
+			return ANALYSIS_FAILURE;
 		default:
 			throw new WebdanicaException("Unknown status value: " + status);
 		}
@@ -67,6 +76,12 @@ public enum Status {
 			return "seed.header.rejected";
 		case 7:
 			return "seed.header.awaiting.final.curator.approval";
+		case 8:
+			return "seed.header.harvesting.failure";
+		case 9:
+			return "seed.header.done";
+		case 10:
+			return "seed.header.analysis.failed";
 		default:
 			throw new WebdanicaException("Unknown status value: " + status);
 		}
@@ -89,6 +104,12 @@ public enum Status {
 			return "seed.description.rejected";
 		case 7:
 			return "seed.description.awaiting.final.curator.approval";
+		case 8: 
+			return "seed.description.harvesting.failure";
+		case 9:
+			return "seed.description.done";	
+		case 10:	
+			return "seed.description.analysis.failed";
 		default:
 			throw new WebdanicaException("Unknown status value: " + status);
 		}

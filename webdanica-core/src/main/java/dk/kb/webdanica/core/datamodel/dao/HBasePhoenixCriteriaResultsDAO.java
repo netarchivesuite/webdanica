@@ -15,8 +15,8 @@ import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
-
-	public SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws Exception {
+	
+	private SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws Exception {
 		SingleCriteriaResult s = null;
 		if (rs != null) {
 			if (rs.next()) {
@@ -24,7 +24,10 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 				s.url = rs.getString("url");
 				s.urlOrig = rs.getString("UrlOrig");
 				s.seedurl = rs.getString("seedurl");
-				s.harvestName = rs.getString("harvestname"); 
+				s.harvestName = rs.getString("harvestname");
+				s.hostname = rs.getString("hostname");
+				s.domainName = rs.getString("domain");
+				s.errorMsg = rs.getString("error");
 				s.Cext1 = rs.getLong("Cext1");
 				s.Cext2 = rs.getLong("Cext2");
 				s.Cext3 = rs.getLong("Cext3");
@@ -44,47 +47,29 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	    return s;
 	}
 
-	public void getResultsFromResultSet(ResultSet rs, List<SingleCriteriaResult> seedList) throws Exception {
+	private void getResultsFromResultSet(ResultSet rs, List<SingleCriteriaResult> seedList) throws Exception {
 		SingleCriteriaResult s;
 		if (rs != null) {
 			while (rs.next()) {
-				s = new SingleCriteriaResult();
-				s.url = rs.getString("url");
-				s.urlOrig = rs.getString("UrlOrig");
-				s.seedurl = rs.getString("seedurl");
-				s.harvestName = rs.getString("harvestname"); 
-				s.Cext1 = rs.getLong("Cext1");
-				s.Cext2 = rs.getLong("Cext2");
-				s.Cext3 = rs.getLong("Cext3");
-			    //s.Cext3Orig = row.getString("extWDateOrig");
-				for (String c: SingleCriteriaResult.StringCriteria) {
-					s.C.put(c, rs.getString(c));
-				}
-				s.intDanish = rs.getFloat("intDanish");
-			    s.source = DataSource.fromOrdinal(rs.getInt("source"));
-			    s.calcDanishCode = rs.getInt("calcDanishCode");
-			    s.CText = rs.getString("CText");
-			    s.CLinks = DatabaseUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
-			    s.insertedDate = rs.getLong("inserted_time");
-				s.updatedDate = rs.getLong("updated_time");
+				s = getResultFromResultSet(rs);
 				seedList.add(s);
 			}
 		}
 	}
-
+	
 	public static final String INSERT_SQL;
 
 	static {
 		INSERT_SQL = ""
 				+ "UPSERT INTO criteria_results "
-				+ "(url, urlOrig, seedurl, harvestname, Cext1, Cext2, Cext3, " //1-7
-				+ "C1a, C2a, C2b, C3a, C3b, C3c, C3d, C3e, C3f, C3g, " // 8-17
-				+ "C4a, C4b, C5a, C5b, C6a, C6b, C6c, C6d, " // 18-25
-				+ "C7a, C7b, C7c, C7d, C7e, C7f, C7g, C7h, " //26-33
-				+ "C8a, C8b, C8c, C9a, C9b, C9c, C9d, C9e, C9f, " //34-42
-				+ "C10a, C10b, C10c, C15a, C15b, C16a, C17a, C18a, intDanish, source, calcDanishCode, CText, CLinks, " //43-55
-				+ "inserted_time) " //56
-				+ " VALUES (" + StringUtils.repeat("?,", 55) + "?) ";							
+				+ "(url, urlOrig, seedurl, harvestname, hostname, domain, error, Cext1, Cext2, Cext3, " //1-10
+				+ "C1a, C2a, C2b, C3a, C3b, C3c, C3d, C3e, C3f, C3g, " // 11-20
+				+ "C4a, C4b, C5a, C5b, C6a, C6b, C6c, C6d, " // 21-28
+				+ "C7a, C7b, C7c, C7d, C7e, C7f, C7g, C7h, " //29-36
+				+ "C8a, C8b, C8c, C9a, C9b, C9c, C9d, C9e, C9f, " //37-44
+				+ "C10a, C10b, C10c, C15a, C15b, C16a, C17a, C18a, intDanish, source, calcDanishCode, CText, CLinks, " //46-58
+				+ "inserted_time) " //59
+				+ " VALUES (" + StringUtils.repeat("?,", 58) + "?) ";							
 	}
 
 	/**
@@ -111,6 +96,10 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.setString(idx++, singleAnalysis.urlOrig);
 			stm.setString(idx++, singleAnalysis.seedurl);
 			stm.setString(idx++, singleAnalysis.harvestName);
+			stm.setString(idx++, singleAnalysis.hostname);
+			stm.setString(idx++, singleAnalysis.domainName);
+			stm.setString(idx++, singleAnalysis.errorMsg);
+			
 			if (singleAnalysis.Cext1 == null) {
 				stm.setNull(idx, SqlType.BIGINT.id);
 			} else {

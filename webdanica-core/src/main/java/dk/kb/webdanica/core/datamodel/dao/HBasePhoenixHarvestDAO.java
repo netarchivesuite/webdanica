@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
@@ -95,6 +96,44 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 		}
 		return res != 0;
 	}
+	
+	@Override
+	public boolean insertHarvest(SingleSeedHarvest report) throws Exception {
+		java.sql.Array sqlArr = null;
+		PreparedStatement stm = null;
+		int res = 0;
+		try {
+			long harvestedTime = report.getHarvestedTime();
+			if (!(harvestedTime > 0)) {
+				harvestedTime = System.currentTimeMillis();
+				System.err.println("harvestedTime undefined. setting it to  " + harvestedTime);
+			}
+			List<String> strList = report.getFiles();
+			String[] strArr = new String[strList.size()];
+			strArr = strList.toArray(strArr);
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			sqlArr = conn.createArrayOf("VARCHAR", strArr);
+			stm = conn.prepareStatement(INSERT_SQL);
+			stm.clearParameters();
+			stm.setString(1, report.getHarvestName());
+			stm.setString(2, report.getSeed());
+			stm.setInt(3, report.getFinalState().ordinal());
+			stm.setBoolean(4, report.successful());
+			stm.setLong(5, harvestedTime);
+			stm.setArray(6, sqlArr);
+			stm.setString(7, report.getErrMsg());
+			res = stm.executeUpdate();
+			conn.commit();
+		} finally {
+			if (sqlArr != null) {
+				sqlArr.free();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return res != 0;
+	}	
 
 	public static final String SELECT_HARVEST_BY_NAME_SQL = "SELECT * FROM harvests WHERE harvestname=?";
 

@@ -14,7 +14,6 @@ import org.json.simple.parser.ParseException;
 import dk.kb.webdanica.core.criteria.Words;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
-import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
@@ -27,35 +26,7 @@ import dk.kb.webdanica.core.utils.TextUtils;
  */
 public class CriteriaIngest {
 	
-	public static void main(String[] args) throws Exception {
-		//File f = new File("/home/test/criteria-results/03-08-2016-1470237223/68-55-20160803110922385-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
-		//System.out.println(isGzippedFile(f));
-		
-		// Read a harvestlog, and look for the associated criteria-results in the criteria-results folder. 
-		// a parameter: get all, get the latest
-
-		// TEST2: Nyt sample fra fredag d. 
-		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
-		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		File HarvestLogTest1 = new File(basedir, "harvestlog-1470674884515.txt");
-		File HarvestLogTest2 = new File(basedir, "test_danica_urls.txt.harvestlog");
-		File HarvestLogTest3 = new File(basedir, "test_non_danica_urls.txt.harvestlog");
-		
-		//doTest(HarvestLogTest1, baseCriteriaDir, true);
-		//doTest(HarvestLogTest2, baseCriteriaDir, true);
-		//doTest(HarvestLogTest3, baseCriteriaDir, true);
-		File basedir1 = new File("/home/svc/devel/webdanica/criteria-test-23-08-2016");
-		File baseCriteriaDir1 = new File(basedir1, "23-08-2016-1471968184");
-		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt");
-		DAOFactory daofactory = new HBasePhoenixDAOFactory();
-		ingest(HarvestLogTest4, baseCriteriaDir1,false, daofactory);
-
-		//runTest3();
-		
-		//runTest1();
-		//runTest2();
-		System.exit(0);
-	}
+	
 	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
@@ -68,7 +39,7 @@ public class CriteriaIngest {
 			}
 		}
 		List<HarvestError> errors = HarvestReport.processCriteriaResults(harvests, baseCriteriaDir,addToDatabase, daofactory);
-		
+
 		for (HarvestError e: errors) {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
 		}
@@ -86,33 +57,7 @@ public class CriteriaIngest {
 	    return harvestLogReport;
     }
 
-	private static void runTest3() throws Exception {
-		File basedir = new File("/home/svc/devel/webdanica/criteria-test-11-08-2016");
-		String harvestLogName = "harvestlog-1470674884515.txt";
-		File HarvestLog = new File(basedir, harvestLogName);
-		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		DAOFactory daofactory = new HBasePhoenixDAOFactory();
-		ingest(HarvestLog, baseCriteriaDir, false, daofactory);
-	}
-
-	private static void runTest2() throws Exception { 
-			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
-			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
-			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
-			DAOFactory daofactory = new HBasePhoenixDAOFactory();
-			ingest(HarvestLog, baseCriteriaDir,false, daofactory);
-    }
-
-	private static void runTest1() throws Exception {
-		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
-		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
-		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		DAOFactory daofactory = new HBasePhoenixDAOFactory();
-		ingest(danicaHarvestLog, baseCriteriaDir, false, daofactory);
-		ingest(notdanicaHarvestLog, baseCriteriaDir, false, daofactory);	
-	}
-
-
+	
 	/**
 	 * 
 	 * @param ingestFile
@@ -245,18 +190,18 @@ public class CriteriaIngest {
 			//TODO return false instead of true
 			return true; // we stop now: as we believe the rest of the fields are empty 
 		}
-
-		/**************************************/
-		/*** Update missing fields          ***/
 		
-		/*** calculate C15b                 ***/
+		/*******************************************/
+		/*** Update missing fields  if necessary ***/
+		/*******************************************/
+		
+		/*** calculate C15b ***/
 		String tld = CriteriaUtils.findTLD(res.url);
 		if (!tld.isEmpty()) {
 			res.C.put("C15b", tld);
 		} else {
 			res.C.put("C15b", "-"); 
 		}
-
 
 		/*** calculate C8b if equal to 8a ***/
 		if ((res.C.get("C8a") != null)) { 
@@ -287,7 +232,7 @@ public class CriteriaIngest {
 		if (res.C.get("C1a") != null) {  
 			CodesResult coderes = new CodesResult(); 
 			coderes = CodesResult.setcodes_mail(res.C.get("C1a"), res.C.get("C5a"), res.C.get("C5b"), 
-					res.C.get("C15b"), ""); // FIXME this is not correct, is it?
+					res.C.get("C15b"), res.C.get("C7g"));
 			if (coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
@@ -295,6 +240,21 @@ public class CriteriaIngest {
 			}
 		}
 
+		// test c4a og c4b
+		if (res.C.get("C4a").equals("da")) {
+			// look at the percentage in C4b
+			String languagesFound = res.C.get("C4b");
+			
+			List<Language> languages = Language.findLanguages(languagesFound);
+			for (Language l: languages) {
+				if (l.getCode() == "da" && l.getConfidence() > 0.90F) {
+					res.intDanish = 1;
+					res.calcDanishCode = 4;
+					return true;
+				}
+			}
+		}
+		
 		//res.calcDanishCode =20-27, 40-47 - many dk indications 
 		if (res.calcDanishCode==0 
 				&& res.C.get("C15a")!=null && res.C.get("C16a")!=null && res.C.get("C17a")!=null 
@@ -313,7 +273,7 @@ public class CriteriaIngest {
 		}
 
 		//res.calcDanishCode = 76-77  likely dk language (not norwegian)
-		if (res.calcDanishCode==0 && res.C.get("C4a")!=null && res.C.get("C5a")!=null) {  
+		if (res.calcDanishCode==0 && res.C.get("C4a") !=null && res.C.get("C5a") !=null) {  
 			CodesResult coderes = new CodesResult(); 
 			coderes = CodesResult.setcodes_languageDkNew(res.C.get("C4a"), res.C.get("C5a"), res.C.get("C5b"), 
 					res.C.get("C15b"));
@@ -332,6 +292,9 @@ public class CriteriaIngest {
 				res.intDanish = cr.intDanish;
 			}
 		}
+		
+		
+		
 
 		//res.calcDanishCode =100-107 small sizes
 		if (res.calcDanishCode==0 && res.Cext1<=200) { 
@@ -376,39 +339,6 @@ public class CriteriaIngest {
 		
 		return true;
 	}
-	
-	private static void update9e(SingleCriteriaResult res) {
-		String C9b = res.C.get("C9b");
-    	String C9e = res.C.get("C9e");
-    	if (C9b!=null && (!C9b.isEmpty() && !C9b.startsWith("0"))) {
-    		res.C.put("C9e", CriteriaUtils.findC9eval(C9b, C9e));
-    	}
-	    
-    }
-	private static void update8c(SingleCriteriaResult res) {
-		String C8a = res.C.get("C8a");
-	    String C8c = res.C.get("C8c");
-    	if (C8a!=null && (!C8a.isEmpty() && !C8a.startsWith("0"))) {
-    		String oldC8c = C8c;
-    		C8c = CriteriaUtils.findC8cval(C8a, C8c);
-    		log("Updating criteria C8c. Changed from '" + oldC8c + "' to '" + C8c + "' using the C8a value '" + C8a + "'");
-    		res.C.put("C8c", C8c);
-    	}
-	    
-    }
-	private static void update3g(SingleCriteriaResult res) {
-		String C3g = res.C.get("C3g");
-		if (C3g!=null && (!C3g.isEmpty() && !C3g.startsWith("0"))) {
-			String oldC3g = C3g;
-            Set<String> tokens = TextUtils.tokenizeText(C3g.substring(1).trim());
-            List<String> words = Arrays.asList(Words.frequentwordsWithDanishLettersCodedNew);
-            tokens.retainAll(words);
-            C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
-            log("Updating criteria C3g. Changed from '" + oldC3g + "' to '" + C3g + "'");
-            res.C.put("C3g", C3g);
-    	}
-	    
-    }	
 	
 	private static void someUpdateCode(SingleCriteriaResult res) {
 		//update 3g
@@ -471,6 +401,42 @@ public class CriteriaIngest {
 
 
 	}
+	
+	private static void update9e(SingleCriteriaResult res) {
+		String C9b = res.C.get("C9b");
+    	String C9e = res.C.get("C9e");
+    	if (C9b!=null && (!C9b.isEmpty() && !C9b.startsWith("0"))) {
+    		res.C.put("C9e", CriteriaUtils.findC9eval(C9b, C9e));
+    	}
+	    
+    }
+	private static void update8c(SingleCriteriaResult res) {
+		String C8a = res.C.get("C8a");
+	    String C8c = res.C.get("C8c");
+    	if (C8a!=null && (!C8a.isEmpty() && !C8a.startsWith("0"))) {
+    		String oldC8c = C8c;
+    		C8c = CriteriaUtils.findC8cval(C8a, C8c);
+    		log("Updating criteria C8c. Changed from '" + oldC8c + "' to '" + C8c + "' using the C8a value '" + C8a + "'");
+    		res.C.put("C8c", C8c);
+    	}
+	    
+    }
+	private static void update3g(SingleCriteriaResult res) {
+		String C3g = res.C.get("C3g");
+		if (C3g!=null && (!C3g.isEmpty() && !C3g.startsWith("0"))) {
+			String oldC3g = C3g;
+            Set<String> tokens = TextUtils.tokenizeText(C3g.substring(1).trim());
+            List<String> words = Arrays.asList(Words.frequentwordsWithDanishLettersCodedNew);
+            tokens.retainAll(words);
+            C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
+            log("Updating criteria C3g. Changed from '" + oldC3g + "' to '" + C3g + "'");
+            res.C.put("C3g", C3g);
+    	}
+	    
+    }	
+	
+	
+	
 }
 	
 	

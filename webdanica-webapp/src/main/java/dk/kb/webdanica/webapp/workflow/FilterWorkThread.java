@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.BlackList;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
@@ -15,7 +16,9 @@ import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.core.seeds.filtering.ResolveRedirects;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.Configuration;
+import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 
 /**
@@ -39,6 +42,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	private ResolveRedirects resolveRedirects;
 
 	private Configuration configuration;
+
+	private boolean rejectDKUrls;
 	
     /**
      * Constructor for the Filter thread worker object.
@@ -75,8 +80,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
     	configuration = Configuration.getInstance();
     	seeddao = configuration.getDAOFactory().getSeedsDAO();
     	blacklistDao = configuration.getDAOFactory().getBlackListDAO();
-    	
-    	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());	
+    	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());
+    	rejectDKUrls = SettingsUtilities.getBooleanSetting(WebdanicaSettings.REJECT_DK_URLS, Constants.DEFAULT_REJECT_DK_URLS_VALUE);
 	}
 
 	@Override
@@ -158,8 +163,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
 			}
 		}
 		
-		// Test 3: test that url is not from the .DK top level domain.
-		if (belongsToDK(urlInvestigated)) {
+		// Test 3: test that url is not from the .DK top level domain. unless WebdanicaSettings.REJECT_DK_URLS is set to false
+		if (rejectDKUrls && belongsToDK(urlInvestigated)) {
 			s.setStatus(Status.REJECTED);
 			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
 					+ "' belongs to the .dk toplevel and by default is part of legal deposit"); 
