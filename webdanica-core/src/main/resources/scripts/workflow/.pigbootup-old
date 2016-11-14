@@ -1,0 +1,29 @@
+REGISTER lib-pig/bacon.jar
+REGISTER lib-pig/json.jar
+--REGISTER lib/tika-app-1.4.jar
+--REGISTER lib/geoip-api-1.2.12.jar 
+--REGISTER lib/WebdanicaJobs-14-11-2014.jar
+--REGISTER lib/serializer-2.7.1.jar
+--REGISTER lib-pig/guava-19.0.jar
+--REGISTER lib-pig/tika-app-1.13.jar
+REGISTER lib/webdanica-core-0.2.0-SNAPSHOT.jar
+REGISTER lib/tika-core-1.13.jar
+REGISTER lib/tika-langdetect-1.13.jar 
+--REGISTER lib/language-detector-0.5.jar
+REGISTER lib-pig/language-detector-0.6-SNAPSHOT.jar
+--REGISTER lib-pig/guava-19.0.jar
+REGISTER lib/slf4j-api-1.7.7.jar
+REGISTER lib/jwat-common-1.0.4.jar
+
+
+DEFINE FROMJSON         org.archive.bacon.FromJSON();
+DEFINE HOST             org.archive.bacon.url.Host();
+DEFINE DOMAIN           org.archive.bacon.url.Domain();
+DEFINE FILENOTFOUND     dk.kb.webdanica.criteria.NotFound();
+DEFINE SHOWSIZE         dk.kb.webdanica.criteria.ShowSize();
+--DEFINE ONLYTEXT       dk.kb.webdanica.criteria.OnlyTextType();
+DEFINE CONCATTEXT       dk.kb.webdanica.criteria.ConcatText();
+DEFINE ISNT_ROBOTSTXT   dk.kb.webdanica.criteria.IsNotRobotsTxt();
+DEFINE Combo            dk.kb.webdanica.criteria.Combo();
+DEFINE ComboNovV5	dk.kb.webdanica.criteria.ComboNovV5();
+DEFINE CombinedCombo    dk.kb.webdanica.criteria.CombinedCombo();

@@ -1,0 +1,34 @@
+For alle harvestlog-filer fundet i /home/harvestlogs/ folderen
+
+
+1) Flyt harvestlog til workflow-folderen
+
+2) lav parsed-text af det høstede
+
+Generer et unikt SEQ_DIR i SEQ_BASEDIR (/home/test/SEQ)
+
+DATESTAMP=`/bin/date '+%d-%m-%Y'`
+SEQ_DIR=$SEQ_BASEDIR/$DATESTAMP
+mkdir -p $SEQ_DIR
+
+bash parsed-workflow.sh <harvestlogfile> <SEQ_DIR>
+
+3) lav kriterie-analyse med pig
+
+Generer et unikt criteria_results_DIR i CRITERIA_RESULTS_BASEDIR (e.g. /home/test/criteria-results/)
+
+bash criteria-workflow.sh <SEQ_DIR> <criteria_results_DIR>
+
+eller 
+
+for  alternativ kriterie-analyse med pig (der anvender en liste af bynavne i UTF-16 tekst (gemt fra Excel som UTF8 tekst))
+tilpas stien til bynavne-filen, så den er rigtig, i filen pigscripts/criteriaRun-combinedComboJson-alt-seq.pig.
+p.t. peges der på stien /home/test/workflow/Bynavne_JEI_UTF16.txt
+
+bash criteria-workflow-alt.sh <SEQ_DIR> <criteria_results_DIR>
+
+4) Efterprocessering af kriteria-analysen og ingest i databasen
+ 
+bash ingestTool.sh <harvestlog-file> <criteria-resultat-folder>
+
+
