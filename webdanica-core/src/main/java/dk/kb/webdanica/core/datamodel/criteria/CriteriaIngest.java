@@ -26,19 +26,18 @@ import dk.kb.webdanica.core.utils.TextUtils;
  */
 public class CriteriaIngest {
 	
-	
-	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
+	public static void ingest(File harvestLog, File baseCriteriaDir, boolean addHarvestToDatabase, boolean addCriteriaResultsToDatabase, DAOFactory daofactory) throws Exception {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
 		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestLog);
-		if (addToDatabase) {
+		if (addHarvestToDatabase) {
 			HarvestDAO hdao = daofactory.getHarvestDAO();
 			for (HarvestReport hp: harvests) {
 				hdao.insertHarvest(hp);
 			}
 		}
-		List<HarvestError> errors = HarvestReport.processCriteriaResults(harvests, baseCriteriaDir,addToDatabase, daofactory);
+		List<HarvestError> errors = HarvestReport.processCriteriaResults(harvests, baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
 
 		for (HarvestError e: errors) {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());

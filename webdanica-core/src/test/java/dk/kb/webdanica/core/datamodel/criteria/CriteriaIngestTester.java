@@ -48,7 +48,7 @@ public class CriteriaIngestTester {
 		File basedir1 = new File("/home/svc/devel/webdanica/criteria-test-23-08-2016");
 		File baseCriteriaDir1 = new File(basedir1, "23-08-2016-1471968184");
 		File HarvestLogTest4 = new File(basedir1,"nl-urls-harvestlog.txt"); 
-		CriteriaIngest.ingest(HarvestLogTest4, baseCriteriaDir1,false, daoFactory);
+		CriteriaIngest.ingest(HarvestLogTest4, baseCriteriaDir1,false, false, daoFactory);
 
 		//runTest3(daoFactory);
 		
@@ -62,22 +62,22 @@ public class CriteriaIngestTester {
 		String harvestLogName = "harvestlog-1470674884515.txt";
 		File HarvestLog = new File(basedir, harvestLogName);
 		File baseCriteriaDir = new File(basedir, "11-08-2016-1470934842");
-		CriteriaIngest.ingest(HarvestLog, baseCriteriaDir, false, daoFactory);
+		CriteriaIngest.ingest(HarvestLog, baseCriteriaDir, false, false, daoFactory);
 	}
 
 	private static void runTest2(DAOFactory daoFactory) throws Exception { 
 			File basedir = new File("/home/svc/devel/webdanica/criteria-test-09-08-2016");
 			File HarvestLog = new File(basedir, "harvestlog-1470674884515.txt");
 			File baseCriteriaDir = new File(basedir, "09-08-2016-1470760002");
-			CriteriaIngest.ingest(HarvestLog, baseCriteriaDir,false, daoFactory);
+			CriteriaIngest.ingest(HarvestLog, baseCriteriaDir,false, false, daoFactory);
     }
 
 	private static void runTest1(DAOFactory daoFactory) throws Exception {
 		File danicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_danica_urls.txt.harvestlog");
 		File notdanicaHarvestLog = new File("/home/svc/devel/webdanica/toSVC/test_non_danica_urls.txt.harvestlog");
 		File baseCriteriaDir = new File("/home/svc/devel/webdanica/toSVC/03-08-2016-1470237223/");
-		CriteriaIngest.ingest(danicaHarvestLog, baseCriteriaDir, false, daoFactory);
-		CriteriaIngest.ingest(notdanicaHarvestLog, baseCriteriaDir, false, daoFactory);	
+		CriteriaIngest.ingest(danicaHarvestLog, baseCriteriaDir, false, false, daoFactory);
+		CriteriaIngest.ingest(notdanicaHarvestLog, baseCriteriaDir, false, false, daoFactory);	
 	}
 	
 	
