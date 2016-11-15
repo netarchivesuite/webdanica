@@ -46,6 +46,7 @@ public class SettingsUtilities {
 	    	if (settingsValue == null || settingsValue.isEmpty()) {
 	    		logger.warning("Using default value '" + default_string_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
 	    	} else {
+	    		logger.info("Using value '" + settingsValue + "' for setting '" + settingsName + "'.");
 	    		returnValue = settingsValue;
 	    	}
 	    } else {
@@ -65,6 +66,7 @@ public class SettingsUtilities {
 	    		try {
 	            	intValue = Integer.parseInt(settingsValueAsString);
 	            	returnValue = intValue;
+	            	logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
 	            } catch (NumberFormatException e) {
 	            	logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value '" + settingsValueAsString 
 	            			+ "'  in the settings is not a valid integer");
@@ -85,6 +87,7 @@ public class SettingsUtilities {
 	    	} else {
 	    		boolean boolValue = Boolean.parseBoolean(settingsValueAsString);
 	            returnValue = boolValue;
+	            logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
 	    	}
 	    } else {
 	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_bool_value);

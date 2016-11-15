@@ -33,6 +33,6 @@ fi
 DESTINATION=$CRITERIARESULTSDIR/$J
 #mkdir -p $DESTINATION
 echo do criteria-analysis on file $FILE with destination $DESTINATION
-bash pig16-call-template.sh $FILE $DESTINATION $SCRIPTPATH
+bash pig16-call-script.sh $FILE $DESTINATION $SCRIPTPATH
 done
 

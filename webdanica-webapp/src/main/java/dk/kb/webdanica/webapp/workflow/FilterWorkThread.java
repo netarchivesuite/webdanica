@@ -81,7 +81,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
     	seeddao = configuration.getDAOFactory().getSeedsDAO();
     	blacklistDao = configuration.getDAOFactory().getBlackListDAO();
     	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());
-    	rejectDKUrls = SettingsUtilities.getBooleanSetting(WebdanicaSettings.REJECT_DK_URLS, Constants.DEFAULT_REJECT_DK_URLS_VALUE);
+    	rejectDKUrls = SettingsUtilities.getBooleanSetting(WebdanicaSettings.REJECT_DK_URLS, 
+    			Constants.DEFAULT_REJECT_DK_URLS_VALUE);
 	}
 
 	@Override
@@ -94,13 +95,9 @@ public class FilterWorkThread extends WorkThreadAbstract {
     			logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size() + "' seeds ready for filtering");
     		}
             synchronized (queueList) {
-            	for (int i=0; i<queueList.size(); ++i) { // FIXME Possibly have a limit to how much is processed at a time?
+            	for (int i=0; i<queueList.size(); ++i) {
             		Seed urlRecord = queueList.get(i);
             		workList.add(urlRecord);
-            		/*
-            		if (!workList.contains(urlRecord)) {
-            			workList.add(urlRecord);
-            		}*/
             	}
                 queueList.clear();
             }

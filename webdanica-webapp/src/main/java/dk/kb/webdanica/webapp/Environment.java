@@ -23,6 +23,7 @@ import com.antiaction.common.templateengine.TemplateMaster;
 import com.antiaction.common.templateengine.login.LoginTemplateHandler;
 import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 
+import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
@@ -42,15 +43,7 @@ public class Environment {
 
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(Environment.class.getName());
-
-    public static final String DEFAULT_LOOKUP_CRONTAB = "0 * * * *";
-	public static final String DEFAULT_PID_CRONTAB = "0 0 * * *";
-	public static final String DEFAULT_ALIVECHECK_CRONTAB = "0 0 * * *";
-	public static final String DEFAULT_FETCH_CRONTAB = "0 * * * *";
-	public static final String DEFAULT_WAYBACKCHECK_CRONTAB = "0 0 * * *";
-	public static final String DEFAULT_ARCHIVECHECK_CRONTAB = "0 0 * * *";
-	public static final String DEFAULT_EMAIL_CRONTAB = "0 0 * * *";
-
+    
     /** servletConfig. */
     private ServletConfig servletConfig = null;
 
@@ -294,69 +287,15 @@ public class Environment {
 		} else {
 			throw new ServletException("'The property 'login-template' must be configured in the web.xml");
 		}
-
+		
 		/*
 		 * Crontabs.
 		 */
-
-		String lookupCrontab = getServletConfig().getInitParameter("lookup-crontab");
-		String pidCrontab = getServletConfig().getInitParameter("pid-crontab");
-		String aliveCheckCrontab = getServletConfig().getInitParameter("alive-crontab");
-		String fetchCrontab = getServletConfig().getInitParameter("fetch-crontab");
-		String waybackCheckCrontab = getServletConfig().getInitParameter("check-crontab");
-		String archiveCheckCrontab = getServletConfig().getInitParameter("archive-crontab");
-		String emailCrontab = getServletConfig().getInitParameter("email-crontab");
-		if (lookupCrontab == null || lookupCrontab.length() == 0) {
-			lookupCrontab = DEFAULT_LOOKUP_CRONTAB;
-			logger.info("Using default 'lookup-crontab' value of '" + lookupCrontab + "'.");
-		} else {
-			logger.info("Using 'lookup-crontab' value of '" + lookupCrontab + "'.");
-		}
-		if (pidCrontab == null || pidCrontab.length() == 0) {
-			pidCrontab = DEFAULT_PID_CRONTAB;
-			logger.info("Using default 'pid-crontab' value of '" + pidCrontab + "'.");
-		} else {
-			logger.info("Using 'pid-crontab' value of '" + pidCrontab + "'.");
-		}
-		if (aliveCheckCrontab == null || aliveCheckCrontab.length() == 0) {
-			aliveCheckCrontab = DEFAULT_ALIVECHECK_CRONTAB;
-			logger.info("Using default 'alive-crontab' value of '" + aliveCheckCrontab + "'.");
-		} else {
-			logger.info("Using 'alive-crontab' value of '" + aliveCheckCrontab + "'.");
-		}
-		if (fetchCrontab == null || fetchCrontab.length() == 0) {
-			fetchCrontab = DEFAULT_FETCH_CRONTAB;
-			logger.info("Using default 'fetch-crontab' value of '" + fetchCrontab + "'.");
-		} else {
-			logger.info("Using 'fetch-crontab' value of '" + fetchCrontab + "'.");
-		}
-		if (waybackCheckCrontab == null || waybackCheckCrontab.length() == 0) {
-			waybackCheckCrontab = DEFAULT_WAYBACKCHECK_CRONTAB;
-			logger.info("Using default 'check-crontab' value of '" + waybackCheckCrontab + "'.");
-		} else {
-			logger.info("Using 'check-crontab' value of '" + waybackCheckCrontab + "'.");
-		}
-		if (archiveCheckCrontab == null || archiveCheckCrontab.length() == 0) {
-			archiveCheckCrontab = DEFAULT_ARCHIVECHECK_CRONTAB;
-			logger.info("Using default 'archive-crontab' value of '" + archiveCheckCrontab + "'.");
-		} else {
-			logger.info("Using 'archive-crontab' value of '" + archiveCheckCrontab + "'.");
-		}
-		if (emailCrontab == null || emailCrontab.length() == 0) {
-			emailCrontab = DEFAULT_EMAIL_CRONTAB;
-			logger.info("Using default 'email-crontab' value of '" + emailCrontab + "'.");
-		} else {
-			logger.info("Using 'email-crontab' value of '" + emailCrontab + "'.");
-		}
-		/*
-		lookupSchedule = CrontabSchedule.crontabFactory(lookupCrontab);
-		pidSchedule = CrontabSchedule.crontabFactory(pidCrontab);
-		aliveCheckSchedule = CrontabSchedule.crontabFactory(aliveCheckCrontab);
-		fetchSchedule = CrontabSchedule.crontabFactory(fetchCrontab);
-		waybackCheckSchedule = CrontabSchedule.crontabFactory(waybackCheckCrontab);
-		archiveCheckSchedule = CrontabSchedule.crontabFactory(archiveCheckCrontab);
-		emailSchedule = CrontabSchedule.crontabFactory(emailCrontab);
-		*/
+		String filteringCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_FILTERING, dk.kb.webdanica.webapp.Constants.DEFAULT_FILTERING_CRONTAB); 
+		String harvestingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
+		
+		filterSchedule = CrontabSchedule.crontabFactory(filteringCrontab);
+		harvestSchedule = CrontabSchedule.crontabFactory(harvestingCrontab);
 		
 		// Read resources and their secured status from settings.
 		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
@@ -384,31 +323,11 @@ public class Environment {
 		workflow.start();
 		filterThread = new FilterWorkThread(this, "Seeds filtering");
 		filterThread.start();
-		
 		harvesterThread = new HarvestWorkThread(this, "Harvest worker");
 		harvesterThread.start();
 		
 		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread};
 		
-		/*
-        monitoring = new MonitoringWorkThread(this, "Monitoring");
-        workflow = new WorkflowWorkThread(this, "Workflow");
-        lookup = new LookupWorkThread(this, "Lookup");
-        pid = new PIDWorkThread(this, "PID");
-        alive = new AliveWorkThread(this, "Alive");
-        fetch = new FetchWorkThread(this, "Fetch", extractLimit, extractTempdir, archiveDir, waybackPrefix_value);
-        wayback = new WaybackWorkThread(this, "Wayback");
-        archive = new ArchiveWorkThread(this, "Archive");
-
-        monitoring.start();
-        workflow.start();
-        lookup.start();
-        pid.start();
-        alive.start();
-        fetch.start();
-        wayback.start();
-        archive.start();
-		 */
 		/** Send a mail to the mailAdmin that the system has started */
 		String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
 		theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
@@ -424,7 +343,7 @@ public class Environment {
     }
     
     private String getServer() {
-	    return SystemUtils.getLocalHostName(); // TODO maybe replace with something better (my code in the kbpillar project
+	    return SystemUtils.getLocalHostName();
     }
 
 	private String getStopMailContents(String subject) {
@@ -443,17 +362,13 @@ public class Environment {
 		theconfig.getEmailer().sendAdminEmail(subject, getStopMailContents(subject));
 		if (filterThread != null) {
 			filterThread.stop();
-		}
-		
+		}		
 		if (harvesterThread != null) {
 			harvesterThread.stop();
 		}
-		
 		if (workflow != null) {
             workflow.stop();
         }
-		
-		
 		
 		// Closing down working threads
 		
@@ -463,13 +378,6 @@ public class Environment {
 					(workflow.bRunning? " Workflow": "")
 					+ (filterThread.bRunning? " FilterThread": "")
 					+ (harvesterThread.bRunning? " HarvesterThread": "")
-					
-					/*
-                    + (pid.bRunning? " PID": "")
-                    + (alive.bRunning? " Alive": "")
-                    + (fetch.bRunning? " Fetch": "")
-                    + (wayback.bRunning? " Wayback": "")
-					 */
 					)
 					;
 			logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
@@ -480,55 +388,11 @@ public class Environment {
 			}
 		}
 
-		/*
-    	if (wayback != null) {
-        	wayback.stop();
-    	}
-    	if (fetch != null) {
-        	fetch.stop();
-    	}
-    	if (alive != null) {
-    		alive.stop();
-    	}
-        if (pid != null) {
-            pid.stop();
-        }
-        if (lookup != null) {
-            lookup.stop();
-        }
-        if (workflow != null) {
-            workflow.stop();
-        }
-        if (monitoring != null) {
-        	monitoring.stop();
-        }
-        while (workflow.bRunning || lookup.bRunning || pid.bRunning || alive.bRunning || fetch.bRunning || wayback.bRunning) {
-            String threads = (monitoring.bRunning? " Monitoring": "")
-            		+ (workflow.bRunning? " Workflow": "")
-            		+ (lookup.bRunning? " Lookup": "")
-                    + (pid.bRunning? " PID": "")
-                    + (alive.bRunning? " Alive": "")
-                    + (fetch.bRunning? " Fetch": "")
-                    + (wayback.bRunning? " Wayback": "");
-            logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
-            try {
-                Thread.sleep(5000); // Wait 5 seconds before trying again.
-            } catch (InterruptedException e) {
-            }
-        }
-        wayback = null;
-        fetch = null;
-        alive = null;
-        pid = null;
-        lookup = null;
-        workflow = null;
-        monitoring = null;
-        */
-		
+		harvesterThread = null;
 		filterThread = null;
 		workflow = null;
         loginHandler = null;
-        templateMaster=null;
+        templateMaster = null;
         setServletConfig(null);
         // Should we close all the dao classes independently
         theconfig.close();

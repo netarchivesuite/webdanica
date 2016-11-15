@@ -215,7 +215,7 @@ public class SingleSeedHarvest {
 		}
 		long endtime = System.currentTimeMillis();
 		long usedtimeSecs = (endtime-starttime)/1000;
-		System.out.println("After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status );
+		if (writeToSystemOut) System.out.println("After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status );
 		this.finishedState = status;
 		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);
@@ -227,11 +227,13 @@ public class SingleSeedHarvest {
 		
 		String harvestPrefix = theJob.getHarvestFilenamePrefix();
 		ApplicationUtils.dirMustExist(FileUtils.getTempDir()); // Inserted to ensure that the getTempDir() exists.
-		System.out.println("Retrieving the list of files belonging to the job: ");
+		if (writeToSystemOut)System.out.println("Retrieving the list of files belonging to the job: ");
 		List<String> lines = Reporting.getFilesForJob(jobId.intValue(), harvestPrefix);
-		System.out.println("The following files were harvested: ");
-		for (String line: lines) {
-			System.out.println(line);
+		if (writeToSystemOut){ 
+			System.out.println("The following files were harvested: ");
+			for (String line: lines) {
+				System.out.println(line);
+			}
 		}
 		this.files = lines;
 		

@@ -25,11 +25,18 @@ public class WebdanicaSettings {
 	public static String HARVESTING_MAX_OBJECTS = "settings.harvesting.maxobjects";
 	public static String HARVESTING_MAX_SINGLESEEDHARVESTS = "settings.harvesting.maxSingleSeedHarvests";
 	public static String HARVESTING_HARVESTLOGDIR = "settings.harvesting.harvestlogDir";
+	public static String HARVESTING_HARVEST_LOG_PREFIX = "settings.harvesting.harvestlogPrefix";
+	public static String HARVESTING_HARVEST_LOG_READY_SUFFIX = "settings.harvesting.harvestlogReadySuffix";
+	public static String HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX = "settings.harvesting.harvestlogNotreadySuffix";
+	
 	
 	/** webapp settings */
 	public static String WEBAPP_RESOURCE_PATH = "settings.webapp.resources.resource.path";
 	public static String WEBAPP_RESOURCE_SECURED = "settings.webapp.resources.resource.secured";
 	public static String WEBAPP_DEFAULT_SECURED_SETTING = "settings.webapp.resources.defaultsecuredsetting";
+
+	public static final String WEBAPP_CRONTAB_FILTERING = "settings.webapp.crontab.filtering";
+	public static final String WEBAPP_CRONTAB_HARVESTING = "settings.webapp.crontab.harvesting";
 	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";
