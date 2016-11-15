@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 
+import dk.kb.webdanica.core.criteria.C4;
 import dk.kb.webdanica.core.criteria.Words;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
@@ -70,7 +71,6 @@ public class CriteriaIngest {
 	
 	 */
 	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase, DAOFactory daofactory) throws Exception {
-		boolean listIgnored = true;
 		return process(ingestFile, seed, harvestName, addToDatabase, daofactory);
 	}
 	
@@ -243,14 +243,8 @@ public class CriteriaIngest {
 		if (res.C.get("C4a").equals("da")) {
 			// look at the percentage in C4b
 			String languagesFound = res.C.get("C4b");
-			
-			List<Language> languages = Language.findLanguages(languagesFound);
-			for (Language l: languages) {
-				if (l.getCode() == "da" && l.getConfidence() > 0.90F) {
-					res.intDanish = 1;
-					res.calcDanishCode = 4;
-					return true;
-				}
+			if (C4.checkForDanishCode4(res, languagesFound)) {
+				return true;
 			}
 		}
 		

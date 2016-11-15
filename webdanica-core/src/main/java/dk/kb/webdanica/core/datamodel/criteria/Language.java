@@ -27,9 +27,12 @@ public class Language {
 	    if (languagesFound.contains("#")) {
 	    	String[] parts = languagesFound.split("#");
 	    	for (String part: parts) {
-	    		Language l = parseLanguage(part);
-	    		languages.add(l);
+	    		Language lang = parseLanguage(part);
+	    		languages.add(lang);
 	    	}
+	    } else {
+	    	Language lang = parseLanguage(languagesFound);
+	    	languages.add(lang);
 	    }
 	    return languages;
     }

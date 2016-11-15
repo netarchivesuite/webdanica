@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dk.kb.webdanica.core.criteria.C4;
+import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
 public class C4Tester {
 
@@ -33,7 +34,7 @@ public class C4Tester {
 	}
 
 	@Test
-	public void test() throws IOException {
+	public void testComputeNewC4() throws IOException {
 	    if (true) {
 	        return;
 	    }
@@ -43,8 +44,27 @@ public class C4Tester {
 		String c4a = results.get(0);
 		String c4b = results.get(1);
 		assertEquals(c4a, "da");
-		assertEquals(c4b, "da: HIGH (0.999995)");
-		
+		assertEquals(c4b, "da: HIGH (0.999995)");	
 	}
+	
+	@Test
+	public void testCheckForDanishCode4() {
+		String Languages_da = "da: HIGH (0.999996)";
+		String Languages_en = "en: HIGH (0.999995)";
+		String LanguagesMixt = "da: MEDIUM (0.714284)#en: MEDIUM (0.285713)";
+		SingleCriteriaResult scr = new SingleCriteriaResult();
+		assertTrue(C4.checkForDanishCode4(scr, Languages_da));
+		assertTrue(scr.calcDanishCode == 4);
+		assertTrue(scr.intDanish == 1.0F);
+		scr = new SingleCriteriaResult();
+		assertFalse(C4.checkForDanishCode4(scr, Languages_en));
+		assertTrue(scr.calcDanishCode != 4);
+		assertTrue(scr.intDanish != 1.0F);
+		scr = new SingleCriteriaResult();
+		assertFalse(C4.checkForDanishCode4(scr, LanguagesMixt));
+		assertTrue(scr.calcDanishCode != 4);
+		assertTrue(scr.intDanish != 1.0F);
+	}  
+	
 
 }
