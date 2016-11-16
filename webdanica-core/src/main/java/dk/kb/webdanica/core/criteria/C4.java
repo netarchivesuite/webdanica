@@ -83,17 +83,5 @@ public class C4 extends EvalFunc<String> {
 			returnList.add(C4b);
 			return returnList;
         }
-
-		public static boolean checkForDanishCode4(SingleCriteriaResult res, String languagesFound) {
-			List<Language> languages = Language.findLanguages(languagesFound);
-			for (Language l: languages) {
-				if (l.getCode().equals("da") && l.getConfidence() > 0.90F) {
-					res.intDanish = 1;
-					res.calcDanishCode = 4;
-					return true;
-				}
-			}
-	        return false;
-        }
 }
 

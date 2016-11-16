@@ -243,7 +243,7 @@ public class CriteriaIngest {
 		if (res.C.get("C4a").equals("da")) {
 			// look at the percentage in C4b
 			String languagesFound = res.C.get("C4b");
-			if (C4.checkForDanishCode4(res, languagesFound)) {
+			if (CalcDanishCode.checkForDanishCode4(res, languagesFound)) {
 				return true;
 			}
 		}

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -355,4 +356,16 @@ public class CalcDanishCode {
 	    
 	    return s;
 	}
+	
+	public static boolean checkForDanishCode4(SingleCriteriaResult res, String languagesFound) {
+		List<Language> languages = Language.findLanguages(languagesFound);
+		for (Language l: languages) {
+			if (l.getCode().equals("da") && l.getConfidence() > 0.90F) {
+				res.intDanish = 1;
+				res.calcDanishCode = 4;
+				return true;
+			}
+		}
+        return false;
+    }
 }

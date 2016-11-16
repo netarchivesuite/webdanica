@@ -30,7 +30,8 @@ public class FindHarvestLogs {
 		File harvestLogDir = new File(harvestLogDirName);
 		
 		if (!harvestLogDir.isDirectory()) {
-			System.err.println("HarvestLogDir '" + harvestLogDir.getAbsolutePath() + "' does not exist or is not a directory");
+			System.err.println("ERROR: HarvestLogDir '" + harvestLogDir.getAbsolutePath() + "' does not exist or is not a directory");
+			System.err.println("Exiting program with exit code 1");
 			System.exit(1);
 		}
 		String[] files = harvestLogDir.list(new FilenameFilter() {

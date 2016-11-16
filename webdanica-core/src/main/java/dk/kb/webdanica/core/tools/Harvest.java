@@ -73,7 +73,8 @@ public class Harvest {
 			URL_REJECT_REASON reason = UrlUtils.isRejectableURL(argument);
 			if (reason.equals(URL_REJECT_REASON.NONE)) {
 				System.out.println("Do single harvest of seed '" + argument + "'");
-				SingleSeedHarvest result = SingleSeedHarvest.doSingleHarvest(argument, scheduleName, templateName, harvestPrefix, harvestMaxBytes, harvestMaxObjects, true);		
+				String eventHarvestName = harvestPrefix + System.currentTimeMillis(); 
+				SingleSeedHarvest result = SingleSeedHarvest.doSingleHarvest(argument, eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects, true);		
 				results.add(result);
 			} else {
 				String errMsg = "No harvesting done. The argument '" + argument + "' is not a valid url";

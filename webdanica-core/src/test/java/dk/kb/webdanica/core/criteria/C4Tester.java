@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dk.kb.webdanica.core.criteria.C4;
+import dk.kb.webdanica.core.datamodel.criteria.CalcDanishCode;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
 public class C4Tester {
@@ -53,15 +54,15 @@ public class C4Tester {
 		String Languages_en = "en: HIGH (0.999995)";
 		String LanguagesMixt = "da: MEDIUM (0.714284)#en: MEDIUM (0.285713)";
 		SingleCriteriaResult scr = new SingleCriteriaResult();
-		assertTrue(C4.checkForDanishCode4(scr, Languages_da));
+		assertTrue(CalcDanishCode.checkForDanishCode4(scr, Languages_da));
 		assertTrue(scr.calcDanishCode == 4);
 		assertTrue(scr.intDanish == 1.0F);
 		scr = new SingleCriteriaResult();
-		assertFalse(C4.checkForDanishCode4(scr, Languages_en));
+		assertFalse(CalcDanishCode.checkForDanishCode4(scr, Languages_en));
 		assertTrue(scr.calcDanishCode != 4);
 		assertTrue(scr.intDanish != 1.0F);
 		scr = new SingleCriteriaResult();
-		assertFalse(C4.checkForDanishCode4(scr, LanguagesMixt));
+		assertFalse(CalcDanishCode.checkForDanishCode4(scr, LanguagesMixt));
 		assertTrue(scr.calcDanishCode != 4);
 		assertTrue(scr.intDanish != 1.0F);
 	}  

@@ -11,7 +11,7 @@ import dk.kb.webdanica.core.utils.DatabaseUtils;
 public class CriteriaIngestTool {
 
 	public static void main(String[] args) throws IOException, SQLException {
-		if (args.length <= 2 || args.length > 4) {
+		if (args.length < 2 || args.length > 4) {
 			System.err.println(CriteriaIngestTool.class.getName() + " has missing arguments or too many args (#args given = " + args.length + "). Required #args is between 2 and 4");
 			System.err.println("Usage: CriteriaIngestTool <harvestlogfile> <criteria-results-dir> [--no-add-harvests-to-database] [--no-add-criteriaResults-to-database]");
 			System.exit(1);
@@ -35,7 +35,7 @@ public class CriteriaIngestTool {
 		String OPTIONAL_ARG_ONE = "--no-add-harvests-to-database";
 		String OPTIONAL_ARG_TWO = "--no-add-criteriaResults-to-database";
  		
-		if (args.length > 3) { // args.length == 4
+		if (args.length == 4) { // args.length == 4
 			if (args[2].equalsIgnoreCase(OPTIONAL_ARG_TWO)) {
 				addCriteriaResultsToDatabase= false;
 			} else if (args[3].equalsIgnoreCase(OPTIONAL_ARG_TWO)) {
@@ -50,7 +50,7 @@ public class CriteriaIngestTool {
 			} else {
 				System.err.println("Argument '" + OPTIONAL_ARG_ONE + "' not found in command.");
 			}
-		} else { // args.length == 3
+		} else if (args.length == 3) {
 			if (args[2].equalsIgnoreCase(OPTIONAL_ARG_ONE)) {
 				addHarvestToDatabase = false;
 			} else if (args[2].equalsIgnoreCase(OPTIONAL_ARG_TWO))  {
@@ -59,6 +59,7 @@ public class CriteriaIngestTool {
 				System.err.println("Argument '" +  args[2] + "' invalid and thus ignored");
 			}
 		}
+		
 		if (!addHarvestToDatabase) {
 			System.err.println("User disabled adding harvests to database");
 		}
@@ -66,7 +67,6 @@ public class CriteriaIngestTool {
 			System.err.println("User disabled adding criteriaresults to database");	
 		}
 		DAOFactory daofactory = DatabaseUtils.getDao();
-		System.exit(0);
 		try {
 			CriteriaIngest.ingest(harvestLogFile, criteriaresultsdir, addHarvestToDatabase, addCriteriaResultsToDatabase, daofactory);
 		} catch (Throwable e) {

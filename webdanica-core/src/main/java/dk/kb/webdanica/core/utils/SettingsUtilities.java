@@ -50,7 +50,7 @@ public class SettingsUtilities {
 	    		returnValue = settingsValue;
 	    	}
 	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_string_value);
+	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_string_value + "'");
 	    }
 	    return returnValue;
     }
@@ -73,7 +73,7 @@ public class SettingsUtilities {
 	            }
 	    	}
 	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_int_value);
+	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_int_value + "'");
 	    }
 	    return returnValue;
     }
@@ -90,7 +90,7 @@ public class SettingsUtilities {
 	            logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
 	    	}
 	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: " + default_bool_value);
+	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_bool_value + "'");
 	    }
 	    return returnValue;
     }
