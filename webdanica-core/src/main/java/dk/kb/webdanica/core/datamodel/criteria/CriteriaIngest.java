@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 
-import dk.kb.webdanica.core.criteria.C4;
 import dk.kb.webdanica.core.criteria.Words;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
@@ -44,8 +43,7 @@ public class CriteriaIngest {
 			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
 		}
 		HarvestReport.printToFile(harvests, harvestLogReport);
-	}
-	
+	}	
 
 	private static File findReportFile(File basedir, String harvestLogReportName) {
 		File harvestLogReport = new File(basedir, harvestLogReportName);
@@ -117,7 +115,7 @@ public class CriteriaIngest {
 					success = false;
 				}
 				if (success && doInsert) {
-					success = prepareLine(res, DataSource.NETARKIVET);
+					prepareLine(res, DataSource.NETARKIVET);
 					// REMOVED log for loadTest FIXME
 					//log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
 					if (addToDatabase) {
@@ -143,14 +141,14 @@ public class CriteriaIngest {
 		fr.close();
 		boolean verbose = false;
 		if (verbose) { //FIXME
-		log("Processed " + linecount + " lines");
-		log("Skipped " + skippedCount + " lines");
-		log("Ignored " + ignoredCount + " lines");
-		log("Inserted " + insertedCount + " records");
-		
-		for(String ignored: ignoredSet) {
-			log(" - " + ignored);
-		}
+			log("Processed " + linecount + " lines");
+			log("Skipped " + skippedCount + " lines");
+			log("Ignored " + ignoredCount + " lines");
+			log("Inserted " + insertedCount + " records");
+
+			for(String ignored: ignoredSet) {
+				log(" - " + ignored);
+			}
 		}
 		
 		pr.results = results;
@@ -173,7 +171,7 @@ public class CriteriaIngest {
 	 * @param source
 	 * @return
 	 */
-	private static boolean prepareLine(SingleCriteriaResult res, DataSource source) {
+	private static void prepareLine(SingleCriteriaResult res, DataSource source) {
 		/*** set source ***/
 		res.source = source;
 		// Remove because of noise FIXME
@@ -186,8 +184,7 @@ public class CriteriaIngest {
 		//res.calcDanishCode = 1  size=0 
 		if (res.Cext1==0){ 
 			res.calcDanishCode = 1;   //no text
-			//TODO return false instead of true
-			return true; // we stop now: as we believe the rest of the fields are empty 
+			return; // we stop now: as we believe the rest of the fields are empty 
 		}
 		
 		/*******************************************/
@@ -222,20 +219,15 @@ public class CriteriaIngest {
 		/*** END: Update missing fields     ***/
 		/**************************************/
 
-		//res.calcDanishCode = 3
-		if (res.C.get("C15b").equals("dk")){
-			res.calcDanishCode = 3; // I think we should test in more depth
-			return true;
-		}
-
+		// Find a danishCode for the result
+		
 		if (res.C.get("C1a") != null) {  
-			CodesResult coderes = new CodesResult(); 
-			coderes = CodesResult.setcodes_mail(res.C.get("C1a"), res.C.get("C5a"), res.C.get("C5b"), 
+			CodesResult coderes = CodesResult.setcodes_mail(res.C.get("C1a"), res.C.get("C5a"), res.C.get("C5b"), 
 					res.C.get("C15b"), res.C.get("C7g"));
 			if (coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
-				return true;
+				return;
 			}
 		}
 
@@ -244,93 +236,105 @@ public class CriteriaIngest {
 			// look at the percentage in C4b
 			String languagesFound = res.C.get("C4b");
 			if (CalcDanishCode.checkForDanishCode4(res, languagesFound)) {
-				return true;
+				return;
 			}
 		}
 		
 		//res.calcDanishCode =20-27, 40-47 - many dk indications 
-		if (res.calcDanishCode==0 
-				&& res.C.get("C15a")!=null && res.C.get("C16a")!=null && res.C.get("C17a")!=null 
+		if (res.C.get("C15a")!=null && res.C.get("C16a")!=null && res.C.get("C17a")!=null 
 				&& res.Cext1>200 && res.C.get("C3a")!=null && res.C.get("C4a")!=null 
 				&& res.C.get("C5a")!=null && res.C.get("C5b")!=null && res.C.get("C6a")!=null) {
 			CodesResult.setcodes_dkLanguageVeryLikely(res);
+			if (res.calcDanishCode > 0) {
+				return;
+			}
 		}
 
-		if (res.calcDanishCode==0 && (res.C.get("C3a")!=null)) {  
+		if (res.C.get("C3a")!=null) {  
 			CodesResult coderes = CodesResult.setcodes_languageDklettersNew(res.C.get("C3a"), res.C.get("C5a"), 
 					res.C.get("C5b"), res.C.get("C15b")); 
 			if (coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
+				return;
 			}
 		}
 
 		//res.calcDanishCode = 76-77  likely dk language (not norwegian)
-		if (res.calcDanishCode==0 && res.C.get("C4a") !=null && res.C.get("C5a") !=null) {  
-			CodesResult coderes = new CodesResult(); 
-			coderes = CodesResult.setcodes_languageDkNew(res.C.get("C4a"), res.C.get("C5a"), res.C.get("C5b"), 
+		if (res.C.get("C4a") !=null && res.C.get("C5a") !=null) {  
+			CodesResult coderes = CodesResult.setcodes_languageDkNew(res.C.get("C4a"), res.C.get("C5a"), res.C.get("C5b"), 
 					res.C.get("C15b"));
 			if (coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
+				return;
 			}
 		}
 
 		//find tlf an +45 to 315, 316, 317");
-		if (res.calcDanishCode==0 && res.C.get("C2a")!=null) {  
+		if (res.C.get("C2a")!=null) {  
 			CodesResult cr = CodesResult.setcodes_oldPhone(res.C.get("C2a"),res.C.get("C5a"),res.C.get("C5b"), 
 					res.C.get("C15b")); 
 			if (cr.calcDanishCode>0) {
 				res.calcDanishCode = cr.calcDanishCode ;
 				res.intDanish = cr.intDanish;
+				return;
 			}
 		}
 		
-		
-		
 
 		//res.calcDanishCode =100-107 small sizes
-		if (res.calcDanishCode==0 && res.Cext1<=200) { 
-			CodesResult coderes = new CodesResult(); 
-			coderes = CodesResult.setcodes_smallSize(res.C.get("C4a"), res.C.get("C3a"), res.C.get("C3b"), res.C.get("C3c"), 
+		if (res.Cext1<=200) { 
+			CodesResult coderes = CodesResult.setcodes_smallSize(res.C.get("C4a"), res.C.get("C3a"), res.C.get("C3b"), res.C.get("C3c"), 
 					res.C.get("C3d"), res.C.get("C6a"), res.C.get("C6b"), res.C.get("C6c"));
 			if(coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
+				return;
 			}
 		}
 
 		//res.calcDanishCode =10-12 asian/arabic languages	
-		if (res.calcDanishCode==0 &&  res.C.get("C4a")!=null ) {  
-			CodesResult coderes = new CodesResult(); 
-			coderes = CodesResult.setcodes_otherLanguagesChars(res.C.get("C4a"));
-			if(coderes.calcDanishCode>0) {
+		if (res.C.get("C4a")!= null ) {  
+			CodesResult coderes = CodesResult.setcodes_otherLanguagesChars(res.C.get("C4a"));
+			if (coderes.calcDanishCode>0) {
 				res.calcDanishCode = coderes.calcDanishCode;
 				res.intDanish = coderes.intDanish;
+				return;
 			}
 		}
 
-		// See MysqlX.getCalcDkCodeText for explanations
-		if (res.calcDanishCode==0) {
-			CodesResult cr = CodesResult.setcodes_notDkLanguageVeryLikely(res); //get calcode and IntDanish  and check in depth
-			if (cr.calcDanishCode>0) {
-				res.calcDanishCode = cr.calcDanishCode;
-				res.intDanish = cr.intDanish;
-			}
+		// See CalcDanishCode.getCalcDkCodeText for explanations
+		CodesResult cr = CodesResult.setcodes_notDkLanguageVeryLikely(res); //get callcode and IntDanish  and check in depth
+		if (cr.calcDanishCode>0) {
+			res.calcDanishCode = cr.calcDanishCode;
+			res.intDanish = cr.intDanish;
+			return;
 		}
+
 
 		//res.calcDanishCode = 2: double-char (Cext2 >= 200)
-		if (res.calcDanishCode==0 && res.Cext2>=200) res.calcDanishCode = 2; //lots of doublechars
+		if (res.Cext2>=200) { 
+			res.calcDanishCode = 2; //lots of doublechars
+			return;
+		}
 		//res.calcDanishCode = 220: double-char( 130 <= Cext2 < 200)
-		if (res.calcDanishCode==0 && res.Cext2>=130) res.calcDanishCode = 220; //lots of doublechars
-
-		///////////////////////////////////
-		// set calcDanishCode-codes for which fields are set
-		if (res.calcDanishCode==0) {
-			res.calcDanishCode = CodesResult.findNegativBitmapCalcCode(res);
+		if (res.Cext2>=130) {
+			res.calcDanishCode = 220; //lots of doublechars
+			return;
 		}
 		
-		return true;
+		
+		//res.calcDanishCode = 3
+		if (res.C.get("C15b").equals("dk")){ // TLD-check
+			res.calcDanishCode = 3; // I think we should test in more depth
+			return;
+		}
+		
+		///////////////////////////////////
+		// set calcDanishCode-codes for which fields are set
+		res.calcDanishCode = CodesResult.findNegativBitmapCalcCode(res);
+		return;
 	}
 	
 	private static void someUpdateCode(SingleCriteriaResult res) {
@@ -427,28 +431,4 @@ public class CriteriaIngest {
     	}
 	    
     }	
-	
-	
-	
 }
-	
-	
-/*
-	public static String ingest_turk_update_no = "0008"; //updated tyrk and arabic codes  after 30/8 (7/9)
-	public static String ingest_arabic_update_no = "0009"; //updated tyrk and arabic codes  after 30/8 (7/9)
-	public static String ingest_big0909_update_no = "0010"; //added code 32-35, 52-55, 200-203 and new calccodes (mediunint)
-	public static String ingest_mail0110_update_no = "0011"; //added code 5-6, and bit 18
-	public static String ingest_3efagain_update_no = "0012"; //added code bit 19
-	public static String ingest_largeportionsupdate = "0013"; //
-	public static String ingest_wrong6_dklan = "0014"; //correct 6 and set for dk language
-	public static String ingest_wrong3efandbits = "0015"; //correct 6 and set for dk language
-	public static String ingest_reset_unusable_codes = "0016"; //reset unused codes
-	public static String ingest_new_codes = "0017"; //new codes
-	public static String ingest_cleanup = "0018"; //cleanup
-	public static String ingest_0s = "0019"; //set bits for 0's
-	public static String ingest_0cleanups = "0020"; //set bits for 0's
-	public static String ingest_correctNotDk = "0021"; //set bits for 0's
-	public static String ingest_current_update_no = ingest_0cleanups; //ingest_reset_unusable_codes;
-	*/ 
-
-

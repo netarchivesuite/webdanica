@@ -24,4 +24,6 @@ public interface CriteriaResultsDAO {
 
 	void deleteRecordsByHarvestname(String string) throws Exception;
 
+	boolean updateRecord(SingleCriteriaResult singleAnalysis) throws Exception;
+
 }

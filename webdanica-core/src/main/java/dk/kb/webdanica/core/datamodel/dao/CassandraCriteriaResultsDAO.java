@@ -341,4 +341,11 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 		Row row = rs.one();
 		return row.getLong(0);
 	}
+
+	@Override
+    public boolean updateRecord(SingleCriteriaResult singleAnalysis)
+            throws Exception {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 }

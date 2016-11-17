@@ -12,15 +12,12 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
-import dk.kb.webdanica.core.utils.Settings;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 
 
 public class HBasePhoenixConnectionManager {
 	
-	protected static Logger logger;
-	static {
-		logger = Logger.getLogger(HBasePhoenixConnectionManager.class.getName());
-	}
+	private static final Logger logger = Logger.getLogger(HBasePhoenixConnectionManager.class.getName());
 
 	protected HBasePhoenixConnectionManager() {
 	}
@@ -28,7 +25,7 @@ public class HBasePhoenixConnectionManager {
 	protected static Object driver;
 	protected static String connectionString;
 
-	public static void register() {
+	public static synchronized void register() {
 		if (driver == null) {
 			try {
 				driver = Class.forName( "org.apache.phoenix.jdbc.PhoenixDriver" ).newInstance();
@@ -47,17 +44,7 @@ public class HBasePhoenixConnectionManager {
 			}
 		}
 		String defaultConnectionString = "jdbc:phoenix:localhost:2181:/hbase";
-		if (Settings.hasKey(WebdanicaSettings.DATABASE_CONNECTION)) {
-			connectionString = Settings.get(WebdanicaSettings.DATABASE_CONNECTION);
-			if (connectionString.isEmpty())  {
-				logger.warning("ConnectionString empty in setting '" + WebdanicaSettings.DATABASE_CONNECTION + ". Using default connectionstring '" +  defaultConnectionString + "'.");
-				connectionString = defaultConnectionString;
-			}
-		} else {
-			logger.warning("ConnectionString setting '" + WebdanicaSettings.DATABASE_CONNECTION + "' not set. Using default connectionstring '" +  defaultConnectionString + "'.");
-			connectionString = defaultConnectionString;
-		}
-		
+		connectionString = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_CONNECTION, defaultConnectionString);
 	}
 
 	protected static Map<Thread, Connection> threadConnectionMap = new TreeMap<Thread, Connection>(new Comparator<Thread>() {
@@ -86,10 +73,12 @@ public class HBasePhoenixConnectionManager {
 		Connection conn = threadConnectionMap.remove(Thread.currentThread());
 		if (conn != null) {
 			conn.close();
+			conn = null;
 		}
 	}
 	
 	public static void closeAllConnections() throws SQLException {
+		logger.info("Closing down all " + threadConnectionMap.size() + " connections");
 		for (Connection conn: threadConnectionMap.values()) {
 			if (conn != null) {
 				conn.close();
@@ -110,10 +99,11 @@ public class HBasePhoenixConnectionManager {
 	            try {
 	                DriverManager.deregisterDriver(driver);
 	            } catch (SQLException ex) {
+	            	logger.warning("Exception thrown during deregistering of driver '" + driver.getClass().getName() + "': " + ex); 
 	            }
 	        } else {
 	            // driver was not registered by the webapp's ClassLoader and may be in use elsewhere
-	        }
+	        	logger.warning("jdbc-driver '" + driver.getClass().getName() + "' not registered by this app, so we don't touch it");       }
 	    }
 	}
 

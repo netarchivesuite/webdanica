@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang.StringUtils;
@@ -16,45 +17,43 @@ import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	
+	private static final Logger logger = Logger.getLogger(HBasePhoenixCriteriaResultsDAO.class.getName());
+
 	private SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws Exception {
 		SingleCriteriaResult s = null;
-		if (rs != null) {
-			if (rs.next()) {
-				s = new SingleCriteriaResult();
-				s.url = rs.getString("url");
-				s.urlOrig = rs.getString("UrlOrig");
-				s.seedurl = rs.getString("seedurl");
-				s.harvestName = rs.getString("harvestname");
-				s.hostname = rs.getString("hostname");
-				s.domainName = rs.getString("domain");
-				s.errorMsg = rs.getString("error");
-				s.Cext1 = rs.getLong("Cext1");
-				s.Cext2 = rs.getLong("Cext2");
-				s.Cext3 = rs.getLong("Cext3");
-			    //s.Cext3Orig = row.getString("extWDateOrig");
-				for (String c: SingleCriteriaResult.StringCriteria) {
-					s.C.put(c, rs.getString(c));
-				}
-				s.intDanish = rs.getFloat("intDanish");
-			    s.source = DataSource.fromOrdinal(rs.getInt("source"));
-			    s.calcDanishCode = rs.getInt("calcDanishCode");
-			    s.CText = rs.getString("CText");
-			    s.CLinks = DatabaseUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
-				s.insertedDate = rs.getLong("inserted_time");
-				s.updatedDate = rs.getLong("updated_time");
-			}
+		s = new SingleCriteriaResult();
+		s.url = rs.getString("url");
+		s.urlOrig = rs.getString("UrlOrig");
+		s.seedurl = rs.getString("seedurl");
+		s.harvestName = rs.getString("harvestname");
+		s.hostname = rs.getString("hostname");
+		s.domainName = rs.getString("domain");
+		s.errorMsg = rs.getString("error");
+		s.Cext1 = rs.getLong("Cext1");
+		s.Cext2 = rs.getLong("Cext2");
+		s.Cext3 = rs.getLong("Cext3");
+		//s.Cext3Orig = row.getString("extWDateOrig");
+		for (String c: SingleCriteriaResult.StringCriteria) {
+			s.C.put(c, rs.getString(c));
 		}
-	    return s;
+		s.intDanish = rs.getFloat("intDanish");
+		s.source = DataSource.fromOrdinal(rs.getInt("source"));
+		s.calcDanishCode = rs.getInt("calcDanishCode");
+		s.CText = rs.getString("CText");
+		s.CLinks = DatabaseUtils.sqlArrayToArrayList(rs.getArray("CLinks"));
+		s.insertedDate = rs.getLong("inserted_time");
+		s.updatedDate = rs.getLong("updated_time");
+		return s;
 	}
 
-	private void getResultsFromResultSet(ResultSet rs, List<SingleCriteriaResult> seedList) throws Exception {
-		SingleCriteriaResult s;
+	private List<SingleCriteriaResult> getResultsFromResultSet(ResultSet rs) throws Exception {
+		List<SingleCriteriaResult> resultList = new ArrayList<SingleCriteriaResult>();
 		if (rs != null) {
 			while (rs.next()) {
-				s = getResultFromResultSet(rs);
-				seedList.add(s);
+				resultList.add(getResultFromResultSet(rs));
 			}
 		}
+		return resultList;
 	}
 	
 	public static final String INSERT_SQL;
@@ -68,8 +67,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 				+ "C7a, C7b, C7c, C7d, C7e, C7f, C7g, C7h, " //29-36
 				+ "C8a, C8b, C8c, C9a, C9b, C9c, C9d, C9e, C9f, " //37-44
 				+ "C10a, C10b, C10c, C15a, C15b, C16a, C17a, C18a, intDanish, source, calcDanishCode, CText, CLinks, " //46-58
-				+ "inserted_time) " //59
-				+ " VALUES (" + StringUtils.repeat("?,", 58) + "?) ";							
+				+ "inserted_time, updated_time) " //59-60
+				+ " VALUES (" + StringUtils.repeat("?,", 59) + "?) ";							
 	}
 
 	/**
@@ -79,12 +78,32 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	 */
 	@Override
 	public boolean insertRecord(SingleCriteriaResult singleAnalysis) throws Exception {
+		boolean result = upsertRecord(singleAnalysis, false);
+		return result;
+	}
+	
+	@Override
+	public boolean updateRecord(SingleCriteriaResult singleAnalysis) throws Exception {
+		boolean result = upsertRecord(singleAnalysis, true);
+		return result;
+	}
+		
+	
+	private boolean upsertRecord(SingleCriteriaResult singleAnalysis, boolean isUpdate) throws Exception {
+		Long insertedTime = null;
+		Long updatedTime = null;
+		if (isUpdate) {
+			insertedTime = singleAnalysis.insertedDate;
+			updatedTime = new Date().getTime();
+		} else {
+			insertedTime = new Date().getTime();
+			updatedTime = insertedTime;
+		}
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
 		int idx = 1;
 		int res = 0;
 		try {
-			Date insertedDate = new Date();
 			List<String> strList = singleAnalysis.CLinks;
 			String[] strArr = new String[strList.size()];
 			strArr = strList.toArray(strArr);
@@ -131,7 +150,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.setInt(idx++, singleAnalysis.calcDanishCode);
 			stm.setString(idx++, singleAnalysis.CText);
 			stm.setArray(idx++, sqlArr);
-			stm.setLong(idx++, insertedDate.getTime());
+			stm.setLong(idx++, insertedTime);
+			stm.setLong(idx++, updatedTime);
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -144,7 +164,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 		}
 		return res != 0;
 	}
-
+	
 	public static final String READ_ALL_WITH_URL_SQL;
 
 	static {
@@ -155,7 +175,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	
 	@Override
 	public List<SingleCriteriaResult> getResultsByUrl(String url) throws Exception {
-		List<SingleCriteriaResult> seedList = new ArrayList<SingleCriteriaResult>();
+		List<SingleCriteriaResult> resultList = new ArrayList<SingleCriteriaResult>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		try {
@@ -164,7 +184,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.clearParameters();
 			stm.setString(1, url);
 			rs = stm.executeQuery();
-			getResultsFromResultSet(rs, seedList);
+			resultList = getResultsFromResultSet(rs);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -173,7 +193,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 				stm.close();
 			}
 		}
-		return seedList; 
+		return resultList; 
 	}
 
 	public static final String READ_ALL_WITH_SEEDURL_SQL;
@@ -195,7 +215,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.clearParameters();
 			stm.setString(1, seedurl);
 			rs = stm.executeQuery();
-			getResultsFromResultSet(rs, seedList);
+			seedList = getResultsFromResultSet(rs);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -226,7 +246,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.clearParameters();
 			stm.setString(1, harvestname);
 			rs = stm.executeQuery();
-			getResultsFromResultSet(rs, seedList);
+			seedList = getResultsFromResultSet(rs);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -326,7 +346,13 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.setString(1, url);
 			stm.setString(2, harvest);
 			rs = stm.executeQuery();
-			s = getResultFromResultSet(rs);
+			if (rs != null && rs.next()) {
+				s = getResultFromResultSet(rs);
+			} else {
+				logger.warning("No CriteriaResult found for url '" + url + "' and harvest '" + harvest + "'!");
+			}
+		} catch (Throwable e) {
+			logger.severe("Failure retrieving a CriteriaResult found for url '" + url + "' and harvest '" + harvest + "': " + e);
 		} finally {
 			if (rs != null) {
 				rs.close();
@@ -350,7 +376,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm = conn.prepareStatement(READ_ALL_SQL);
 			stm.clearParameters();
 			rs = stm.executeQuery();
-			getResultsFromResultSet(rs, list);
+			list = getResultsFromResultSet(rs);
 		} finally {
 			if (rs != null) {
 				rs.close();
