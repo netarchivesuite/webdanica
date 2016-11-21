@@ -3,7 +3,7 @@ WORKFLOW_HOME=$2
 WEBDATADIR=$3
 WEBDANICA_VERSION=$4
 HADOOP_HOME=$5
-PIG_HOME=$6
+export PIG_HOME=$6
 
 PROG=`basename "$0"`
 
@@ -96,7 +96,9 @@ echo "Finished parsed-workflow on file $HARVESTLOG_FILE with success"
 #Generer et unikt criteria_results_DIR i CRITERIA_RESULTS_BASEDIR (e.g. /home/test/criteria-results/)
 CRITERIARESULTS_DIR=$CRITERIA_RESULTS_BASEDIR/$TIMESTAMP
 mkdir -p $CRITERIARESULTS_DIR
-bash criteria-workflow.sh $SEQ_DIR $CRITERIARESULTS_DIRs $WORKFLOW_HOME $PIG_HOME
+
+echo "Executing : bash criteria-workflow.sh $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME"
+bash criteria-workflow.sh $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME
 rc=$?
 if [[ $rc != 0 ]]; then echo "criteria-workflow failed"; exit $rc; fi
 
@@ -109,8 +111,8 @@ if [[ $rc != 0 ]]; then echo "criteria-workflow failed"; exit $rc; fi
 #bash criteria-workflow-alt.sh <SEQ_DIR> <criteria_results_DIR>
 
 #4) Efterprocessering af kriteria-analysen og ingest i databasen
- 
-bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR 
+echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME"
+bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME
 rc=$?
 if [[ $rc != 0 ]]; then echo "criteria ingest failed"; exit $rc; fi
 

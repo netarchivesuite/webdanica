@@ -3,14 +3,34 @@ CRITERIARESULTSDIR=$2
 WORKFLOW_HOME=$3
 PIG_HOME=$4
 
+USAGE="USAGE: bash criteria-worklow.sh <seq_basedir> <criteriaresultsdir> <workflow_home> <pig_home>"
+
+
 if [ -z "$1" ]; then
  echo ERROR: No SEQ_BASEDIR argument is given!
- echo "USAGE: bash criteria-worklow.sh <seq_basedir>"
- exit
+ echo $USAGE
+ exit 1
+fi
+if [ -z "$2" ]; then
+ echo ERROR: No CRITERIARESULTSDIR argument is given!
+ echo $USAGE
+ exit 1
+fi
+if [ -z "$3" ]; then
+ echo ERROR: No WORKFLOW_HOME argument is given!
+ echo $USAGE
+ exit 1
 fi
 
-SCRIPTPATH=$WORKFLOW_HOME/pigscripts/criteriaRun-combinedComboJson-seq.pig
+if [ -z "$4" ]; then
+ echo ERROR: No PIG_HOME argument is given!
+ echo $USAGE
+ exit 1
+fi
 
+
+SCRIPTPATH=$WORKFLOW_HOME/pigscripts/criteriaRun-combinedComboJson-seq.pig
+SEQDIRS=`ls $SEQ_BASEDIR`
 for J in $SEQDIRS
 do
 FILE=$SEQ_BASEDIR/$J/$J

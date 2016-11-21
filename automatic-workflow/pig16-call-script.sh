@@ -4,6 +4,9 @@ SCRIPT=$3
 WORKFLOW_HOME=$4
 PIG_HOME=$5
 
+$FILE $DESTINATION $SCRIPTPATH $WORKFLOW_HOME $PIG_HOME
+
+
 ## configure for correct pig version and log4j properties file
 ## points the GEOIP_FILE to /full/path/to/GeoIP.dat       (MAYBE to be used by webdanica project)
 
