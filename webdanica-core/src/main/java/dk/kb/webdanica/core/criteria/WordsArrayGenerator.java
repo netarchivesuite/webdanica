@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -35,19 +37,28 @@ public class WordsArrayGenerator {
         File f7 = new File("korpus/Danske_foreninger_utf8.txt");
         File f8 = new File("korpus/Danske_Virksomheder_utf8.txt");
         File f9 = new File("korpus/names_utf8.txt");
-        File f10 = new File("/home/svc/devel/webdanica/Bynavne_JEI.txt");
-        Set<String> WordSet = generateWordSetFromFile(f10, "UTF-16", "\t", true, false);
-        
-        for (String s: WordSet){
+        File f10 = new File("/home/svc/devel/webdanica/Bynavne_JEI_UTF16.txt"); 
+        List<Set<String>> WordSet = generateWordSetFromFile(f10, "UTF-16", "\t", true, false);
+        Set<String> singleSet = WordSet.get(0);
+        Set<String> doubleSet = WordSet.get(1);
+        System.out.println("single words found: ");
+        for (String s: singleSet){
         	System.out.println(s);
         }
-        System.out.println("size of set: " + WordSet.size());
+        System.out.println("Double words found: ");
+        for (String s: doubleSet){
+        	System.out.println(s);
+        }
+        System.out.println("size of Singleset: " + singleSet.size());
+        System.out.println("size of doubleSet: " + doubleSet.size());
         //runTestsOnFile(f4, frequent150words);       
     }
     
-    public static Set<String> generateWordSetFromFile(File f, String charset, String separator, boolean ignoreHeaderline, boolean toLowercase) throws IOException {
+    public static List<Set<String>> generateWordSetFromFile(File f, String charset, String separator, boolean ignoreHeaderline, boolean toLowercase) throws IOException {
         BufferedReader fr = null;
-        Set<String> resultSet = new TreeSet<String>();
+        List<Set<String>> results = new ArrayList<Set<String>>();
+        Set<String> resultSetSingle = new TreeSet<String>();
+        Set<String> resultSetDouble = new TreeSet<String>();
         boolean seenFirstLine = false;
         try {
         	InputStream is = new FileInputStream(f);
@@ -63,20 +74,25 @@ public class WordsArrayGenerator {
             	}
             	String[] parts = trimmedLine.split(separator);
                 for (String p: parts){
-                	String trimmed  = p.trim();
-                	if (!trimmed.isEmpty()) {
+                	String word = p.trim();
+                	if (!word.isEmpty()) {
                 		if (toLowercase) {
-                			resultSet.add(trimmed.toLowerCase());
-                		} else {
-                			resultSet.add(trimmed);
+                			word = word.toLowerCase();
                 		}
+                		if (word.contains(" ")) {
+                    		resultSetDouble.add(word);
+                    	} else {
+                    		resultSetSingle.add(word);
+                    	}
                 	}
                 }
             }
         } finally {
             IOUtils.closeQuietly(fr);
         }
-        return resultSet;
+        results.add(resultSetSingle);
+        results.add(resultSetDouble);
+        return results;
     }
     
 }

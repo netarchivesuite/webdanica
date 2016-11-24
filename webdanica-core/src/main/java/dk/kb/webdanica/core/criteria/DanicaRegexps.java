@@ -8,6 +8,7 @@ import dk.kb.webdanica.core.utils.TextUtils;
 
 public class DanicaRegexps {
     public static final String[] DanishSurnameSuffixes = new String[]{ "sen"};
+    public static final String DanishSurnameRegexp = "\\W\b\\w+sen\b"; 
 
     public static String danisheMail = "(?i)\\b[A-Z0-9._%+-]+@(?i)[A-Z0-9.-]+\\.DK\\b";
     public static Pattern pDanishMail = Pattern.compile(danisheMail);

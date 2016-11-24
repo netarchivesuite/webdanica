@@ -228,4 +228,10 @@ public class TextUtils {
         tokens.retainAll(wordsToFind);
         return tokens;
     }  
+    
+    public static Set<String> copyTokens(Set<String> tokens) {
+		Set<String> res = new HashSet<String>();
+		res.addAll(tokens);
+		return res;
+	}
 }

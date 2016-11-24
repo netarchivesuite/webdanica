@@ -147,7 +147,7 @@ public class Codes {
 			break;
 			//case cat_unknown_dk:	not implemented 	//= 9200; Not decided 0 and negative
 		default:	 
-			throw new WebdanicaException("Unkown category: " + category);
+			throw new WebdanicaException("Unknown category: " + category);
 		}
 		return codeSet;
 	}

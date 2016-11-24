@@ -1,7 +1,9 @@
 package dk.kb.webdanica.core.utils;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,13 +66,32 @@ public class UrlUtils {
 	        domain = DomainUtils.domainNameFromHostname(hostname);
 	        tld = findTld(domain);
         } catch (Throwable e) {
-        	
-	       
+        	// TODO add logging
         }
 		
 		return new UrlInfo(hostname, domain, tld);
     }
 
+	public static String getHost(String url) {
+        URL u = null;
+        try {
+            u = new URL(url);
+        } catch (MalformedURLException e) {
+            return "";
+        }
+        String host = u.getHost();
+        // If host cannot be determined, return empty string.
+        if ( host == null ) host = "";
+        // Ensure i18n hosts are in Unicode format.
+        host = java.net.IDN.toUnicode( host, java.net.IDN.ALLOW_UNASSIGNED );
+        return host;
+    }
+	
+	
+	
+	
+	
+	
 	/**
 	 * Find tld from the given domain by testing 
 	 * either if "X." plus the last two parts of the domain or "X." plus the last part of the domain results in a valid domain.

@@ -1025,8 +1025,22 @@ public class Words {
         return words;
     }
     
-    
-    
+    public final static String[] virksomheder_one_word_lowercased = new String[]{
+    	"alectia", "ambu", "americapital", "aqualife", "arkitema", "banknordik", 
+    	"bestseller", "bioporto", "brokersclub", "carlsberg", "cbrain", "chemometec", 
+    	"coloplast", "columbus", "comendo", "cowex", "cowi", "danfoss", "danisco", 
+    	"dantax", "dantherm", "deltaq", "dfds", "dfds", "dsb", "dsv", "eas", "ecco", 
+    	"egetaepper", "egmont", "enalyzer", "erria", "exiqon", "expedit", "falck", 
+    	"fastpasscorp", "fdb", "firstfarms", "flsmidth", "fluegger", "g4s", "genmab", 
+    	"gronlandsbanken", "grundfos", "intermail", "iqnovate", "iss", "jeudan", 
+    	"jobindex", "jysk", "klimainvest", "kreditbanken", "lego", "luxor", "matas", 
+    	"mermaid", "microskin", "name", "neurosearch", "nordicom", "novozymes", 
+    	"nykredit", "pandora", "pbs", "pharmacosmos", "plesner", "ramboll", "rias", 
+    	"roblon", "rtx", "sanistal", "sas", "sato", "simcorp", "skako", "solar", 
+    	"sydbank", "tdc", "tiger", "tivoli", "topdanmark", "topotarget", "torm", 
+    	"totalbanken", "trifork", "tryg", "tuborg", "velux", "vestas", "welltec", 
+    	"widex", "winlogic", "wirtek", "zentropa"
+    	};
     
     /**
      * Test-program that test the 150 frequent words.

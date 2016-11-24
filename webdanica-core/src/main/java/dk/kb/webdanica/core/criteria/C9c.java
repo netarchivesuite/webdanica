@@ -30,8 +30,10 @@ public class C9c extends EvalFunc<String>{
     }
 
     public static Set<String> computeC9c(String urlLower) {
-        return TextUtils.SearchPattern(urlLower, 
-                Words.virksomheder_lowercased);
+        return TextUtils.SearchPattern(urlLower,
+        		Words.virksomheder_one_word_lowercased
+                //Words.virksomheder_lowercased
+        );
     }    
     
 }

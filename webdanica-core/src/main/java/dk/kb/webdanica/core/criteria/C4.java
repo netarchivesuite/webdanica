@@ -12,8 +12,6 @@ import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.tika.language.detect.LanguageResult;
 
-import dk.kb.webdanica.core.datamodel.criteria.Language;
-import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.utils.Constants;
 
 

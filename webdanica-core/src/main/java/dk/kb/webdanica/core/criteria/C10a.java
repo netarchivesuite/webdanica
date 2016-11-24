@@ -20,15 +20,29 @@ public class C10a extends EvalFunc<String>{
     
     
    public static void main(String[] args) {
-       String text = "Karen Sørensen";
-               String text2 = "Søren Carlsen";
-               
+       String text = "Karen Sørensen Hansen Jespersen";
+       String text2 = "Søren Carlsen " + text;
+       
+       String regexp = "\\p{Upper}.*sen";
        Set<String> foundMatches = TextUtils.SearchWordSuffixPatterns(text, DanicaRegexps.DanishSurnameSuffixes);
        System.out.println(foundMatches.size());
        
-       foundMatches = findMatches(text + "\n" + text2);
+       String sampleText = text + "\n" + text2;
+       String lowercased = sampleText.toLowerCase();
+       
+       foundMatches = findMatches(lowercased);
+       System.out.println("matches in lowercased: " + foundMatches.size());
        String res = (foundMatches.size() != 0)? 
                ("C10a: " + TextUtils.conjoin("#", foundMatches)) : "C10a: emptylist";
+       System.out.println(res);
+       foundMatches = findMatches(sampleText);
+       System.out.println("matches in non-lowercased: " + foundMatches.size());
+       res = (foundMatches.size() != 0)? 
+               ("C10a: " + TextUtils.conjoin("#", foundMatches)) : "C10a: emptylist";
+       for (String s: foundMatches) {
+    	   System.out.println("String '"+ s  + "' matches regexp: " + s.matches(regexp));
+       }
+               
        System.out.println(res);
        
    }

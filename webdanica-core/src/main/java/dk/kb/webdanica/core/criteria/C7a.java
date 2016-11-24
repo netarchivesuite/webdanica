@@ -43,7 +43,7 @@ public class C7a extends EvalFunc<String>{
         		error.append("Error during computeC7aOnCasedToken: Unable to deduce charset from filename '" +  cityFile.getName() + "'. Assuming default charset '"+ defaultCharset + "'");
         		charset = defaultCharset;
         	}
-	        words = WordsArrayGenerator.generateWordSetFromFile(cityFile, charset, "\t", true, false);
+	        words = WordsArrayGenerator.generateWordSetFromFile(cityFile, charset, "\t", true, false).get(0);
 	        tokens.retainAll(words);
         } catch (IOException e) {
         	error.append("Error during computeC7aOnCasedToken: " + e);
