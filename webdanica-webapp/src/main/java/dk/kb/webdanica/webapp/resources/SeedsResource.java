@@ -11,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jwat.common.Base64;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -30,6 +32,7 @@ import dk.kb.webdanica.webapp.Pagination;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
 import dk.netarkivet.common.utils.I18n;
+import dk.netarkivet.common.webinterface.HTMLUtils;
 /*
 import dk.netarkivet.dab.webadmin.dao.ArchiveEntry;
 import dk.netarkivet.dab.webadmin.dao.GroupedByStatuses;
@@ -54,7 +57,7 @@ public class SeedsResource implements ResourceAbstract {
     protected static final int A_REJECT = 2;
 
     protected static final int A_DELETE = 3;
-
+	
     private Environment environment;
 
     protected int R_STATUS_LIST = -1;
@@ -64,12 +67,17 @@ public class SeedsResource implements ResourceAbstract {
     protected int R_STATUS_LIST_ID_DUMP = -1;
 
     protected int R_URL_WARC_DOWNLOAD = -1;
+    protected int R_STATUS_SEED_SHOW = -1;
 
+    public static final String SEED_PATH = "/seed/";
+    
     public static final String SEEDS_PATH = "/seeds/";
     
     public static final String SEEDS_NUMERIC_PATH = "/seeds/<numeric>/";
     
     public static final String SEEDS_NUMERIC_DUMP_PATH = "/seeds/<numeric>/dump/";
+    
+    private static final String SEED_SHOW_TEMPLATE = "seed_master.html";
     
     @Override
     public void resources_init(Environment environment) {
@@ -87,6 +95,8 @@ public class SeedsResource implements ResourceAbstract {
         //R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, "/seeds/<numeric>/dump/<numeric>/", true);
         R_STATUS_LIST_ID_DUMP = resourceManager.resource_add(this, SEEDS_NUMERIC_DUMP_PATH, 
         		environment.getResourcesMap().getResourceByPath(SEEDS_NUMERIC_DUMP_PATH).isSecure());
+        R_STATUS_SEED_SHOW = resourceManager.resource_add(this, SEED_PATH,
+        		environment.getResourcesMap().getResourceByPath(SEED_PATH).isSecure()); 
         
         //R_URL_WARC_DOWNLOAD = resourceManager.resource_add(this, "/url/warc/<numeric>/", true);
     }
@@ -115,6 +125,10 @@ public class SeedsResource implements ResourceAbstract {
         
         if (resource_id == R_STATUS_LIST || resource_id == R_STATUS_LIST_ID) {
             urls_list(dab_user, req, resp, numerics);
+        } else if (resource_id == R_STATUS_SEED_SHOW) {
+        	SeedRequest seedRequest = ResourceUtils.getUrlFromPathinfo(pathInfo, SEED_PATH);
+        	url_show(dab_user, req, resp, seedRequest);
+        	
         } else if (resource_id == R_STATUS_LIST_ID_DUMP) {
             // Dump all resources in the given state to screen
             // text/plain; charset=utf-8
@@ -122,7 +136,215 @@ public class SeedsResource implements ResourceAbstract {
         } 
     }
 
-    private void urls_list_dump(User dab_user, HttpServletRequest req,
+    private void changeState(SeedRequest seedRequest, SeedsDAO dao) throws Exception {
+    	Seed s = dao.getSeed(seedRequest.getUrl());
+    	Status old = s.getStatus();
+    	s.setStatus(seedRequest.getNewState());
+    	s.setStatusReason("Changed from status '" + old + "' to status '" + seedRequest.getNewState() + "' by user-request "); 
+	    dao.updateSeed(s);
+    }
+
+	private void url_show(User dab_user, HttpServletRequest req,
+            HttpServletResponse resp, SeedRequest sr) throws IOException  {
+    	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
+    	// Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
+    	Seed seedToShow = null;
+    	try {
+	        if (!dao.existsUrl(sr.getUrl())) {
+	        	seedToShow = Seed.createDummySeed();
+	        } else {
+	        	if (sr.getNewState() != null) {
+	        		changeState(sr, dao);
+	        		resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
+	        		return;
+	        	} else {
+	        		try {
+	        	        seedToShow = dao.getSeed(sr.getUrl());
+	                } catch (Exception e) {
+	        	        // TODO Auto-generated catch block
+	        	        e.printStackTrace();
+	                }
+	        	}
+	        }
+        } catch (Exception e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+    	if (seedToShow == null) {
+    		seedToShow = Seed.createDummySeed(); // Show dummy seed-data
+    	}
+    	// Set up the page for showing the seed page
+    	
+    	ServletOutputStream out = resp.getOutputStream();
+        resp.setContentType("text/html; charset=utf-8");
+        // TODO error text
+        String errorStr = null;
+        String successStr = null;
+        Caching.caching_disable_headers(resp);
+        String templateName = SEED_SHOW_TEMPLATE;
+        Template template = environment.getTemplateMaster().getTemplate(templateName);
+
+        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
+        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
+        TemplatePlaceHolder navbarPlace = TemplatePlaceBase.getTemplatePlaceHolder("navbar");
+        TemplatePlaceHolder userPlace = TemplatePlaceBase.getTemplatePlaceHolder("user");
+        TemplatePlaceHolder menuPlace = TemplatePlaceBase.getTemplatePlaceHolder("menu");
+        TemplatePlaceHolder backPlace = TemplatePlaceBase.getTemplatePlaceHolder("back");
+        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
+        TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
+        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
+        
+        /*        
+      <h4>URL: <placeholder id="url" /><br>
+  RedirectedUrl: <placeholder id="redirected_url" /></br>  
+  Domain: <placeholder id="domain" /></br>
+  Hostname: <placeholder id="host" /></br>
+  TLD: <placeholder id="tld" /></br>
+  Status: <placeholder id="status" /> </br> 
+  StatusReason: <placeholder id="status_reason" /></br>
+  DanicaStatus: <placeholder id="danica_status" /></br>
+  InsertedDate: <placeholder id="inserted_time" /></br>
+  UpdatedTime: <placeholder id="updated_time" /></br>
+  Exported: <placeholder id="exported" /></br>
+*/
+        TemplatePlaceHolder urlPlace = TemplatePlaceBase.getTemplatePlaceHolder("url");
+        TemplatePlaceHolder redirectedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("redirected_url");
+        TemplatePlaceHolder domainPlace = TemplatePlaceBase.getTemplatePlaceHolder("domain");
+        TemplatePlaceHolder hostPlace = TemplatePlaceBase.getTemplatePlaceHolder("host");
+        TemplatePlaceHolder tldPlace = TemplatePlaceBase.getTemplatePlaceHolder("tld");
+        
+        TemplatePlaceHolder statusPlace = TemplatePlaceBase.getTemplatePlaceHolder("status");
+        TemplatePlaceHolder statusReasonPlace = TemplatePlaceBase.getTemplatePlaceHolder("status_reason");
+        TemplatePlaceHolder danicastatusPlace = TemplatePlaceBase.getTemplatePlaceHolder("danica_status");
+        TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
+        TemplatePlaceHolder updatedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("updated_time");
+        TemplatePlaceHolder exportedPlace = TemplatePlaceBase.getTemplatePlaceHolder("exported");
+        
+        
+        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
+        placeHolders.add(titlePlace);
+        placeHolders.add(appnamePlace);
+        placeHolders.add(navbarPlace);
+        placeHolders.add(userPlace);
+        placeHolders.add(menuPlace);
+        placeHolders.add(backPlace);
+        placeHolders.add(headingPlace);
+        placeHolders.add(alertPlace);
+        placeHolders.add(contentPlace);
+        // add the new placeholders
+        placeHolders.add(urlPlace);
+        placeHolders.add(redirectedUrlPlace);
+        placeHolders.add(domainPlace);
+        placeHolders.add(hostPlace);
+        placeHolders.add(tldPlace);
+        placeHolders.add(statusPlace);
+        placeHolders.add(statusReasonPlace);
+        placeHolders.add(danicastatusPlace);
+        placeHolders.add(insertedTimePlace);
+        placeHolders.add(updatedTimePlace);
+        placeHolders.add(exportedPlace);
+        
+        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
+        
+        
+        /*
+         * Heading.
+         */
+        String heading = "Details about seed '" + seedToShow.getUrl() + "': ";
+        
+        /*
+         * Places.
+         */
+
+        if (titlePlace != null) {
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME).toString());
+        }
+
+        if (appnamePlace != null) {
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME 
+            		+ dk.kb.webdanica.webapp.Constants.SPACE + environment.getVersion()).toString());
+        }
+
+        if (navbarPlace != null) {
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_URL_SHOW));
+        }
+
+        if (userPlace != null) {
+            userPlace.setText(Navbar.getUserHref(dab_user));
+        } 
+
+        if (backPlace != null) {
+        	backPlace.setText("<a href=\"" 
+        			+ Servlet.environment.getSeedsPath() + seedToShow.getStatus().ordinal() + "/"
+        			+ "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
+        } else {
+        	logger.warning("No back´placeholder found in template '" + templateName+ "'" );
+        }
+
+        if (headingPlace != null) {
+            headingPlace.setText(heading);
+        } else {
+        	logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
+        }
+        
+        ResourceUtils.insertText(urlPlace, "url",  seedToShow.getUrl(), templateName, logger);
+        ResourceUtils.insertText(redirectedUrlPlace, "redirected_url",  seedToShow.getRedirectedUrl() + "", templateName, logger);
+        ResourceUtils.insertText(tldPlace, "tld",  seedToShow.getTld() + "", templateName, logger);
+        ResourceUtils.insertText(hostPlace, "host",  seedToShow.getHostname()+ "", templateName, logger);
+        ResourceUtils.insertText(domainPlace, "domain",  seedToShow.getDomain()+ "", templateName, logger);
+        ResourceUtils.insertText(statusPlace, "status",  seedToShow.getStatus() + "", templateName, logger);
+        ResourceUtils.insertText(statusReasonPlace, "status_reason",  seedToShow.getStatusReason() + "", templateName, logger);
+        ResourceUtils.insertText(danicastatusPlace, "danica_status",  seedToShow.getDanicaStatus() + "", templateName, logger);
+        
+        
+        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + ResourceUtils.printDate(seedToShow.getInsertedTime()), templateName, logger);
+        ResourceUtils.insertText(updatedTimePlace, "updated_time",  "" + seedToShow.getUpdatedTime(), templateName, logger);
+        ResourceUtils.insertText(exportedPlace, "exported",  "" + seedToShow.showExportedState(), templateName, logger);
+        StringBuilder sb = new StringBuilder();
+    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
+        
+        if (alertPlace != null) {
+            StringBuilder alertSb = new StringBuilder();
+            if (errorStr != null) {
+                alertSb.append("<div class=\"row-fluid\">");
+                alertSb.append("<div class=\"span12 bgcolor\">");
+                alertSb.append("<div class=\"alert alert-error\">");
+                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
+                alertSb.append(errorStr);
+                alertSb.append("</div>");
+                alertSb.append("</div>");
+                alertSb.append("</div>");
+                alertPlace.setText(alertSb.toString());
+            } else {
+            	logger.warning("No alert placeholder found in template '" + templateName + "'" );
+            }
+            if (successStr != null) {
+                alertSb.append("<div class=\"row-fluid\">");
+                alertSb.append("<div class=\"span12 bgcolor\">");
+                alertSb.append("<div class=\"alert alert-success\">");
+                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
+                alertSb.append(successStr);
+                alertSb.append("</div>");
+                alertSb.append("</div>");
+                alertSb.append("</div>");
+                alertPlace.setText(alertSb.toString());
+            } else {
+            	logger.warning("No success placeholder found in template '" + templateName + "'" );
+            }
+        }
+
+        try {
+            for (int i = 0; i < templateParts.parts.size(); ++i) {
+                out.write(templateParts.parts.get(i).getBytes());
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+        	logger.warning("IOException thrown, but ignored: " + e);        
+        }
+   }
+
+	private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
     	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
@@ -225,9 +447,9 @@ public class SeedsResource implements ResourceAbstract {
             
         }
 
-        List<Seed> urlRecordsFiltered = new ArrayList<Seed>(urlRecords.size());
-        urlRecordsFiltered = urlRecords;
-        Seed urlRecord;
+        //List<Seed> urlRecordsFiltered = new ArrayList<Seed>(urlRecords.size());
+        //urlRecordsFiltered = urlRecords;
+        //Seed urlRecord;
 
  /*
         if (urlRecords != null) {
@@ -247,11 +469,11 @@ public class SeedsResource implements ResourceAbstract {
 */
         StringBuilder sb = new StringBuilder();
         sb.append("##\r\n");
-        sb.append("## Liste over alle " + urlRecordsFiltered.size() + " seeds i status "
+        sb.append("## Liste over alle " + urlRecords.size() + " seeds i status "
                 + status + "\r\n");
         sb.append("##\r\n");
         
-        for (Seed rec: urlRecordsFiltered) {
+        for (Seed rec: urlRecords) {
         /*	if (bSysno) {
                 sb.append(rec.sysno);
                 sb.append(';');
@@ -276,7 +498,7 @@ public class SeedsResource implements ResourceAbstract {
             throws IOException {
         String errorStr = null;
         String successStr = null;
-        SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
+        SeedsDAO sdao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
         /*
         UrlRecords urlRecordsInstance = UrlRecords
                 .getInstance(environment.dataSource);
@@ -557,7 +779,7 @@ public class SeedsResource implements ResourceAbstract {
         }
 */
         StringBuilder statemenuSb = new StringBuilder();
-        String heading = buildStatemenu(statemenuSb, status, dao);
+        String heading = buildStatemenu(statemenuSb, status, sdao);
 
     	/*
         actionButtonsSb
@@ -616,7 +838,7 @@ public class SeedsResource implements ResourceAbstract {
 
         StringBuilder urlListSb = new StringBuilder();
 
-        int ordering = 0;
+        //int ordering = 0;
 
         //getUrlRecords(ordering);
 
@@ -624,7 +846,7 @@ public class SeedsResource implements ResourceAbstract {
         List<Seed> urlRecords = new ArrayList<Seed>();
         Status wantedStatus = Status.fromOrdinal(status);
         try {
-            urlRecords = dao.getSeeds(wantedStatus, 10000);
+            urlRecords = sdao.getSeeds(wantedStatus, 10000);
         } catch (Exception e) {
             logger.warning("Exception on retrieving max 10000 seeds with status " + wantedStatus + ": " + e); 
         }
@@ -735,9 +957,16 @@ public class SeedsResource implements ResourceAbstract {
             
             urlListSb.append(urlRecord.getUrl());
             urlListSb.append("\">");
-            urlListSb.append(makeEllipsis(urlRecord.getUrl(), 120));
- 
+            urlListSb.append(makeEllipsis(urlRecord.getUrl(), 40)); // TODO make a setting
             urlListSb.append("</a>");
+            // Add link to show details about seed
+            String base64Encoded = Base64.encodeString(urlRecord.getUrl());
+        	if (base64Encoded == null) {
+        		logger.warning("base64 encoding of url '" +  urlRecord.getUrl() + "' gives null");
+        		base64Encoded = urlRecord.getUrl();
+        	}
+        	 String linkToShowPage = Servlet.environment.getSeedPath() + HTMLUtils.encode(base64Encoded) + "/\"";
+        	urlListSb.append("(<a href=\"" + linkToShowPage + ">Show details</a>)");
             urlListSb.append("</td>");
             urlListSb.append("<td>");
             

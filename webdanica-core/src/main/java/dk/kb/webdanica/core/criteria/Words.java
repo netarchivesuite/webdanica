@@ -6,10 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-
 import dk.kb.webdanica.core.utils.TextUtils;
 
 
@@ -203,8 +201,8 @@ public class Words {
         "bevaege", "udgoere", "moedes","udgore", "modes", "traenge", 
         "afsloere", "medfoere","afslore", "medfore", "begraense",         
     };
-    public final static Set<WordPattern> patternsFrequentwordsWithDanishLettersCodedNov = GetCompiledPatterns(frequentwordsWithDanishLettersCodedNov);
-    public final static Set<WordPattern> patternsFrequentwordsWithDanishLettersCodedNovNoCase = GetCompiledPatternsNoCase(frequentwordsWithDanishLettersCodedNov);
+    public final static Set<WordPattern> patternsFrequentwordsWithDanishLettersCodedNov = WordPattern.getCompiledPatterns(frequentwordsWithDanishLettersCodedNov);
+    public final static Set<WordPattern> patternsFrequentwordsWithDanishLettersCodedNovNoCase = WordPattern.getCompiledPatternsNoCase(frequentwordsWithDanishLettersCodedNov);
 
     // C3e+f: NEW FIELDS - restricted version of above
     // Coded means på => paa, være => vaere
@@ -510,7 +508,7 @@ public class Words {
     "nørresundby", "norresundby", "noerresundby",  "ringsted ", 
     "ølstykke-Stenløse", "olstykke-stenlose", "oelstykke-stenloese","skive"
     };
-    public final static Set<WordPattern> patternsdanishMajorCities = GetCompiledPatterns(danishMajorCities);
+    public final static Set<WordPattern> patternsdanishMajorCities = WordPattern.getCompiledPatterns(danishMajorCities);
  
     //C7g -koge
     public final static String[] danishMajorCitiesNov = new String[] {
@@ -531,8 +529,8 @@ public class Words {
     "nørresundby", "norresundby", "noerresundby",  "ringsted ", 
     "ølstykke-Stenløse", "olstykke-stenlose", "oelstykke-stenloese","skive"
     };
-    public final static Set<WordPattern> patternsdanishMajorCitiesNov = GetCompiledPatterns(danishMajorCitiesNov);
-    public final static Set<WordPattern> patternsdanishMajorCitiesNovNoCase = GetCompiledPatternsNoCase(danishMajorCitiesNov);
+    public final static Set<WordPattern> patternsdanishMajorCitiesNov = WordPattern.getCompiledPatterns(danishMajorCitiesNov);
+    public final static Set<WordPattern> patternsdanishMajorCitiesNovNoCase = WordPattern.getCompiledPatternsNoCase(danishMajorCitiesNov);
     
     //C7e 
     public final static String[] CapitalCountryTranslated = new String[] {
@@ -570,46 +568,8 @@ public class Words {
         "kopenhaga", "w kopenhadze", "dania", // Polsk
         "kodaň", "dánsko" //tjekkisk/slovakisk
     };
-    public final static Set<WordPattern> patternsCapitalCountryTranslatedNov = GetCompiledPatterns(CapitalCountryTranslatedNov);
-    public final static Set<WordPattern> patternsCapitalCountryTranslatedNovNoCase = GetCompiledPatternsNoCase(CapitalCountryTranslatedNov);
-
-    public final static String[] virksomheder_lowercased = new String[]{
-    "2up gaming", "a. p. moller-maersk group", "african capital partners holding", "alectia", 
-    "alk-abelló", "aller media", "alm brand", "ambu", "americapital", "andersen & martini", "anglo african minerals", "ap moeller - maersk", "aqualeap technologies ltd", "aqualife", 
-    "arkil holding", "arkitema", "arla foods", "arp-hansen hotel group", "asgaard group", "asia pacific gold mining investment ltd", "astra resources", "athena it-group", "atlantic airways", "atlantic petroleum", 
-    "auriga industries", "axon global", "balux brands", "bang & olufsen", "banknordik", "bavarian nordic", "bech-bruun", "belgrave resources", "bestseller", "bioporto", 
-    "bispebjerg kollegiet", "bjarke ingels group", "block 42", "blue vision", "boconcept holding", "brd klee", "br-energy", "brodrene hartmann", "brokersclub", "brondbyernes if fodbold", 
-    "brødrene hartmann", "c. f. møller architects", "carlsberg", "cassona se", "cbrain", "celebrity brands", "chemometec", "chr hansen holding", "chr. hansen", "city odds capital", 
-    "cobe architects", "cold fall corp", "coloplast", "columbus", "comendo", "cowex", "cowi", "creek project investments", "d/s norden", "dalhoff larsen & horneman", 
-    "dampskibsselskabet norden", "dampskibsselskabet torm", "danfoss", "danisco", "danish agro", "danish crown", "dansk supermarked group", "danske andelskassers bank", "danske bank", "dantax", 
-    "dantherm", "deltaq", "dfds", "dfds", "dissing+weitling", "djurslands bank", "dk co", "dlf-trifolium", "dong energy", "dsb", 
-    "dsv", "dxs international", "dynamic systems holdings inc", "eas", "east asiatic co ltd", "ecco", "efb elite", "egetaepper", "egmont", "egnsinvest ejd. tyskland", 
-    "ei invest nordisk retail turku oy", "electrum mining resources", "eligere investments", "enalyzer", "erria", "esoft systems", "eurocap investments", "euroinvestor.com", "exiqon", "expedit", 
-    "falck", "fast ejendom danmark", "fastpasscorp", "fcm holding", "fdb", "fe bording", "firstfarms", "flsmidth", "flsmidth & co", "fluegger", 
-    "fodboldalliancen ac horsens", "formuepleje epikur", "formuepleje merkur", "formuepleje optimum", "formuepleje pareto", "formuepleje penta", "fortune graphite inc", "fragrant prosperity", "fynske bank", "g4s", 
-    "gabriel holding", "gc mining", "genmab", "german high street properties", "global mineral resources corp", "glunz & jensen intl", "gn resound", "gn store nord", "go green group ltd", "gold horizons mining", 
-    "greentech energy systems", "griffin iv berlin", "gronlandsbanken", "group 4 securicor", "grundfos", "gyldendalske boghandel", "h lundbeck", "h+h international", "haldor topsoe", "harboes bryggeri", 
-    "hci hamilton capital", "hempel group", "henning larsen architects", "herrington teddy bear corp", "hojgaard holdings", "house of amber", "hvidbjerg bank", "ic companys", "imc exploration group", "incor holdings", 
-    "intermail", "international western petroleum corp", "invest resources", "io interactive", "iqnovate", "iqx ltd", "iss", "jensen & moller invest", "jet time", "jeudan", 
-    "jobindex", "jorgensen engineering", "jutlander bank", "jysk", "jyske bank", "kif handbold elite", "kilimanjaro capital", "klimainvest", "kobenhavns lufthavne", "kreditbanken", 
-    "københavns lufthavne", "lambda td software", "lan & spar bank", "land & leisure", "lego", "lego group", "lm glasfiber", "lollands bank", "lottoarena entertainment", "lundgaard & tranberg", 
-    "luxor", "maghreb24 television inc", "magical production", "man oil group", "martin light", "matas", "maxi vision", "medical prognosis institute", "mega village systems", "mermaid", 
-    "microskin", "minerals mining corp", "mols-linien", "monberg & thorsen", "mons bank", "monterey integrative retirement systems", "motivideo systems", "name", "neg micon", "netbooster holding", 
-    "neurosearch", "new freedom", "newcap holding", "nexacon energy inc", "nkt holding", "nordea bank", "nordfyns bank", "nordic shipholding", "nordicom", "nordisk film", 
-    "nordjyske bank", "norresundby bank", "north media", "northwest oil & gas trading co inc", "novo nordisk", "novozymes", "ntr holding", "nykredit", "optima worldwide group", "or holding inc", 
-    "ossur hf", "ostjydsk bank", "pandora", "parken sport & entertainment", "pbs", "per aarsleff", "pg alluvial mining", "pharma nord", "pharmacosmos", "phase one", 
-    "plesner", "post danmark", "pre owned cars", "prime office", "questus global capital market", "ramboll", "rapid nutrition", "re-cap b", "rella holding", "rias", 
-    "ringkjoebing landbobank", "roblon", "rockwool international", "royal copenhagen", "royal unibrew", "rtx", "salling bank", "sanistal", "sas", "sato", 
-    "saxo bank", "scandinavian airlines system", "scandinavian brake systems", "scandinavian private equity", "schmidt hammer lassen", "schouw & co", "silkeborg if invest", "simcorp", "skako", "skandinavisk tobakskompagni", 
-    "skjern bank", "smallcap danmark", "smartguy group", "solar", "southern cross resource group", "sp group", "spar nord bank", "ssbv-rovsing", "strategic investments", "sumo resources", 
-    "svejsemaskinefabrikken migatronic", "sydbank", "tdc", "tera hyper networks", "terma a", "thorco shipping", "tiger", "tivoli", "tk development", "topdanmark", 
-    "topotarget", "topsil semiconductor matls", "torm", "totalbanken", "travelmarket.com", "tricolor sport", "trifork", "tryg", "tuborg", "united international enterprises", 
-    "united shipping & trading company", "universal health solutions", "us oil and gas", "vejle boldklub holding", "veloxis pharmaceuticals", "velux", "vestas", "vestas wind systems", "vestjysk bank", "viborg handbold klub", 
-    "victor international", "victoria properties", "welltec", "widex", "william demant", "winlogic", "wirtek", "zealand pharma", "zentropa", "aalborg boldspilklub", 
-    "aarhus elite"
-    };
-    public final static Set<WordPattern> patternsVirksomheder_lowercased = GetCompiledPatterns(virksomheder_lowercased);
-    public final static Set<WordPattern> patternsVirksomheder_lowercasedNoCase = GetCompiledPatternsNoCase(virksomheder_lowercased);
+    public final static Set<WordPattern> patternsCapitalCountryTranslatedNov = WordPattern.getCompiledPatterns(CapitalCountryTranslatedNov);
+    public final static Set<WordPattern> patternsCapitalCountryTranslatedNovNoCase = WordPattern.getCompiledPatternsNoCase(CapitalCountryTranslatedNov);
     
     public final static String[] virksomheder_lowercased_1_word_Nov2 = new String[]{
     	"alectia", "alk-abelló", "ambu", "americapital", "aqualife", "arkitema", "banknordik", "bech-bruun", "br-energy", "bioporto", "brokersclub", "carlsberg",  "cbrain", 
@@ -670,63 +630,138 @@ public class Words {
     "aarhus elite"
     };
 
-    
-    public final static String[] foreninger_lowercased = new String[] {
-        "4h", "acab (bornholm)", "dansk adelsforening", "adoption og samfund", "afholdsbevægelsen", "danmarks afholdsforening", "afrika kontakt", 
-        "danmarks agrarforening", "akademisk arkitektforening", "akb", "dansk aktionærforening", "aktive kvinder i danmark", "aktive lyttere og seere", "aldrig mere krig", "dansk amatør teater samvirke", "dansk amatør-orkesterforbund", "dansk amerikansk fodbold forbund", 
-        "andelsboligforeningernes fællesrepræsentation", "andelssamfundet i hjortshøj", "anima (forening)", "danske anlægsgartnere", "dansk annoncørforening", "dansk antijødisk liga", "antropologforeningen i danmark", "antroposofisk selskab", "danmarks apotekerforening", "arbejde adler", 
-        "arbejderbevægelsens internationale forum", "arbejderforeningen af 1860", "arbejdernes andels boligforening (københavn)", "arbejdernes kunstforening", "dansk arbejdsgiverforening", "danske arkitekters landsforbund", "dansk arkitektforening", "danske arkitektvirksomheder", "arkivforeningen", "arsenal denmark", 
-        "asfaltindustrien", "assurandør-societetet", "astma-allergi forbundet", "astronomisk selskab", "ateistisk selskab", "athenæum (læseselskab)", "atlantsammenslutningen", "augustforeningen", "avalon (forening)", "axis", 
-        "bedre byggeskik", "beredskabsforbundet", "dansk bibliofilklub", "bibliotekslederforeningen", "bifrost (rollespil)", "bigruppen", "black wolves", "danmarks blinde", "blue knights", "blus", 
-        "de blå/hvide engle", "blågården", "danmarks bløderforening", "bogstaveligheden", "bolsjefabrikken", "bornholms passagerforening", "dansk botanisk forening", "brancheforeningen for industriel automation", "dansk broder orden", "brugsforening", 
-        "bryggerlavet i den gamle by", "brøndby support", "busbevarelsesgruppen danmark", "busfronten", "byggesocietetet", "børnehjælpsdagen", "centralasiatisk selskab", "citybugowners", "colitis-crohn foreningen", "coop amba", 
-        "danes worldwide", "danmission", "dansk blindesamfund", "dansk-cubansk forening", "den danske forening", "de berejstes klub", "de samvirkende danske forsvarsbroderselskaber", "de studerendes erhvervskontakt", "demokratiske muslimer", "den fri architektforening", 
-        "den frie biavlerforening, læsø", "den liberale erhvervsklub", "det kongelige danske haveselskab", "det kongelige danske landhusholdningsselskab", "det kongelige kjøbenhavnske skydeselskab og danske broderskab", "det norske selskab", "det skandinaviske litteraturselskab", "det tekniske selskab", "det unge grænseværn", "dfk", 
-        "dhs - foreningen de historie studerende", "di service", "diabetesforeningen", "dialogos", "dis danmark", "divisionsforeningen håndbold", "domea", "den danske dommerforening", "doss", "dut", 
-        "dværgeforeningen", "dykkehistorisk selskab", "dykkerklubben narhvalen", "dyrenes beskyttelse", "dyreværnet", "døk alumni", "ejendomsforeningen danmark", "dansk ejendomsmæglerforening", "dansk eksportforening (stiftet 1895)", "eksportforeningen", 
-        "dansk elbil komite", "energiforum danmark", "ensomme gamles værn", "dansk epilepsiforening", "erhvervslejernes landsorganisation", "erhvervsskolernes elev-organisation", "esbjerg fredsbevægelse", "esperantoforeningen for danmark", "dansk etnografisk forening", "europa 2000", 
-        "eventyrernes klub", "f.c. københavn fan club", "fadb", "danmarks farmaceutiske selskab", "dansk farmacihistorisk fond", "fdm", "fiduso", "danmarks film akademi", "finanssektorens forening til støtte af et sundt og konkurrencedygtigt erhvervsliv", "fiskeringen", 
-        "flik", "dansk folkeforening", "danmarks folkelige broderier", "dansk folkeoplysnings samråd", "forbrugerrådet", "forbrugsforeningen", "forening for boghaandværk", "dansk forening for ludomaner og pårørende", "foreningen af 1888 til understøttelse af dannebrogsridderes efterladte", "foreningen af 3. december 1892", 
-        "foreningen af danske spiludviklere", "foreningen af danske teaterjournalister", "foreningen af danske transportcentre", "foreningen af katolske børnehaver i danmark", "foreningen af katolske skoler i danmark", "foreningen af kommuner i københavns amt", "foreningen af kristne friskoler", "foreningen af små teatre i danmark", "foreningen af speciallæger", "foreningen dansk arbejde", 
-        "foreningen for dansk kunst", "foreningen for kønsforskning i danmark", "foreningen for undersøgende journalistik", "foreningen grønlandske børn", "foreningen herberger langs hærvejen", "foreningen kollegienet odense", "foreningen materiel design", "foreningen oprør", "foreningen skånsk fremtid", "foreningen til fremskaffelse af boliger for ældre og enlige", 
-        "foreningen til gamle bygningers bevaring", "foreningen til søfartens fremme", "foreningen til udgivelse af danmarks adels aarbog", "dansk forfatterforening", "forfatterlandsholdet", "danmarks forskningsbiblioteksforening", "forstyrret.dk", "forsvars- & aerospaceindustrien i danmark", "de danske forsvarsbrødre for fredericia og omegn", "dansk forum", 
-        "dansk fotografisk forening", "dansk fredsforening", "frie grundskolers fællesråd", "danske, frie og uafhængige murere", "friluftsrådet", "dansk friskoleforening", "frit danmark (forening)", "frit oplysningsforbund", "frøsamlerne", "fsbbolig", 
-        "fuhu", "fædrelandets forsvar", "fællesrepræsentationen for dansk industri og haandværk", "fængselslærerforeningen", "galebevægelsen", "det danske gastronomiske akademi", "gate 21", "dansk geologisk forening", "gesten lokalråd", "gifted children danmark", 
-        "gigtforeningen", "gjaestebud", "glentevejs antennelaug", "global contact", "gramex", "grundlovskomiteen 2003 vedr. irak-krigen", "grundlovsværneforeningen", "grænseforeningen", "det grønlandske selskab", "det grønne crew", 
-        "guldsmedelauget", "danske gymnasieelevers sammenslutning", "gymnasieskolernes rektorforening", "danmarks gymnastik forbund", "danske gymnastik- & idrætsforeninger", "h.c. andersen-samfundet", "harmonien", "det danske haveselskab", "det danske haveselskab  øerne", "haveselskabet", 
-        "hedeselskabet", "herfølge support", "dansk historisk fællesråd", "historisk samfund for fyn", "historisk-topografisk selskab for lyngby-taarbæk kommune", "den danske historiske forening", "hiv-danmark", "hjerneskadeforeningen", "hjerteforeningen", "horserød-stutthof foreningen", 
-        "humanistisk samfund", "håbefulde unge forfattere", "haandværkerforeningen", "høreforeningen", "immun defekt foreningen", "industriens arbejdsgivere", "industriforeningen", "ingeniør-sammenslutningen", "dansk ingeniørforening", "ingeniørforeningen i danmark", 
-        "instituttet for fremtidsforskning", "dansk international bosætningsservice", "isps danmark", "dansk it", "it-politisk forening", "itek (di)", "dansk jernbane-klub", "jydsk racekatte klub", "det jydske haveselskab", "jyllands forfattere", 
-        "jyllinge sejl og motorbådsforening", "jyllinge sejl- og motorbådsforening", "jysk børneforsorg fredehjem", "jysk folkeforening", "jysk selskab for historie", "kalk- og teglværksforeningen af 1893", "kammermusikforeningen af 1868", "kemisk forening", "kirkeasyl", "kirkelig forening for den indre mission i danmark", 
-        "kl", "klid", "klimabevægelsen", "knæleren", "koda", "kogræsserselskab", "kolding borgerlige skydeselskab af 1785", "kommunale tjenestemænd og overenskomstansatte", "kommunekredit", "dansk komponist forening", 
-        "koncertforeningen", "kongelig dansk aeroklub", "kongelig dansk automobil klub", "konservative gymnasiaster", "kredsen mars og merkur danmark", "det krigsvidenskabelige selskab", "det danske kriminalakademi", "kræftens bekæmpelse", "kubologisk sportsforening", "kulturforum danaustria", 
-        "kulturkapellet", "kunst på arbejdspladsen", "kunstforeningen", "kunstnerforeningen af 18. november", "kunstnersamfundet", "kvindelig læseforening", "kvinder i fysik", "dansk kvindesamfund", "den danske købstadsforening", "køge amatørscene", 
-        "køge support", "lambda (forening)", "dansk land og strandjagt", "landbrugernes sammenslutning", "dansk landsforening for laryngectomerede", "landsforeningen af beskikkede advokater", "landsforeningen bedre psykiatri", "landsforeningen danske folkedansere", "landsforeningen for bygnings- og landskabskultur", "landsforeningen for bæredygtigt landbrug", 
-        "landsforeningen krim", "landsforeningen sind", "landsorganisationen af arbejdsledige", "landsorganisationen danske fugleforeninger", "landssammenslutningen af handelsskoleelever", "landssammenslutningen af handelsskoleelever region nord", "latinlærerforeningen", "leda", "lejernes lo", "lev", 
-        "lgbt danmark", "liberalt oplysnings forbund", "dansker-ligaen", "ligeværd", "litteraturkritikernes lav", "litteraturselskabet", "livgardens gamle tambourer", "ljud", "lki.dk", "lokale pengeinstitutter", 
-        "danmarks lungeforening", "luthersk mission", "lærerstuderendes landskreds", "læreruddannelsens sløjdlærerforening", "løvfald i/s", "majoratsforeningen", "danske malermestre", "managementrådgiverne", "maritimt center danmark", "mask", 
-        "dansk matematisk forening", "danske mediers arbejdsgiverforening", "mellemfolkeligt samvirke", "militærnægterforeningen", "miljøorganisation", "miqësia - dansk-albansk forening", "ateistisk selskab", "modersmål-selskabet", "modersmålskredsen", "morgendagens heltinder", 
-        "morsø kunstforening", "musikforeningen", "muskelsvindfonden", "muslimernes fællesråd", "muslimsk ungdom i danmark", "dansk muslimsk union", "musoc", "nationaløkonomisk forening", "danmarks naturfredningsforening", "danske naturister", 
-        "nepenthes (miljøforening)", "netværket af ungdomsråd", "noah (dansk miljøorganisation)", "nordisk copyright bureau", "nordisk jernbane-klub", "nordsjællands astronomi forening", "det ny samfund", "nyreforeningen", "næstor", "næstved amatørscene", 
-        "næstved model racing club", "nørrebro lokalhistoriske forening og arkiv", "nørrebros beboeraktion", "ok-klubben", "oktoberforeningen", "olympic amager idrætsforening", "ordenshistorisk selskab", "organisationen danske arkiver", "organisationen til oplysning om atomkraft", "dansk ornitologisk forening", 
-        "patientforeningen", "patientforsikringen", "patriotisk selskab", "dansk pen", "den photographiske forening", "poetklub århus", "poetry slam cph.", "polyteknisk flyvegruppe", "polyteknisk forening", "pornofrit miljø", 
-        "praktiserende lægers organisation", "danmarks privatskoleforening", "ptsd foreningen i danmark", "ptu - landsforeningen af polio-, trafik- og ulykkesskadede", "den danske publicistklub", "den danske radeerforening", "radiohistorisk forening ringsted", "randers flyveklub", "realdania", "rejsearrangører i danmark", 
-        "danmarks rejsebureau forening", "reklamer ja tak", "rekylkorps", "ren energi oplysning, reo", "den republikanske grundlovsbevægelse", "revy", "ridder rune og hans lystige svende", "ringen (germanofil organisation)", "ripen", "ripensersamfundet", 
-        "run4kids", "danmarks rygerforening", "rådet for international konfliktløsning", "danish sail training association", "sala", "danmarks-samfundet", "samfundet for dansk genealogi og personalhistorie", "sammenslutningen af danske erhvervsbiavlere", "sammenslutningen af danske småøer", "dansk santalmission", 
-        "scleroseforeningen", "sehat", "seksualpolitisk forum", "dansk selskab for otolaryngologi - hoved & halskirurgi", "dansk selskab for teoretisk statistik", "selskabet for borgerdyd", "selskabet for dansk memorabilitet", "selskabet for dekorativ kunst", "selskabet for efterslægten", "selskabet for frihed og kultur", 
-        "selskabet for kirkelig kunst", "selskabet for naturlærens udbredelse", "selskabet for psykisk forskning", "selskabet for trykkefrihedens rette brug", "selskabet til forskning i arbejderbevægelsens historie", "selskabet til udgivelse af danske mindesmærker", "seminariernes musiklærerforening", "silkeborg boldklubs venner", "sjældne diagnoser", "skamlingsbankeselskabet", 
-        "skandinavisk ufo information", "skatteborgerforeningen", "skive idræts-forbund", "dansk skoleidræt", "dansk skovforening", "skuespillerforeningen af 1879", "skyttebladet", "skyttesagen", "dansk-skaansk forening", "slagtehal 3", 
-        "slesvig-ligaen", "dansk sløjdforening", "sløjdforeningen af 1902", "danmarks sløjdlærerforening", "dansk sløjdlærerforening", "sløjdlærernes fællesrepræsentation", "dansk sløjdlærersamfund", "smid", "smil", "smokenhagen", 
-        "socialistisk standpunkt", "societa dante alighieri", "somali community", "dansk sommelier forening", "den danske sommerskole", "sorø antenneforening", "dansk spare-selskab", "spastikerforeningen", "danske sportsjournalister", "sporvejshistorisk selskab", 
-        "det danske sprog- og litteraturselskab", "sprogforeningen", "sslug", "stomiforeningen copa", "stop islamiseringen af danmark", "storlogen af danmark", "støtte til soldater og pårørende", "støttekomiteen for tibet", "svenstrup godthåb idrætsforening", "sydslesvigsk udvalg af 5. maj 1945", 
-        "søe-lieutenant-selskabet", "søofficers-foreningen", "dansk søvn-apnø forening", "tandsundhed uden grænser", "dansk teknologihistorisk selskab", "tenen", "the network (forening)", "tivolis venner", "danske torpare", "trekkies.dk", 
-        "træskibs-sammenslutningen", "tuba (forening)", "dansk-tysk forening", "dansk-tysk selskab", "tågekammeret", "tørring-uldum folkedansere", "det udenrigspolitiske selskab", "unf", "ungdomsråd", "dansk vampyr selskab", 
-        "vandreforeningen fodslaw", "dansk vandrelaug", "vardensersamfundet", "vederfølner", "vedvarendeenergi (forening)", "dansk vegetarforening", "venskabsforeningen danmark - den demokratiske folkerepublik korea", "venøsund færgelaug", "vesterbro komponistforening", "vikingeklubben jomsborg", 
-        "visens venner i danmark", "vorupør fiskeriforening", "de danske vaabenbrødre", "xet", "yngre læger", "ynk", "dansk zionistforbund", "aab support club", "aakjærselskabet", "aalborg kunstpavillon", 
-        "århus sangskriver værksted", "aarhus økologiske fødevarefællesskab", "ærø natur- og energiskole", "øjenforeningen værn om synet", "øjlug", "ølakademiet", "ølejrbevægelsen", "danske ølentusiaster" 
-    };
-    public final static Set<WordPattern> patternsForeninger_lowercased = GetCompiledPatterns(foreninger_lowercased);
-    public final static Set<WordPattern> patternsForeninger_lowercasedNoCase = GetCompiledPatternsNoCase(foreninger_lowercased);
+
+// Edited by STHU on November 24, 2016
+public final static String[] foreninger_lowercased = new String[] {
+    "aab support club", "aalborg kunstpavillon", "aarhus økologiske fødevarefællesskab", 
+    "acab (bornholm)", "adoption og samfund", "afrika kontakt", "akademisk arkitektforening", 
+    "aktive kvinder i danmark", "aktive lyttere og seere", "aldrig mere krig", 
+    "andelsboligforeningernes fællesrepræsentation", "andelssamfundet i hjortshøj", 
+    "anima (forening)", "antropologforeningen i danmark", "antroposofisk selskab", 
+    "arbejde adler", "arbejderbevægelsens internationale forum", "arbejderforeningen af 1860", 
+    "arbejdernes andels boligforening (københavn)", "arbejdernes kunstforening", "arsenal denmark", 
+    "astma-allergi forbundet", "astronomisk selskab", "ateistisk selskab", "athenæum (læseselskab)", 
+    "avalon (forening)", "bedre byggeskik", "bifrost (rollespil)", "black wolves", "blue knights", 
+    "bornholms passagerforening", "brancheforeningen for industriel automation", "bryggerlavet i den gamle by", 
+    "brøndby support", "busbevarelsesgruppen danmark", "centralasiatisk selskab", "colitis-crohn foreningen", 
+    "coop amba", "danes worldwide", "danish sail training association", "danmarks afholdsforening", 
+    "danmarks agrarforening", "danmarks apotekerforening", "danmarks blinde", "danmarks bløderforening", 
+    "danmarks farmaceutiske selskab", "danmarks film akademi", "danmarks folkelige broderier", 
+    "danmarks forskningsbiblioteksforening", "danmarks gymnastik forbund", "danmarks lungeforening", 
+    "danmarks naturfredningsforening", "danmarks privatskoleforening", "danmarks rejsebureau forening", 
+    "danmarks rygerforening", "danmarks sløjdlærerforening", "dansk adelsforening", "dansk aktionærforening", 
+    "dansk amatør teater samvirke", "dansk amatør-orkesterforbund", "dansk amerikansk fodbold forbund", 
+    "dansk annoncørforening", "dansk antijødisk liga", "dansk arbejdsgiverforening", "dansk arkitektforening", 
+    "dansk bibliofilklub", "dansk blindesamfund", "dansk botanisk forening", "dansk broder orden", 
+    "dansk ejendomsmæglerforening", "dansk eksportforening (stiftet 1895)", "dansk elbil komite", 
+    "dansk epilepsiforening", "dansk etnografisk forening", "dansk farmacihistorisk fond", "dansk folkeforening", 
+    "dansk folkeoplysnings samråd", "dansk forening for ludomaner og pårørende", "dansk forfatterforening", 
+    "dansk forum", "dansk fotografisk forening", "dansk fredsforening", "dansk friskoleforening", 
+    "dansk geologisk forening", "dansk historisk fællesråd", "dansk ingeniørforening", 
+    "dansk international bosætningsservice", "dansk it", "dansk jernbane-klub", "dansk komponist forening", 
+    "dansk kvindesamfund", "dansk land og strandjagt", "dansk landsforening for laryngectomerede", 
+    "dansk matematisk forening", "dansk muslimsk union", "dansk ornitologisk forening", "dansk pen", 
+    "dansk santalmission", "dansk selskab for otolaryngologi - hoved & halskirurgi", 
+    "dansk selskab for teoretisk statistik", "dansk skoleidræt", "dansk skovforening", "dansk sløjdforening", 
+    "dansk sløjdlærerforening", "dansk sløjdlærersamfund", "dansk sommelier forening", "dansk spare-selskab", 
+    "dansk søvn-apnø forening", "dansk teknologihistorisk selskab", "dansk vampyr selskab", "dansk vandrelaug", 
+    "dansk vegetarforening", "dansk zionistforbund", "dansk-cubansk forening", "dansk-skaansk forening", 
+    "dansk-tysk forening", "dansk-tysk selskab", "danske anlægsgartnere", "danske arkitekters landsforbund", 
+    "danske arkitektvirksomheder", "danske gymnasieelevers sammenslutning", "danske gymnastik- & idrætsforeninger", 
+    "danske malermestre", "danske mediers arbejdsgiverforening", "danske naturister", "danske sportsjournalister", 
+    "danske torpare", "danske ølentusiaster", "danske, frie og uafhængige murere", "de berejstes klub", 
+    "de blå/hvide engle", "de danske forsvarsbrødre for fredericia og omegn", "de danske vaabenbrødre", 
+    "de samvirkende danske forsvarsbroderselskaber", "de studerendes erhvervskontakt", "demokratiske muslimer", 
+    "den danske dommerforening", "den danske forening", "den danske historiske forening", 
+    "den danske købstadsforening", "den danske publicistklub", "den danske radeerforening", 
+    "den danske sommerskole", "den fri architektforening", "den frie biavlerforening, læsø", 
+    "den liberale erhvervsklub", "den photographiske forening", "den republikanske grundlovsbevægelse", 
+    "det danske gastronomiske akademi", "det danske haveselskab", "det danske haveselskab � øerne", 
+    "det danske kriminalakademi", "det danske sprog- og litteraturselskab", "det grønlandske selskab", 
+    "det grønne crew", "det jydske haveselskab", "det kongelige danske haveselskab", 
+    "det kongelige danske landhusholdningsselskab", "det kongelige kjøbenhavnske skydeselskab og danske broderskab", 
+    "det krigsvidenskabelige selskab", "det norske selskab", "det ny samfund", 
+    "det skandinaviske litteraturselskab", "det tekniske selskab", "det udenrigspolitiske selskab", 
+    "det unge grænseværn", "dhs - foreningen de historie studerende", "di service", "dis danmark", 
+    "divisionsforeningen håndbold", "dykkehistorisk selskab", "dykkerklubben narhvalen", "dyrenes beskyttelse", 
+    "døk alumni", "ejendomsforeningen danmark", "energiforum danmark", "ensomme gamles værn", 
+    "erhvervslejernes landsorganisation", "erhvervsskolernes elev-organisation", "esbjerg fredsbevægelse", 
+    "esperantoforeningen for danmark", "europa 2000", "eventyrernes klub", "f.c. københavn fan club", 
+    "finanssektorens forening til støtte af et sundt og konkurrencedygtigt erhvervsliv", 
+    "forening for boghaandværk", "foreningen af 1888 til understøttelse af dannebrogsridderes efterladte", 
+    "foreningen af 3. december 1892", "foreningen af danske spiludviklere", 
+    "foreningen af danske teaterjournalister", "foreningen af danske transportcentre", 
+    "foreningen af katolske børnehaver i danmark", "foreningen af katolske skoler i danmark", 
+    "foreningen af kommuner i københavns amt", "foreningen af kristne friskoler", 
+    "foreningen af små teatre i danmark", "foreningen af speciallæger", "foreningen dansk arbejde", 
+    "foreningen for dansk kunst", "foreningen for kønsforskning i danmark", 
+    "foreningen for undersøgende journalistik", "foreningen grønlandske børn", 
+    "foreningen herberger langs hærvejen", "foreningen kollegienet odense", "foreningen materiel design", 
+    "foreningen oprør", "foreningen skånsk fremtid", 
+    "foreningen til fremskaffelse af boliger for ældre og enlige", "foreningen til gamle bygningers bevaring", 
+    "foreningen til søfartens fremme", "foreningen til udgivelse af danmarks adels aarbog", 
+    "forsvars- & aerospaceindustrien i danmark", "frie grundskolers fællesråd", "frit danmark (forening)", 
+    "frit oplysningsforbund", "fædrelandets forsvar", "fællesrepræsentationen for dansk industri og haandværk", 
+    "gate 21", "gesten lokalråd", "gifted children danmark", "glentevejs antennelaug", "global contact", 
+    "grundlovskomiteen 2003 vedr. irak-krigen", "gymnasieskolernes rektorforening", "h.c. andersen-samfundet", 
+    "herfølge support", "historisk samfund for fyn", "historisk-topografisk selskab for lyngby-taarbæk kommune", 
+    "horserød-stutthof foreningen", "humanistisk samfund", "håbefulde unge forfattere", 
+    "immun defekt foreningen", "industriens arbejdsgivere", "ingeniørforeningen i danmark", 
+    "instituttet for fremtidsforskning", "isps danmark", "it-politisk forening", "itek (di)", 
+    "jydsk racekatte klub", "jyllands forfattere", "jyllinge sejl og motorbådsforening", 
+    "jyllinge sejl- og motorbådsforening", "jysk børneforsorg fredehjem", "jysk folkeforening", 
+    "jysk selskab for historie", "kalk- og teglværksforeningen af 1893", "kammermusikforeningen af 1868", 
+    "kemisk forening", "kirkelig forening for den indre mission i danmark", 
+    "kolding borgerlige skydeselskab af 1785", "kommunale tjenestemænd og overenskomstansatte", 
+    "kongelig dansk aeroklub", "kongelig dansk automobil klub", "konservative gymnasiaster", 
+    "kredsen mars og merkur danmark", "kræftens bekæmpelse", "kubologisk sportsforening", 
+    "kulturforum danaustria", "kunst på arbejdspladsen", "kunstnerforeningen af 18. november", 
+    "kvindelig læseforening", "kvinder i fysik", "køge amatørscene", "køge support", 
+    "lambda (forening)", "landbrugernes sammenslutning", "landsforeningen af beskikkede advokater", 
+    "landsforeningen bedre psykiatri", "landsforeningen danske folkedansere", 
+    "landsforeningen for bygnings- og landskabskultur", "landsforeningen for bæredygtigt landbrug", 
+    "landsforeningen krim", "landsforeningen sind", "landsorganisationen af arbejdsledige", 
+    "landsorganisationen danske fugleforeninger", "landssammenslutningen af handelsskoleelever", 
+    "landssammenslutningen af handelsskoleelever region nord", "lejernes lo", "lgbt danmark", 
+    "liberalt oplysnings forbund", "litteraturkritikernes lav", "livgardens gamle tambourer", 
+    "lokale pengeinstitutter", "luthersk mission", "lærerstuderendes landskreds", 
+    "læreruddannelsens sløjdlærerforening", "løvfald i/s", "maritimt center danmark", 
+    "mellemfolkeligt samvirke", "miqësia - dansk-albansk forening", "morgendagens heltinder", 
+    "morsø kunstforening", "muslimernes fællesråd", "muslimsk ungdom i danmark", "nationaløkonomisk forening", 
+    "nepenthes (miljøforening)", "netværket af ungdomsråd", "noah (dansk miljøorganisation)", 
+    "nordisk copyright bureau", "nordisk jernbane-klub", "nordsjællands astronomi forening", 
+    "næstved amatørscene", "næstved model racing club", "nørrebro lokalhistoriske forening og arkiv", 
+    "nørrebros beboeraktion", "olympic amager idrætsforening", "ordenshistorisk selskab", 
+    "organisationen danske arkiver", "organisationen til oplysning om atomkraft", "patriotisk selskab", 
+    "poetklub århus", "poetry slam cph.", "polyteknisk flyvegruppe", "polyteknisk forening", 
+    "pornofrit miljø", "praktiserende lægers organisation", "ptsd foreningen i danmark", 
+    "ptu - landsforeningen af polio-, trafik- og ulykkesskadede", "radiohistorisk forening ringsted", 
+    "randers flyveklub", "rejsearrangører i danmark", "reklamer ja tak", "ren energi oplysning, reo", 
+    "ridder rune og hans lystige svende", "ringen (germanofil organisation)", 
+    "rådet for international konfliktløsning", "samfundet for dansk genealogi og personalhistorie", 
+    "sammenslutningen af danske erhvervsbiavlere", "sammenslutningen af danske småøer", 
+    "seksualpolitisk forum", "selskabet for borgerdyd", "selskabet for dansk memorabilitet", 
+    "selskabet for dekorativ kunst", "selskabet for efterslægten", "selskabet for frihed og kultur", 
+    "selskabet for kirkelig kunst", "selskabet for naturlærens udbredelse", "selskabet for psykisk forskning", 
+    "selskabet for trykkefrihedens rette brug", "selskabet til forskning i arbejderbevægelsens historie", 
+    "selskabet til udgivelse af danske mindesmærker", "seminariernes musiklærerforening", 
+    "silkeborg boldklubs venner", "sjældne diagnoser", "skandinavisk ufo information", "skive idræts-forbund", 
+    "skuespillerforeningen af 1879", "slagtehal 3", "sløjdforeningen af 1902", 
+    "sløjdlærernes fællesrepræsentation", "socialistisk standpunkt", "societa dante alighieri", 
+    "somali community", "sorø antenneforening", "sporvejshistorisk selskab", "stomiforeningen copa", 
+    "stop islamiseringen af danmark", "storlogen af danmark", "støtte til soldater og pårørende", 
+    "støttekomiteen for tibet", "svenstrup godthåb idrætsforening", "sydslesvigsk udvalg af 5. maj 1945", 
+    "tandsundhed uden grænser", "the network (forening)", "tivolis venner", "tuba (forening)", 
+    "tørring-uldum folkedansere", "vandreforeningen fodslaw", "vedvarendeenergi (forening)", 
+    "venskabsforeningen danmark - den demokratiske folkerepublik korea", "venøsund færgelaug", 
+    "vesterbro komponistforening", "vikingeklubben jomsborg", "visens venner i danmark", 
+    "vorupør fiskeriforening", "yngre læger", "århus sangskriver værksted", "ærø natur- og energiskole", 
+    "øjenforeningen værn om synet"
+};
+
+
+    public final static Set<WordPattern> patternsForeninger_lowercased = WordPattern.getCompiledPatterns(foreninger_lowercased);
+    public final static Set<WordPattern> patternsForeninger_lowercasedNoCase = WordPattern.getCompiledPatternsNoCase(foreninger_lowercased);
     
     public final static String[] foreninger_lowercased_1_word_Nov2 = new String[] {
     	"4h","akb", "afholdsbevægelsen", "atlantsammenslutningen", "augustforeningen", "arkivforeningen", "asfaltindustrien", "assurandør-societetet", "bigruppen", "blus",
@@ -992,8 +1027,8 @@ public class Words {
     "johansen", "møller", "knudsen"
     };
 
-    public final static Set<WordPattern> patternsDanishNamesNov = GetCompiledPatterns(DanishNamesNov);
-    public final static Set<WordPattern> patternsDanishNamesNovNoCase = GetCompiledPatternsNoCase(DanishNamesNov);
+    public final static Set<WordPattern> patternsDanishNamesNov = WordPattern.getCompiledPatterns(DanishNamesNov);
+    public final static Set<WordPattern> patternsDanishNamesNovNoCase = WordPattern.getCompiledPatternsNoCase(DanishNamesNov);
     
     public static final String[] englishWordsEndingOnSen = new String[]{"arisen", "chosen"};
     
@@ -1016,8 +1051,8 @@ public class Words {
         words.addAll(java.util.Arrays.asList(frequent250subsNov));
         return words;
     }
-    public final static Set<WordPattern> patternsFrequentDanishWordsNov = GetCompiledPatterns(getFrequentDanishWordsNov());
-    public final static Set<WordPattern> patternsFrequentDanishWordsNovNoCase = GetCompiledPatternsNoCase(getFrequentDanishWordsNov());
+    public final static Set<WordPattern> patternsFrequentDanishWordsNov = WordPattern.getCompiledPatterns(getFrequentDanishWordsNov());
+    public final static Set<WordPattern> patternsFrequentDanishWordsNovNoCase = WordPattern.getCompiledPatternsNoCase(getFrequentDanishWordsNov());
     
     public static Set<String> getBadSenWords() {
         Set<String> words = new HashSet<String>();
@@ -1041,6 +1076,57 @@ public class Words {
     	"totalbanken", "trifork", "tryg", "tuborg", "velux", "vestas", "welltec", 
     	"widex", "winlogic", "wirtek", "zentropa"
     	};
+    
+    // Edited by STHU, November 24,2016
+    public final static String[] virksomheder_lowercased = new String[]{
+        "a. p. moller-maersk group", "aalborg boldspilklub", "aarhus elite", "african capital partners holding", 
+        "aller media", "alm brand", "andersen & martini", "anglo african minerals", "ap moeller - maersk", 
+        "aqualeap technologies ltd", "arkil holding", "arla foods", "arp-hansen hotel group", "asgaard group", 
+        "asia pacific gold mining investment ltd", "astra resources", "athena it-group", "atlantic airways", 
+        "atlantic petroleum", "auriga industries", "axon global", "balux brands", "bang & olufsen", "bavarian nordic", 
+        "belgrave resources", "bispebjerg kollegiet", "bjarke ingels group", "block 42", "blue vision", 
+        "boconcept holding", "brd klee", "brodrene hartmann", "brondbyernes if fodbold", "brødrene hartmann", 
+        "c. f. møller architects", "cassona se", "celebrity brands", "chr hansen holding", "chr. hansen", 
+        "city odds capital", "cobe architects", "cold fall corp", "creek project investments", "d/s norden", 
+        "dalhoff larsen & horneman", "dampskibsselskabet norden", "dampskibsselskabet torm", "danish agro", 
+        "danish crown", "dansk supermarked group", "danske andelskassers bank", "danske bank", "djurslands bank", 
+        "dk co", "dong energy", "dxs international", "dynamic systems holdings inc", "east asiatic co ltd", 
+        "efb elite", "egnsinvest ejd. tyskland", "ei invest nordisk retail turku oy", "electrum mining resources", 
+        "eligere investments", "esoft systems", "eurocap investments", "fast ejendom danmark", "fcm holding", 
+        "fe bording", "flsmidth & co", "fodboldalliancen ac horsens", "formuepleje epikur", "formuepleje merkur", 
+        "formuepleje optimum", "formuepleje pareto", "formuepleje penta", "fortune graphite inc", "fragrant prosperity", 
+        "fynske bank", "gabriel holding", "gc mining", "german high street properties", "global mineral resources corp", 
+        "glunz & jensen intl", "gn resound", "gn store nord", "go green group ltd", "gold horizons mining", 
+        "greentech energy systems", "griffin iv berlin", "group 4 securicor", "gyldendalske boghandel", 
+        "h lundbeck", "h+h international", "haldor topsoe", "harboes bryggeri", "hci hamilton capital", 
+        "hempel group", "henning larsen architects", "herrington teddy bear corp", "hojgaard holdings", 
+        "house of amber", "hvidbjerg bank", "ic companys", "imc exploration group", "incor holdings", 
+        "international western petroleum corp", "invest resources", "io interactive", "iqx ltd", 
+        "jensen & moller invest", "jet time", "jorgensen engineering", "jutlander bank", "jyske bank", 
+        "kif handbold elite", "kilimanjaro capital", "kobenhavns lufthavne", "københavns lufthavne", 
+        "lambda td software", "lan & spar bank", "land & leisure", "lego group", "lm glasfiber", "lollands bank", 
+        "lottoarena entertainment", "lundgaard & tranberg", "maghreb24 television inc", "magical production", 
+        "man oil group", "martin light", "maxi vision", "medical prognosis institute", "mega village systems", 
+        "minerals mining corp", "monberg & thorsen", "mons bank", "monterey integrative retirement systems", 
+        "motivideo systems", "neg micon", "netbooster holding", "new freedom", "newcap holding", "nexacon energy inc", 
+        "nkt holding", "nordea bank", "nordfyns bank", "nordic shipholding", "nordisk film", "nordjyske bank", 
+        "norresundby bank", "north media", "northwest oil & gas trading co inc", "novo nordisk", "ntr holding", 
+        "optima worldwide group", "or holding inc", "ossur hf", "ostjydsk bank", "parken sport & entertainment", 
+        "per aarsleff", "pg alluvial mining", "pharma nord", "phase one", "post danmark", "pre owned cars", 
+        "prime office", "questus global capital market", "rapid nutrition", "re-cap b", "rella holding", 
+        "ringkjoebing landbobank", "rockwool international", "royal copenhagen", "royal unibrew", "salling bank", 
+        "saxo bank", "scandinavian airlines system", "scandinavian brake systems", "scandinavian private equity", 
+        "schmidt hammer lassen", "schouw & co", "silkeborg if invest", "skandinavisk tobakskompagni", "skjern bank", 
+        "smallcap danmark", "smartguy group", "southern cross resource group", "sp group", "spar nord bank", 
+        "strategic investments", "sumo resources", "svejsemaskinefabrikken migatronic", "tera hyper networks", 
+        "terma a", "thorco shipping", "tk development", "topsil semiconductor matls", "tricolor sport", 
+        "united international enterprises", "united shipping & trading company", "universal health solutions", 
+        "us oil and gas", "vejle boldklub holding", "veloxis pharmaceuticals", "vestas wind systems", "vestjysk bank", 
+        "viborg handbold klub", "victor international", "victoria properties", "william demant", "zealand pharma"
+    };
+    
+    public final static Set<WordPattern> patternsVirksomheder_lowercased = WordPattern.getCompiledPatterns(virksomheder_lowercased);
+    public final static Set<WordPattern> patternsVirksomheder_lowercasedNoCase = WordPattern.getCompiledPatternsNoCase(virksomheder_lowercased);
     
     /**
      * Test-program that test the 150 frequent words.
@@ -1072,65 +1158,4 @@ public class Words {
         IOUtils.closeQuietly(fr);
     }
     
-    public static Set<WordPattern> GetCompiledPatterns(String[] words) {
-        Set<WordPattern> res = new HashSet<WordPattern>();
-        for (String word: words) {
-        	if (!word.trim().isEmpty()) {
-	            String re = "(?i)\\b(?:" + word + ")\\b";
-	            Pattern pRe = Pattern.compile(re);
-	        	WordPattern wp = new WordPattern(pRe,word);
-	            res.add(wp);
-            }
-        }
-        return res;
     }
-
-    public static Set<WordPattern>  GetCompiledPatterns(Set<String> words) {
-        Set<WordPattern> res = new HashSet<WordPattern>();
-        for (String word: words) {
-        	if (!word.trim().isEmpty()) {
-	            String re = "(?i)\\b(?:" + word + ")\\b";
-	            Pattern pRe = Pattern.compile(re);
-	        	WordPattern wp = new WordPattern(pRe,word);
-	            res.add(wp);
-            }
-        }
-        return res;
-    }
-    
-    public static Set<WordPattern>  GetCompiledPatternsNoCase(String[] words) {
-        Set<WordPattern> res = new HashSet<WordPattern>();
-        for (String word: words) {
-        	if (!word.trim().isEmpty()) {
-	            String re = "\\b(?:" + word + ")\\b";
-	            Pattern pRe = Pattern.compile(re);
-	        	WordPattern wp = new WordPattern(pRe,word);
-	            res.add(wp);
-	        }
-        }
-        return res;
-    }
-
-    public static Set<WordPattern> GetCompiledPatternsNoCase(Set<String> words) {
-        Set<WordPattern> res = new HashSet<WordPattern>();
-        for (String word: words) {
-        	if (!word.trim().isEmpty()) {
-	            String re = "\\b(?:" + word + ")\\b";
-	            Pattern pRe = Pattern.compile(re);
-	        	WordPattern wp = new WordPattern(pRe,word);
-	            res.add(wp);
-            }
-        }
-        return res;
-    }
-
-    public static class WordPattern {
-        public Pattern p;
-        public String w;
-
-        public WordPattern(Pattern ip,String iw) {
-            this.p = ip;
-            this.w = iw;
-        }
-    }
-}

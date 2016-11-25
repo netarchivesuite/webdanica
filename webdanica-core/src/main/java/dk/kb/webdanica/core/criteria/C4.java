@@ -5,45 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.pig.EvalFunc;
-import org.apache.pig.data.Tuple;
 import org.apache.tika.langdetect.OptimaizeLangDetector;
-import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.tika.language.detect.LanguageResult;
 
-import dk.kb.webdanica.core.utils.Constants;
 
 
 /** 
- * The TIKA languageIdentifier as a PIG UDF.
- * Answer C4: TRUE if language is 'da' or 'no', else FALSE
- * Currently, the language is just returned
+ * A program to calculate criteria c4a, c4b.
+ * returns a list containing (C4a,C4b) as Strings. 
  *
  */
-public class C4 extends EvalFunc<String> {
-        @Override
-        public String exec(Tuple input) throws IOException {
-            if (input == null || input.size() == 0 || input.get(0) == null) {
-                return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
-            }
-            String result;
-            String text = (String) input.get(0);
-            //String language = new LanguageIdentifier(text).getLanguage();
-            LanguageIdentifier li = new LanguageIdentifier(text);
-            String language = li.getLanguage();
-            boolean certain = li.isReasonablyCertain();
-            result = "C4: " + language;
-            if (language.equalsIgnoreCase("da") || language.equalsIgnoreCase("no")) {
-                result += ", " + C5a.computeC5a(text);
-                result += ", " + C5b.computeC5b(text);
-            }
-            return result;
-            //boolean matchesNorwegianAndDanish = language.equalsIgnoreCase("da") 
-            //        || language.equalsIgnoreCase("no");
-            //return (matchesNorwegianAndDanish? "C4: TRUE": "C4: FALSE");
-        }
-        
+public class C4 {
+	    
         /**
          * Language detection using the OptimaizeLangDetector
          * @param text

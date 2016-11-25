@@ -8,7 +8,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +19,6 @@ import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
-import dk.kb.webdanica.core.exceptions.WebdanicaException;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
@@ -32,7 +30,7 @@ Seed: https://changecoachdk.com/resources/
 	Files harvested: 60-47-20160803102623295-00000-dia-prod-udv-01.kb.dk.warc.gz,60-metadata-1.warc
 
  */
-public class HarvestReport {
+public class HarvestLog {
 	public final static String seedPattern = "Seed: ";
 	public final static String harvestnamePattern = "HarvestName: ";
 	public final static String successfulPattern = "Successful: ";
@@ -41,43 +39,12 @@ public class HarvestReport {
 	public final static String filesPattern = "Files harvested: ";
 	public final static String errorPattern = "Errors: ";
 	
-	public String seed;
-	public String harvestName;
-	public boolean successful;
-	public JobStatus finalState;
-	public String[] FilesHarvested;
-	public List<SingleCriteriaResult> results;
-	private boolean resultsInitiated;
-	private Set<String> errors;
-	public String error;
-	public long harvestedTime;
-	
-	
-	public HarvestReport(String harvestname, String seedurl, boolean successful, List<String> files, String error, 
-			JobStatus finalState, long harvestedTime) {
-		this.harvestName = harvestname;
-		this.seed = seedurl;
-		this.successful = successful;
-		if (files != null) {
-		    this.FilesHarvested = files.toArray(new String[0]);
-		} else {
-		    this.FilesHarvested = new String[]{};
-		}
-		this.error = error;
-		this.finalState = finalState;
-		this.harvestedTime = harvestedTime;
-		
-    }
-
-	public HarvestReport(){
-	}
-	
-	public static List<HarvestReport> readHarvestLog(File harvestlog) throws IOException {
-		List<HarvestReport> results = new ArrayList<HarvestReport>();
+	public static List<SingleSeedHarvest> readHarvestLog(File harvestlog) throws IOException {
+		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
 
 		BufferedReader fr = StreamUtils.getBufferedReader(harvestlog);        
 		String line = "";
-		HarvestReport current = null;
+		SingleSeedHarvest current = null;
 		String trimmedLine = null;
 
 		//read file add to list
@@ -96,7 +63,7 @@ public class HarvestReport {
 							results.add(current);
 						}
 						// start new harvest
-						current = new HarvestReport();
+						current = new SingleSeedHarvest();
 						current.seed = line.split(seedPattern)[1];
 					} else if (line.startsWith(harvestnamePattern)) {
 						errorLineWasLast = false;
@@ -108,9 +75,9 @@ public class HarvestReport {
 						errorLineWasLast = false;
 						String finalStateStr = line.split(endstatePattern)[1];
 						if (finalStateStr.equals("null")) {
-							current.finalState = JobStatus.FAILED;
+							current.finishedState = JobStatus.FAILED;
 						} else {
-							current.finalState = JobStatus.valueOf(finalStateStr);
+							current.finishedState = JobStatus.valueOf(finalStateStr);
 						}
 					} else if (line.startsWith(harvestedTimePattern)) {
 						errorLineWasLast = false;
@@ -118,18 +85,21 @@ public class HarvestReport {
 					} else if (line.startsWith(filesPattern)) {
 						errorLineWasLast = false;
 						String files = line.split(filesPattern)[1];
-						if (files.equals("null")) {
-							current.FilesHarvested = new String[]{};
-						} else {
-							current.FilesHarvested = files.split(",");
+						List<String> fileList = new ArrayList<String>();
+						if (!files.equals("null")) {
+							String[] filesParts = files.split(",");
+							for (String file: filesParts) {
+								fileList.add(file);
+							}
 						}
+						current.files = fileList;
 					} else if (line.startsWith(errorPattern)) {
 						errorLineWasLast = true;
 						String error = line.split(errorPattern)[1].trim();
-						current.error = error;
+						current.errMsg = error;
 					} else {
 						if (errorLineWasLast) { // Add to error
-							current.error += line;
+							current.errMsg += line;
 						} else {
 							System.err.println("Ignoring line: " + line);
 						}
@@ -144,83 +114,19 @@ public class HarvestReport {
 		return results;
 	}
 	
-	
-	public List<String> getAllFiles() {
-		List<String> allFiles = new ArrayList<String>(); 
-		for (String f: this.FilesHarvested) {
-			allFiles.add(f);
-		}
-		return allFiles;
-	}
-
-	public List<String> getHeritrixWarcs() {
-		List<String> allFiles = new ArrayList<String>(); 
-		for (String f: this.FilesHarvested) {
-			if (!f.contains("metadata")) {
-				allFiles.add(f);
-			}
-		}
-		return allFiles;
-	}
-	
-	public Set<String> getMetadataWarcs() {
-		Set<String> allFiles = new HashSet<String>(); 
-		for (String f: this.FilesHarvested) {
-			if (f.contains("metadata")) {
-				allFiles.add(f);
-			}
-		}
-		return allFiles;
-	}
-	
-	public void setCriteriaResults(List<SingleCriteriaResult> results) {
-		this.results = results;
-	}
-	
-	public boolean resultsFound() {
-		if (!resultsInitiated) {
-			throw new WebdanicaException("CriteriaResults not yet associated with this harvest (" + this.harvestName + ")");
-		} else {
-			return results.size() > 0;
-		}
-	}
-
-	public boolean resultsCalculated() {
-		return this.resultsInitiated;
-	}
-	
-	public static void printToFile(List<HarvestReport> harvests, File outputFile) throws IOException {
+	public static void printToReportFile(List<SingleSeedHarvest> harvests, File outputFile) throws IOException {
 		outputFile.createNewFile();
 		FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
 		BufferedWriter resfile = new BufferedWriter(fw);
-		for (HarvestReport h: harvests) {
+		for (SingleSeedHarvest h: harvests) {
 			System.out.println("Printing out report for seed: " + h.seed);
 			printOut(h, resfile);
 		}
 		fw.flush();
 		fw.close();
 	}
-	
-	boolean hasErrors() {
-		return ( (error != null && !error.isEmpty()) 
-				|| (errors != null && !errors.isEmpty()));
-	}
-	
-	String getErrorsAsString() {
-		StringBuffer errorsBuffer = new StringBuffer();
-		if (error != null && !error.isEmpty()) {
-			errorsBuffer.append(error);
-		}
-		if (errors != null && !errors.isEmpty()) {
-			errorsBuffer.append(StringUtils.join(errors, ","));
-		}
-		return errorsBuffer.toString();
-	}
-	
-	
-	
-	
-	private static void printOut(final HarvestReport h, final BufferedWriter resfile) throws IOException {
+
+	private static void printOut(final SingleSeedHarvest h, final BufferedWriter resfile) throws IOException {
 		resfile.append("################################################");
 		resfile.newLine();
 		resfile.append("Analysis of harvest of seed " + h.seed);
@@ -228,15 +134,16 @@ public class HarvestReport {
 		resfile.append("################################################");
 		resfile.newLine();
 		if (h.hasErrors()) {
-			resfile.append("Errors found: '" + h.getErrorsAsString()  + "'");
+			resfile.append("Errors found: '" + h.getErrMsg()  + "'");
 			resfile.newLine();
 		}
-		if (h.results == null || h.results.isEmpty()) {
+		List<SingleCriteriaResult> results = h.getCritresults();
+		if (results == null || results.isEmpty()) {
 			resfile.append("No criteria results found for seed");
 			resfile.newLine();
 		} else {
-			for (SingleCriteriaResult scr: h.results) {
-				resfile.append(scr.getValuesInString(",", ":"));
+			for (SingleCriteriaResult scr: results) {
+				resfile.append(scr.getValuesInString(",", ":", SingleCriteriaResult.StringCriteria));
 				resfile.newLine();
 				resfile.append("Text: " + scr.getCText());
 				resfile.newLine();
@@ -250,9 +157,9 @@ public class HarvestReport {
 		resfile.flush();
 	}
 		
-	public static List<HarvestError> processCriteriaResults(List<HarvestReport> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
+	public static List<HarvestError> processCriteriaResults(List<SingleSeedHarvest> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
-		for (HarvestReport h: harvests) {
+		for (SingleSeedHarvest h: harvests) {
 			Set<String> errs = new HashSet<String>();
 			if (h.getHeritrixWarcs().size() != 0){
 				List<SingleCriteriaResult> results = new ArrayList<SingleCriteriaResult>();
@@ -286,16 +193,11 @@ public class HarvestReport {
 				HarvestError he = new HarvestError(h, "no data harvested for seed: " +  StringUtils.join(errs, ","));
 				errorReports.add(he);
 			}
-			h.setErrors(errs);
+			h.setErrMsg(StringUtils.join(errs, ","));
 			
 		}
 		return errorReports;
 	}
-
-
-	private void setErrors(Set<String> errs) {
-	    this.errors = errs;  
-    }
 
 
 	public static List<String> findPartFiles(File ingestDir) {
@@ -315,30 +217,12 @@ public class HarvestReport {
 			return Arrays.asList(new String[]{});
 		}
     }
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(seedPattern + seed);
-		sb.append("\n");
-		sb.append(harvestnamePattern + harvestName);
-		sb.append("\n");
-		sb.append(successfulPattern + successful);
-		sb.append("\n");
-		sb.append(harvestedTimePattern + new Date(harvestedTime));
-		sb.append("\n");
-		sb.append(endstatePattern + finalState);
-		sb.append("\n");
-		sb.append(filesPattern + StringUtils.join(getAllFiles(), ","));
-		sb.append("\n");
-		sb.append(errorPattern + ((error == null)?"":error));
-		sb.append("\n");
-		return sb.toString();
-	}
-
-	public static HarvestReport makeErrorObject(String error) {
-	    HarvestReport h = new HarvestReport();
+	
+	public static SingleSeedHarvest makeErrorObject(String error) {
+		SingleSeedHarvest h = new SingleSeedHarvest();
 	    h.harvestName = error;
-	    h.error = error;
-	    h.FilesHarvested = new String[]{};
+	    h.errMsg = error;
+	    h.files = new ArrayList<String>();
 	    return h;
     }
 }

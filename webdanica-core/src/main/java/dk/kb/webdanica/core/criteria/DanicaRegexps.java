@@ -69,11 +69,4 @@ public class DanicaRegexps {
        "%f8", "%d8", "%e6", "%e5", "%c6", "%c5",
        
     };
-    
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {        
-    }
-
 }

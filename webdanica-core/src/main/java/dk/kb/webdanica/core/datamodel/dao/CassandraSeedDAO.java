@@ -34,7 +34,7 @@ public class CassandraSeedDAO implements SeedsDAO {
 	
 	private PreparedStatement readAllWithStateAndLimitstatement;
 
-	private PreparedStatement preparedUpdateState;
+	private PreparedStatement preparedUpdateStatement;
 	
 	private PreparedStatement getSeedsCountStatement;
 	
@@ -81,8 +81,7 @@ public class CassandraSeedDAO implements SeedsDAO {
 	}	
 
 	private Seed getSeedFromRow(Row row) {
-		//Seed(String url, String redirectedUrl, String hostname, String domain, String tld, Long insertedTime, Long updatedTime, DanicaStatus danicastate, 
-		//		Status state, String stateReason) 
+		// Not yet tested!
 		return new Seed(
 				row.getString("url"),
 				row.getString("redirected_url"), 
@@ -93,7 +92,9 @@ public class CassandraSeedDAO implements SeedsDAO {
 				row.getLong("updated_time"),
 				DanicaStatus.fromOrdinal(row.getInt("danica")),
 				Status.fromOrdinal(row.getInt("status")), 
-				row.getString("status_reason")
+				row.getString("status_reason"),
+				row.getBool("exported"),
+				row.getLong("exported_time")
 				);
     }
 
@@ -116,9 +117,23 @@ public class CassandraSeedDAO implements SeedsDAO {
 			//FIXME This is no longer valid 
 			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?,?) IF NOT EXISTS");
 		}
+		/*
+		row.getString("url"),
+		row.getString("redirected_url"), 
+		row.getString("host"),
+		row.getString("domain"),
+		row.getString("tld"),
+		row.getLong("inserted_time"),
+		row.getLong("updated_time"),
+		DanicaStatus.fromOrdinal(row.getInt("danica")),
+		Status.fromOrdinal(row.getInt("status")), 
+		row.getString("status_reason"),
+		row.getBool("exported"),
+		row.getLong("exported_time")
+		*/
 		
-		if (preparedUpdateState == null || newSession) {
-			preparedUpdateState = session.prepare("UPDATE seeds SET status=?, status_reason=? WHERE url=? IF EXISTS");
+		if (preparedUpdateStatement == null || newSession) {
+			preparedUpdateStatement = session.prepare("UPDATE seeds SET redirected_url=?, host=?, domain=?, tld=?, inserted_time=?, updated_time=?, danica=?, status=?, status_reason=?, exported=?, exported_time=? WHERE url=? IF EXISTS");
 		}
 		if (readAllWithStatestatement == null || newSession) {
 			readAllWithStatestatement = session.prepare("SELECT * FROM seeds WHERE status=?");
@@ -137,10 +152,26 @@ public class CassandraSeedDAO implements SeedsDAO {
 		newSession = false;
     }
 	
-	public boolean updateState(Seed singleSeed) {
+	public boolean updateSeed(Seed singleSeed) {
 		init();
-		BoundStatement bound = preparedUpdateState.bind(singleSeed.getStatus().ordinal(), 
-				singleSeed.getStatusReason(), singleSeed.getUrl());
+		if (singleSeed.getExportedState() == true && singleSeed.getExportedTime() == null) {
+			singleSeed.setExportedTime(new Date().getTime());
+		}
+		// UPDATE seeds SET redirected_url=?, host=?, domain=?, tld=?, inserted_time=?, updated_time=?, danica=?, status=?, status_reason=?, exported=?, exported_time=? WHERE url=? IF EXISTS");
+		Long updatedTime = new Date().getTime();
+		BoundStatement bound = preparedUpdateStatement.bind(
+				singleSeed.getRedirectedUrl(),
+				singleSeed.getHostname(),
+				singleSeed.getDomain(),
+				singleSeed.getTld(),
+				singleSeed.getInsertedTime(),
+				updatedTime,
+				singleSeed.getDanicaStatus().ordinal(),
+				singleSeed.getStatus().ordinal(), 
+				singleSeed.getStatusReason(),
+				singleSeed.getExportedState(),
+				singleSeed.getExportedTime()
+				);
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		// Possibly change this code. this depends on appending IF EXISTS to the statement
@@ -160,7 +191,7 @@ public class CassandraSeedDAO implements SeedsDAO {
 	public void close() {
 	    db.close();
     }
-
+/*
 	public boolean updateRedirectedUrl(Seed s) {
 	    init();
 	    BoundStatement bound = preparedUpdateRedirectedUrl.bind(s.getRedirectedUrl(), s.getUrl()); 
@@ -170,10 +201,29 @@ public class CassandraSeedDAO implements SeedsDAO {
 		boolean updateFailed = row.getColumnDefinitions().contains("url");
 		return !updateFailed;
     }
-
+*/
 	@Override
     public Long getSeedsDanicaCount(DanicaStatus s) {
 	    // TODO Auto-generated method stub
 	    return null;
     }
+
+	@Override
+    public List<Seed> getSeedsReadyToExport() throws Exception {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	@Override
+    public boolean existsUrl(String url) throws Exception {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
+	@Override
+    public Seed getSeed(String url) throws Exception {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
 }

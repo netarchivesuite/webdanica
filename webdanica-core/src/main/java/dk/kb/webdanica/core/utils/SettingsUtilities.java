@@ -40,17 +40,21 @@ public class SettingsUtilities {
 	}
 	
 	public static String getStringSetting(String settingsName, String default_string_value) {
+		return getStringSetting(settingsName, default_string_value, true);
+	}
+	
+	public static String getStringSetting(String settingsName, String default_string_value, boolean logging) {
     	String returnValue = default_string_value;
 	    if (Settings.hasKey(settingsName)) {
 	    	String settingsValue = Settings.get(settingsName);  
 	    	if (settingsValue == null || settingsValue.isEmpty()) {
-	    		logger.warning("Using default value '" + default_string_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
+	    		if (logging) logger.warning("Using default value '" + default_string_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
 	    	} else {
-	    		logger.info("Using value '" + settingsValue + "' for setting '" + settingsName + "'.");
+	    		if (logging) logger.info("Using value '" + settingsValue + "' for setting '" + settingsName + "'.");
 	    		returnValue = settingsValue;
 	    	}
 	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_string_value + "'");
+	    	if (logging) logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_string_value + "'");
 	    }
 	    return returnValue;
     }

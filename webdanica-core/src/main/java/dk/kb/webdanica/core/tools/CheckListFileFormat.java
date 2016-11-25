@@ -1,8 +1,9 @@
 package dk.kb.webdanica.core.tools;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import dk.kb.webdanica.core.criteria.WordsArrayGenerator;
 
@@ -30,24 +31,44 @@ public class CheckListFileFormat {
 		 */
 		String defaultCharset =  "UTF-16";
 		
-		Set<String> words = new HashSet<String>();
-		Set<String> wordsDefault = new HashSet<String>();
+		List<Set<String>> wordsSet = null;
+		List<Set<String>> wordsDefaultSet = null;
+		
 		try {
-			words = WordsArrayGenerator.generateWordSetFromFile(listfile, charset, "\t", true, false);
-			wordsDefault = WordsArrayGenerator.generateWordSetFromFile(listfile, defaultCharset, "\t", true, false);
+			wordsSet = WordsArrayGenerator.generateWordSetFromFile(listfile, charset, "\t", true, false);
+			wordsDefaultSet = WordsArrayGenerator.generateWordSetFromFile(listfile, defaultCharset, "\t", true, false);
 		} catch (Throwable e) {
 			System.err.println("Exception while parsing the file " + listfile.getAbsolutePath() + ": " + e);
 			System.exit(1);
 		}
-		System.out.println("The file '" +  listfile.getAbsolutePath() + "' contains " + words.size() + " words:");
+		long singleSize = wordsSet.get(0).size();
+		long doubleSize = wordsSet.get(1).size(); 
+		System.out.println("The file '" +  listfile.getAbsolutePath() + "' contains " + singleSize + " single words, and " +  doubleSize + " double words:");
+		System.out.println("The doublewords: ");
 		long count = 0;
-		for (String word: words) {
+		for (String word: wordsSet.get(1)) {
 			count++;
 			System.out.println("word #" +  count + ": '" + word + "'");
 		}
-		words.removeAll(wordsDefault);
-		if (words.size() != 0) {
-			System.out.println("Removing all words also in the set read with UTF-16 charset gives a set of size " + words.size());
+		System.out.println("The singlewords: ");
+		count = 0;
+		for (String word: wordsSet.get(0)) {
+			count++;
+			System.out.println("word #" +  count + ": '" + word + "'");
+		}
+		count = 0;
+		
+		Set<String> AllwordsInwordsSet = new TreeSet<String>();
+		AllwordsInwordsSet.addAll(wordsSet.get(0));
+		AllwordsInwordsSet.addAll(wordsSet.get(1));
+		Set<String> AllwordsInwordsDefaultSet = new TreeSet<String>();
+		AllwordsInwordsDefaultSet.addAll(wordsDefaultSet.get(0));
+		AllwordsInwordsDefaultSet.addAll(wordsDefaultSet.get(1));
+	
+		AllwordsInwordsSet.removeAll(AllwordsInwordsDefaultSet);
+		
+		if (AllwordsInwordsSet.size() != 0) {
+			System.out.println("Removing all words also in the set read with UTF-16 charset gives a set of size " + AllwordsInwordsSet.size());
 			System.out.println("This means that the file '" +  listfile.getAbsolutePath() + "' is not a '" + defaultCharset + "' file");
 		}
 	}

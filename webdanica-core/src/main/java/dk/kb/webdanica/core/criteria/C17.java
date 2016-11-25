@@ -1,18 +1,15 @@
 package dk.kb.webdanica.core.criteria;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.pig.EvalFunc;
 import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 
-import dk.kb.webdanica.core.utils.Constants;
 import dk.kb.webdanica.core.utils.UrlUtils;
 
 /**
@@ -21,7 +18,7 @@ import dk.kb.webdanica.core.utils.UrlUtils;
  * 
  * Inddata: AS links:{ tuple(link:[]) }; 
  */
-public class C17 extends EvalFunc<String>{
+public class C17 {
 
     public final static String URL_KEY = "url";
     public final static String TEXT_KEY = "text";
@@ -29,20 +26,6 @@ public class C17 extends EvalFunc<String>{
     public final static String DK_SUFFIX = ".dk";    
     
     
- 
-    @Override
-    public String exec(Tuple input) throws IOException {
-        if (input == null|| input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
-        } 
-        
-        DataBag links = (DataBag)(input.get(0));
-        int foundDKOutlinks = computeC17(links);
-        
-              
-        return "C17: found " + foundDKOutlinks;
-    }
-
     public static int computeC17(DataBag links) throws ExecException {
         int foundDKoutLinks = 0;
         if (links != null) {

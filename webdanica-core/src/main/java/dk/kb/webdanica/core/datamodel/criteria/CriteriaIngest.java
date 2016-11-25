@@ -16,7 +16,8 @@ import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.kb.webdanica.core.utils.TextUtils;
 
@@ -30,19 +31,19 @@ public class CriteriaIngest {
 		File basedir = harvestLog.getParentFile();
 		String harvestLogReportName = harvestLog.getName() + ".report.txt";
 		File harvestLogReport = findReportFile(basedir, harvestLogReportName);
-		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestLog);
+		List<SingleSeedHarvest> harvests = HarvestLog.readHarvestLog(harvestLog);
 		if (addHarvestToDatabase) {
 			HarvestDAO hdao = daofactory.getHarvestDAO();
-			for (HarvestReport hp: harvests) {
+			for (SingleSeedHarvest hp: harvests) {
 				hdao.insertHarvest(hp);
 			}
 		}
-		List<HarvestError> errors = HarvestReport.processCriteriaResults(harvests, baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
+		List<HarvestError> errors = HarvestLog.processCriteriaResults(harvests, baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
 
 		for (HarvestError e: errors) {
-			System.out.println("Harvest of seed " + e.getReport().seed + " has errors: " + e.getError());
+			System.out.println("Harvest of seed " + e.getHarvest().getSeed() + " has errors: " + e.getError());
 		}
-		HarvestReport.printToFile(harvests, harvestLogReport);
+		HarvestLog.printToReportFile(harvests, harvestLogReport);
 	}	
 
 	private static File findReportFile(File basedir, String harvestLogReportName) {

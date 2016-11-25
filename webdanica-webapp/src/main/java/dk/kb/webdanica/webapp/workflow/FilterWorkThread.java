@@ -127,11 +127,11 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	    		if (redirectedUrl != null && !redirectedUrl.isEmpty()) {
 	    			s.setRedirectedUrl(redirectedUrl);
 	    			logger.info("Identified '" + url + "' as redirecting to '" + redirectedUrl + "'");
-	    		seeddao.updateRedirectedUrl(s);
+	    		seeddao.updateSeed(s);
 	    		}
 	    	}
 	    	doFilteringOnSeed(s, activeBlackLists);	
-	    	seeddao.updateState(s);
+	    	seeddao.updateSeed(s);
 	    }
     }
 	private void doFilteringOnSeed(Seed s, List<BlackList> blacklists) {

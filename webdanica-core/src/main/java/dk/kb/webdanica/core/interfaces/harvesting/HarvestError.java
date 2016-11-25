@@ -1,15 +1,15 @@
 package dk.kb.webdanica.core.interfaces.harvesting;
 
 public class HarvestError {
-	private HarvestReport hr;
+	private SingleSeedHarvest hr;
 	private String errMsg;
 
-	public HarvestError(HarvestReport hr, String errMsg) {
-		this.hr = hr;
+	public HarvestError(SingleSeedHarvest h, String errMsg) {
+		this.hr = h;
 		this.errMsg = errMsg;
 	}
 	
-	public HarvestReport getReport() {
+	public SingleSeedHarvest getHarvest() {
 		return this.hr;
 	}
 	

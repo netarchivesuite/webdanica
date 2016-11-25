@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import dk.kb.webdanica.core.criteria.Words;
+import dk.kb.webdanica.core.criteria.WordPattern;
 
 public class TextUtils {
 
@@ -66,9 +66,9 @@ public class TextUtils {
         return res;
     }
 
-    public static Set<String> SearchWordPatterns(String text, Set<Words.WordPattern> wpts, boolean withCount) {
+    public static Set<String> SearchWordPatterns(String text, Set<WordPattern> wpts, boolean withCount) {
         Set<String> res = new HashSet<String>();
-        for (Words.WordPattern wp: wpts) {
+        for (WordPattern wp: wpts) {
         	if (wp.p.matcher(text).find()) {
         		if (withCount) {
 	                int cnt = 0; 

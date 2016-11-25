@@ -1,12 +1,9 @@
 package dk.kb.webdanica.core.criteria;
 
-import java.io.IOException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.pig.EvalFunc;
-import org.apache.pig.data.Tuple;
-
-import dk.kb.webdanica.core.utils.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 /**
@@ -14,28 +11,43 @@ import dk.kb.webdanica.core.utils.TextUtils;
  * +45 0045 followed by eight digits. 
  * Test-method: 
  *  See if any of these danish telnumberIndicators are found in the text 
- *  TODO Still experimental
  */
-public class C2 extends EvalFunc<String> {
+public class C2 {
     
     public static String[] telnumberIndicators = new String[]{"mobil +45", "tlf.", "+45", "0045"};
     
-    @Override
-    public String exec(Tuple input) throws IOException {
-        if (input == null || input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
-        }
-        String text = (String) input.get(0);
-        Set<String> matches = computeC2a(text);
-        
-        return (matches.size() > 0)? "C2: " 
-            + TextUtils.conjoin("#", matches): "C2: emptylist";  
-
-        //boolean matches = text.matches(DanicaRegexps.danishTlfRegexp);
-        //return (matches? "C2: y": "C2: n");  
-    }
-
+    // C2a. Look for the telnumberIndicators
     public static Set<String> computeC2a(String text) {
         return TextUtils.SearchPattern(text, telnumberIndicators);
     }
+    
+    // C2b. Try to find a Danish telefonnumber in the text based on a regular expression
+    // version 1
+    public static boolean computeC2b(String text) {
+        Pattern pDanishTlfRegexp = Pattern.compile(DanicaRegexps.danishTlfRegexp);
+        Matcher m = pDanishTlfRegexp.matcher(text);
+    	return m.matches();
+    }
+    // C2b. Try to find a Danish telefonnumber in the text based on a regular expression
+    // version 2
+    public static boolean computeC2bV2(String text) {
+        Matcher m = DanicaRegexps.pDanishTlfRegexp.matcher(text);
+    	return m.matches();
+    }    
+ 
+    // C2b. Try to find a Danish telefonnumber in the text based on a regular expression
+    // version 3    
+    public static boolean computeC2bV3(String text) {
+        Matcher m = DanicaRegexps.pDanishTlfRegexpNoCase.matcher(text);
+    	return m.matches();
+    }    
+    
+    /*public static void main(String[] args) {
+    	System.out.println("DanicaRegexps " + DanicaRegexps.danishTlfRegexp);
+    	String text = "dfsf<s";
+        System.out.println("t: '" + text + "': " + DanicaRegexps.pDanishTlfRegexp.matcher(text).matches());  
+    	text = "tlf. +45 40 43 11 00";
+        System.out.println("t: '" + text + "': " + DanicaRegexps.pDanishTlfRegexp.matcher(text).matches());  
+    }*/
+    
 }

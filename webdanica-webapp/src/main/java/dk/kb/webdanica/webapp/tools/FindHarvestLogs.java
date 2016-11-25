@@ -14,18 +14,17 @@ public class FindHarvestLogs {
 	 * Find out all harvestlogs ready for analysis from 
 	 * 
 	 * Settings used: 
-	public static String HARVESTING_HARVESTLOGDIR = "settings.harvesting.harvestlogDir";
-	public static String HARVESTING_HARVEST_LOG_PREFIX = "settings.harvesting.harvestlogPrefix";
-	public static String HARVESTING_HARVEST_LOG_READY_SUFFIX = "settings.harvesting.harvestlogReadySuffix";
-	public static String HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX = "settings.harvesting.harvestlogNotreadySuffix";
-	 * 
+	 *	settings.harvesting.harvestlogDir
+	 *	settings.harvesting.harvestlogPrefix
+	 *	settings.harvesting.harvestlogReadySuffix
+	 * And (if not set) their associated defaults in dk.kb.webdanica.webapp.Constants
 	 * @param args no arguments 
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR);
-		final String harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX);
-		final String harvestLogReadySuffix =	SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX, Constants.DEFAULT_HARVESTLOG_READY_SUFFIX);
+		String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR, false);
+		final String harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX, false);
+		final String harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX, Constants.DEFAULT_HARVESTLOG_READY_SUFFIX, false);
 		
 		File harvestLogDir = new File(harvestLogDirName);
 		

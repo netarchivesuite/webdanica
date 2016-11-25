@@ -27,7 +27,8 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
@@ -66,14 +67,15 @@ public class HarvestResource implements ResourceAbstract {
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
     	logger.info("pathInfo: " + pathInfo);
         logger.info("resource_id: " + resource_id);
-        HarvestReport b = null;
+        SingleSeedHarvest b = null;
         String harvestName = getHarvestName(pathInfo);
         boolean isError = false;
         if (harvestName == null) {
         	harvestName = "ERROR: unable to extract harvestname from path '" + pathInfo + "'";
         	isError = true;
-        	b = HarvestReport.makeErrorObject(harvestName);
+        	b = HarvestLog.makeErrorObject(harvestName);
         }
+        //resp.sendRedirect(arg0);
         
         if (!isError){ // Try to fetch harvest
         	try {
@@ -83,7 +85,7 @@ public class HarvestResource implements ResourceAbstract {
         	if (b == null) {
         		harvestName = "ERROR: unable to show harvest with name '" + harvestName + "'. It doesn't exist";
             	isError = true;
-            	b = HarvestReport.makeErrorObject(harvestName);	
+            	b = HarvestLog.makeErrorObject(harvestName);	
         	}
         }
         
@@ -121,7 +123,7 @@ public class HarvestResource implements ResourceAbstract {
     }
 
 	public void harvest_show(User dab_user, HttpServletRequest req,
-            HttpServletResponse resp, HarvestReport b)
+            HttpServletResponse resp, SingleSeedHarvest b)
             throws IOException {
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/html; charset=utf-8");
@@ -186,7 +188,7 @@ public class HarvestResource implements ResourceAbstract {
         /*
          * Heading.
          */
-        String heading = "Information about harvest '" + b.harvestName + "' of seed '" + b.seed + "' :";
+        String heading = "Information about harvest '" + b.getHarvestName() + "' of seed '" + b.getSeed() + "' :";
         
         /*
          * Places.
@@ -235,37 +237,37 @@ public class HarvestResource implements ResourceAbstract {
          * 
          */
         
-        ResourceUtils.insertText(namePlace, "name",  b.harvestName, HARVEST_SHOW_TEMPLATE, logger);
-        ResourceUtils.insertText(seedPlace, "seed",  b.seed, HARVEST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(namePlace, "name",  b.getHarvestName(), HARVEST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(seedPlace, "seed",  b.getSeed(), HARVEST_SHOW_TEMPLATE, logger);
         
-        ResourceUtils.insertText(harvestedTimePlace, "harvested_time", "" + new Date(b.harvestedTime), HARVEST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(harvestedTimePlace, "harvested_time", "" + new Date(b.getHarvestedTime()), HARVEST_SHOW_TEMPLATE, logger);
         
-        ResourceUtils.insertText(successfullPlace, "successful",  b.successful + "", HARVEST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(successfullPlace, "successful",  b.isSuccessful() + "", HARVEST_SHOW_TEMPLATE, logger);
         String error = "No errors";
-        if (b.error != null && !b.error.isEmpty()) {
-        	error = b.error;
+        if (b.getErrMsg() != null && !b.getErrMsg().isEmpty()) {
+        	error = b.getErrMsg();
         }
         ResourceUtils.insertText(errorPlace, "errors",  error, HARVEST_SHOW_TEMPLATE, logger);
-        ResourceUtils.insertText(endStatePlace, "endState",  b.finalState + "", HARVEST_SHOW_TEMPLATE, logger);
+        ResourceUtils.insertText(endStatePlace, "endState",  b.getFinalState() + "", HARVEST_SHOW_TEMPLATE, logger);
 
         // FIXME better handling
         long critCount = 0;
         try {
-            critCount = cdao.getCountByHarvest(b.harvestName);
+            critCount = cdao.getCountByHarvest(b.getHarvestName());
         } catch (Exception e) {
         	
         }
 
         String linkToCriteriaresults = "No criteriaresults found for this harvest";
         if (critCount > 0) {
-        	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.harvestName + "/\">" + critCount + "</a>";
+        	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.getHarvestName() + "/\">" + critCount + "</a>";
         }
         ResourceUtils.insertText(criteriaresultsPlace, "criteria_results",  linkToCriteriaresults, HARVEST_SHOW_TEMPLATE, logger);
          
         StringBuilder sb = new StringBuilder();
         sb.append("<pre>\r\n");
 
-        for (String listElement: b.getAllFiles()) {
+        for (String listElement: b.getFiles()) {
     		sb.append(listElement);
     		sb.append("\r\n");
     	}

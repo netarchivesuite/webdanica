@@ -219,7 +219,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        sb.append("<pre>\r\n");
 	        String ROW_DELIM = ",";
 	        String KEYVAL_DELIM = ":";
-	    	for (String listElement: b.getValuesAsStringList(ROW_DELIM, KEYVAL_DELIM)) {
+	    	for (String listElement: b.getValuesAsStringList(ROW_DELIM, KEYVAL_DELIM, SingleCriteriaResult.StringCriteriaVisibleInWebapp)) {
 	    		sb.append(listElement);
 	    		sb.append("\r\n");
 	    	}

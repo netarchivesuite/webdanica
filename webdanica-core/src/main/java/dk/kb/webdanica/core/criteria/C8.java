@@ -1,30 +1,33 @@
 package dk.kb.webdanica.core.criteria;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.pig.EvalFunc;
-import org.apache.pig.data.Tuple;
-
-import dk.kb.webdanica.core.utils.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
-public class C8c_from_a_Nov extends EvalFunc<String>{
+public class C8 {
 
-    @Override
-    public String exec(Tuple input) throws IOException {
-        if (input == null || input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
-        }
-        String text = (String) input.get(0);
-        Set<String> foundMatches = computeC8c(text);
-        
-        return (foundMatches.size() > 0? ("C8c: " + TextUtils.conjoin("#", foundMatches)):
-            "C8c: emptylist");
+	/**
+     * C8a
+     */
+    public static Set<String> computeC8a(String text) {
+    	// TODO Should probably be SearchWord as shown below, but this does not work
+        /**
+        return TextUtils.SearchWord(text, 
+                Words.foreninger_lowercased);
+        **/        
+        return TextUtils.SearchPattern(text, 
+                Words.foreninger_lowercased);
     }
-
+    /**
+     * C8b
+     */ 
+    public static Set<String> computeC8b(String url) {
+    	return TextUtils.SearchPattern(url, 
+    			Words.foreninger_lowercased);
+    }     
+    //////////////// C8C - diverse varianter ///////////////////
     public static Set<String> computeC8c(String text) {
         return TextUtils.SearchWordRegExp(text, Words.foreninger_lowercased,false); 
     }    

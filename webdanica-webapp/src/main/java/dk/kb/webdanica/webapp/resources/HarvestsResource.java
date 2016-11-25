@@ -18,7 +18,7 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -114,27 +114,27 @@ public class HarvestsResource implements ResourceAbstract {
 	        StringBuffer sb = new StringBuffer();
 
 	        // FIXME better handling
-	        List<HarvestReport> blacklistList = null;
+	        List<SingleSeedHarvest> blacklistList = null;
 	        try {
 		        blacklistList = environment.getConfig().getDAOFactory().getHarvestDAO().getAll();
 	        } catch (Exception e) {
 	        }
 
-	        for (HarvestReport b: blacklistList) {
+	        for (SingleSeedHarvest b: blacklistList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");
 	        	sb.append("<a href=\"");
 	        	sb.append(Servlet.environment.getHarvestPath());
-	        	sb.append(b.harvestName);
+	        	sb.append(b.getHarvestName());
 	        	sb.append("/\">");
-	        	sb.append(b.harvestName);
+	        	sb.append(b.getHarvestName());
 	        	sb.append("</a>");
 	        	sb.append("</td>");
 	        	sb.append("<td>");
-	        	sb.append(b.seed);
+	        	sb.append(b.getSeed());
 	        	sb.append("</td>");
 	        	sb.append("<td>");
-	        	sb.append(new Date(b.harvestedTime));
+	        	sb.append(new Date(b.getHarvestedTime()));
 	        	sb.append("</td>");
 	        	sb.append("</tr>\n");
 	        }

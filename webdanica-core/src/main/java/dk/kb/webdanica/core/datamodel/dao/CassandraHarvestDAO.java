@@ -12,7 +12,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import dk.kb.webdanica.core.datamodel.Cassandra;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
@@ -51,30 +51,30 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		//File basedir = UnitTestUtils.getTestResourceFile(
 		File basedir = new File("/home/svc/devel/webdanica/webdanica-core/src/test/resources/criteria-results/criteria-test-23-08-2016");
 		File harvestlog = new File(basedir, "nl-urls-harvestlog.txt");
-		List<HarvestReport> harvests = HarvestReport.readHarvestLog(harvestlog);
+		List<SingleSeedHarvest> harvests = HarvestLog.readHarvestLog(harvestlog);
 		
 		HarvestDAO dao = CassandraHarvestDAO.getInstance();
 		int duplicateCount = 0;
 		try {
 			System.out.println("harvest count: " + harvests.size());
-			for (HarvestReport h: harvests) {
+			for (SingleSeedHarvest h: harvests) {
 				boolean successful = dao.insertHarvest(h);
 				if (!successful) {
 					duplicateCount++;
 				}
 			}
-			List<HarvestReport> alle = dao.getAll();
+			List<SingleSeedHarvest> alle = dao.getAll();
 			System.out.println("harvest db count: " + alle.size());
 			System.out.println("harvest duplicate count: " + duplicateCount);
-			HarvestReport h = alle.get(0);
+			SingleSeedHarvest h = alle.get(0);
 			System.out.println(h.toString());
-			HarvestReport firstReport = dao.getHarvest(h.harvestName);
+			SingleSeedHarvest firstReport = dao.getHarvest(h.getHarvestName());
 			System.out.println(firstReport.toString());
-			List<HarvestReport> seedUrlReports = dao.getAllWithSeedurl(h.seed);
-			System.out.println("reports with seedurl '" + h.seed + "': " + seedUrlReports.size());
-			List<HarvestReport> successfullReports = dao.getAllWithSuccessfulstate(true);
+			List<SingleSeedHarvest> seedUrlReports = dao.getAllWithSeedurl(h.getSeed());
+			System.out.println("reports with seedurl '" + h.getSeed() + "': " + seedUrlReports.size());
+			List<SingleSeedHarvest> successfullReports = dao.getAllWithSuccessfulstate(true);
 			System.out.println("reports with successful : " + successfullReports.size());
-			List<HarvestReport> unsuccessfullReports = dao.getAllWithSuccessfulstate(false);
+			List<SingleSeedHarvest> unsuccessfullReports = dao.getAllWithSuccessfulstate(false);
 			System.out.println("reports with unsuccessful : " + unsuccessfullReports.size());
 			
 		} catch (Throwable e) {
@@ -96,30 +96,33 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		db = new Cassandra(settings);
 	}
 
-	public boolean insertHarvest(HarvestReport report) {
+	@Override
+    public boolean insertHarvest(SingleSeedHarvest report) throws Exception {
 		init();
-		long harvestedTime = report.harvestedTime;
+		long harvestedTime = report.getHarvestedTime();
 		if (!(harvestedTime > 0)) {
 			harvestedTime = System.currentTimeMillis();
 			System.err.println("harvestedTime undefined. setting it to  " + harvestedTime);
 		}
 		//harvestname, seedurl, finalState, successful, harvested_time, files, error
-		BoundStatement bound = preparedInsert.bind(report.harvestName, report.seed, 
-				report.finalState.ordinal(), report.successful, harvestedTime,  
-				report.getAllFiles(), report.error);
+		BoundStatement bound = preparedInsert.bind(report.getHarvestName(), report.getSeed(), 
+				report.getFinalState().ordinal(), report.isSuccessful(), harvestedTime,  
+				report.getFiles(), report.getErrMsg());
 				
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		boolean insertFailed = row.getColumnDefinitions().contains("seedurl");
 		return !insertFailed; // Was the insert successful?
-	}
-
-	public List<HarvestReport> getAll() {
+    }
+	
+	
+	@Override
+	public List<SingleSeedHarvest> getAll() {
 		init();
-		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
+		List<SingleSeedHarvest> harvestsFound = new ArrayList<SingleSeedHarvest>();
 		ResultSet results = session.execute("SELECT * FROM harvests");
 		for (Row row: results.all()) {
-			HarvestReport h = getHarvestFromRow(row);
+			SingleSeedHarvest h = getHarvestFromRow(row);
 			harvestsFound.add(h);
 		}
 		return harvestsFound; 
@@ -129,7 +132,8 @@ public class CassandraHarvestDAO implements HarvestDAO {
 	 * @param harvestName a given harvestname
 	 * @return null, if none found with given harvestname
 	 */
-	public HarvestReport getHarvest(String harvestName) {
+	@Override
+	public SingleSeedHarvest getHarvest(String harvestName) {
 		init();
 		BoundStatement bound = readWithHarvestnamestatement.bind(harvestName);
 		ResultSet results = session.execute(bound);
@@ -137,37 +141,42 @@ public class CassandraHarvestDAO implements HarvestDAO {
 		return getHarvestFromRow(row);
 	}
 	
-	private HarvestReport getHarvestFromRow(Row row) {
-		return new HarvestReport(row.getString("harvestname"), row.getString("seedurl"), row.getBool("successful"), row.getList("files", String.class),
-				row.getString("error"), JobStatus.fromOrdinal(row.getInt("finalState")), row.getLong("harvested_time"));
+	private SingleSeedHarvest getHarvestFromRow(Row row) {
+		return new SingleSeedHarvest(
+					row.getString("harvestname"), 
+					row.getString("seedurl"), 
+					row.getBool("successful"), 
+					row.getList("files", String.class),
+					row.getString("error"), 
+					JobStatus.fromOrdinal(row.getInt("finalState")), 
+					row.getLong("harvested_time"),
+					null // NAsreports //FIXME
+					);
 	}
-	
-	public List<HarvestReport> getAllWithSeedurl(String seedurl) {
+	@Override
+	public List<SingleSeedHarvest> getAllWithSeedurl(String seedurl) {
 		init();
-		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
+		List<SingleSeedHarvest> harvestsFound = new ArrayList<SingleSeedHarvest>();
 		BoundStatement bound = readAllWithSeedurlstatement.bind(seedurl);
 		ResultSet results = session.execute(bound);
 		for (Row row: results.all()) {
-			HarvestReport h = getHarvestFromRow(row);
+			SingleSeedHarvest h = getHarvestFromRow(row);
 			harvestsFound.add(h);
 		}
 		return harvestsFound; 
 	}
-	public List<HarvestReport> getAllWithSuccessfulstate(boolean successful) {
+	@Override
+	public List<SingleSeedHarvest> getAllWithSuccessfulstate(boolean successful) {
 		init();
-		List<HarvestReport> harvestsFound = new ArrayList<HarvestReport>();
+		List<SingleSeedHarvest> harvestsFound = new ArrayList<SingleSeedHarvest>();
 		BoundStatement bound = readAllWithSuccessfulstatement.bind(successful);
 		ResultSet results = session.execute(bound);
 		for (Row row: results.all()) {
-			HarvestReport h = getHarvestFromRow(row);
+			SingleSeedHarvest h = getHarvestFromRow(row);
 			harvestsFound.add(h);
 		}
 		return harvestsFound; 
 	}
-	
-	
-	
-	
 	
 	private void init() {
 		if (session == null || session.isClosed()) {			
@@ -223,9 +232,5 @@ public class CassandraHarvestDAO implements HarvestDAO {
         return null;
     }
 
-	@Override
-    public boolean insertHarvest(SingleSeedHarvest report) throws Exception {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	
 }

@@ -160,26 +160,26 @@ public class CombinedCombo extends EvalFunc<String> {
 				addResultForCriterie(object, "C2a", C2amatches);
 				// Calc C2b 		'ph in htm using regexp: "(?i)\\b(?:tlf\\.?(nr\\.?)?|telefon|mobil)\\s*(\\+45)?\\s*[1-9]\\d(.?\\d{2}){3}\\b";
 				// input: lowercase text
-				boolean C2b = C2b_from_a_Nov.computeC2b(text);
+				boolean C2b = C2.computeC2b(text);
 				//result.append(", C2b: " + (C2b? "y": "n"));
 				object.put("C2b", (C2b? "y": "n"));
 				
 				// Calc C3a         'æ.ø.å in htm (input lowercase text)
-				Set<String> C3amatches = C3a.ComputeC3a(text);
+				Set<String> C3amatches = C3.ComputeC3a(text);
 				addResultForCriterie(object, "C3a", C3amatches);
 				
 				// Calc C3b         'ae.oe.aa in htm (input lowercase text)
-				Set<String> C3bmatches = C3b.ComputeC3b(text);
+				Set<String> C3bmatches = C3.ComputeC3b(text);
 				addResultForCriterie(object, "C3b", C3bmatches);
 				// Calc C3c         'æ.ø.å in url (input url in lowercase)
-				Set<String> C3cmatches = C3c.ComputeC3c(urlLower);
+				Set<String> C3cmatches = C3.ComputeC3c(urlLower);
 				addResultForCriterie(object, "C3c", C3cmatches);
 				//Calc C3d         'ae.oe.aa in url (input url in lowercase)
-				Set<String> C3dmatches = ComputeC3d(urlLower);
+				Set<String> C3dmatches = C3.ComputeC3d(urlLower);
 				addResultForCriterie(object, "C3d", C3dmatches);
 				//Calc C3g		  'look for frequent danish words, with danish letters substituted with ae, oe/o,aa,
 				// Input lowercase text tokenized
-				Set<String> C3gmatches = C3g_fom_b_Nov.computeC3gV5(TextUtils.copyTokens(tokens));
+				Set<String> C3gmatches = C3.computeC3gV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C3g", C3gmatches);
 			
 				// Calc C4a and C4b - detect the language(s) of the text
@@ -202,91 +202,90 @@ public class CombinedCombo extends EvalFunc<String> {
 				}
 				
 				//Calc C6a         'freq. danish words (input: lowercase text)
-				Set<String> C6amatches = C6a.ComputeC6a(text);
+				Set<String> C6amatches = C6.ComputeC6a(text);
 				addResultForCriterie(object, "C6a", C6amatches);
 				//Calc C6b         'typ. danish words in htm (input: lowercase text)
-				Set<String> C6bmatches = C6b.ComputeC6b(text);
+				Set<String> C6bmatches = C6.ComputeC6b(text);
 				addResultForCriterie(object, "C6b", C6bmatches);
 					
 				// Calc C6c         'typ. words in url (input: lowercase url)
-				Set<String> C6cmatches = C6c.ComputeC6c(urlLower);
+				Set<String> C6cmatches = C6.ComputeC6c(urlLower);
 				addResultForCriterie(object, "C6c", C6cmatches);
 				// Calc C6d			'frequent danish words: Words.getFrequentDanishWordsNov()
 				// Input lowercase text tokenized
-				Set<String> C6dmatches = C6d_from_a_Nov.computeC6dV5(TextUtils.copyTokens(tokens));
-				addResultForCriterie(object, "C6d", C6dmatches);
-				
+				Set<String> C6dmatches = C6.computeC6dV5(TextUtils.copyTokens(tokens));
+				addResultForCriterie(object, "C6d", C6dmatches);		
 				
 				//Calc C7a         'towns in htm (input: lowercase tezt)
 				Set<String> C7amatches = null;
 				if (useStandardC7ATest) {
-					C7amatches = C7a.computeC7a(text);
+					C7amatches = C7.computeC7a(text);
 				} else {
-					C7amatches = C7a.computeC7aOnCasedTokens(TextUtils.copyTokens(tokensUncased), cityFile, errorSb);
+					C7amatches = C7.computeC7aOnCasedTokens(TextUtils.copyTokens(tokensUncased), cityFile, errorSb);
 				}
 				
 				addResultForCriterie(object, "C7a", C7amatches);
 				//Calc C7b         'towns in url (input: lowercase url)
-				Set<String> C7bmatches = C7b.computeC7b(urlLower);
+				Set<String> C7bmatches = C7.computeC7b(urlLower);
 				addResultForCriterie(object, "C7b", C7bmatches);
 				//Calc C7c         'town suffixes in htm (input: lowercase text)
-				Set<String> C7cmatches = C7c.computeC7c(text);
+				Set<String> C7cmatches = C7.computeC7c(text);
 				addResultForCriterie(object, "C7c", C7cmatches);
 				//Calc C7d         'town suffixes in url (input: lowercase url)
-				Set<String> C7dmatches = C7d.computeC7d(urlLower);
+				Set<String> C7dmatches = C7.computeC7d(urlLower);
 				addResultForCriterie(object, "C7d", C7dmatches);
 				//Calc C7e         '(København/Danmark) translated to foreign languages in htm 
-				Set<String> C7ematches = C7e.computeC7e(text);
+				Set<String> C7ematches = C7.computeC7e(text);
 				addResultForCriterie(object, "C7e", C7ematches);
 				//Calc C7f         '(København/Danmark) translated to foreign languages in url (input: lowercase url)
-				Set<String> C7fmatches = C7f.computeC7f(urlLower);
+				Set<String> C7fmatches = C7.computeC7f(urlLower);
 				addResultForCriterie(object, "C7f", C7fmatches);
 				//Calc C7g 			'danish city names (input: al text, tokenized)
-				Set<String> C7gmatches = C7g_from_a_Nov.computeC7gV5(TextUtils.copyTokens(tokens));
+				Set<String> C7gmatches = C7.computeC7gV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C7g", C7gmatches);
 				//Calc C7h			'(København/Danmark) translated to foreign languages in htm (input: text, tokemized) 
-				Set<String> C7hmatches = C7h_from_e_Nov.computeC7hV5(TextUtils.copyTokens(tokens));
+				Set<String> C7hmatches = C7.computeC7hV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C7h", C7hmatches);
 				
 				//Calc C8a         'unions in htm (input: al text lowercased)
-				Set<String> C8amatches = C8a.computeC8a(text);
+				Set<String> C8amatches = C8.computeC8a(text);
 				addResultForCriterie(object, "C8a", C8amatches);
 				//Calc C8b         'unions in url (input: lowercase url) (WRONGLY computed earlier on text instead of urlLower) 
-				Set<String> C8bmatches = C8b.computeC8b(urlLower);
+				Set<String> C8bmatches = C8.computeC8b(urlLower);
 				addResultForCriterie(object, "C8b", C8bmatches);
 				//Calc C8c         'unions in htm (input: al text lowercased, tokenized)
-				Set<String> C8cmatches = C8c_from_a_Nov.computeC8cV5(TextUtils.copyTokens(tokens));
+				Set<String> C8cmatches = C8.computeC8cV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C8c", C8cmatches);
 				
 				
 				//Calc C9a         'company type Aps etc.
-				Set<String> C9amatches = C9a.computeC9a(text);
+				Set<String> C9amatches = C9.computeC9a(text);
 				addResultForCriterie(object, "C9a", C9amatches);
 				//Calc C9b         'company names in htm
-				Set<String> C9bmatches = C9b.computeC9b(text);
+				Set<String> C9bmatches = C9.computeC9b(text);
 				addResultForCriterie(object, "C9b", C9bmatches);
 				//Calc C9c         'company names in url
-				Set<String> C9cmatches = C9c.computeC9c(urlLower);
+				Set<String> C9cmatches = C9.computeC9c(urlLower);
 				addResultForCriterie(object, "C9c", C9cmatches);
 				//Calc C9d         'company cvr
-				Set<String> C9dmatches = C9d.computeC9d(text);
+				Set<String> C9dmatches = C9.computeC9d(text);
 				addResultForCriterie(object, "C9d", C9dmatches);
 				//Calc C9e 		   'search for lowercase company-names (input: lowercased text tokenized,  Output: any matches) 
-				Set<String> C9ematches = C9e_from_b_Nov.computeC9eV5(TextUtils.copyTokens(tokens));
+				Set<String> C9ematches = C9.computeC9eV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C9e", C9ematches);
 				//Calc C9f          'search for lowercased cvr-number, input: al text lowercased, output: y/n
-				boolean C9f = C9f_from_d_Nov.computeC9f(text);
+				boolean C9f = C9.computeC9f(text);
 				//result.append(", C9f: " + (C9f? "y": "n"));
 				object.put("C9f", (C9f? "y": "n"));
 				
 				//Calc C10a         'surname patterns (input: lowercased text, tokenized, output: )
-				Set<String> C10amatches = C10a.computeC10a(text);
+				Set<String> C10amatches = C10.computeC10a(text);
 				addResultForCriterie(object, "C10a", C10amatches);
 				//Calc C10b         'freq. person names (input: lowercased text, output: any found names in the text)
-				Set<String> C10bmatches = C10b.computeC10b(text);
+				Set<String> C10bmatches = C10.computeC10b(text);
 				addResultForCriterie(object, "C10b", C10bmatches);
 				//Calc C10c		
-				Set<String> C10cmatches = C10c_from_b_Nov.computeC10cV5(TextUtils.copyTokens(tokens));
+				Set<String> C10cmatches = C10.computeC10cV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C10c", C10cmatches);     
 
 				// Calc C15a      'The URL belongs to a TLD often used by Danes (The list currently comprises .dk, .no, .se, .de, .eu, .org, .com, .net, .nu, .tv, .info)
@@ -323,10 +322,7 @@ public class CombinedCombo extends EvalFunc<String> {
 		jo.put(criteria, result);
 	}
 
-	public static Set<String> ComputeC3d(String urlLower) {
-		return TextUtils.SearchPattern(
-				urlLower, Words.frequentwordsWithDanishLettersCoded);
-	}
+	
 	
 	private String getCityfilePath(StringBuilder error) {
 		try {

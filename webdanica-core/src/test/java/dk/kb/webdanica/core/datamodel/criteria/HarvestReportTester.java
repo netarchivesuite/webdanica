@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.utils.UnitTestUtils;
 
 public class HarvestReportTester {
@@ -25,18 +25,18 @@ public class HarvestReportTester {
 		File fileNo = UnitTestUtils.getTestResourceFile(pathNo);
 		File fileYes = UnitTestUtils.getTestResourceFile(pathYes);
 		File fileNull = null;
-		List<String> partfiles = HarvestReport.findPartFiles(fileYes);
+		List<String> partfiles = HarvestLog.findPartFiles(fileYes);
 		if (partfiles == null || partfiles.isEmpty()) {
 			fail("Should have a partfile in the resultdir " +  pathYes);
 		}
-		partfiles = HarvestReport.findPartFiles(fileNo);
+		partfiles = HarvestLog.findPartFiles(fileNo);
 		if (partfiles == null) {
 			fail("Should not return null partfiles from the resultdir " +  pathNo);
 		}
 		if (!partfiles.isEmpty()) {
 			fail("Should have returned en empty list of partfiles from the resultdir " +  pathNo);
 		}
-		partfiles = HarvestReport.findPartFiles(fileNull);
+		partfiles = HarvestLog.findPartFiles(fileNull);
 		
 		if (partfiles != null) {
 			fail("Should have returned a null list of partfiles from the resultdir " +  fileNull);

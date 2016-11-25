@@ -1,4 +1,4 @@
-package dk.kb.webdanica.core.interfaces.harvesting;
+package dk.kb.webdanica.core.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +29,7 @@ import dk.netarkivet.harvester.datamodel.DomainConfiguration;
 import dk.netarkivet.harvester.datamodel.DomainDAO;
 import dk.netarkivet.harvester.datamodel.SeedList;
 
-public class Import {
+public class ImportIntoNetarchiveSuite {
 	 // TODO constant in webdanica_settings
 	public static final String WEBDANICA_SEEDS_NAME = "webdanicaseeds";
 	
@@ -126,7 +126,7 @@ public class Import {
 	
 	public static void importSeeds(List<String> seeds) {
 		// separate the seeds to different domains sets
-		Map<String, Set<String>> domainMap = Import.splitUpSeed(seeds);
+		Map<String, Set<String>> domainMap = ImportIntoNetarchiveSuite.splitUpSeed(seeds);
 		DomainDAO dao = DomainDAO.getInstance();
 		for (String domain: domainMap.keySet()) {
 			List<String> newseeds = new ArrayList<String>(domainMap.get(domain));
@@ -134,14 +134,14 @@ public class Import {
 				// Domain exists and has default config
 				String config = dao.getDefaultDomainConfigurationName(domain);
 				Domain d = dao.readKnown(domain);
-				boolean hasWebdanicaSeeds = d.hasSeedList(Import.WEBDANICA_SEEDS_NAME);
-				SeedList sl = new SeedList(Import.WEBDANICA_SEEDS_NAME, newseeds);
+				boolean hasWebdanicaSeeds = d.hasSeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME);
+				SeedList sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, newseeds);
 				if (hasWebdanicaSeeds) {
-					SeedList slOld = d.getSeedList(Import.WEBDANICA_SEEDS_NAME);
+					SeedList slOld = d.getSeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME);
 					Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
 					combinedSeeds.addAll(newseeds);
 					List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
-					sl = new SeedList(Import.WEBDANICA_SEEDS_NAME, combinedSeedsWithoutDuplicates);
+					sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, combinedSeedsWithoutDuplicates);
 					String existingComments = sl.getComments();
 					String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
 					sl.setComments(existingComments + addedComment);
@@ -155,7 +155,7 @@ public class Import {
 				// Is seedlist s1 already part of configuration?
 				boolean existsWebdanicaSeedlistAsPartOfConfig = false;
 				for (SeedList s: IteratorUtils.toList(dc.getSeedLists())) {
-					if (s.getName().equalsIgnoreCase(Import.WEBDANICA_SEEDS_NAME)) {
+					if (s.getName().equalsIgnoreCase(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME)) {
 						existsWebdanicaSeedlistAsPartOfConfig = true;
 					}
 				}
@@ -194,7 +194,7 @@ public class Import {
 				 }
 				 d.updateSeedList(newDefaultSeedList);
 				 				 
-				 SeedList sl = new SeedList(Import.WEBDANICA_SEEDS_NAME, newseeds);
+				 SeedList sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, newseeds);
 				 d.addSeedList(sl);
 				 dao.create(d);
 								 

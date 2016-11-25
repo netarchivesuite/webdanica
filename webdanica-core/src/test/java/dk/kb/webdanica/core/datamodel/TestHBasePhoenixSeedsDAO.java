@@ -34,10 +34,10 @@ public class TestHBasePhoenixSeedsDAO {
 
 			seed.setStatus(Status.NEW);
 			seed.setStatusReason("Just added.");
-			dao.updateState(seed);
+			dao.updateSeed(seed);
 
 			seed.setRedirectedUrl("http://www.karburator.dk/");
-			dao.updateRedirectedUrl(seed);
+			dao.updateSeed(seed);
 
 			long cnt = dao.getSeedsCount(Status.NEW);
 			// debug

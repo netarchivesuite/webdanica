@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.webdanica.core.tools.ImportIntoNetarchiveSuite;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.netarkivet.harvester.HarvesterSettings;
 import dk.netarkivet.harvester.datamodel.DBSpecifics;
@@ -64,10 +65,10 @@ public class ImportTester {
 			seeds.add(argument);
 		} else {
 			System.out.println("Trying to import seeds from file '" + argumentAsFile.getAbsolutePath() + "' into netarkivet.");
-			seeds.addAll(Import.getSeedsFromFile(argumentAsFile));
+			seeds.addAll(ImportIntoNetarchiveSuite.getSeedsFromFile(argumentAsFile));
 			System.out.println("Read " + seeds.size() + " seeds from file.");
 		}
-		Import.importSeeds(seeds);	
+		ImportIntoNetarchiveSuite.importSeeds(seeds);	
 	}
 
 

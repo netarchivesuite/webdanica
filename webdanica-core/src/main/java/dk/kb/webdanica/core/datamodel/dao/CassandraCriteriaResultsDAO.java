@@ -143,7 +143,7 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 	public boolean insertRecord(SingleCriteriaResult singleAnalysis) {
 		SingleCriteriaResult s = singleAnalysis;
 		if (s.seedurl.isEmpty() || s.harvestName.isEmpty()) {	
-			System.err.println("One of seedurl, harvestName is empty: " + s.getValuesInString(",", ":"));
+			System.err.println("One of seedurl, harvestName is empty: " + s.getValuesInString(",", ":", SingleCriteriaResult.StringCriteria));
 			return false;
 		}
 		init();	

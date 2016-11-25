@@ -133,6 +133,10 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 			return;
 		}
        
+		if (maxHarvestsAtaTime < 1) {
+			configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", "Maxharvests is less than 1: " +  maxHarvestsAtaTime);
+		}
+		
        	if (existsLogdirAndIsWritable(harvestLogDir)) {
        		harvestingEnabled = true;
        		logger.info("All requirements fullfilled for harvesting. So harvestingEnabled is set to true");
@@ -200,10 +204,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 		try {
 		    seedsReadyForHarvesting = seeddao.getSeeds(Status.READY_FOR_HARVESTING, maxHarvestsAtaTime); 
 		} catch (Throwable e) {
-		    logger.log(Level.WARNING, 
-		            "Exception thrown during method HarvestWorkThread.process_run:" + e);
+			String errMsg = "Exception thrown during method HarvestWorkThread.process_run:" + e;
+		    logger.log(Level.WARNING, errMsg);
 		    harvestingInProgress.set(Boolean.FALSE);
-		    // TODO send a mail??
+		    configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failed - unable to receive seeds with status '" 
+		    		+ Status.READY_FOR_HARVESTING + "'", errMsg);
 		    return;
 		}
 		
@@ -243,9 +248,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 			s.setStatus(Status.HARVESTING_IN_PROGRESS);
 			String eventHarvestName = null;
 			try {
-	            seeddao.updateState(s);
+	            seeddao.updateSeed(s);
 	            eventHarvestName = harvestPrefix + System.currentTimeMillis();
+	            // isolate in a separate thread, so we can stop the process, if it takes too long
 	            SingleSeedHarvest h = new SingleSeedHarvest(s.getUrl(), eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects);
+	            
 	            harvestSuccess = h.finishHarvest(false);
 	            // save harvest in harvest-database
 	            boolean inserted = harvestdao.insertHarvest(h);
@@ -268,7 +275,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             		s.setStatusReason("Harvesting finished successfully. harvestname is " + eventHarvestName);
             	}
             	try {
-	                seeddao.updateState(s);
+	                seeddao.updateSeed(s);
                 } catch (Exception e) {
                 	String errMsg = "Unable to save state of seed: " + e.toString();
                 	logger.log(Level.SEVERE, errMsg, e);
@@ -316,6 +323,9 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         } 
     }
 
+	
+	
+	
 	@Override
     protected void process_cleanup() {
 	    // TODO Auto-generated method stub

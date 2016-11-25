@@ -6,7 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 
 public class FindHarvestWarcs {
 
@@ -39,9 +40,9 @@ public class FindHarvestWarcs {
 	}
 	
 	public static Set<String> getFilenames(File harvestLog) throws IOException {
-		List<HarvestReport> results = HarvestReport.readHarvestLog(harvestLog);
+		List<SingleSeedHarvest> results = HarvestLog.readHarvestLog(harvestLog);
 		Set<String> filenames = new HashSet<String>();
-		for (HarvestReport h: results) {
+		for (SingleSeedHarvest h: results) {
 			if (h.getHeritrixWarcs().size() > 0) {
 				filenames.addAll(h.getHeritrixWarcs());
 			} else {

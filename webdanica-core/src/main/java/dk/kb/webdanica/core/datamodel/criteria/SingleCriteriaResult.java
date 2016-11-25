@@ -31,6 +31,22 @@ public class SingleCriteriaResult {
 		"C17a",
 		"C18a",
 	};
+	
+	public static final String[] StringCriteriaVisibleInWebapp = new String[] {
+		"C1a",
+		"C2a", "C2b",
+		"C3a", "C3b", "C3c", "C3d", "C3e", "C3f", "C3g",
+		"C4a", "C4b",
+		"C5a", "C5b",
+		"C6a", "C6b", "C6c", "C6d",
+		"C7a", "C7b", "C7c", "C7d", "C7e", "C7f", "C7g", "C7h",
+		"C8a", "C8b", "C8c",
+		"C9a", "C9b", "C9c", "C9d", "C9e", "C9f",
+		"C10a", "C10b", "C10c",
+		"C15a", "C15b",
+		"C17a"
+	};
+	
 
 	private static final String CRITERIA_CEXT1 = "Cext1";
 
@@ -185,16 +201,17 @@ public class SingleCriteriaResult {
      *  
      * @param row_delim
      * @param keyval_delim
+     * @param list of criteria to show
      * @return
      */
-    public String getValuesInString(String row_delim, String keyval_delim) {
+    public String getValuesInString(String row_delim, String keyval_delim, String[] criteriaList) {
     	String s = "";
     	s = s + "url" + keyval_delim + this.url;
     	s = s + row_delim + "date" + keyval_delim + this.Cext3; 
     	s = s + row_delim + "extSize" + keyval_delim + this.Cext1; //3
     	s = s + row_delim + "extDblChar" + keyval_delim + this.Cext2; //4
     	
-    	for (String c: StringCriteria) {
+    	for (String c: criteriaList) {
     		s = s + row_delim + c + keyval_delim + (this.C.get(c) != null?this.C.get(c).replace(row_delim, ","):"");
     	}
 
@@ -204,7 +221,7 @@ public class SingleCriteriaResult {
     	return s;
     }
     
-    public List<String> getValuesAsStringList(String row_delim, String keyval_delim) {
+    public List<String> getValuesAsStringList(String row_delim, String keyval_delim, String[] criteriaList) {
     	List<String> list = new ArrayList<String>();
     	list.add("url" + keyval_delim + this.url);
     	if (Cext3 != null) {
@@ -215,7 +232,7 @@ public class SingleCriteriaResult {
     	list.add("Cext1/extsize" + keyval_delim + this.Cext1); //3
     	list.add("Cext2/extDblChar" + keyval_delim + this.Cext2); //4
     	
-    	for (String c: StringCriteria) {
+    	for (String c: criteriaList) {
     		list.add(c + keyval_delim + (this.C.get(c) != null?this.C.get(c).replace(row_delim, ","):""));
     	}
 

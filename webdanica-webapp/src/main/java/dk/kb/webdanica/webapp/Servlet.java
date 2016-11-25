@@ -199,6 +199,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (resource == null && pathInfo.startsWith(CriteriaResultsResource.CRITERIA_RESULTS_PATH)) {
                 	resource = pathMap.get(CriteriaResultsResource.CRITERIA_RESULTS_PATH, numerics);
                 }
+                if (resource == null && pathInfo.startsWith(SeedsResource.SEED_PATH)) {
+                	resource = pathMap.get(SeedsResource.SEED_PATH, numerics);
+                }
                 
                 if (resource != null) {
                 	logger.info("found resource in pathMap: " + resource);

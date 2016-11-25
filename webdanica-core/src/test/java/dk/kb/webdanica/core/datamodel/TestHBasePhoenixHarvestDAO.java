@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
 
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixConnectionManager;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixHarvestDAO;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
 @RunWith(JUnit4.class)
@@ -34,8 +34,8 @@ public class TestHBasePhoenixHarvestDAO {
 			files.add("2");
 			files.add("3");
 
-			HarvestReport report = new HarvestReport("harvestname", "seedurl", true, files, "error", JobStatus.STARTED, new Date().getTime());
-			List<HarvestReport> harvestList;
+			SingleSeedHarvest report = new SingleSeedHarvest("harvestname", "seedurl", true, files, "error", JobStatus.STARTED, new Date().getTime(), null); // FIXME
+			List<SingleSeedHarvest> harvestList;
 
 			HBasePhoenixHarvestDAO dao = new HBasePhoenixHarvestDAO();
 			dao.insertHarvest(report);

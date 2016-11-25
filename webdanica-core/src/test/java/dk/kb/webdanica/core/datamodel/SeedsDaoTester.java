@@ -28,7 +28,7 @@ public class SeedsDaoTester {
 	    		s.setStatus(Status.READY_FOR_HARVESTING);
 	    		s.setStatusReason("");
 	    	}
-	    	dao.updateState(s);
+	    	dao.updateSeed(s);
 	    }
 		seeds = dao.getSeeds(Status.NEW,100000);
 		System.out.println("Found '" +  seeds.size() + "' size with status NEW after filtering out urls with ignored suffixes");

@@ -21,7 +21,7 @@ import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.IngestLogDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestReport;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.UrlUtils;
@@ -126,7 +126,7 @@ public static void main(String[] args) throws Exception {
  	      SeedsDAO dao = daoFactory.getSeedsDAO();
  	      dao.insertSeed(s);
  	      s.setStatus(Status.ANALYSIS_COMPLETED);
- 	      dao.updateState(s);
+ 	      dao.updateSeed(s);
  	      // TODO should be able to verify that it has changed
  	      long millisEnded = System.currentTimeMillis(); 
  	     System.out.println("Finished Step3 at " + new Date());
@@ -179,7 +179,7 @@ public static void main(String[] args) throws Exception {
                 long harvestedTime = System.currentTimeMillis();
                 String harvestName = harvestNameTemplate + filecount + "/" + count;
                 String seedurl = seedurlTemplate + filecount + "/" + count;
-                HarvestReport hr = new HarvestReport(harvestName, seedurl, successful, files, error, finalState, harvestedTime);
+                SingleSeedHarvest hr = new SingleSeedHarvest(harvestName, seedurl, successful, files, error, finalState, harvestedTime, null); // FIXME
                 try {
                     hdao.insertHarvest(hr);
                     harvestsInserted++;
@@ -215,12 +215,12 @@ public static void main(String[] args) throws Exception {
           List<String> harvestNames = hdao.getAllNames();
           System.out.println("Retrieved " + hdao.getCount() + " harvestnames (limit of 100K)");
           String seedurlName = seedurlTemplate + "1/0";
-          List<HarvestReport> harvestsFound = hdao.getAllWithSeedurl(seedurlName);
+          List<SingleSeedHarvest> harvestsFound = hdao.getAllWithSeedurl(seedurlName);
           System.out.println("Retrieved " + harvestsFound.size() + " harvests for seed " + seedurlName);
           if (!harvestNames.isEmpty()) {
               String harvestName = harvestNames.get(0);
-              HarvestReport hr = hdao.getHarvest(harvestName);
-              System.out.println("Retrieved harvest for seed: " + hr.seed);
+              SingleSeedHarvest hr = hdao.getHarvest(harvestName);
+              System.out.println("Retrieved harvest for seed: " + hr.getSeed());
           }
           
           long millisEnded = System.currentTimeMillis(); 

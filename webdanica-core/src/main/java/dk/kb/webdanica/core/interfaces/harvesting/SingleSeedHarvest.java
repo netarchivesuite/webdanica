@@ -2,6 +2,7 @@ package dk.kb.webdanica.core.interfaces.harvesting;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,19 +16,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import dk.kb.webdanica.core.batch.WARCExtractUrlsJob;
+import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
-import dk.kb.webdanica.core.utils.SettingsUtilities;
+import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
 import dk.netarkivet.common.distribute.arcrepository.BitarchiveRecord;
+import dk.netarkivet.common.distribute.arcrepository.Replica;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
+import dk.netarkivet.common.utils.Settings;
 import dk.netarkivet.common.utils.StreamUtils;
 import dk.netarkivet.common.utils.TimeUtils;
+import dk.netarkivet.common.utils.batch.BatchLocalFiles;
 import dk.netarkivet.common.utils.cdx.CDXRecord;
+import dk.netarkivet.harvester.datamodel.DomainConfiguration;
 import dk.netarkivet.harvester.datamodel.HarvestDefinition;
 import dk.netarkivet.harvester.datamodel.HarvestDefinitionDAO;
 import dk.netarkivet.harvester.datamodel.Job;
@@ -37,7 +45,6 @@ import dk.netarkivet.harvester.datamodel.JobStatusInfo;
 import dk.netarkivet.harvester.datamodel.PartialHarvest;
 import dk.netarkivet.harvester.datamodel.Schedule;
 import dk.netarkivet.harvester.datamodel.ScheduleDAO;
-import dk.netarkivet.harvester.datamodel.DomainConfiguration;
 import dk.netarkivet.harvester.datamodel.TemplateDAO;
 import dk.netarkivet.harvester.webinterface.HarvestStatus;
 import dk.netarkivet.harvester.webinterface.HarvestStatusQuery;
@@ -56,39 +63,21 @@ import dk.netarkivet.viewerproxy.webinterface.Reporting;
  */
 public class SingleSeedHarvest {
 	
-	final String seed; // The single seed being harvested;
-	private String evName; // The name of the eventharvest
-	private JobStatus finishedState;
-	private List<String> files;
+	String seed; // The single seed being harvested;
+	String harvestName; // The name of the eventharvest
+	JobStatus finishedState;
+	List<String> files;
 	private JobStatusInfo statusInfo;
-	private Map<String, String> reportMap;
-	private String errMsg;
-	private boolean successful;
+	private NasReports reports;
+	String errMsg;
+	boolean successful;
 	private Throwable exception;
 	private long maxBytes;
 	private int maxObjects;
-	private long harvestedTime;
+	long harvestedTime;
 	private Long hid;
-	
-	/**
-	 * Currently harvests the site http://www.familien-carlsen.dk using the schedule 'Once'
-	 * and Heritrix template 'webdanica_order'
-	 * @param args currently no args read
-	 * @throws Throwable When the property "dk.netarkivet.settings.file" either is not defined or points to a non existing file
-	 */
-	public static void main (String[] args) throws Throwable {
-		// Verify that netarchiveSuite settings file is defined and exists
-		SettingsUtilities.testPropertyFile("dk.netarkivet.settings.file", true);
-		long maxBytes = 10000L;
-		int maxOjects = 10000;
-		SingleSeedHarvest ph = new SingleSeedHarvest("http://www.familien-carlsen.dk", 
-				"test1" + System.currentTimeMillis(), "Once", "webdanica_order", maxBytes, maxOjects);
-		boolean writeToStdOut = true; 
-		boolean success = ph.finishHarvest(writeToStdOut);
-		System.out.println("Harvest was successful: " + success);
-		System.out.println("final state of harvest: " + ph.getFinalState());
-		System.out.println("files harvested: " + StringUtils.join(ph.getFiles(), ","));
-	}	
+	private List<SingleCriteriaResult> critResults;
+	private Set<String> fetchedUrls;
 	
 	/**
 	 * @param seed
@@ -100,7 +89,7 @@ public class SingleSeedHarvest {
 	 */
 	public SingleSeedHarvest(String seed, String eventHarvestName, String scheduleName, String templateName, long maxBytes, int maxObjects) {
 		this.seed = seed;
-		this.evName = eventHarvestName;
+		this.harvestName = eventHarvestName;
 		List<DomainConfiguration> noDcs = new ArrayList<DomainConfiguration>();
 		this.maxBytes = maxBytes;
 		this.maxObjects = maxObjects;
@@ -136,7 +125,27 @@ public class SingleSeedHarvest {
 	    this.seed = seed;
 	    this.errMsg = error;
 	    this.exception = e;
-	    this.evName = harvestName;
+	    this.harvestName = harvestName;
+    }
+	
+	public SingleSeedHarvest(String harvestname, String seedurl, boolean successful, List<String> files, String error, 
+			JobStatus finalState, long harvestedTime, NasReports reports) {
+		this.harvestName = harvestname;
+		this.seed = seedurl;
+		this.successful = successful;
+		if (files != null) {
+		    this.files = files;
+		} else {
+		    this.files = new ArrayList<String>();
+		}
+		this.errMsg = error;
+		this.finishedState = finalState;
+		this.harvestedTime = harvestedTime;
+		this.reports = reports;
+    }
+
+	public SingleSeedHarvest() {
+	   
     }
 
 	/**
@@ -161,7 +170,7 @@ public class SingleSeedHarvest {
 	}
 	
 	public String getHarvestName() {  // TODO This should never be null
-		return this.evName;
+		return this.harvestName;
 	}
 	
 	public JobStatus getFinalState() {
@@ -172,22 +181,23 @@ public class SingleSeedHarvest {
 		return this.statusInfo;
 	}
 
-	public Map<String, String> getReportMap() {
-	    return reportMap;
+	public NasReports getReports() {
+	    return reports;
     }
 	
 	/**
 	 * Wait until harvest is finished or failed.
 	 * @return true, if successful otherwise false;
+	 * @throws Exception 
 	 */
-	public boolean finishHarvest(boolean writeToSystemOut) {
+	public boolean finishHarvest(boolean writeToSystemOut) throws Exception {
 		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
 		finishedStates.add(JobStatus.DONE);
 		finishedStates.add(JobStatus.FAILED); 
 
 		while (getHarvestStatus() == null){
 			if (writeToSystemOut) 
-				System.out.println("Waiting for job for eventharvest '" + evName + "' to be scheduled .."); 
+				System.out.println("Waiting for job for eventharvest '" + harvestName + "' to be scheduled .."); 
 			try {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
@@ -238,31 +248,61 @@ public class SingleSeedHarvest {
 		this.files = lines;
 		
 		//get the reports associated with the harvest as well, extracted from the metadatawarc.file. 
-		this.reportMap = getReports(theJob.getJobID()); //FIXME add now
+		this.reports = getReports(theJob.getJobID());
+		// get the urls harvested by the job
+		this.fetchedUrls = getHarvestedUrls(getHeritrixWarcs());
 		this.successful = status.equals(JobStatus.DONE);
 		this.harvestedTime = theJob.getActualStop().getTime();
 		return this.successful;
     }
 
-	public static Map<String, String> getReports(Long jobID) {
+	public static NasReports getReports(Long jobID) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
-	    	System.out.println("Fetching the record: " + key);
+	    	//System.out.println("Fetching the record: " + key);
 	        BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
 	        		record.getOffset());
 	        String data = StreamUtils.getInputStreamAsString(baRecord.getData());
 	        reportMap.put(key, data);
 	    }
-	    return reportMap;
+	    return new NasReports(reportMap);
+    }
+	
+	public static Set<String> getHarvestedUrls(List<String> warcfiles) throws Exception {
+		Set<String> urls = new TreeSet<String>();
+		for (String warcfilename: warcfiles){
+			urls.addAll(getUrlsFromFile(warcfilename));
+		}
+		return urls;
+	}
+	
+	
+	static Set<String> getUrlsFromFile(String warcfilename) throws Exception{
+		File toFile = new File(FileUtils.getTempDir(), warcfilename);
+		Set<String> urls = new TreeSet<String>();
+		toFile.createNewFile();
+		if (!toFile.isFile()) {
+			throw new IOException("Unable not create temporary file '" + toFile.getAbsolutePath() + "'");
+		}
+		String replicaId = Settings.get(CommonSettings.USE_REPLICA_ID);
+		ArcRepositoryClientFactory.getViewerInstance().getFile(warcfilename,Replica.getReplicaFromId(replicaId), toFile);
+		
+        ByteArrayOutputStream cdxBaos = new ByteArrayOutputStream();
+        BatchLocalFiles batchRunner = new BatchLocalFiles(new File[] {toFile});
+        batchRunner.run(new WARCExtractUrlsJob(), cdxBaos);
+        for (String cdxLine : cdxBaos.toString().split("\n")) {
+            urls.add(cdxLine);
+        }
+        return urls;
     }
 
 	public List<String> getFiles() {
 		return this.files;
 	}
 	
-	public boolean successful() {
+	public boolean isSuccessful() {
 		return this.successful;
 	}
 	
@@ -288,7 +328,7 @@ public class SingleSeedHarvest {
 	
 	
 	public static SingleSeedHarvest doSingleHarvest(String seed, String eventHarvestName, String scheduleName,
-            String templateName, long maxBytes, int maxObjects, boolean writeToStdout) {
+            String templateName, long maxBytes, int maxObjects, boolean writeToStdout) throws Exception {
 	    SingleSeedHarvest ssh = new SingleSeedHarvest(seed, eventHarvestName, scheduleName, templateName, maxBytes, maxObjects);
 	    boolean success = ssh.finishHarvest(writeToStdout);
 	    if (writeToStdout)System.out.println("Harvest of seed '" + seed + "': " + (success? "succeeded":"failed"));
@@ -349,21 +389,66 @@ public class SingleSeedHarvest {
     		if (onlySuccessFul && !s.successful) {
     			continue;
     		}
-    		harvestLogWriter.println(HarvestReport.seedPattern + s.getSeed());
-    		harvestLogWriter.println(HarvestReport.harvestnamePattern + s.getHarvestName());
-    		harvestLogWriter.println(HarvestReport.successfulPattern + s.successful());
-    		harvestLogWriter.println(HarvestReport.endstatePattern + s.getFinalState());
-    		harvestLogWriter.println(HarvestReport.harvestedTimePattern + s.getHarvestedTime());
-    		harvestLogWriter.println(HarvestReport.filesPattern + StringUtils.join(s.getFiles(), ","));
+    		harvestLogWriter.println(HarvestLog.seedPattern + s.getSeed());
+    		harvestLogWriter.println(HarvestLog.harvestnamePattern + s.getHarvestName());
+    		harvestLogWriter.println(HarvestLog.successfulPattern + s.isSuccessful());
+    		harvestLogWriter.println(HarvestLog.endstatePattern + s.getFinalState());
+    		harvestLogWriter.println(HarvestLog.harvestedTimePattern + s.getHarvestedTime());
+    		harvestLogWriter.println(HarvestLog.filesPattern + StringUtils.join(s.getFiles(), ","));
     		String errString = (s.getErrMsg() != null?s.getErrMsg():"");
     		String excpString = (s.getException() != null)? "" + s.getException():""; 
-    		harvestLogWriter.println(HarvestReport.errorPattern + errString + " " + excpString);
+    		harvestLogWriter.println(HarvestLog.errorPattern + errString + " " + excpString);
     		harvestLogWriter.println(StringUtils.repeat("#", 80));
     		harvestsWritten++;
     	}  	
     	harvestLogWriter.close();
 	    return harvestsWritten;
     }
+
+	public void setCriteriaResults(List<SingleCriteriaResult> results) {
+	    this.critResults = results;
+    }
+
+	public List<SingleCriteriaResult> getCritresults() {
+	    return this.critResults;
+    }
+
+	public boolean hasErrors() {
+		if (this.errMsg == null || this.errMsg.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	    
+    }
+
+	public List<String> getHeritrixWarcs() {
+		List<String> allFiles = new ArrayList<String>(); 
+		for (String f: this.files) {
+			if (!f.contains("metadata")) {
+				allFiles.add(f);
+			}
+		}
+		return allFiles;
+	}
 	
-	
+	public Set<String> getMetadataWarcs() {
+		Set<String> allFiles = new HashSet<String>(); 
+		for (String f: this.files) {
+			if (f.contains("metadata")) {
+				allFiles.add(f);
+			}
+		}
+		return allFiles;
+	}
+
+	public void setErrMsg(String error) {
+	    this.errMsg = error;
+	    
+    }
+
+	public Set<String> getFetchedUrls() {
+	    return this.fetchedUrls;
+    }
+
 }
