@@ -469,7 +469,12 @@ public class CombinedCombo extends EvalFunc<String> {
 				if (useStandardC8BTest || foreningerOnewordFileTokenSet == null) {
 					C8bmatches = C8.computeC8b(urlLower);
 				} else {
-					C8bmatches = C8.computeC8bAlt(urlLower, TextUtils.copyTokens(foreningerOnewordFileTokenSet));
+					try {
+						C8bmatches = C8.computeC8bAlt(urlLower, TextUtils.copyTokens(foreningerOnewordFileTokenSet));
+					} catch (Throwable e) {
+						errorSb.append("new C8b calculation failed (reverting to standard): " + e);
+						C8bmatches = C8.computeC8b(urlLower);
+					}
 				}
 				//Set<String> C8bmatches = C8.computeC8b(urlLower);
 				addResultForCriterie(object, "C8b", C8bmatches);
@@ -479,7 +484,12 @@ public class CombinedCombo extends EvalFunc<String> {
 				if (useStandardC8CTest || foreningerOnewordFileTokenSet == null) {
 					C8cmatches = C8.computeC8cV5(TextUtils.copyTokens(tokens));
 				} else {
-					C8.computeC8cAlt(TextUtils.copyTokens(tokens), foreningerOnewordFileTokenSet);
+					try {
+						C8.computeC8cAlt(TextUtils.copyTokens(tokens), foreningerOnewordFileTokenSet);
+					} catch (Throwable e) {
+						errorSb.append("new C8c calculation failed (reverting to standard): " + e);
+						C8cmatches =  C8.computeC8cV5(TextUtils.copyTokens(tokens));
+					}
 				}
 				addResultForCriterie(object, "C8c", C8cmatches);
 				
