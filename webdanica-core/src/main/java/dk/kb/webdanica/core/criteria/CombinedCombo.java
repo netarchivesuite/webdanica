@@ -579,6 +579,9 @@ public class CombinedCombo extends EvalFunc<String> {
 
 	@SuppressWarnings("unchecked")
     private void addResultForCriterie(JSONObject jo, String criteria, Set<String> matches) {
+		if (matches == null) {
+			jo.put(criteria, "Null-resultset computed for criteria " +  criteria);
+		}
 		String result = matches.size() + "";
 		if (matches.size() > 0) {
 			result = matches.size() + " " 
