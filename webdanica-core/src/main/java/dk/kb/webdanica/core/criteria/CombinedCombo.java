@@ -250,7 +250,7 @@ public class CombinedCombo extends EvalFunc<String> {
 				useStandardC8BTest = false;
 				useStandardC8CTest = false;
 			} else {
-				errorSb.append("The given foreningerOneWordFile '" + foreningerFilePathAsArg + "' does not exist. Reverting to old test for C8b, C8c");
+				errorSb.append("The given foreningerOneWordFile '" + foreningerOneWordFilePathAsArg + "' does not exist. Reverting to old test for C8b, C8c");
 			}
 		} else {
 			errorSb.append("No argument given for the foreningerOneWordFile (optional argument 10). Reverting to old test for C8b, C8c");
