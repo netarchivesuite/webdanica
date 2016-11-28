@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import dk.kb.webdanica.core.batch.WARCExtractUrlsJob;
+import dk.kb.webdanica.core.datamodel.AnalysisStatus;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
 import dk.netarkivet.common.CommonSettings;
@@ -77,7 +79,9 @@ public class SingleSeedHarvest {
 	long harvestedTime;
 	private Long hid;
 	private List<SingleCriteriaResult> critResults;
-	private Set<String> fetchedUrls;
+	private List<String> fetchedUrls;
+	private AnalysisStatus analysisState;
+	private String analysisStateReason;
 	
 	/**
 	 * @param seed
@@ -126,10 +130,12 @@ public class SingleSeedHarvest {
 	    this.errMsg = error;
 	    this.exception = e;
 	    this.harvestName = harvestName;
+	    this.analysisState = AnalysisStatus.NO_ANALYSIS;
+	    this.analysisStateReason = "No analysis done, as the harvest has failed";
     }
 	
 	public SingleSeedHarvest(String harvestname, String seedurl, boolean successful, List<String> files, String error, 
-			JobStatus finalState, long harvestedTime, NasReports reports) {
+			JobStatus finalState, long harvestedTime, NasReports reports, List<String> fetchedUrls, AnalysisStatus analysisStatus, String analysisReason) {
 		this.harvestName = harvestname;
 		this.seed = seedurl;
 		this.successful = successful;
@@ -142,6 +148,9 @@ public class SingleSeedHarvest {
 		this.finishedState = finalState;
 		this.harvestedTime = harvestedTime;
 		this.reports = reports;
+		this.fetchedUrls = fetchedUrls;
+		this.analysisState = analysisStatus;
+		this.analysisStateReason = analysisReason;
     }
 
 	public SingleSeedHarvest() {
@@ -169,7 +178,7 @@ public class SingleSeedHarvest {
 		return this.seed;
 	}
 	
-	public String getHarvestName() {  // TODO This should never be null
+	public String getHarvestName() {
 		return this.harvestName;
 	}
 	
@@ -184,6 +193,15 @@ public class SingleSeedHarvest {
 	public NasReports getReports() {
 	    return reports;
     }
+	
+	public AnalysisStatus getAnalysisState() {
+		return this.analysisState;
+	}
+	
+	public String getAnalysisStateReason() {
+		return this.analysisStateReason;
+	}
+	
 	
 	/**
 	 * Wait until harvest is finished or failed.
@@ -253,6 +271,13 @@ public class SingleSeedHarvest {
 		this.fetchedUrls = getHarvestedUrls(getHeritrixWarcs());
 		this.successful = status.equals(JobStatus.DONE);
 		this.harvestedTime = theJob.getActualStop().getTime();
+		if (this.successful) {
+			this.analysisState = AnalysisStatus.AWAITING_ANALYSIS;
+			this.analysisStateReason = "Harvest was successful, so analysis can be done";
+		} else {
+			this.analysisState = AnalysisStatus.NO_ANALYSIS;
+			this.analysisStateReason = "Harvest was not successful, so analysis can't be done";
+		}
 		return this.successful;
     }
 
@@ -270,8 +295,8 @@ public class SingleSeedHarvest {
 	    return new NasReports(reportMap);
     }
 	
-	public static Set<String> getHarvestedUrls(List<String> warcfiles) throws Exception {
-		Set<String> urls = new TreeSet<String>();
+	public static List<String> getHarvestedUrls(List<String> warcfiles) throws Exception {
+		List<String> urls = new ArrayList<String>();
 		for (String warcfilename: warcfiles){
 			urls.addAll(getUrlsFromFile(warcfilename));
 		}
@@ -367,7 +392,7 @@ public class SingleSeedHarvest {
 		
 		//harvest each seed in the file
 		for (String seed: seeds) {
-			String eventHarvestName = harvestPrefix + System.currentTimeMillis(); 
+			String eventHarvestName = harvestPrefix + SingleSeedHarvest.getTimestamp();
 			try {
 				SingleSeedHarvest ssh = doSingleHarvest(seed, eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects, writeToStdout);
 				results.add(ssh);
@@ -447,8 +472,13 @@ public class SingleSeedHarvest {
 	    
     }
 
-	public Set<String> getFetchedUrls() {
+	public List<String> getFetchedUrls() {
 	    return this.fetchedUrls;
+    }
+
+	public static String getTimestamp() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-");
+		return sdf.format(new Date()) + System.currentTimeMillis();
     }
 
 }

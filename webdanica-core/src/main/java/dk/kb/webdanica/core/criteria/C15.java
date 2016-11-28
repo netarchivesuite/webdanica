@@ -55,12 +55,7 @@ public class C15 extends EvalFunc<String> {
         return tld;
     }
 
-    public static boolean computeC15a(String hostname) {
-        if (findIfHostBelongsToNeighbouringCountry(hostname) != null) {
-            return true;
-        } else {
-            return false;
-        }
-        
+    public static String computeC15a(String hostname) {
+        return findIfHostBelongsToNeighbouringCountry(hostname);      
     }
 }

@@ -142,7 +142,7 @@ public class HarvestResource implements ResourceAbstract {
         TemplatePlaceHolder backPlace = TemplatePlaceBase.getTemplatePlaceHolder("back");
         TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
         TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
-        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
+        //TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
         
 /*        
         <h4> Name: <placeholder id="name" /></br>  
@@ -152,7 +152,25 @@ public class HarvestResource implements ResourceAbstract {
         Error:<placeholder id="errors" /></br> 
         Successful: <placeholder id="successful" /></br>
         endState:<placeholder id="endState" /></br>
+        analysisStatus: <placeholder id="analysisStatus" /></br>
+		analysisStatusReason: <placeholder id="analysisStatusReason" /></br>
         </h4>
+<h5>Harvested files: </h5>
+    <div class="container-fluid">
+      <div class="row-fluid">
+<placeholder id="harvested_files" />
+      </div><!--/row-->
+<h5>Fetched urls: </h5>
+          <div class="container-fluid">
+      <div class="row-fluid">
+<placeholder id="harvested_urls" />
+      </div><!--/row-->
+<h5>SeedReport: </h5>
+    <div class="container-fluid">
+      <div class="row-fluid">
+<placeholder id="seedReport" />
+        
+        
   */      
         
         TemplatePlaceHolder namePlace = TemplatePlaceBase.getTemplatePlaceHolder("name");
@@ -162,7 +180,9 @@ public class HarvestResource implements ResourceAbstract {
         TemplatePlaceHolder successfullPlace = TemplatePlaceBase.getTemplatePlaceHolder("successful");
         TemplatePlaceHolder endStatePlace = TemplatePlaceBase.getTemplatePlaceHolder("endState");
         TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("errors");
-        
+        TemplatePlaceHolder harvestedFilesPlace = TemplatePlaceBase.getTemplatePlaceHolder("harvested_files");
+        TemplatePlaceHolder harvestedUrlsPlace = TemplatePlaceBase.getTemplatePlaceHolder("harvested_urls");
+        TemplatePlaceHolder seedReportPlace = TemplatePlaceBase.getTemplatePlaceHolder("seedReport");
         List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
         placeHolders.add(titlePlace);
         placeHolders.add(appnamePlace);
@@ -172,7 +192,6 @@ public class HarvestResource implements ResourceAbstract {
         placeHolders.add(backPlace);
         placeHolders.add(headingPlace);
         placeHolders.add(alertPlace);
-        placeHolders.add(contentPlace);
         // add the new placeholders
         placeHolders.add(namePlace);
         placeHolders.add(seedPlace);
@@ -181,6 +200,9 @@ public class HarvestResource implements ResourceAbstract {
         placeHolders.add(successfullPlace);
         placeHolders.add(endStatePlace);
         placeHolders.add(errorPlace);
+        placeHolders.add(harvestedFilesPlace); // replaces the contentPlace
+        placeHolders.add(harvestedUrlsPlace);
+        placeHolders.add(seedReportPlace);
         
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
@@ -263,7 +285,8 @@ public class HarvestResource implements ResourceAbstract {
         	linkToCriteriaresults = "<a href=\"" + environment.getCriteriaResultsPath() + b.getHarvestName() + "/\">" + critCount + "</a>";
         }
         ResourceUtils.insertText(criteriaresultsPlace, "criteria_results",  linkToCriteriaresults, HARVEST_SHOW_TEMPLATE, logger);
-         
+        
+        // printing out the harvested files
         StringBuilder sb = new StringBuilder();
         sb.append("<pre>\r\n");
 
@@ -271,10 +294,40 @@ public class HarvestResource implements ResourceAbstract {
     		sb.append(listElement);
     		sb.append("\r\n");
     	}
+        sb.append("</pre>\r\n");
         
-    	// Currently, all harvested files are written to 'content' placeholder
-    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), HARVEST_SHOW_TEMPLATE, logger); 
-        
+    	ResourceUtils.insertText(harvestedFilesPlace, "harvested_files",  sb.toString(), HARVEST_SHOW_TEMPLATE, logger); 
+    	// handling the fetched_urls
+    	StringBuilder sbFetchedUrls = new StringBuilder();
+    	if (b.getFetchedUrls() != null && !b.getFetchedUrls().isEmpty()) {
+    		sbFetchedUrls.append("<pre>\r\n");
+            for (String listElement: b.getFetchedUrls()) {
+            	sbFetchedUrls.append(listElement);
+            	sbFetchedUrls.append("\r\n");
+        	}
+            sbFetchedUrls.append("</pre>\r\n");
+    	} else {
+    		sbFetchedUrls.append("<pre>\r\n");
+    		sbFetchedUrls.append("None found in database");
+    		sbFetchedUrls.append("</pre>\r\n");
+    	}
+    	
+    	ResourceUtils.insertText(harvestedUrlsPlace, "harvested_urls",  sbFetchedUrls.toString(), HARVEST_SHOW_TEMPLATE, logger);
+    	
+    	// handling the seedReport
+    	StringBuilder sbSeedReport = new StringBuilder();
+    	if (b.getReports() != null && b.getReports().getSeedReport() != null) {
+    		sbSeedReport.append("<pre>\r\n");
+    		sbSeedReport.append(b.getReports().getSeedReport());
+    		sbSeedReport.append("</pre>\r\n");
+    	} else {
+    		sbSeedReport.append("<pre>\r\n");
+    		sbSeedReport.append("No Seedreport found for harvest");
+    		sbSeedReport.append("</pre>\r\n");
+    	}
+    	ResourceUtils.insertText(seedReportPlace, "seedReport",  sbSeedReport.toString(), HARVEST_SHOW_TEMPLATE, logger);
+    	
+    	
         if (alertPlace != null) {
             StringBuilder alertSb = new StringBuilder();
             if (errorStr != null) {

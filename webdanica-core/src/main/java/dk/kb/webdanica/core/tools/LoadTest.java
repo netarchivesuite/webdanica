@@ -179,7 +179,7 @@ public static void main(String[] args) throws Exception {
                 long harvestedTime = System.currentTimeMillis();
                 String harvestName = harvestNameTemplate + filecount + "/" + count;
                 String seedurl = seedurlTemplate + filecount + "/" + count;
-                SingleSeedHarvest hr = new SingleSeedHarvest(harvestName, seedurl, successful, files, error, finalState, harvestedTime, null); // FIXME
+                SingleSeedHarvest hr = new SingleSeedHarvest(harvestName, seedurl, successful, files, error, finalState, harvestedTime, null, null, null,null); // FIXME
                 try {
                     hdao.insertHarvest(hr);
                     harvestsInserted++;

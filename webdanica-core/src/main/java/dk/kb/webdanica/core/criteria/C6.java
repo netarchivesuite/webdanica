@@ -10,7 +10,7 @@ import dk.kb.webdanica.core.utils.TextUtils;
                 new String[] {"dansk","danmark", "forening","/dk/", "/da/"};
        
     	public static Set<String> ComputeC6a(String text) {
-            return TextUtils.findMatches(text, Words.getFrequentDanishWords());
+            return TextUtils.findMatches(text, FrequentWords.getFrequentDanishWords());
             
         }
         
@@ -28,19 +28,19 @@ import dk.kb.webdanica.core.utils.TextUtils;
         
         public static Set<String> ComputeC6d(String text) {
             return TextUtils.SearchWordRegExp(
-                    text, Words.getFrequentDanishWordsNov(), false); 
+                    text, FrequentWords.getFrequentDanishWordsNov(), false); 
         }
 
         public static Set<String> ComputeC6dV2(String text) {
-            return TextUtils.SearchWordPatterns(text, Words.patternsFrequentDanishWordsNov,false); 
+            return TextUtils.SearchWordPatterns(text, FrequentWords.patternsFrequentDanishWordsNov,false); 
         }    
 
         public static Set<String> ComputeC6dV3(String text) {
-            return TextUtils.SearchWordPatterns(text, Words.patternsFrequentDanishWordsNovNoCase,false); 
+            return TextUtils.SearchWordPatterns(text, FrequentWords.patternsFrequentDanishWordsNovNoCase,false); 
         }    
 
         public static Set<String> computeC6dV5(Set<String> tokens) {
-            tokens.retainAll( Words.getFrequentDanishWordsNov());
+            tokens.retainAll( FrequentWords.getFrequentDanishWordsNov());
             return tokens; 
         }    
 }

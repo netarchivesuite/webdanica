@@ -18,7 +18,7 @@ public class C3 {
     // with danish characters, where ø is o/oe
     public static Set<String> ComputeC3b(String text) {
         return TextUtils.SearchPattern(
-            text, Words.frequentwordsWithDanishLettersCoded);
+            text, FrequentWords.frequentwordsWithDanishLettersCoded);
     }
     
     //c3c: look urlencodede danishcaracters in the url
@@ -29,26 +29,26 @@ public class C3 {
     
     public static Set<String> ComputeC3d(String urlLower) {
 		return TextUtils.SearchPattern(
-				urlLower, Words.frequentwordsWithDanishLettersCoded);
+				urlLower, FrequentWords.frequentwordsWithDanishLettersCoded);
 	}
     
     
     //C3g - diverse varianter 
     public static Set<String> computeC3g(String text) {
         return TextUtils.SearchWordRegExp(
-            text, Words.frequentwordsWithDanishLettersCodedNov, false);
+            text, FrequentWords.frequentwordsWithDanishLettersCodedNov, false);
     }
   
     public static Set<String> computeC3gV2(String text) {
-        return TextUtils.SearchWordPatterns(text, Words.patternsFrequentwordsWithDanishLettersCodedNov,false); 
+        return TextUtils.SearchWordPatterns(text, FrequentWords.patternsFrequentwordsWithDanishLettersCodedNov,false); 
     }    
 
     public static Set<String> computeC3gV3(String text) {
-        return TextUtils.SearchWordPatterns(text, Words.patternsFrequentwordsWithDanishLettersCodedNov,false); 
+        return TextUtils.SearchWordPatterns(text, FrequentWords.patternsFrequentwordsWithDanishLettersCodedNov,false); 
     }    
     
     public static Set<String> computeC3gV5(Set<String> tokens) {
-        List<String> words = Arrays.asList(Words.frequentwordsWithDanishLettersCodedNov);
+        List<String> words = Arrays.asList(FrequentWords.frequentwordsWithDanishLettersCodedNov);
         tokens.retainAll(words);
         return tokens; 
 } 

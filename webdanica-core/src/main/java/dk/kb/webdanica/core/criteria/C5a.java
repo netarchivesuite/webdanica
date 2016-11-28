@@ -31,7 +31,7 @@ public class C5a extends EvalFunc<String>{
     }
     
     public static Set<String> computeC5a(String text) {
-        return TextUtils.findMatches(text, Words.especiallyNormalDanishWords);        
+        return TextUtils.findMatches(text, FrequentWords.especiallyNormalDanishWords);        
     }
     
     

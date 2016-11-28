@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.webdanica.core.datamodel.AnalysisStatus;
 import dk.kb.webdanica.core.interfaces.harvesting.NasReports;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
@@ -22,8 +23,6 @@ import dk.netarkivet.harvester.datamodel.JobStatus;
 |            |              | HARVESTS    | HARVESTED_TIME         | -5         | BIGINT         | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | FILES                  | 2003       | VARCHAR ARRAY  | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | FETCHED_URLS           | 2003       | VARCHAR ARRAY  | null         | null           | null            | null            | 1         |          |            |
-|            |              | HARVESTS    | SEED_REPORT            | 12         | VARCHAR        | null         | null           | null            | null            | 1         |          |            |
-|            |              | HARVESTS    | CRAWLLOG               | 12         | VARCHAR        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | ANALYSIS_STATE         | 4          | INTEGER        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | ANALYSIS_STATE_REASON  | 12         | VARCHAR        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | REPORTS                | 2003  
@@ -36,54 +35,46 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 		SingleSeedHarvest report = null;
 		if (rs != null) {
 			if (rs.next()) {
-				
-				report = new SingleSeedHarvest(
-						rs.getString("harvestname"),
-						rs.getString("seedurl"),
-						rs.getBoolean("successful"),
-						DatabaseUtils.sqlArrayToArrayList(rs.getArray("files")),
-						rs.getString("error"),
-						JobStatus.fromOrdinal(rs.getInt("finalState")),
-						rs.getLong("harvested_time"),
-						NasReports.makeNasReportsFromJson(
-								DatabaseUtils.sqlArrayToArrayList(rs.getArray("reports")))
-					
-				);
+				report = getSingleSeed(rs);
 			}
 		}
 		return report; 
 	}
 
 	public void getHarvestsFromResultSet(ResultSet rs, List<SingleSeedHarvest> harvestsFound) throws Exception {
-		SingleSeedHarvest report;
 		if (rs != null) {
 			while (rs.next()) {
-				report = new SingleSeedHarvest(
-						rs.getString("harvestname"),
-						rs.getString("seedurl"),
-						rs.getBoolean("successful"),
-						DatabaseUtils.sqlArrayToArrayList(rs.getArray("files")),
-						rs.getString("error"),
-						JobStatus.fromOrdinal(rs.getInt("finalState")),
-						rs.getLong("harvested_time"),
-						NasReports.makeNasReportsFromJson(
-								DatabaseUtils.sqlArrayToArrayList(rs.getArray("reports")))
-				);
-				harvestsFound.add(report);
+				harvestsFound.add(getSingleSeed(rs));
 			}
 		}
 	}
-
+	
+	private SingleSeedHarvest getSingleSeed(ResultSet rs) throws Exception {
+		return new SingleSeedHarvest(
+				rs.getString("harvestname"),
+				rs.getString("seedurl"),
+				rs.getBoolean("successful"),
+				DatabaseUtils.sqlArrayToArrayList(rs.getArray("files")),
+				rs.getString("error"),
+				JobStatus.fromOrdinal(rs.getInt("finalState")),
+				rs.getLong("harvested_time"),
+				NasReports.makeNasReportsFromJson(
+						DatabaseUtils.sqlArrayToArrayList(rs.getArray("reports"))),
+				DatabaseUtils.sqlArrayToArrayList(rs.getArray("fetched_urls")),		
+				AnalysisStatus.fromOrdinal(rs.getInt("analysis_state")),
+				rs.getString("analysis_state_reason")
+				);
+	}
+	
 	public static final String INSERT_SQL;
 
 	static {
 		INSERT_SQL = ""
 				+ "UPSERT INTO harvests (harvestname, seedurl, finalState, successful, harvested_time, files, error, " //1-7
-				+ "reports, fetched_urls "
-				//+ ",analysis_state, "
-				//+ "analysis_state_reason"
-				+ ") " //8-11
-				+ "VALUES (?,?,?,?,?,?,?,?,?) ";
+				+ "reports, fetched_urls " //8-9
+				+ ",analysis_state, analysis_state_reason" //10-11
+				+ ") " 
+				+ "VALUES (?,?,?,?,?,?,?,?,?, ?, ?) ";
 	}
 	
 	@Override
@@ -97,11 +88,12 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 				harvestedTime = System.currentTimeMillis();
 				System.err.println("harvestedTime undefined. setting it to  " + harvestedTime);
 			}
-			List<String> strList = report.getFiles();
-			String[] strArr = new String[strList.size()];
-			strArr = strList.toArray(strArr);
+			List<String> strListFiles = report.getFiles();
+			String[] strArrFiles = new String[strListFiles.size()];
+			strArrFiles = strListFiles.toArray(strArrFiles);
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			sqlArr = conn.createArrayOf("VARCHAR", strArr);
+			sqlArr = conn.createArrayOf("VARCHAR", strArrFiles);
+			
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
 			stm.setString(1, report.getHarvestName());
@@ -112,27 +104,37 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			stm.setArray(6, sqlArr);
 			stm.setString(7, report.getErrMsg());
 			//reports, fetched_urls, analysis_state, analysis_state_reason
-			
 			if (report.getReports()== null) {
 				String[] emptyStrArr = new String[0];
 				sqlArr = conn.createArrayOf("VARCHAR", emptyStrArr);
 				stm.setArray(8, sqlArr);
 			} else {
-				strList = report.getReports().getReportsAsJsonLists();
-				strArr = new String[strList.size()];
-				strArr = strList.toArray(strArr);
+				List<String> strListReports = report.getReports().getReportsAsJsonLists();
+				String[] strArrReports = new String[strListReports.size()];
+				strArrReports = strListReports.toArray(strArrReports);
+				sqlArr = conn.createArrayOf("VARCHAR", strArrReports);
 				stm.setArray(8, sqlArr);
-			}
+			}	
+			
 			if (report.getFetchedUrls() == null) {
 				String[] emptyStrArr = new String[0];
 				sqlArr = conn.createArrayOf("VARCHAR", emptyStrArr);
 				stm.setArray(9, sqlArr);
 			} else {
-				strList = new ArrayList<String>(report.getFetchedUrls());
-				strArr = new String[strList.size()];
-				strArr = strList.toArray(strArr);
+				List<String> strListUrls = new ArrayList<String>(report.getFetchedUrls());
+				String[] strArrUrls = new String[strListUrls.size()];
+				strArrUrls = strListUrls.toArray(strArrUrls);
+				sqlArr = conn.createArrayOf("VARCHAR", strArrUrls);
 				stm.setArray(9, sqlArr);
 			}
+			// analysis_state
+			AnalysisStatus as = report.getAnalysisState();
+			if (as == null) {
+				as = AnalysisStatus.UNKNOWN_STATUS;
+			}
+			stm.setInt(10, as.ordinal());
+			// analysis_state_reason
+			stm.setString(11, report.getAnalysisStateReason());
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {

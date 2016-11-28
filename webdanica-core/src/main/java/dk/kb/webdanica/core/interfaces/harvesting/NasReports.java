@@ -107,6 +107,9 @@ public class NasReports {
 		}
 		
 		public static NasReports makeNasReportsFromJson(List<String> jsonLists) {
+			if (jsonLists == null) {
+				return null;
+			}
 			Map<String,String> reports = new HashMap<String,String>();
 			for (String line: jsonLists){
 				CriteriaJson CJ = new CriteriaJson(line);

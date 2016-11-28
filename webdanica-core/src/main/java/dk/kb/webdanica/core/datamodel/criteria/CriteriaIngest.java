@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 
-import dk.kb.webdanica.core.criteria.Words;
+import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
@@ -424,7 +424,7 @@ public class CriteriaIngest {
 		if (C3g!=null && (!C3g.isEmpty() && !C3g.startsWith("0"))) {
 			String oldC3g = C3g;
             Set<String> tokens = TextUtils.tokenizeText(C3g.substring(1).trim());
-            List<String> words = Arrays.asList(Words.frequentwordsWithDanishLettersCodedNew);
+            List<String> words = Arrays.asList(FrequentWords.frequentwordsWithDanishLettersCodedNew);
             tokens.retainAll(words);
             C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
             log("Updating criteria C3g. Changed from '" + oldC3g + "' to '" + C3g + "'");

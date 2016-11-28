@@ -98,10 +98,24 @@ public class C10 {
    }    
   
    public static Set<String> computeC10cV5(Set<String> tokens) {
-       List<String> words = Arrays.asList(Words.DanishNamesNov);
+       List<String> words = Arrays.asList(Words.DanishNames);
        tokens.retainAll(words);
        return tokens; 
-   }    
+   }
+   
+   public static Set<String> computeC10cV5Alt(String text, Set<String> tokens,
+        List<Set<String>> danishNamesTokenSet) {
+	   	Set<String> resultSet = new HashSet<String>();
+	   	Set<String> words = danishNamesTokenSet.get(0); // single words
+	    tokens.retainAll(words);
+	    resultSet.addAll(tokens);
+	    for (String doubleWordToFind: danishNamesTokenSet.get(1)) {
+	    	if (text.contains(doubleWordToFind)) {
+	    		resultSet.add(doubleWordToFind);
+	    	}
+	    }
+	return resultSet;
+}    
    
   /* public static void main(String[] args) {
    	String text = "";

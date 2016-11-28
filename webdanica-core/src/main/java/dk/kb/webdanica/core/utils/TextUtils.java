@@ -1,5 +1,6 @@
 package dk.kb.webdanica.core.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -118,6 +119,22 @@ public class TextUtils {
         }
         return matches;
     }
+
+    public static Set<String> SearchPattern(String text,
+            Collection<String> patterns) {
+        Set<String> matches = new HashSet<String>();
+        for (String pattern: patterns) {
+            if (text.contains(pattern)) {
+                matches.add(pattern);
+            }
+            /*if (text.matches(".*" + pattern + ".*")) {
+                matches.add(pattern);
+            }*/
+        }
+        return matches;
+    }
+    
+    
     
     public static Set<String> SearchWordSuffixPatterns(String text,
             String[] patterns) {
@@ -148,19 +165,6 @@ public class TextUtils {
         return text.matches(pattern);
     }
     
-    public static Set<String> SearchPattern(String text,
-            Collection<String> patterns) {
-        Set<String> matches = new HashSet<String>();
-        for (String pattern: patterns) {
-            if (text.contains(pattern)) {
-                matches.add(pattern);
-            }
-            /*if (text.matches(".*" + pattern + ".*")) {
-                matches.add(pattern);
-            }*/
-        }
-        return matches;
-    }
 
     public static Set<String> SearchWordPattern(String text,
             String[] especiallyNormalDanishWords) {
@@ -234,4 +238,15 @@ public class TextUtils {
 		res.addAll(tokens);
 		return res;
 	}
+
+	public static List<Set<String>> copyTokens(
+            List<Set<String>> fileTokenSet) {
+	    List<Set<String>> resultList = new ArrayList<Set<String>>();
+	    for (Set<String> set: fileTokenSet) {
+	    	Set<String> res = new HashSet<String>();
+	    	res.addAll(set);
+	    	resultList.add(res);
+	    }
+	    return resultList;
+    }
 }

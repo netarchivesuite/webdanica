@@ -31,23 +31,28 @@ public class SingleCriteriaResult {
 		"C17a",
 		"C18a",
 	};
-	
+	// This removes criteria not reliable or interesting for determining danica
 	public static final String[] StringCriteriaVisibleInWebapp = new String[] {
 		"C1a",
 		"C2a", "C2b",
-		"C3a", "C3b", "C3c", "C3d", "C3e", "C3f", "C3g",
+		"C3a", "C3b", "C3c", "C3d", "C3e", "C3f", 
+		//"C3g",
 		"C4a", "C4b",
-		"C5a", "C5b",
-		"C6a", "C6b", "C6c", "C6d",
-		"C7a", "C7b", "C7c", "C7d", "C7e", "C7f", "C7g", "C7h",
+		//"C5a", "C5b",
+		"C6a", "C6b", "C6c", 
+		//"C6d",
+		//"C7a", 
+		"C7b", 
+		//"C7c", "C7d", 
+		"C7e", "C7f", "C7g", "C7h",
 		"C8a", "C8b", "C8c",
 		"C9a", "C9b", "C9c", "C9d", "C9e", "C9f",
-		"C10a", "C10b", "C10c",
+		//"C10a""C10b", 
+		"C10c",
 		"C15a", "C15b",
 		"C17a"
 	};
 	
-
 	private static final String CRITERIA_CEXT1 = "Cext1";
 
 	private static final String CRITERIA_CEXT2 = "Cext2";

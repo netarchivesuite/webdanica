@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.criteria.Words;
 import dk.kb.webdanica.core.utils.TextUtils;
 
@@ -104,7 +105,7 @@ public class CriteriaUtils {
 	        Set<String> tokens = TextUtils.tokenizeText(previous);
 	        Set<String> foundMatches = new HashSet<String>();
 	        for (String word: tokens) {
-	        	if(TextUtils.findMatches(word, Words.frequentwordsWithDanishLettersCodedNew).size()>0) {
+	        	if(TextUtils.findMatches(word, FrequentWords.frequentwordsWithDanishLettersCodedNew).size()>0) {
 	                foundMatches.add(word);
 	            }
 	        }

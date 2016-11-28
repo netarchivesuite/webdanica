@@ -17,6 +17,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.IOUtils;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.netarkivet.common.utils.Settings;
 
 public class WordsArrayGenerator {
@@ -94,6 +95,26 @@ public class WordsArrayGenerator {
         results.add(resultSetDouble);
         return results;
     }
+    
+    public static List<Set<String>> getListOfTokens(File externalFile, StringBuilder error){
+    	List<Set<String>> words;
+    	String defaultCharset = "UTF-16";
+        try {
+        	String charset = CriteriaUtils.findCharsetFromName(externalFile.getName());
+        	if (charset==null){
+        		error.append("Error during getListOfTokens: Unable to deduce charset from filename '" + externalFile.getName() + "'. Assuming default charset '"+ defaultCharset + "'");
+        		charset = defaultCharset;
+        	}
+	        words = WordsArrayGenerator.generateWordSetFromFile(externalFile, charset, "\t", true, false);
+        } catch (IOException e) {
+        	error.append("Error during getListOfTokens: " + e);
+        	return null;
+        }
+    	return words; 
+    }
+    
+    
+    
     
 }
 

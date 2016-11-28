@@ -1,6 +1,7 @@
 package dk.kb.webdanica.core.criteria;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -63,7 +64,9 @@ public class C9 {
     }    
 
     public static Set<String> computeC9eV5(Set<String> tokens) {
-        List<String> words = Arrays.asList(Words.virksomheder_lowercased);
+        List<String> words = Arrays.asList(
+        		//Words.virksomheder_lowercased
+        		Words.virksomheder_one_word_lowercased);
         tokens.retainAll(words);
         return tokens; 
     }    
@@ -83,6 +86,27 @@ public class C9 {
     public static boolean computeC9fV3(String text) {
         Matcher m = DanicaRegexps.pDanishCvrRegexpNoCase.matcher(text);
     	return m.matches();
+    }
+
+	public static Set<String> computeC9bAlt(String text,
+            List<Set<String>> virksomhederFileTokenset) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: virksomhederFileTokenset) {
+			resultSet.addAll(TextUtils.SearchPattern(text, set));
+		}
+	    return resultSet;
+    }
+
+	public static Set<String> computeC9cAlt(String urlLower,
+            List<Set<String>> virksomhederOneWordFileTokenset) {
+		// Assume only a one word list
+		return TextUtils.SearchPattern(urlLower, virksomhederOneWordFileTokenset.get(0)); 
+    }
+
+	public static Set<String> computeC9eAlt(Set<String> set,
+            List<Set<String>> virksomhederOneWordFileTokenset) {
+	    	set.retainAll(virksomhederOneWordFileTokenset.get(0)); // Assume only a one word list
+		return set;
     }    
     
 }

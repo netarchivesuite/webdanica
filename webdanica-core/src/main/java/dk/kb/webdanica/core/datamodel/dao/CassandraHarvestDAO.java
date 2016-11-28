@@ -150,7 +150,10 @@ public class CassandraHarvestDAO implements HarvestDAO {
 					row.getString("error"), 
 					JobStatus.fromOrdinal(row.getInt("finalState")), 
 					row.getLong("harvested_time"),
-					null // NAsreports //FIXME
+					null,// NAsreports //FIXME
+					null, //fetchedUrls//FIXME
+					null,// analysisStatus //FIXME
+					null // analysisStatusReason //FIXME
 					);
 	}
 	@Override

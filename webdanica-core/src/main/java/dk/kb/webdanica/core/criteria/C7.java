@@ -75,7 +75,7 @@ public class C7 {
     }    
 
     public static Set<String> computeC7gV5(Set<String> tokens) {
-        List<String> words = Arrays.asList(Words.danishMajorCitiesNov);
+        List<String> words = Arrays.asList(Words.danishmajorcities);
         tokens.retainAll(words);
         return tokens; 
     }    
@@ -94,12 +94,47 @@ public class C7 {
     }    
 
     public static Set<String> computeC7hV5(Set<String> tokens) {
-        List<String> words = Arrays.asList(Words.CapitalCountryTranslatedNov);
+        //List<String> words = Arrays.asList(Words.CapitalCountryTranslatedNov);
+        List<String> words = Arrays.asList(Words.CapitalCountryTranslated);
         tokens.retainAll(words);
         return tokens; 
-    }    
-    
+    }
+
+	public static Set<String> computeC7bAlt(String urlLower,
+            List<Set<String>> cityFileTokenSet) {
+		return TextUtils.SearchPattern(urlLower, cityFileTokenSet.get(0)); 
+    }
+
+	public static Set<String> computeC7gAlt(String text, Set<String> copyTokens,
+            List<Set<String>> cityFileTokenSet) {
+	    	Set<String> resultSet = new HashSet<String>();
+	    Set<String> singleWords = cityFileTokenSet.get(0);
+	    Set<String> doubleWords = cityFileTokenSet.get(1);
+	    for (String doubleWord: doubleWords) {
+	    	if (text.contains(doubleWord)) {
+	    		resultSet.add(doubleWord);
+	    	}
+	    }
+	    copyTokens.retainAll(singleWords);
+	    resultSet.addAll(copyTokens);
+	    return resultSet;
+    }
+
+	public static Set<String> computeC7cAlt(String text,
+            List<Set<String>> placeNamesTokenSet) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: placeNamesTokenSet) {
+			resultSet.addAll(TextUtils.SearchPattern(text,set));
+		}
+	    return resultSet;
+    }
+
+	public static Set<String> computeC7dAlt(String urlLower,
+            List<Set<String>> placeNamesTokenSet) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: placeNamesTokenSet) {
+			resultSet.addAll(TextUtils.SearchPattern(urlLower,set));
+		}
+	    return resultSet;
+    }       
 }
-
-
-

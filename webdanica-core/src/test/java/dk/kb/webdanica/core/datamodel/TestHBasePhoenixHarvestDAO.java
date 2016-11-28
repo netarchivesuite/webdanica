@@ -34,7 +34,7 @@ public class TestHBasePhoenixHarvestDAO {
 			files.add("2");
 			files.add("3");
 
-			SingleSeedHarvest report = new SingleSeedHarvest("harvestname", "seedurl", true, files, "error", JobStatus.STARTED, new Date().getTime(), null); // FIXME
+			SingleSeedHarvest report = new SingleSeedHarvest("harvestname", "seedurl", true, files, "error", JobStatus.STARTED, new Date().getTime(), null, null, null, null); // FIXME
 			List<SingleSeedHarvest> harvestList;
 
 			HBasePhoenixHarvestDAO dao = new HBasePhoenixHarvestDAO();

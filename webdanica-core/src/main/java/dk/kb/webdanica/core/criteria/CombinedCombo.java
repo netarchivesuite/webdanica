@@ -11,12 +11,39 @@ import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 import org.json.simple.JSONObject;
 
-import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.utils.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 /** 
+ * samplecall: 
+ * captures = FOREACH captures GENERATE CombinedCombo(
+ * url, 
+ * date, 
+ * text, 
+ * links, 
+ * hostname, 
+ * true, 
+ * '/home/test/workflow/wordslist/danishMajorCities_UTF8.txt', 
+ * '/home/test/workflow/wordslist/DanishNames_UTF8.txt', 
+ * '/home/test/workflow/wordslist/foreninger_lowercased_UTF8.txt', 
+ * '/home/test/workflow/wordslist/foreninger_one_word_lowercased_UTF8.txt', 
+ * '/home/test/workflow/wordslist/placenamesuffixes_UTF8.txt', 
+ * '/home/test/workflow/wordslist/virksomheder_lowercased_UTF8.txt', 
+ * '/home/test/workflow/wordslist/virksomheder_one_word_lowercased_UTF8.txt');
+ * 
+ * 
+ *
+ * C7b, C7g: danishMajorCities_UTF8.txt (danishMajorCities)
+ * C7c, C7d: placenames_UTF8.txt (placenames)
+ * C8a: foreninger_lowercased_UTF8.txt (foreninger_lowercased)
+ * C8b, C8c: foreninger_one_word_lowercased_UTF8.txt (foreninger_one_word_lowercased)
+ * C9b: virksomheder_lowercased_UTF8.txt (virksomheder_lowercased)
+ * C9c, C9e: virksomheder_one_word_lowercased_UTF8.txt (virksomheder_one_word_lowercased)
+ * C10c: DanishNames_UTF8.txt (DanishNames)
+ *				
+ * 
+ * 
  * CombinedCombo criteria runner.
  * url = tuple[0}
  * timestamp = tuple[1]
@@ -24,6 +51,7 @@ import dk.kb.webdanica.core.utils.TextUtils;
  * links     = tuple[3]
  * hostname = tuple[4]
  * debugMode = tuple[5] (optional argument), default = false
+ * danishMajorCities
  * 
  * Note: C16a removed, as it is not relevant for production use, but only in the Research project
  * 
@@ -93,21 +121,72 @@ public class CombinedCombo extends EvalFunc<String> {
 			return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
 		}
 
-		String url = (String) input.get(0);
+		String url = (String) input.get(0); // argument #1
 		String urlLower = url.toLowerCase();
-		String timestamp = (String) input.get(1);
-		String textNormal = (String) input.get(2);
+		String timestamp = (String) input.get(1); // argument #2
+		String textNormal = (String) input.get(2);// argument #3
 		String text = textNormal.toLowerCase();
-		DataBag links = (DataBag)(input.get(3));
-		String hostname = (String) input.get(4);
+		DataBag links = (DataBag)(input.get(3));// argument #4
+		String hostname = (String) input.get(4);// argument #5
 		boolean debugMode = false;
 		if (input.size() > 5) {
-			debugMode = (Boolean) input.get(5);
+			debugMode = (Boolean) input.get(5); // argument #6
 		}
+		
+		boolean useStandardC7BTest = true;
+		boolean useStandardC7GTest = true;
+		
+		boolean useStandardC7CTest = true;
+		boolean useStandardC7DTest = true;
+		
+		boolean useStandardC8ATest = true;
+		
+		boolean useStandardC8BTest = true;
+		boolean useStandardC8CTest = true;
+
+		boolean useStandardC9BTest = true;
+		
+		boolean useStandardC9CTest = true;
+		boolean useStandardC9ETest = true;
+		
+		boolean useStandardC10CTest = true;
+		
+		// File 1 - used by tests C7b, C7g
 		String cityfilePathAsArg = null;
-		if (input.size() == 7) {
-			cityfilePathAsArg = (String) input.get(6); 
+		if (input.size() > 6) {
+			cityfilePathAsArg = (String) input.get(6); // argument #7
 		}
+		// File 2 - used by tests C10c
+		String danishNamesFilePathAsArg = null;
+		if (input.size() > 7) {
+			danishNamesFilePathAsArg = (String) input.get(7); // argument #8
+		}
+		// File 3 - used by tests C8a
+		String foreningerFilePathAsArg = null;
+		if (input.size() > 8) {
+			foreningerFilePathAsArg = (String) input.get(8); // argument #9
+		}
+		// File 4 - used by tests C8b, C8c
+		String foreningerOneWordFilePathAsArg = null;
+		if (input.size() > 9) {
+			foreningerOneWordFilePathAsArg = (String) input.get(9); // argument #10
+		}
+		// File 5 - used by tests C7c, C7d
+		String placeNamesFilePathAsArg = null;
+		if (input.size() > 10) {
+			placeNamesFilePathAsArg = (String) input.get(10); // argument #11
+		}
+
+		// File 6 - used by tests c9b
+		String virksomhederFilePathAsArg = null;
+		if (input.size() > 11) {
+			virksomhederFilePathAsArg = (String) input.get(11); // argument #12
+		}
+		// File 7 - used by tests C9c, C9e
+		String virksomhederOneWordFilePathAsArg = null;
+		if (input.size() > 12) {
+			virksomhederOneWordFilePathAsArg = (String) input.get(12); // argument #13
+		} 
 		
 		Set<String> tokens = TextUtils.tokenizeText(text);
 		Set<String> tokensUncased = TextUtils.tokenizeText(textNormal);
@@ -118,22 +197,106 @@ public class CombinedCombo extends EvalFunc<String> {
 		
 		//calc Cext1 '- Size of web-page'
 		int Cext1 = text.length();
-		String cityfilePath = null;
+		
+		/*
 		if (cityfilePathAsArg == null) {
 			cityfilePath = getCityfilePath(errorSb);
 		} else {
 			cityfilePath = cityfilePathAsArg;
-		}
+		}*/
+		
+		// Validate optional argument 7 - used by C7B and C7G
 		File cityFile = null;
-		boolean useStandardC7ATest = true;
-		if (cityfilePath != null) {
-			cityFile = new File(cityfilePath);
+		if (cityfilePathAsArg != null) {
+			cityFile = new File(cityfilePathAsArg);
 			if (cityFile.isFile()) {
-				useStandardC7ATest = false;
+				useStandardC7BTest = false;
+				useStandardC7GTest = false;
 			} else {
-				errorSb.append("The given file '" +  cityFile.getAbsolutePath() + "' does not exist. Reverting to old test");
+				errorSb.append("The given cityFile '" +  cityFile.getAbsolutePath() + "' does not exist. Reverting to old test for C7B and C7G");
 			}
+		} else {
+			errorSb.append("No argument given for the cityFile (optional argument 7). Reverting to old test for C7B and C7G");
 		}
+		// Validate optional argument 8 - used by test C10C
+		File danishNamesFile = null;
+		if (danishNamesFilePathAsArg != null) {
+			danishNamesFile = new File(danishNamesFilePathAsArg);
+			if (danishNamesFile.isFile()) {
+				useStandardC10CTest = false;
+			} else {
+				errorSb.append("The given danishNamesFile '" +  danishNamesFile.getAbsolutePath() + "' does not exist. Reverting to old test for C10C");
+			}
+		} else {
+			errorSb.append("No argument given for the danishNamesFile (optional argument 8). Reverting to old test for C10C");
+		}
+		// Validate optional argument 9 - used by test C8A
+		File foreningerFile = null;
+		if (foreningerFilePathAsArg != null) {
+			foreningerFile = new File(foreningerFilePathAsArg);
+			if (foreningerFile.isFile()) {
+				useStandardC8ATest = false;
+			} else {
+				errorSb.append("The given foreningerFile '" + foreningerFilePathAsArg + "' does not exist. Reverting to old test for C8A");
+			}
+		} else {
+			errorSb.append("No argument given for the foreningerFile (optional argument 9). Reverting to old test for C8A");
+		}
+		// Validate optional argument 10 - used by C8B and C8C
+		File foreningerOneWordFile = null;
+		if (foreningerOneWordFilePathAsArg != null) {
+			foreningerOneWordFile = new File(foreningerOneWordFilePathAsArg);
+			if (foreningerOneWordFile.isFile()) {
+				useStandardC8BTest = false;
+				useStandardC8CTest = false;
+			} else {
+				errorSb.append("The given foreningerOneWordFile '" + foreningerFilePathAsArg + "' does not exist. Reverting to old test for C8b, C8c");
+			}
+		} else {
+			errorSb.append("No argument given for the foreningerOneWordFile (optional argument 10). Reverting to old test for C8b, C8c");
+		}
+		
+		// Validate optional argument 11 -- used by tests C7c, C7d
+		File placeNamesFile = null;
+		if (placeNamesFilePathAsArg != null) {
+			placeNamesFile = new File(placeNamesFilePathAsArg);
+			if (placeNamesFile.isFile()) {
+				useStandardC7CTest = false;
+				useStandardC7DTest = false;
+			} else {
+				errorSb.append("The given placeNamesFile '" + placeNamesFilePathAsArg + "' does not exist. Reverting to old test for C7C, C7D");
+			}
+		} else {
+			errorSb.append("No argument given for the placeNamesFile (optional argument 11). Reverting to old test for C7C, C7D");
+		}
+		
+		// Validate optional argument 12 - used by tests C89B
+		File virksomhederFile = null;
+		if (virksomhederFilePathAsArg != null) {
+			virksomhederFile = new File(virksomhederFilePathAsArg);
+			if (virksomhederFile.isFile()) {
+				useStandardC9BTest = false;
+			} else {
+				errorSb.append("The given virksomhederFile '" + virksomhederFilePathAsArg + "' does not exist. Reverting to old test for C9B");
+			}
+		} else {
+			errorSb.append("No argument given for the virksomhederFile (optional argument 12). Reverting to old test for C9B");
+		}
+		
+		// Validate optional argument 13 - - used by tests C9c, C9e
+		File virksomhederOneWordFile = null;
+		if (virksomhederOneWordFilePathAsArg != null) {
+			virksomhederOneWordFile = new File(virksomhederOneWordFilePathAsArg);
+			if (virksomhederOneWordFile.isFile()) {
+				useStandardC9CTest = false;
+				useStandardC9ETest = false;
+			} else {
+				errorSb.append("The given virksomhederFile '" + virksomhederOneWordFilePathAsArg + "' does not exist. Reverting to old test for C9C and C9E");
+			}
+		} else {
+			errorSb.append("No argument given for the virksomhederFile (optional argument 12). Reverting to old test for C9C and C9E");
+		}
+		
 		JSONObject object = new JSONObject();
 		object.put("url", CriteriaUtils.toBase64(url));
 		object.put("Cext1", Cext1 + "");
@@ -216,23 +379,52 @@ public class CombinedCombo extends EvalFunc<String> {
 				Set<String> C6dmatches = C6.computeC6dV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C6d", C6dmatches);		
 				
-				//Calc C7a         'towns in htm (input: lowercase tezt)
-				Set<String> C7amatches = null;
+				//Calc C7a         'towns in htm (input: lowercase text)
+				Set<String> C7amatches = C7.computeC7a(text);
+				/*
 				if (useStandardC7ATest) {
 					C7amatches = C7.computeC7a(text);
 				} else {
 					C7amatches = C7.computeC7aOnCasedTokens(TextUtils.copyTokens(tokensUncased), cityFile, errorSb);
-				}
+				}*/
 				
 				addResultForCriterie(object, "C7a", C7amatches);
 				//Calc C7b         'towns in url (input: lowercase url)
-				Set<String> C7bmatches = C7.computeC7b(urlLower);
+				
+				Set<String> C7bmatches = null;
+				List<Set<String>> cityFileTokenSet = null;
+				if (!useStandardC7BTest) {
+					cityFileTokenSet = WordsArrayGenerator.getListOfTokens(cityFile,errorSb);
+				}
+				
+				if (useStandardC7BTest || cityFileTokenSet == null) { 
+					C7bmatches = C7.computeC7b(urlLower);
+				} else {
+					C7bmatches = C7.computeC7bAlt(urlLower, cityFileTokenSet);	
+				}
 				addResultForCriterie(object, "C7b", C7bmatches);
+				
+				////////////////////////////////////////////////////////////////////////
 				//Calc C7c         'town suffixes in htm (input: lowercase text)
-				Set<String> C7cmatches = C7.computeC7c(text);
+				List<Set<String>> placeNamesTokenSet = null; // used by both C7c and C7d
+				if (!useStandardC7CTest) {
+					placeNamesTokenSet = WordsArrayGenerator.getListOfTokens(placeNamesFile, errorSb);
+				}
+				Set<String> C7cmatches = null; 
+				if (useStandardC7CTest || placeNamesTokenSet == null) {
+					C7cmatches = C7.computeC7c(text);
+				} else {
+					C7cmatches = C7.computeC7cAlt(text, placeNamesTokenSet);
+				}
 				addResultForCriterie(object, "C7c", C7cmatches);
 				//Calc C7d         'town suffixes in url (input: lowercase url)
-				Set<String> C7dmatches = C7.computeC7d(urlLower);
+				Set<String> C7dmatches = null;
+				if (useStandardC7DTest || placeNamesTokenSet == null) {
+					C7dmatches = C7.computeC7d(urlLower);
+				} else {
+					C7dmatches = C7.computeC7dAlt(urlLower, placeNamesTokenSet);
+				}
+
 				addResultForCriterie(object, "C7d", C7dmatches);
 				//Calc C7e         '(København/Danmark) translated to foreign languages in htm 
 				Set<String> C7ematches = C7.computeC7e(text);
@@ -241,37 +433,97 @@ public class CombinedCombo extends EvalFunc<String> {
 				Set<String> C7fmatches = C7.computeC7f(urlLower);
 				addResultForCriterie(object, "C7f", C7fmatches);
 				//Calc C7g 			'danish city names (input: al text, tokenized)
-				Set<String> C7gmatches = C7.computeC7gV5(TextUtils.copyTokens(tokens));
+				Set<String> C7gmatches = null;
+				if (useStandardC7GTest || cityFileTokenSet == null) { 
+					C7gmatches = C7.computeC7gV5(TextUtils.copyTokens(tokens));
+				} else {
+					C7gmatches = C7.computeC7gAlt(text, TextUtils.copyTokens(tokens), cityFileTokenSet);	
+				}
+				//Set<String> C7gmatches = C7.computeC7gV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C7g", C7gmatches);
 				//Calc C7h			'(København/Danmark) translated to foreign languages in htm (input: text, tokemized) 
 				Set<String> C7hmatches = C7.computeC7hV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C7h", C7hmatches);
 				
+				////////////////////////////////////////////////////////////////////
 				//Calc C8a         'unions in htm (input: al text lowercased)
-				Set<String> C8amatches = C8.computeC8a(text);
+				List<Set<String>> foreningerFileTokenSet = null;
+				Set<String> C8amatches = null;
+				if (!useStandardC8ATest) {
+					foreningerFileTokenSet = WordsArrayGenerator.getListOfTokens(foreningerFile, errorSb);
+				}
+				if (useStandardC8ATest || foreningerFileTokenSet == null) {
+					C8amatches = C8.computeC8a(text);
+				} else {
+					C8amatches = C8.computeC8aAlt(text, foreningerFileTokenSet);
+				}
+				//Set<String> C8amatches = C8.computeC8a(text);
 				addResultForCriterie(object, "C8a", C8amatches);
-				//Calc C8b         'unions in url (input: lowercase url) (WRONGLY computed earlier on text instead of urlLower) 
-				Set<String> C8bmatches = C8.computeC8b(urlLower);
-				addResultForCriterie(object, "C8b", C8bmatches);
-				//Calc C8c         'unions in htm (input: al text lowercased, tokenized)
-				Set<String> C8cmatches = C8.computeC8cV5(TextUtils.copyTokens(tokens));
-				addResultForCriterie(object, "C8c", C8cmatches);
 				
+				//Calc C8b         'unions in url (input: lowercase url) (WRONGLY computed earlier on text instead of urlLower) 				
+				List<Set<String>> foreningerOnewordFileTokenSet = null;
+				if (!useStandardC8BTest) {
+					foreningerOnewordFileTokenSet = WordsArrayGenerator.getListOfTokens(foreningerOneWordFile, errorSb);
+				}
+				Set<String> C8bmatches = null;
+				if (useStandardC8BTest || foreningerOnewordFileTokenSet == null) {
+					C8bmatches = C8.computeC8b(urlLower);
+				} else {
+					C8bmatches = C8.computeC8bAlt(urlLower, TextUtils.copyTokens(foreningerOnewordFileTokenSet));
+				}
+				//Set<String> C8bmatches = C8.computeC8b(urlLower);
+				addResultForCriterie(object, "C8b", C8bmatches);
+				
+				//Calc C8c         'unions in htm (input: al text lowercased, tokenized)
+				Set<String> C8cmatches = null;
+				if (useStandardC8CTest || foreningerOnewordFileTokenSet == null) {
+					C8cmatches = C8.computeC8cV5(TextUtils.copyTokens(tokens));
+				} else {
+					C8.computeC8cAlt(TextUtils.copyTokens(tokens), foreningerOnewordFileTokenSet);
+				}
+				addResultForCriterie(object, "C8c", C8cmatches);
 				
 				//Calc C9a         'company type Aps etc.
 				Set<String> C9amatches = C9.computeC9a(text);
 				addResultForCriterie(object, "C9a", C9amatches);
 				//Calc C9b         'company names in htm
-				Set<String> C9bmatches = C9.computeC9b(text);
+				// uses virksomheder_lowercased_UTF8.txt
+				List<Set<String>> virksomhederFileTokenset = null;
+				Set<String> C9bmatches = null;
+				if (!useStandardC9BTest) {
+					virksomhederFileTokenset = WordsArrayGenerator.getListOfTokens(virksomhederFile, errorSb);
+				}
+				if (useStandardC9BTest || virksomhederFileTokenset == null) {
+					C9bmatches = C9.computeC9b(text);
+				} else {
+					C9bmatches = C9.computeC9bAlt(text, virksomhederFileTokenset);
+				}
 				addResultForCriterie(object, "C9b", C9bmatches);
+				
 				//Calc C9c         'company names in url
-				Set<String> C9cmatches = C9.computeC9c(urlLower);
+				List<Set<String>> virksomhederOneWordFileTokenset = null;
+				Set<String> C9cmatches = null;
+				if (!useStandardC9CTest) {
+					virksomhederOneWordFileTokenset = WordsArrayGenerator.getListOfTokens(virksomhederOneWordFile, errorSb);
+				}
+				if (useStandardC9CTest || virksomhederOneWordFileTokenset == null) {
+					C9cmatches = C9.computeC9c(urlLower);
+				} else {
+					C9cmatches = C9.computeC9cAlt(urlLower, TextUtils.copyTokens(virksomhederOneWordFileTokenset));
+				}
+				//Set<String> C9cmatches = C9.computeC9c(urlLower);
 				addResultForCriterie(object, "C9c", C9cmatches);
 				//Calc C9d         'company cvr
 				Set<String> C9dmatches = C9.computeC9d(text);
 				addResultForCriterie(object, "C9d", C9dmatches);
-				//Calc C9e 		   'search for lowercase company-names (input: lowercased text tokenized,  Output: any matches) 
-				Set<String> C9ematches = C9.computeC9eV5(TextUtils.copyTokens(tokens));
+				//Calc C9e 		   'search for lowercase company-names (input: lowercased text tokenized,  Output: any matches)
+				Set<String> C9ematches = null;
+				if (useStandardC9ETest || virksomhederOneWordFileTokenset == null) {
+					C9ematches = C9.computeC9eV5(TextUtils.copyTokens(tokens));
+				} else {
+					C9ematches = C9.computeC9eAlt(TextUtils.copyTokens(tokens), virksomhederOneWordFileTokenset);
+				}
+				//Set<String> C9ematches = C9.computeC9eV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C9e", C9ematches);
 				//Calc C9f          'search for lowercased cvr-number, input: al text lowercased, output: y/n
 				boolean C9f = C9.computeC9f(text);
@@ -284,13 +536,26 @@ public class CombinedCombo extends EvalFunc<String> {
 				//Calc C10b         'freq. person names (input: lowercased text, output: any found names in the text)
 				Set<String> C10bmatches = C10.computeC10b(text);
 				addResultForCriterie(object, "C10b", C10bmatches);
-				//Calc C10c		
-				Set<String> C10cmatches = C10.computeC10cV5(TextUtils.copyTokens(tokens));
+				
+				/////////////////////////////////////////////////////////////
+				//Calc C10c	
+				List<Set<String>> danishNamesTokenSet = null;
+				Set<String> C10cmatches = null;
+				if (!useStandardC10CTest) { // try to extract tokens 
+					danishNamesTokenSet = WordsArrayGenerator.getListOfTokens(danishNamesFile, errorSb);
+				}
+				if (useStandardC10CTest || danishNamesTokenSet == null) {
+					C10cmatches = C10.computeC10cV5(TextUtils.copyTokens(tokens));
+				} else {
+					C10cmatches = C10.computeC10cV5Alt(text, TextUtils.copyTokens(tokens), danishNamesTokenSet);
+				}
+				//Set<String> C10cmatches = C10.computeC10cV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C10c", C10cmatches);     
 
+				/////////////////////////////////////////////////////////////
 				// Calc C15a      'The URL belongs to a TLD often used by Danes (The list currently comprises .dk, .no, .se, .de, .eu, .org, .com, .net, .nu, .tv, .info)
-				boolean C15a = C15.computeC15a(hostname);
-				object.put("C15a", (C15a? "y": "n"));
+				String C15a = C15.computeC15a(hostname);
+				object.put("C15a", (C15a==null? "n": "y: " + C15a));
 				//Calc C17a      'The outlinks of the page refers to .dk web pages
 				int c17a = C17.computeC17(links);
 				object.put("C17a", c17a + "");
@@ -322,7 +587,7 @@ public class CombinedCombo extends EvalFunc<String> {
 		jo.put(criteria, result);
 	}
 
-	
+/*	
 	
 	private String getCityfilePath(StringBuilder error) {
 		try {
@@ -333,5 +598,6 @@ public class CombinedCombo extends EvalFunc<String> {
 		}
 		return null;
 	}
+*/	
 }
 

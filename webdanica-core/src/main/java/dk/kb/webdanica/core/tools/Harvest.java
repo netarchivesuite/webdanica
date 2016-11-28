@@ -10,7 +10,10 @@ import java.util.Set;
 import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
+import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.UrlUtils;
@@ -28,8 +31,8 @@ public class Harvest {
 	 * 
 	 */
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Need file with seeds to harvest as argument or just a seed");
+		if (args.length < 1  || args.length > 2) {
+			System.err.println("Usage: java Harvest <seedsfile>|<seed> [--store]");
 			System.exit(1);
 		}
 		
@@ -62,8 +65,13 @@ public class Harvest {
 		// Check if argument is a file or just considered a single seed
 		String argument = args[0];
 		// Assume the argument is a file, and see if it exists
-		File argumentAsFile = new File(argument); 
+		File argumentAsFile = new File(argument);
+		Boolean saveHarvestInWebdanicaDB = false;
 		boolean argumentIsSeedFile = argumentAsFile.exists(); 
+		if (args.length == 2 && args[1].equalsIgnoreCase("--store")) {
+			saveHarvestInWebdanicaDB = true;
+		}
+		
 		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
 		
 		if (argumentIsSeedFile) {
@@ -73,7 +81,7 @@ public class Harvest {
 			URL_REJECT_REASON reason = UrlUtils.isRejectableURL(argument);
 			if (reason.equals(URL_REJECT_REASON.NONE)) {
 				System.out.println("Do single harvest of seed '" + argument + "'");
-				String eventHarvestName = harvestPrefix + System.currentTimeMillis(); 
+				String eventHarvestName = harvestPrefix + SingleSeedHarvest.getTimestamp(); 
 				SingleSeedHarvest result = SingleSeedHarvest.doSingleHarvest(argument, eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects, true);		
 				results.add(result);
 			} else {
@@ -89,7 +97,7 @@ public class Harvest {
 		if (argumentIsSeedFile) {
 			harvestLogNamePrefix = argumentAsFile.getName() + "-" + harvestLogNamePrefix;
 		}
-		File harvestLog = new File(harvestLogNamePrefix + System.currentTimeMillis() + ".txt");
+		File harvestLog = new File(harvestLogNamePrefix + SingleSeedHarvest.getTimestamp() + ".txt");
 		
 		System.out.println("Writing results of the " + results.size() + " harvests to file '" + harvestLog.getAbsolutePath() 
 				+ "'");
@@ -101,11 +109,23 @@ public class Harvest {
     	int written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, onlySuccessFul, results);
     	System.out.println(written + " harvests were written to log '" + harvestLog.getAbsolutePath() + "'");
     	System.out.println();System.out.println();
+    	if (saveHarvestInWebdanicaDB) {
+    		System.out.println("Storing harvests in WebdanicaDB");
+    		try {
+    			DAOFactory daofactory = DatabaseUtils.getDao();
+    			HarvestDAO hdao = daofactory.getHarvestDAO();
+    			for (SingleSeedHarvest s: results) {
+    				hdao.insertHarvest(s);
+    			}
+    		} catch (Throwable e) {
+    			System.err.println("Failed to store harvests in webdanicaDB: " + e);
+    			//e.printStackTrace();
+    		}
+    	}
+    	
     	System.out.println("Program exited successfully at date: " +  new Date());
     	System.exit(0);
 	}
-
-	
 }
 		
 		
