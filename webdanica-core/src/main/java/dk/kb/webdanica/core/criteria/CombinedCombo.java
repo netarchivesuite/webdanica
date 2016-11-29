@@ -485,7 +485,7 @@ public class CombinedCombo extends EvalFunc<String> {
 					C8cmatches = C8.computeC8cV5(TextUtils.copyTokens(tokens));
 				} else {
 					try {
-						C8.computeC8cAlt(TextUtils.copyTokens(tokens), foreningerOnewordFileTokenSet);
+						C8cmatches = C8.computeC8cAlt(TextUtils.copyTokens(tokens), foreningerOnewordFileTokenSet);
 					} catch (Throwable e) {
 						errorSb.append("new C8c calculation failed (reverting to standard): " + e);
 						C8cmatches =  C8.computeC8cV5(TextUtils.copyTokens(tokens));
@@ -588,14 +588,21 @@ public class CombinedCombo extends EvalFunc<String> {
 	}
 
 	@SuppressWarnings("unchecked")
-    private void addResultForCriterie(JSONObject jo, String criteria, Set<String> matches) {
+	private void addResultForCriterie(JSONObject jo, String criteria, Set<String> matches) {
+		String result = null;
 		if (matches == null) {
 			jo.put(criteria, "Null-resultset computed for criteria " +  criteria);
+			return;
 		}
-		String result = matches.size() + "";
-		if (matches.size() > 0) {
-			result = matches.size() + " " 
-					+ TextUtils.conjoin("#", matches);
+		try {
+			result = matches.size() + "";
+			if (matches.size() > 0) {
+				result = matches.size() + " " 
+						+ TextUtils.conjoin("#", matches);
+			} 
+		} catch (Throwable e) {
+			jo.put(criteria, "Unable to compute criteria '" + criteria + "': " + e);
+			return;
 		}
 		jo.put(criteria, result);
 	}
