@@ -1168,7 +1168,7 @@ public final static String[] foreninger_lowercased = new String[] {
         "vorupør", "vrå", "vraa", "vraaby", "vråby", "vrads", "vrangstrup", "vrejlev", "vrensted", "vridsted", 
         "vrigsted", "vrist", "vroue", "vust", "ydby", "yderby", "yding", "zions"};
     
-    public final static String[] placenamesuffixes = new String[] {
+    public final static String[] placenames = new String[] {
         "aaroe", "ærø", "aeroe", "agerø", "ageroe", "agersø", "agersoe", "aktie", "alhedens", "almindingen", 
         "almindsø", "almindsoe", "alrø", "alroe", "als", "amager", "anholt", "årø", "arresø", "arresoe", "askø", 
         "askoe", "avernakø", "avernakoe", "baagoe", "bågø", "barsø", "barsoe", "barup", "bastrup", "bechers", 

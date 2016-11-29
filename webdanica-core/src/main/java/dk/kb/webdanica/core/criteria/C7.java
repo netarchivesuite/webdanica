@@ -43,12 +43,21 @@ public class C7 {
     }    
     
     public static Set<String> computeC7c(String text) {
-        return TextUtils.SearchPattern(text, Words.placenamesuffixes);
+        return TextUtils.SearchPattern(text, Words.placenames);
     }    
+    
+    public static Set<String> computeC7cAlt(String text,
+            List<Set<String>> placeNamesTokenSet) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: placeNamesTokenSet) {
+			resultSet.addAll(TextUtils.SearchPattern(text,set));
+		}
+	    return resultSet;
+    }
     
     public static Set<String> computeC7d(String urlLower) {
         return  TextUtils.SearchPattern(urlLower, 
-                Words.placenamesuffixes);
+                Words.placenames);
     }
     
     public static Set<String> computeC7e(String text) {
@@ -120,15 +129,7 @@ public class C7 {
 	    return resultSet;
     }
 
-	public static Set<String> computeC7cAlt(String text,
-            List<Set<String>> placeNamesTokenSet) {
-		Set<String> resultSet = new HashSet<String>();
-		for (Set<String> set: placeNamesTokenSet) {
-			resultSet.addAll(TextUtils.SearchPattern(text,set));
-		}
-	    return resultSet;
-    }
-
+	
 	public static Set<String> computeC7dAlt(String urlLower,
             List<Set<String>> placeNamesTokenSet) {
 		Set<String> resultSet = new HashSet<String>();
