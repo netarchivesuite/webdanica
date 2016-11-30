@@ -235,5 +235,17 @@ public class CassandraHarvestDAO implements HarvestDAO {
         return null;
     }
 
+	@Override
+    public boolean exists(String harvestName) {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
+	@Override
+    public Long getCountWithSeedurl(String url) throws Exception {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
 	
 }

@@ -315,7 +315,8 @@ public class CombinedCombo extends EvalFunc<String> {
 				
 				//Calc C1a         '@ in links (looks for danish mail-addresses matching this regex: "(?i)\\b[A-Z0-9._%+-]+@(?i)[A-Z0-9.-]+\\.DK\\b";
 				//input: outlinks found
-				Set<String> C1amatches = C1a.computeC1a(links);
+				Set<String> C1amatches = C1.computeC1a(links);
+				C1amatches.addAll(C1.computeC1(textNormal));
 				addResultForCriterie(object, "C1a", C1amatches);
 				
 				// Calc C2a         'ph. in htm using indicators "mobil +45", "tlf.", "+45", "0045" (input lowercase text)
@@ -357,10 +358,10 @@ public class CombinedCombo extends EvalFunc<String> {
 				Set<String> C5bmatches = new HashSet<String>();
 				if (C4a.equalsIgnoreCase("da") || C4a.equalsIgnoreCase("no")) {
 					// Calc C5a - Look for characteristic danish words (input: lowercase text)
-					C5amatches = C5a.computeC5a(text);
+					C5amatches = C5.computeC5a(text);
 					addResultForCriterie(object, "C5a", C5amatches);
 					// Calc C5b - Look for characteristic Norwegian words that is not danish words (input: lowercase text)
-					C5bmatches = C5b.computeC5b(text);
+					C5bmatches = C5.computeC5b(text);
 					addResultForCriterie(object, "C5b", C5bmatches);
 				}
 				

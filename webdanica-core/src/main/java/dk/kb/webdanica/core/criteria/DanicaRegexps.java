@@ -23,7 +23,8 @@ public class DanicaRegexps {
 	//String tlfRegExp = "\\b(?:(?:\\+45|0045)[\\s.-]?)?[1-9]\\d([\\s.-]?\\d{2}){3}\\b";
     //String danishTlfRegexp = "(?i)\\b(?:Tlf\\.?|telefon)\\s*(\\+45)?\\s*[1-9]\\d(.?\\d{2}){3}\\b";
     //public static String danishTlfRegexp="\\b(?:(?:\\+45|0045|45)[\\s.-]?)?[1-9]\\d([\\s.-]?\\d{2}){3}\\b";
-    public static String danishTlfRegexp = "(?i)\\b(?:tlf\\.?(nr\\.?)?|telefon|mobil)\\s*(\\+45)?\\s*[1-9]\\d(.?\\d{2}){3}\\b";
+    //public static String danishTlfRegexp = "(?i)\\b(?:tlf\\.?(nr\\.?)?|telefon|mobil)\\s*(\\+45)?\\s*[1-9]\\d(.?\\d{2}){3}\\b";
+    public static String danishTlfRegexp = "\\b(?:([tT][eE]?lf?|[Nn]r|[Tt]elefon|[Mm]obil)[\\.|:]?)\\s*(\\+)?(45)?\\s*(\\d{2}\\s*\\d{2}\\s*\\d{2}\\s*\\d{2}|\\d{4}\\s*\\d{4}|\\d{8})\\b";
     public static Pattern pDanishTlfRegexp = Pattern.compile(danishTlfRegexp);
     public static String danishTlfRegexpNoCase = "\\b(?:tlf\\.?(nr\\.?)?|telefon|mobil)\\s*(\\+45)?\\s*[1-9]\\d(.?\\d{2}){3}\\b";
     public static Pattern pDanishTlfRegexpNoCase = Pattern.compile(danishTlfRegexp);

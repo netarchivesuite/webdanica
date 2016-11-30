@@ -1,10 +1,3 @@
-/*
- * Created on 19/08/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
@@ -46,6 +39,7 @@ public class BlackListResource implements ResourceAbstract {
 
     protected int R_BLACKLIST = -1;
     public static final String BLACKLIST_PATH = "/blacklist/";
+    public static final String BLACKLISTS_PATH = "/blacklists/";
     private Environment environment;
 
     private BlackListDAO dao;
@@ -101,17 +95,7 @@ public class BlackListResource implements ResourceAbstract {
         	logger.warning("No UUID for blacklist given as argument in the path: " + pathInfo);
         	b = new BlackList(dummyUUID, "dummyUUD", "No blacklist designated", dummyList, System.currentTimeMillis() , false);
         }
-        
-        if (Servlet.environment.getContextPath()== null) {
-        	Servlet.environment.setContextPath(req.getContextPath());
-        }
-        
-        if (Servlet.environment.getBlacklistPath() == null) {
-        	Servlet.environment.setBlacklistPath(Servlet.environment.getContextPath() + "/blacklist/");
-        }
-        if (Servlet.environment.getBlacklistsPath() == null) {
-        	Servlet.environment.setBlacklistsPath(Servlet.environment.getContextPath() + "/blacklists/");
-        }
+
         if (resource_id == R_BLACKLIST) {
             blacklist_show(dab_user, req, resp, b);
         } 

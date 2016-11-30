@@ -84,6 +84,8 @@ public class HBasePhoenixConnectionManager {
 				conn.close();
 			}
 		}
+		threadConnectionMap.clear();
+		logger.info("Clearing the connectionmap");
 	}
 
 	public static void deregister() {

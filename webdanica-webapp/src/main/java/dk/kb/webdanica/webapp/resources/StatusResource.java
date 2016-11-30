@@ -105,9 +105,7 @@ public class StatusResource implements ResourceAbstract {
 
     @Override
     public void resource_service(ServletContext servletContext, User dab_user, HttpServletRequest req, HttpServletResponse resp, int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-        if (Servlet.environment.getContextPath() == null) {
-        	Servlet.environment.setContextPath(req.getContextPath());
-        }
+    	
         /*
         logger.info("pathInfo: " + pathInfo);
         logger.info("resource_id: " + resource_id);

@@ -1,10 +1,3 @@
-/*
- * Created on 19/08/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
@@ -88,22 +81,7 @@ public class HarvestResource implements ResourceAbstract {
             	b = HarvestLog.makeErrorObject(harvestName);	
         	}
         }
-        
-        if (Servlet.environment.getContextPath()== null) {
-        	Servlet.environment.setContextPath(req.getContextPath());
-        }
-        
-        if (Servlet.environment.getHarvestPath() == null) {
-        	Servlet.environment.setHarvestPath(Servlet.environment.getContextPath() + HARVEST_PATH);
-        }
-        if (Servlet.environment.getHarvestsPath() == null) {
-        	Servlet.environment.setHarvestsPath(Servlet.environment.getContextPath() + HarvestsResource.HARVEST_LIST_PATH);
-        }
-        
-        if (Servlet.environment.getCriteriaResultsPath() == null) {
-        	Servlet.environment.setCriteriaResultsPath(Servlet.environment.getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH);
-        }
-        
+
         if (resource_id == R_HARVEST) {
             harvest_show(dab_user, req, resp, b);
         } 
@@ -272,12 +250,14 @@ public class HarvestResource implements ResourceAbstract {
         ResourceUtils.insertText(errorPlace, "errors",  error, HARVEST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(endStatePlace, "endState",  b.getFinalState() + "", HARVEST_SHOW_TEMPLATE, logger);
 
-        // FIXME better handling
+        
         long critCount = 0;
         try {
             critCount = cdao.getCountByHarvest(b.getHarvestName());
         } catch (Exception e) {
-        	
+        	e.printStackTrace();
+        	// FIXME better handling
+        	// redirect to error page
         }
 
         String linkToCriteriaresults = "No criteriaresults found for this harvest";
@@ -326,38 +306,7 @@ public class HarvestResource implements ResourceAbstract {
     		sbSeedReport.append("</pre>\r\n");
     	}
     	ResourceUtils.insertText(seedReportPlace, "seedReport",  sbSeedReport.toString(), HARVEST_SHOW_TEMPLATE, logger);
-    	
-    	
-        if (alertPlace != null) {
-            StringBuilder alertSb = new StringBuilder();
-            if (errorStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-error\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(errorStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            } else {
-            	logger.warning("No alert placeholder found in template '" + HARVEST_SHOW_TEMPLATE + "'" );
-            }
-            if (successStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-success\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(successStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            } else {
-            	logger.warning("No success placeholder found in template '" + HARVEST_SHOW_TEMPLATE + "'" );
-            }
-        }
-
+  
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
             	logger.info("Printing out id :" + templateParts.parts.get(i).getId());
@@ -367,6 +316,9 @@ public class HarvestResource implements ResourceAbstract {
             out.close();
         } catch (IOException e) {
         	logger.warning("IOException thrown, but ignored: " + e);        
+        } catch (Throwable e) {
+        	String errMsg = "Exception thrown during rendering of harvest:  " + b;
+        	CommonResource.show_error(errMsg, resp, environment);
         }
     }
         

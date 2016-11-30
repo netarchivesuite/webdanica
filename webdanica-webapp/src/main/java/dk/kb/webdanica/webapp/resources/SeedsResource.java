@@ -2,8 +2,10 @@ package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -23,6 +25,10 @@ import com.antiaction.common.templateengine.TemplatePlaceTag;
 
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
+import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -78,6 +84,7 @@ public class SeedsResource implements ResourceAbstract {
     public static final String SEEDS_NUMERIC_DUMP_PATH = "/seeds/<numeric>/dump/";
     
     private static final String SEED_SHOW_TEMPLATE = "seed_master.html";
+	
     
     @Override
     public void resources_init(Environment environment) {
@@ -107,26 +114,32 @@ public class SeedsResource implements ResourceAbstract {
     public void resource_service(ServletContext servletContext, User dab_user,
     		HttpServletRequest req, HttpServletResponse resp,
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
+/*    	
         if (Servlet.environment.getContextPath() == null) {
         	Servlet.environment.setContextPath(req.getContextPath());
         }
+*/        
         /*
         if (servicePath == null) {
             servicePath = req.getContextPath() + req.getServletPath();
         }
         */
+        /*
         if (Servlet.environment.getSeedsPath() == null) {
-        	Servlet.environment.setSeedsPath(Servlet.environment.getContextPath() + "/seeds/");
+        	Servlet.environment.setSeedsPath(Servlet.environment.getContextPath() + SEEDS_PATH);
         }
         if (Servlet.environment.getSeedPath() == null) {
-        	Servlet.environment.setSeedPath(Servlet.environment.getContextPath() + "/seed/");
+        	Servlet.environment.setSeedPath(Servlet.environment.getContextPath() + SEED_PATH);
         }
+        */
+        
         
         
         if (resource_id == R_STATUS_LIST || resource_id == R_STATUS_LIST_ID) {
+        	//
             urls_list(dab_user, req, resp, numerics);
         } else if (resource_id == R_STATUS_SEED_SHOW) {
-        	SeedRequest seedRequest = ResourceUtils.getUrlFromPathinfo(pathInfo, SEED_PATH);
+        	SeedRequest seedRequest = SeedRequest.getUrlFromPathinfo(pathInfo, SEED_PATH);
         	url_show(dab_user, req, resp, seedRequest);
         	
         } else if (resource_id == R_STATUS_LIST_ID_DUMP) {
@@ -151,7 +164,9 @@ public class SeedsResource implements ResourceAbstract {
     	Seed seedToShow = null;
     	try {
 	        if (!dao.existsUrl(sr.getUrl())) {
-	        	seedToShow = Seed.createDummySeed();
+	        	String error = "The given url '" + sr.getUrl() + "' was not found in the database"; 
+	        	CommonResource.show_error(error, resp, environment);
+	        	return;
 	        } else {
 	        	if (sr.getNewState() != null) {
 	        		changeState(sr, dao);
@@ -163,15 +178,20 @@ public class SeedsResource implements ResourceAbstract {
 	                } catch (Exception e) {
 	        	        // TODO Auto-generated catch block
 	        	        e.printStackTrace();
+	        	        String error = "The given url '" + sr.getUrl() + "' could not be retrived from the database due to this error: " + e; 
+	        	        CommonResource.show_error(error, resp, environment);
+	        	        return;
 	                }
 	        	}
 	        }
         } catch (Exception e) {
 	        // TODO Auto-generated catch block
-	        e.printStackTrace();
+	        //e.printStackTrace();
+        	
         }
     	if (seedToShow == null) {
     		seedToShow = Seed.createDummySeed(); // Show dummy seed-data
+    		// Should not happen
     	}
     	// Set up the page for showing the seed page
     	
@@ -206,6 +226,9 @@ public class SeedsResource implements ResourceAbstract {
   InsertedDate: <placeholder id="inserted_time" /></br>
   UpdatedTime: <placeholder id="updated_time" /></br>
   Exported: <placeholder id="exported" /></br>
+  <br>
+  Harvests: <placeholder id="harvests" /></br>
+  CriteriaResult: <placeholder id="criteriaresults" /></br>
 */
         TemplatePlaceHolder urlPlace = TemplatePlaceBase.getTemplatePlaceHolder("url");
         TemplatePlaceHolder redirectedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("redirected_url");
@@ -219,6 +242,8 @@ public class SeedsResource implements ResourceAbstract {
         TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
         TemplatePlaceHolder updatedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("updated_time");
         TemplatePlaceHolder exportedPlace = TemplatePlaceBase.getTemplatePlaceHolder("exported");
+        TemplatePlaceHolder harvestsPlace = TemplatePlaceBase.getTemplatePlaceHolder("harvests");
+        TemplatePlaceHolder criteriaResultsPlace = TemplatePlaceBase.getTemplatePlaceHolder("criteriaresults");
         
         
         List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
@@ -243,7 +268,8 @@ public class SeedsResource implements ResourceAbstract {
         placeHolders.add(insertedTimePlace);
         placeHolders.add(updatedTimePlace);
         placeHolders.add(exportedPlace);
-        
+        placeHolders.add(harvestsPlace);
+        placeHolders.add(criteriaResultsPlace);
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
         
         
@@ -287,19 +313,59 @@ public class SeedsResource implements ResourceAbstract {
         	logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
         }
         
+        String redirectedUrlText = seedToShow.getRedirectedUrl();
+        if (redirectedUrlText == null || redirectedUrlText.isEmpty()) {
+        	redirectedUrlText = "N/A";
+        }
         ResourceUtils.insertText(urlPlace, "url",  seedToShow.getUrl(), templateName, logger);
-        ResourceUtils.insertText(redirectedUrlPlace, "redirected_url",  seedToShow.getRedirectedUrl() + "", templateName, logger);
+        ResourceUtils.insertText(redirectedUrlPlace, "redirected_url",  redirectedUrlText, templateName, logger);
         ResourceUtils.insertText(tldPlace, "tld",  seedToShow.getTld() + "", templateName, logger);
         ResourceUtils.insertText(hostPlace, "host",  seedToShow.getHostname()+ "", templateName, logger);
         ResourceUtils.insertText(domainPlace, "domain",  seedToShow.getDomain()+ "", templateName, logger);
         ResourceUtils.insertText(statusPlace, "status",  seedToShow.getStatus() + "", templateName, logger);
         ResourceUtils.insertText(statusReasonPlace, "status_reason",  seedToShow.getStatusReason() + "", templateName, logger);
         ResourceUtils.insertText(danicastatusPlace, "danica_status",  seedToShow.getDanicaStatus() + "", templateName, logger);
-        
-        
-        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + ResourceUtils.printDate(seedToShow.getInsertedTime()), templateName, logger);
-        ResourceUtils.insertText(updatedTimePlace, "updated_time",  "" + seedToShow.getUpdatedTime(), templateName, logger);
+        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  ResourceUtils.printDate(seedToShow.getInsertedTime()), templateName, logger);
+        ResourceUtils.insertText(updatedTimePlace, "updated_time",  ResourceUtils.printDate(seedToShow.getUpdatedTime()), templateName, logger);
         ResourceUtils.insertText(exportedPlace, "exported",  "" + seedToShow.showExportedState(), templateName, logger);
+        String harvestsString = "N/A";
+        String criteriaString = "N/A";
+        StringBuilder sbCriteriaResults = new StringBuilder();
+        try {
+        	HarvestDAO hdao = this.environment.getConfig().getDAOFactory().getHarvestDAO();
+        	long hcount = hdao.getCountWithSeedurl(seedToShow.getUrl());
+        	if (hcount > 0) {
+        		String link = environment.getHarvestsPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/";
+        		harvestsString = "<A href=\"" + link + "\">" + hcount + " harvests</A>";
+        	} else {
+        		harvestsString = "0 harvests";
+        	}
+        	CriteriaResultsDAO cdao =  this.environment.getConfig().getDAOFactory().getCriteriaResultsDAO();
+        	List<SingleCriteriaResult> cresults = cdao.getResultsByUrl(seedToShow.getUrl());
+        	Set<String> clinks = new HashSet<String>();
+        	long ccount = cresults.size();
+        	sbCriteriaResults.append(ccount + " results");
+        	
+        	if (!cresults.isEmpty()) {
+        		for (SingleCriteriaResult c: cresults) {
+        			clinks.add(CriteriaResultsResource.createLink(environment, c.harvestName, c.url));
+        		}
+        		StringBuilder sb = new StringBuilder();
+                sb.append("</br><pre>\r\n");
+                for (String listElement: clinks ) {
+            		sb.append(listElement);
+            		sb.append("\r\n");
+            	}
+                sb.append("</pre>\r\n");
+                sbCriteriaResults.append(sb);
+                criteriaString = sbCriteriaResults.toString();
+        	}
+        } catch (Throwable e) {
+        	e.printStackTrace();
+        }
+        
+        ResourceUtils.insertText(harvestsPlace, "harvests",  harvestsString, templateName, logger);
+        ResourceUtils.insertText(criteriaResultsPlace, "criteriaresults",  criteriaString, templateName, logger);
         StringBuilder sb = new StringBuilder();
     	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
         
@@ -344,6 +410,7 @@ public class SeedsResource implements ResourceAbstract {
         }
    }
 
+	
 	private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);

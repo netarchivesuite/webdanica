@@ -40,6 +40,20 @@ public class C2 {
     public static boolean computeC2bV3(String text) {
         Matcher m = DanicaRegexps.pDanishTlfRegexpNoCase.matcher(text);
     	return m.matches();
+    }
+
+	public static boolean computeC2bAlt(String text) {
+		Pattern p = Pattern.compile(
+				DanicaRegexps.danishTlfRegexp, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		Matcher m = p.matcher(text);
+	    return m.matches();
+    }
+
+	public static boolean computeC2bNoCase(String text) {
+		Pattern p = Pattern.compile(
+				DanicaRegexps.danishTlfRegexpNoCase, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		Matcher m = p.matcher(text);
+	    return m.matches();
     }    
     
     /*public static void main(String[] args) {

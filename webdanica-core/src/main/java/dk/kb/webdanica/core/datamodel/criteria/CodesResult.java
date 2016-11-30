@@ -209,7 +209,7 @@ public static int findNegativBitmapCalcCode(SingleCriteriaResult res) {
     setbit = setbit || ((res.C.get("C9d")!=null) &&  (res.C.get("C9d").length()>2)); 
 	if (setbit) code = setBit(6, code); //A/S… or CVR
     if (res.C.get("C15a")!=null) {
-    	setbit = (res.C.get("C15a").equals("y"));
+    	setbit = (res.C.get("C15a").startsWith("y"));
     	if (setbit) code = setBit(7, code); //neighboring countries
     }
     setbit = ((res.C.get("C16a")!=null) && (!res.C.get("C16a").isEmpty()) && (Long.parseLong(res.C.get("C16a")) > 0L)); 
@@ -281,7 +281,7 @@ public static boolean setcodes_dkLanguageVeryLikely(SingleCriteriaResult res)  {
     int interval = (bigSize ? 20 : 40);
 
 	boolean inclTld = (res.C.get("C15a") != null);
-	inclTld = inclTld && (res.C.get("C15a").equals("y"));  // The URL belongs to a TLD often used by Danes
+	inclTld = inclTld && (res.C.get("C15a").startsWith("y"));  // The URL belongs to a TLD often used by Danes
 	boolean inclToLinks = (res.C.get("C16a")!=null);
 	inclToLinks = inclToLinks && (Long.parseLong(res.C.get("C16a"))>0L);  // There are .dk sites that points to the webpage
 	boolean inclFromLinks = (res.C.get("C17a")!=null);
@@ -406,7 +406,7 @@ public static CodesResult setcodes_notDkLanguageVeryLikelyNewFields(SingleCriter
 	
     boolean bigSize = (res.Cext1>250); // 50 for size 200-250
 	boolean inclTld = (res.C.get("C15a")!=null);
-	inclTld = inclTld && (res.C.get("C15a").equals("y"));     // The URL belongs to a TLD often used by Danes
+	inclTld = inclTld && (res.C.get("C15a").startsWith("y"));     // The URL belongs to a TLD often used by Danes
 
 	boolean incl7g = (res.C.get("C7g")!=null);
 	incl7g = incl7g && !res.C.get("C7g").startsWith("0");
@@ -461,7 +461,7 @@ public static CodesResult setcodes_notDkLanguageVeryLikely(SingleCriteriaResult 
     int interval = (bigSize ? 30 : 50);
     
 	boolean inclTld = (res.C.get("C15a")!=null);
-	inclTld = inclTld && (res.C.get("C15a").equals("y"));     // The URL belongs to a TLD often used by Danes
+	inclTld = inclTld && (res.C.get("C15a").startsWith("y"));     // The URL belongs to a TLD often used by Danes
 
 	boolean incl6a = (res.C.get("C6a") !=null);
 	incl6a = incl6a && !res.C.get("C6a").startsWith("0");
@@ -516,7 +516,7 @@ public static CodesResult setcodes_notDkLanguageVeryLikely(SingleCriteriaResult 
     ok = ok && ((res.C.get("C9d")==null) || (res.C.get("C9d").isEmpty()) || (res.C.get("C9d").startsWith("0"))); // NOT search for CVR + 8 digits for registered Danish company number 
     ok = ok && ((res.C.get("C10a")==null) || (res.C.get("C10a").isEmpty()) || (res.C.get("C10a").startsWith("0"))); // NOT look for typical patterns in Danish surnames like names ending in 'sen' (for son)
     ok = ok && ((res.C.get("C10b")==null) || (res.C.get("C10b").isEmpty()) || (res.C.get("C10b").startsWith("0"))); // NOT look in list of 150 frequently used Danish first names and surnames
-    ok = ok && ((res.C.get("C15a")==null) || (res.C.get("C15a").isEmpty()) || (res.C.get("C15a").equals(inclTld ? "y":"n")));   //The URL does NOT belong to a TLD often used by Danes
+    ok = ok && ((res.C.get("C15a")==null) || (res.C.get("C15a").isEmpty()) || (res.C.get("C15a").startsWith(inclTld ? "y":"n")));   //The URL does NOT belong to a TLD often used by Danes
     ok = ok && ((res.C.get("C16a")==null) || (Long.parseLong(res.C.get("C16a"))==0));   //The URL does NOT belong to a TLD often used by Danes
     ok = ok && ((res.C.get("C17a")==null) || (Long.parseLong(res.C.get("C17a"))==0));   //The URL does NOT belong to a TLD often used by Danes
 

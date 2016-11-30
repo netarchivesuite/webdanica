@@ -22,4 +22,8 @@ public interface HarvestDAO {
 
 	void close();
 
+	boolean exists(String harvestName) throws Exception;
+
+	Long getCountWithSeedurl(String url) throws Exception;
+
 }

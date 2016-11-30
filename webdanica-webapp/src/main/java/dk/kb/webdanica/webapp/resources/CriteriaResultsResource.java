@@ -61,40 +61,16 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        //R_BLACKLIST_ADD = resourceManager.resource_add(this, "/blacklists/add", true);
 	    }
 
-	    //private String servicePath;
-
 	    @Override
 	    public void resource_service(ServletContext servletContext, User dab_user,
 	    		HttpServletRequest req, HttpServletResponse resp,
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
 	    	
-	    	if (Servlet.environment.getContextPath()== null) {
-	        	Servlet.environment.setContextPath(req.getContextPath());
-	        }
-	        
-	        /*
-	        if (servicePath == null) {
-	            servicePath = req.getContextPath() + req.getServletPath();
-	        }
-	        */
-	        if (Servlet.environment.getCriteriaResultPath() == null) {
-	        	Servlet.environment.setCriteriaResultPath(Servlet.environment.getContextPath() + "/criteriaresult/");
-	        }
-	        if (Servlet.environment.getCriteriaResultsPath() == null) {
-	        	Servlet.environment.setCriteriaResultsPath(Servlet.environment.getContextPath() + "/criteriaresults/");
-	        }
 	        if (resource_id == R_CRITERIARESULTS) {
 	            criteriaresults_show(dab_user, req, resp, pathInfo);
 	        }
-//	        else if (resource_id == R_BLACKLIST_ADD) {
-//	            blacklist_add(dab_user, req, resp);
-//	        }
 	    }
 
-	    private void blacklist_add(User dab_user, HttpServletRequest req,
-                HttpServletResponse resp) {
-	        	logger.warning("NOT YET IMPLEMENTED");   
-        }
 	    
 	    private String getHarvestName(String pathInfo) {
 	    	// Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
@@ -143,7 +119,7 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        StringBuffer sb = new StringBuffer();
 	        String harvestName = getHarvestName(pathInfo);
 	        List<SingleCriteriaResult> blacklistList = null;
-	        // FIXME better handling
+	       
 	        try {
 		        if (harvestName == null) {
 		        	blacklistList = dao.getResults();
@@ -151,19 +127,15 @@ public class CriteriaResultsResource implements ResourceAbstract {
 		        	blacklistList = dao.getResultsByHarvestname(harvestName);
 		        }
 	        } catch (Exception e) {
-	        	
+	        	 // FIXME better handling
+	        	// Show error-page if any problems.
 	        }
 	        for (SingleCriteriaResult b: blacklistList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");
 	        	sb.append("<a href=\"");
-	        	sb.append(Servlet.environment.getCriteriaResultPath());
-	        	String base64Encoded = Base64.encodeString(b.url);
-	        	if (base64Encoded == null) {
-	        		logger.warning("base64 encoding of url '" +  b.url + "' gives null");
-	        		base64Encoded = b.url;
-	        	}
-	        	sb.append(b.harvestName + "/" + HTMLUtils.encode(base64Encoded));
+	        	String link = createLink(environment, b.harvestName, b.url);
+	        	sb.append(link);
 	        	sb.append("/\">");
 	        	sb.append(StringUtils.makeEllipsis(b.url, 50) + " (harvest: " + b.harvestName + ")");
 	        	sb.append("</a>");
@@ -257,7 +229,17 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        }
 	    }
 
-		
+		public static String createLink(Environment environment2, String harvestName,
+                String url) {
+			String linkPrefix = environment2.getCriteriaResultPath();
+        	String base64Encoded = Base64.encodeString(url);
+        	if (base64Encoded == null) {
+        		logger.warning("base64 encoding of url '" +  url + "' gives null");
+        		base64Encoded = url;
+        	}
+        	String link = "<A href=\"" + linkPrefix + harvestName + "/" + HTMLUtils.encode(base64Encoded) + "/\">result from harvest '" + harvestName + "'</A>";
+	        return link;
+        }
 	}
 
 

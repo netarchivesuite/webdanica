@@ -18,7 +18,7 @@ public class ResourceUtilsTester {
 	@Test
 	public void testGetUrlFromPathinfo() {
 		String samplePath = "/seed/aHR0cDovL3Jpc2FnZXIuaW5mby8=/";
-		SeedRequest sr = ResourceUtils.getUrlFromPathinfo(samplePath, 
+		SeedRequest sr = SeedRequest.getUrlFromPathinfo(samplePath, 
 				SeedsResource.SEED_PATH);
 		System.out.println(sr.getUrl());
 		System.out.println(sr.getNewState());

@@ -115,7 +115,7 @@ public class NasReports {
 				CriteriaJson CJ = new CriteriaJson(line);
 				if (CJ.isValid()) {
 					for (String key: CJ.getKeys()) {
-						System.out.println("Found value: " + key);
+						//System.out.println("Found value: " + key);
 						reports.put(key, CJ.getValue(key));
 					}
 				}

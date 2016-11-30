@@ -26,7 +26,6 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
-import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
 
 public class IndexResource implements ResourceAbstract {
@@ -51,11 +50,12 @@ public class IndexResource implements ResourceAbstract {
     public void resource_service(ServletContext servletContext, User dab_user,
     		HttpServletRequest req, HttpServletResponse resp,
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
+  /*  	
     	// Update the contextPath if it is not yet set
         if (Servlet.environment.getContextPath() == null) {
         	Servlet.environment.setContextPath(req.getContextPath());
         }
-   
+   */
         if (resource_id == R_INDEX) {
             index_show(dab_user, req, resp);
         }

@@ -26,7 +26,13 @@ import com.antiaction.common.templateengine.storage.TemplateFileStorageManager;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
+import dk.kb.webdanica.webapp.resources.BlackListResource;
+import dk.kb.webdanica.webapp.resources.CriteriaResultResource;
+import dk.kb.webdanica.webapp.resources.CriteriaResultsResource;
+import dk.kb.webdanica.webapp.resources.HarvestResource;
+import dk.kb.webdanica.webapp.resources.HarvestsResource;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
+import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
@@ -57,8 +63,16 @@ public class Environment {
      */
 
     private String contextPath;
-    private String seedsPath; // Maybe not fields here
-	private String seedPath;  // Maybe not fields here
+    private String seedsPath; 
+	private String seedPath;  
+	private String blacklistsPath;
+	private String blacklistPath;
+	private String ingestlogsPath;
+	private String ingestlogPath;
+	private String criteriaResultPath;
+	private String criteriaResultsPath;
+	private String harvestsPath;
+	private String harvestPath;
     
     /*
      * Templates.
@@ -136,29 +150,13 @@ public class Environment {
 	private int defaultItemsPerPage = 25; // create settings
 
 	private ServletContext servletContext;
-	
-	private String blacklistsPath;
-
-	private String blacklistPath;
-
-	private String ingestlogsPath;
-
-	private String ingestlogPath;
 
 	private File netarchiveSuiteSettingsFile;
 	
 	private File webdanicaSettingsFile;
 
 	private ResourcesMap resourcesMap;
-
-	private String criteriaResultPath;
-
-	private String criteriaResultsPath;
-
-	private String harvestsPath;
-
-	private String harvestPath;
-
+	
 	private Configuration theconfig;
 	
     /**
@@ -302,6 +300,17 @@ public class Environment {
 		// if the resource is not found, it sets the secure-status as false, later it will be true (login required)
 		resourcesMap = new ResourcesMap();
 		
+		// initialize the necessary paths of the webapp
+		
+		this.contextPath = servletContext.getContextPath();
+		this.blacklistPath = getContextPath() + BlackListResource.BLACKLIST_PATH;
+		this.blacklistsPath = getContextPath() + BlackListResource.BLACKLISTS_PATH;		
+		this.seedPath = getContextPath() + SeedsResource.SEED_PATH;
+		this.seedsPath = getContextPath() + SeedsResource.SEEDS_PATH;
+		this.harvestPath = getContextPath() + HarvestResource.HARVEST_PATH;
+		this.harvestsPath = getContextPath() + HarvestsResource.HARVESTS_PATH;
+		this.criteriaResultPath = getContextPath() + CriteriaResultResource.CRITERIA_RESULT_PATH;
+		this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
 		/*
 		 * Initialize template master.
 		 */
@@ -407,16 +416,6 @@ public class Environment {
     }
 
 
-	public String getContextPath() {
-	    return contextPath;
-    }
-
-
-	public void setContextPath(String contextPath) {
-	    this.contextPath = contextPath;
-    }
-
-
 	public String getVersion() {
 	    return version;
     }
@@ -429,21 +428,6 @@ public class Environment {
 	    this.servletConfig = servletConfig;
     }
 
-	public String getSeedsPath() {
-	    return seedsPath;
-    }
-
-	public void setSeedsPath(String seedsPath) {
-	    this.seedsPath = seedsPath;
-    }
-
-	public String getSeedPath() {
-	    return seedPath;
-    }
-
-	public void setSeedPath(String seedPath) {
-	    this.seedPath = seedPath;
-    }
 	
 	public WorkThreadAbstract[] getWorkThreads() {
 		return this.workthreads;
@@ -458,42 +442,55 @@ public class Environment {
 	    return this.templateMaster;
     }
 
-	/// Path methods for blacklists: 
+	////////////////////////////////////
+	// Path  methods
+	////////////////////////////////////
+	
+	public String getContextPath() {
+	    return contextPath;
+    }
+
+	public String getSeedsPath() {
+	    return seedsPath;
+    }
+
+	public String getSeedPath() {
+	    return seedPath;
+    }
 	
 	public String getBlacklistsPath() {
 	    return this.blacklistsPath;
     }
 
-	public void setBlacklistsPath(String string) {
-		this.blacklistsPath = string;
-    }
-
 	public String getBlacklistPath() {
 	    return this.blacklistPath;
     }
-
-	public void setBlacklistPath(String string) {
-		this.blacklistPath = string;
-    }
-
-	/// Path methods for ingestlogs: 
 	
 	public String getIngestLogsPath() {
 	    return this.ingestlogsPath;
-    }
-
-	public void setIngestLogsPath(String string) {
-		this.ingestlogsPath = string;
     }
 
 	public String getIngestLogPath() {
 	    return this.ingestlogPath;
     }
 
-	public void setIngestLogPath(String string) {
-		this.ingestlogPath = string;
+	public String getCriteriaResultPath() {
+	    return this.criteriaResultPath;
     }
 
+	public String getCriteriaResultsPath() {
+		return this.criteriaResultsPath;
+    }
+
+	public String getHarvestsPath() {
+		return this.harvestsPath;
+    }
+
+	public String getHarvestPath() {
+		return this.harvestPath;
+    }
+
+	
 	// TODO Add to configuration object for webdanica.
 	public File getNetarchivesuiteSettingsFile() {
 	    return this.netarchiveSuiteSettingsFile;
@@ -507,42 +504,6 @@ public class Environment {
 	public ResourcesMap getResourcesMap() {
 	    return this.resourcesMap;	    
     }
-
-
-	public Object getCriteriaResultPath() {
-	    return this.criteriaResultPath;
-    }
-
-
-	public void setCriteriaResultPath(String string) {
-		this.criteriaResultPath = string;
-    }
-
-
-	public Object getCriteriaResultsPath() {
-		return this.criteriaResultsPath;
-    }
-
-	public void setCriteriaResultsPath(String string) {
-		this.criteriaResultsPath = string;
-    }
-	
-	public void setHarvestsPath(String string) {
-		this.harvestsPath = string;
-    }
-	
-	public String getHarvestsPath() {
-		return this.harvestsPath;
-    }
-	
-	public void setHarvestPath(String string) {
-		this.harvestPath = string;
-    }
-	
-	public String getHarvestPath() {
-		return this.harvestPath;
-    }
-
 
 	public Configuration getConfig() {
 	    return this.theconfig;

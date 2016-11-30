@@ -85,6 +85,9 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        	try {
 		            b = dao.getSingleResult(CK.url, CK.harvest);
 	        	} catch (Exception e) {
+	        		String errMsg = "Unable to fetch a singleResult for url='" + CK.url + "', harvest='" 
+        			+ CK.harvest + "'.";
+	        		CommonResource.show_error(errMsg, resp, environment);
 	        	}
 	            if (b == null) { // no criteria_result found with given url and harvestname
 	            	String errMsg = "No result found for url='" + CK.url + "', harvest='" 
@@ -93,17 +96,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	            	b = SingleCriteriaResult.createErrorResult(errMsg);
 	            }
 	        } 
-	        
-	        if (Servlet.environment.getContextPath()== null) {
-	        	Servlet.environment.setContextPath(req.getContextPath());
-	        }
-	        
-	        if (Servlet.environment.getCriteriaResultPath() == null) {
-	        	Servlet.environment.setCriteriaResultPath(Servlet.environment.getContextPath() + "/criteriaresult/");
-	        }
-	        if (Servlet.environment.getCriteriaResultsPath() == null) {
-	        	Servlet.environment.setCriteriaResultsPath(Servlet.environment.getContextPath() + "/criteriaresults/");
-	        }
+
 	        if (resource_id == R_CRITERIA_RESULT) {
 	        	criteriaResult_show(dab_user, req, resp, b);
 	        } 

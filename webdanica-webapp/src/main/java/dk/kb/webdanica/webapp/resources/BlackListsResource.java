@@ -60,22 +60,7 @@ public class BlackListsResource implements ResourceAbstract {
 	    public void resource_service(ServletContext servletContext, User dab_user,
 	    		HttpServletRequest req, HttpServletResponse resp,
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-	    	
-	    	if (Servlet.environment.getContextPath()== null) {
-	        	Servlet.environment.setContextPath(req.getContextPath());
-	        }
-	        
-	        /*
-	        if (servicePath == null) {
-	            servicePath = req.getContextPath() + req.getServletPath();
-	        }
-	        */
-	        if (Servlet.environment.getBlacklistsPath() == null) {
-	        	Servlet.environment.setBlacklistsPath(Servlet.environment.getContextPath() + "/blacklists/");
-	        }
-	        if (Servlet.environment.getBlacklistPath() == null) {
-	        	Servlet.environment.setBlacklistPath(Servlet.environment.getContextPath() + "/blacklist/");
-	        }
+
 	        if (resource_id == R_BLACKLIST_LIST) {
 	            users_list(dab_user, req, resp);
 	        } else if (resource_id == R_BLACKLIST_ADD) {
@@ -226,15 +211,7 @@ public class BlackListsResource implements ResourceAbstract {
 	        } catch (IOException e) {
 	        	
 	        }
-/*
-	        if (conn != null) {
-	            try {
-	                conn.close();
-	            } catch (SQLException e) {
-	                logger.log(Level.SEVERE, e.toString(), e);
-	            }
-	        }
-*/	        
+
 	    }
 	}
 

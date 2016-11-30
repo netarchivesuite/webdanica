@@ -316,4 +316,57 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
         }
     }
 
+    public static final String SELECT_EXISTS_SQL = "SELECT count(*) FROM harvests where harvestname=?";
+	@Override
+    public boolean exists(String harvestName) throws Exception {
+		PreparedStatement stm = null;
+        ResultSet rs = null;
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(SELECT_EXISTS_SQL);
+            stm.clearParameters();
+            stm.setString(1, harvestName);
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+	    return res != 0;
+    }
+
+	public static final String GET_COUNT_WITH_SEEDURL_SQL = "SELECT count(*) FROM harvests WHERE seedurl=?";
+	
+	@Override
+    public Long getCountWithSeedurl(String url) throws Exception {
+		PreparedStatement stm = null;
+        ResultSet rs = null;
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            stm = conn.prepareStatement(GET_COUNT_WITH_SEEDURL_SQL);
+            stm.clearParameters();
+            stm.setString(1, url);
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+        }
+	    return res;
+    }
+
 }

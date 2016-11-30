@@ -59,6 +59,12 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	private int harvestMaxObjects;
 
 	private long harvestMaxBytes;
+
+	private String harvestLogPrefix;
+
+	private String harvestLogReadySuffix;
+
+	private String harvestLogNotReadySuffix;
 	
 	
     /**
@@ -89,9 +95,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
        	harvestdao = configuration.getDAOFactory().getHarvestDAO();
        	
        	String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR);
-       	String harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX);
-       	String harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX,Constants.DEFAULT_HARVESTLOG_READY_SUFFIX);
-       	String harvestLogNotReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX, Constants.DEFAULT_HARVESTLOG_NOTREADY_SUFFIX);
+      
+       	harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX);
+       	harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX,Constants.DEFAULT_HARVESTLOG_READY_SUFFIX);
+       	harvestLogNotReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX, Constants.DEFAULT_HARVESTLOG_NOTREADY_SUFFIX);
+       
        	maxHarvestsAtaTime = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_SINGLESEEDHARVESTS, Constants.DEFAULT_MAX_HARVESTS);
        	harvestLogDir = new File(harvestLogDirName);
        	
@@ -145,7 +153,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
     }
 
 	private boolean existsLogdirAndIsWritable(File harvestLogDir) {
-		boolean deleteTestFile = false;
+		boolean deleteTestFile = true;
        	if (!harvestLogDir.isDirectory()) {
        		String errMsg = "HarvestWorkFlow will not be enabled as the given directory '" + harvestLogDir.getAbsolutePath() + "' does not exist or is not a proper directory";
         	logger.log(Level.WARNING, errMsg);
@@ -286,8 +294,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 		}
 		
 		long systemTime = System.currentTimeMillis();
-		String logNameInitial = "harvestLog-" + systemTime + ".txt.open"; // TODO add this as settings
-		String logNameFinal = "harvestLog-" + systemTime + ".txt";
+		String logNameInitial = harvestLogPrefix + systemTime + harvestLogNotReadySuffix;
+		String logNameFinal = harvestLogPrefix + systemTime + harvestLogReadySuffix;
 		File harvestLog = new File(harvestLogDir, logNameInitial);
 		File harvestLogFinal = new File(harvestLogDir, logNameFinal);
 		String harvestLogHeaderPrefix = "Harvestlog for ";
@@ -317,7 +325,6 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLog.getAbsolutePath() + "'");
         } catch (Exception e) {
         	String errMsg = "Unable to write a harvestlog to file " + harvestLog.getAbsolutePath() + ": " + e.toString();
-        	//TODO send a mail
         	logger.log(Level.SEVERE, errMsg, e);
         	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failure - unable to write harvestlog to disk", errMsg);
         } 

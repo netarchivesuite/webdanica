@@ -25,7 +25,6 @@ import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
 
-
 public class HarvestsResource implements ResourceAbstract {
 
 	    private static final Logger logger = Logger.getLogger(HarvestsResource.class.getName());
@@ -39,7 +38,7 @@ public class HarvestsResource implements ResourceAbstract {
 
 		//protected int R_BLACKLIST_ADD = -1;
 
-		public static final String HARVEST_LIST_PATH = "/harvests/";
+		public static final String HARVESTS_PATH = "/harvests/";
 		
 	    @Override
 	    public void resources_init(Environment environment) {
@@ -49,40 +48,27 @@ public class HarvestsResource implements ResourceAbstract {
 
 	    @Override
 	    public void resources_add(ResourceManagerAbstract resourceManager) {
-	        R_HARVEST_LIST = resourceManager.resource_add(this, HARVEST_LIST_PATH, 
-	        		   		environment.getResourcesMap().getResourceByPath(HARVEST_LIST_PATH).isSecure());
+	        R_HARVEST_LIST = resourceManager.resource_add(this, HARVESTS_PATH, 
+	        		   		environment.getResourcesMap().getResourceByPath(HARVESTS_PATH).isSecure());
 	    }
-
-	    //private String servicePath;
-
+	    
 	    @Override
 	    public void resource_service(ServletContext servletContext, User dab_user,
 	    		HttpServletRequest req, HttpServletResponse resp,
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-	    	
-	    	if (Servlet.environment.getContextPath()== null) {
-	        	Servlet.environment.setContextPath(req.getContextPath());
-	        }
 	        
-	        /*
-	        if (servicePath == null) {
-	            servicePath = req.getContextPath() + req.getServletPath();
-	        }
-	        */
-	        if (Servlet.environment.getHarvestPath() == null) {
-	        	Servlet.environment.setHarvestPath(Servlet.environment.getContextPath() + "/harvest/");
-	        }
-	        if (Servlet.environment.getHarvestsPath() == null) {
-	        	Servlet.environment.setHarvestsPath(Servlet.environment.getContextPath() + "/harvests/");
-	        }
 	        if (resource_id == R_HARVEST_LIST) {
-	            harvests_list(dab_user, req, resp);
+	            harvests_list(dab_user, req, resp, pathInfo);
 	        } 
 	    }
 
 		public void harvests_list(User dab_user, HttpServletRequest req,
-	            HttpServletResponse resp) throws IOException {
-	        ServletOutputStream out = resp.getOutputStream();
+	            HttpServletResponse resp, String pathInfo) throws IOException {
+			
+			HarvestRequest hr = HarvestRequest.getRequest(HarvestsResource.HARVESTS_PATH, pathInfo);
+			
+			
+			ServletOutputStream out = resp.getOutputStream();
 	        resp.setContentType("text/html; charset=utf-8");
 
 	        Caching.caching_disable_headers(resp);
@@ -113,28 +99,33 @@ public class HarvestsResource implements ResourceAbstract {
 	        // Primary textarea
 	        StringBuffer sb = new StringBuffer();
 
-	        // FIXME better handling
-	        List<SingleSeedHarvest> blacklistList = null;
+	        List<SingleSeedHarvest> harvestList = null;
 	        try {
-		        blacklistList = environment.getConfig().getDAOFactory().getHarvestDAO().getAll();
+	        	if (hr.viewAll()) {
+	        		harvestList = environment.getConfig().getDAOFactory().getHarvestDAO().getAll();
+	        	} else {
+	        		harvestList = environment.getConfig().getDAOFactory().getHarvestDAO().getAllWithSeedurl(hr.getSeedUrl());
+	        	}
 	        } catch (Exception e) {
+	        	// Create error-page
+	        	// FIXME better handling	
 	        }
 
-	        for (SingleSeedHarvest b: blacklistList) {
+	        for (SingleSeedHarvest harvest: harvestList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");
 	        	sb.append("<a href=\"");
 	        	sb.append(Servlet.environment.getHarvestPath());
-	        	sb.append(b.getHarvestName());
+	        	sb.append(harvest.getHarvestName());
 	        	sb.append("/\">");
-	        	sb.append(b.getHarvestName());
+	        	sb.append(harvest.getHarvestName());
 	        	sb.append("</a>");
 	        	sb.append("</td>");
 	        	sb.append("<td>");
-	        	sb.append(b.getSeed());
+	        	sb.append(harvest.getSeed());
 	        	sb.append("</td>");
 	        	sb.append("<td>");
-	        	sb.append(new Date(b.getHarvestedTime()));
+	        	sb.append(new Date(harvest.getHarvestedTime()));
 	        	sb.append("</td>");
 	        	sb.append("</tr>\n");
 	        }
@@ -167,7 +158,9 @@ public class HarvestsResource implements ResourceAbstract {
 	         */
 
 	        String heading = "Liste over høstninger i systemet";
-
+	        if (!hr.viewAll()) {
+	        	heading = "Liste over høstninger i systemet af seedurl '" + hr.getSeedUrl() + "'";
+	        }
 	        /*
 	         * Places.
 	         */

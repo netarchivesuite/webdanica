@@ -12,9 +12,12 @@ import java.util.Set;
 import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.core.criteria.FrequentWords;
+import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
@@ -35,7 +38,11 @@ public class CriteriaIngest {
 		if (addHarvestToDatabase) {
 			HarvestDAO hdao = daofactory.getHarvestDAO();
 			for (SingleSeedHarvest hp: harvests) {
-				hdao.insertHarvest(hp);
+				if (!hdao.exists(hp.getHarvestName())) {
+					hdao.insertHarvest(hp);
+				} else {
+					System.out.println("Skip ingest of harvest '" + hp.getHarvestName() + "' -  a harvest with this name already exists in database");
+				}
 			}
 		}
 		List<HarvestError> errors = HarvestLog.processCriteriaResults(harvests, baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
@@ -98,7 +105,28 @@ public class CriteriaIngest {
 			System.err.println("ERROR: ingest file '" + ingestFile.getAbsolutePath() + "' does not exist!");
 			System.exit(1);
 		}  
-		
+		if (addToDatabase) {
+			// Verify that seed exists in the seed-table, otherwise create it
+			SeedsDAO sdao = daofactory.getSeedsDAO();
+			if (!sdao.existsUrl(seed)) {
+				Seed s = new Seed(seed);
+				s.setStatus(Status.HARVESTING_FINISHED);
+				s.setStatusReason("Set to status '" 
+						+ Status.HARVESTING_FINISHED 
+						+ "' as we should have already harvested this seed");
+				try {
+					boolean inserted = sdao.insertSeed(s);
+					if (!inserted) {
+						System.err.println("Failed to insert the seed '" + seed + "' into the seedstable"); 
+					} else {
+						System.out.println("Insert the seed '" + seed + "' into the seedstable");
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
 		BufferedReader fr = StreamUtils.getBufferedReader(ingestFile);        
 		String line = "";
 		String trimmedLine = null;

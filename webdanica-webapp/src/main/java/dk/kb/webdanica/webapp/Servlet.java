@@ -181,15 +181,15 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 logger.info("Looking for resource to match pathInfo:" + pathInfo);
                 List<Integer> numerics = new ArrayList<Integer>();
                 Resource resource = pathMap.get(pathInfo, numerics);
-                // Hack for handling access to /blacklist/<uid>/ pages
+                // Hacks for handling access to /blacklist/<uid>/ pages
                 if (resource == null && pathInfo.startsWith(BlackListResource.BLACKLIST_PATH)) {
                 	resource = pathMap.get(BlackListResource.BLACKLIST_PATH, numerics);
                 }
                 if (resource == null && pathInfo.startsWith(HarvestResource.HARVEST_PATH)) {
                 	resource = pathMap.get(HarvestResource.HARVEST_PATH, numerics);
                 }
-                if (resource == null && pathInfo.startsWith(HarvestsResource.HARVEST_LIST_PATH)) {
-                	resource = pathMap.get(HarvestsResource.HARVEST_LIST_PATH, numerics);
+                if (resource == null && pathInfo.startsWith(HarvestsResource.HARVESTS_PATH)) {
+                	resource = pathMap.get(HarvestsResource.HARVESTS_PATH, numerics);
                 }
                 
                 if (resource == null && pathInfo.startsWith(CriteriaResultResource.CRITERIA_RESULT_PATH)) {
@@ -201,6 +201,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 }
                 if (resource == null && pathInfo.startsWith(SeedsResource.SEED_PATH)) {
                 	resource = pathMap.get(SeedsResource.SEED_PATH, numerics);
+                }
+                if (resource == null && pathInfo.startsWith(SeedsResource.SEEDS_PATH)) {
+                	resource = pathMap.get(SeedsResource.SEEDS_PATH, numerics);
                 }
                 
                 if (resource != null) {

@@ -37,11 +37,17 @@ public class C7 {
     	
     	return tokens; 
     }
-    
+    //////////////////C7b - to varianter ///////////
     public static Set<String> computeC7b(String urlLower) {
         return TextUtils.SearchPattern(urlLower, Words.danishMajorCities);
     }    
     
+    public static Set<String> computeC7bAlt(String urlLower,
+            List<Set<String>> cityFileTokenSet) {
+		return TextUtils.SearchPattern(urlLower, cityFileTokenSet.get(0)); 
+    }
+    
+    //////////////////C7c - to varianter ///////////
     public static Set<String> computeC7c(String text) {
         return TextUtils.SearchPattern(text, Words.placenames);
     }    
@@ -54,11 +60,19 @@ public class C7 {
 		}
 	    return resultSet;
     }
-    
+    //////////////////C7d - to varianter ///////////
     public static Set<String> computeC7d(String urlLower) {
         return  TextUtils.SearchPattern(urlLower, 
                 Words.placenames);
     }
+    public static Set<String> computeC7dAlt(String urlLower,
+            List<Set<String>> placeNamesTokenSet) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: placeNamesTokenSet) {
+			resultSet.addAll(TextUtils.SearchPattern(urlLower,set));
+		}
+	    return resultSet;
+    }       
     
     public static Set<String> computeC7e(String text) {
         return  TextUtils.SearchPattern(text,  Words.CapitalCountryTranslated);
@@ -87,7 +101,22 @@ public class C7 {
         List<String> words = Arrays.asList(Words.danishmajorcities);
         tokens.retainAll(words);
         return tokens; 
-    }    
+    }  
+    
+    public static Set<String> computeC7gAlt(String text, Set<String> copyTokens,
+            List<Set<String>> cityFileTokenSet) {
+	    	Set<String> resultSet = new HashSet<String>();
+	    Set<String> singleWords = cityFileTokenSet.get(0);
+	    Set<String> doubleWords = cityFileTokenSet.get(1);
+	    for (String doubleWord: doubleWords) {
+	    	if (text.contains(doubleWord)) {
+	    		resultSet.add(doubleWord);
+	    	}
+	    }
+	    copyTokens.retainAll(singleWords);
+	    resultSet.addAll(copyTokens);
+	    return resultSet;
+    }
     //////////////////C7h - diverse varianter ////////////////////////////
     
     public static Set<String> computeC7h(String text) {
@@ -107,35 +136,5 @@ public class C7 {
         List<String> words = Arrays.asList(Words.CapitalCountryTranslated);
         tokens.retainAll(words);
         return tokens; 
-    }
-
-	public static Set<String> computeC7bAlt(String urlLower,
-            List<Set<String>> cityFileTokenSet) {
-		return TextUtils.SearchPattern(urlLower, cityFileTokenSet.get(0)); 
-    }
-
-	public static Set<String> computeC7gAlt(String text, Set<String> copyTokens,
-            List<Set<String>> cityFileTokenSet) {
-	    	Set<String> resultSet = new HashSet<String>();
-	    Set<String> singleWords = cityFileTokenSet.get(0);
-	    Set<String> doubleWords = cityFileTokenSet.get(1);
-	    for (String doubleWord: doubleWords) {
-	    	if (text.contains(doubleWord)) {
-	    		resultSet.add(doubleWord);
-	    	}
-	    }
-	    copyTokens.retainAll(singleWords);
-	    resultSet.addAll(copyTokens);
-	    return resultSet;
-    }
-
-	
-	public static Set<String> computeC7dAlt(String urlLower,
-            List<Set<String>> placeNamesTokenSet) {
-		Set<String> resultSet = new HashSet<String>();
-		for (Set<String> set: placeNamesTokenSet) {
-			resultSet.addAll(TextUtils.SearchPattern(urlLower,set));
-		}
-	    return resultSet;
-    }       
+    }	
 }
