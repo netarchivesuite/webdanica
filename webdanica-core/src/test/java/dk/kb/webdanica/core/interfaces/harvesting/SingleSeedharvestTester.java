@@ -1,7 +1,6 @@
 package dk.kb.webdanica.core.interfaces.harvesting;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +31,7 @@ public class SingleSeedharvestTester {
 		    
 		    NasReports nr = SingleSeedHarvest.getReports(147L); 
 		    //System.out.println(nr.getSeedReport());
-		    SeedReport sr = new SeedReport(nr.getSeedReport());
+		    SeedReport sr = nr.getSeedReport();
 			//for (String s: reports.keySet()) {
 			//	System.out.println(s);
 			//}

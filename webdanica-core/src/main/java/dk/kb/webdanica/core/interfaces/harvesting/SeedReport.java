@@ -1,10 +1,9 @@
 package dk.kb.webdanica.core.interfaces.harvesting;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /*
 [code] [status] [seed] [redirect]
@@ -14,9 +13,11 @@ import java.util.Set;
 
 public class SeedReport { 
 	
+	private static final Logger logger = Logger.getLogger(NasReports.class.getName());
+	
 	public static String SEEDS_HEADER_PATTERN = "[code] [status] [seed] [redirect]";
 	
-	public Map<Integer,Set<SeedReportEntry>> entryMap = new HashMap<Integer,Set<SeedReportEntry>>(); 
+	public Map<String,SeedReportEntry> entryMap = new HashMap<String,SeedReportEntry>(); 
 	
 	public SeedReport(String report) {
 		String[] lines = report.split("\n");
@@ -24,26 +25,22 @@ public class SeedReport {
 			processLine(line);
 		}
 	}
+		
+	public Set<String> getSeeds() {
+		return entryMap.keySet();
+	}
 	
 	private void processLine(String line) {
 		if (!line.contains(SEEDS_HEADER_PATTERN)) {
 			SeedReportEntry entry = new SeedReportEntry(line);
-			if (!entryMap.containsKey(entry.code)) {
-				Set<SeedReportEntry> newEntrySet = new HashSet<SeedReportEntry>();
-				entryMap.put(entry.code, newEntrySet);
-			}
-			Set<SeedReportEntry> entrySet = entryMap.get(entry.code);
-			entrySet.add(entry);
+			entryMap.put(entry.getSeed(), entry);
 		}
     }
+	
+	public SeedReportEntry getEntry(String seed) {
+	    return entryMap.get(seed);
+    }
 
-	public SeedReport(List<String> lines) {
-		for (String line: lines) {
-			processLine(line);
-		}
-	}
-	
-	
 	public static class SeedReportEntry {
 		private String line;
 		private Integer code;
@@ -56,7 +53,7 @@ public class SeedReport {
 			parseLine(line);
 		}
 
-		private void parseLine(String line2) {
+		private void parseLine(String line) {
 	        if (line.contains(SEEDS_HEADER_PATTERN)) {
 	        	return;
 	        } else {
@@ -89,8 +86,12 @@ public class SeedReport {
 		Integer getCode() {
 			return this.code;
 		}
+		
+		boolean isCrawled() {
+			logger.info("Found status '" + this.status + "'");
+			boolean crawled = this.status.equalsIgnoreCase("CRAWLED");
+			logger.info("iscrawled decision for seed '" + this.seed + "': " + crawled);
+			return crawled;
+		}
 	}
-	
-	
-	
 }

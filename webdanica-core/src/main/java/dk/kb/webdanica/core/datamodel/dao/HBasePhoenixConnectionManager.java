@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 
+import org.apache.phoenix.jdbc.PhoenixDriver;
 
 public class HBasePhoenixConnectionManager {
 	
@@ -42,7 +43,12 @@ public class HBasePhoenixConnectionManager {
 				System.out.println( "Error: could not access jdbc driver." );
 				e.printStackTrace();
 			}
+			if (driver instanceof org.apache.phoenix.jdbc.PhoenixDriver) {
+				PhoenixDriver driverP = (org.apache.phoenix.jdbc.PhoenixDriver) driver;
+				logger.info("Now created instance of driver '" +  driverP.getClass().getName());
+			}
 		}
+		
 		String defaultConnectionString = "jdbc:phoenix:localhost:2181:/hbase";
 		connectionString = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_CONNECTION, defaultConnectionString);
 	}
@@ -96,6 +102,7 @@ public class HBasePhoenixConnectionManager {
 	    Enumeration<Driver> drivers = DriverManager.getDrivers();
 	    while (drivers.hasMoreElements()) {
 	        Driver driver = drivers.nextElement();
+	        
 	        if (driver.getClass().getClassLoader() == cl) {
 	            // This driver was registered by the webapp's ClassLoader, so deregister it:
 	            try {

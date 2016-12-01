@@ -96,10 +96,10 @@ public class HarvestLog {
 					} else if (line.startsWith(errorPattern)) {
 						errorLineWasLast = true;
 						String error = line.split(errorPattern)[1].trim();
-						current.errMsg = error;
+						current.errMsg = new StringBuilder(error);
 					} else {
 						if (errorLineWasLast) { // Add to error
-							current.errMsg += line;
+							current.errMsg.append(line);
 						} else {
 							System.err.println("Ignoring line: " + line);
 						}
@@ -221,7 +221,7 @@ public class HarvestLog {
 	public static SingleSeedHarvest makeErrorObject(String error) {
 		SingleSeedHarvest h = new SingleSeedHarvest();
 	    h.harvestName = error;
-	    h.errMsg = error;
+	    h.errMsg = new StringBuilder(error);
 	    h.files = new ArrayList<String>();
 	    return h;
     }

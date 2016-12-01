@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -127,18 +128,17 @@ public class CriteriaResultsResource implements ResourceAbstract {
 		        	blacklistList = dao.getResultsByHarvestname(harvestName);
 		        }
 	        } catch (Exception e) {
-	        	 // FIXME better handling
-	        	// Show error-page if any problems.
+	        	String error = "Exception thrown when retrieving the criteriaresults";
+	        	logger.log(Level.WARNING, error, e);
+	        	CommonResource.show_error(error + e, resp, environment);
+	        	return;
 	        }
 	        for (SingleCriteriaResult b: blacklistList) {
 	        	sb.append("<tr>");
 	        	sb.append("<td>");
-	        	sb.append("<a href=\"");
-	        	String link = createLink(environment, b.harvestName, b.url);
+	        	String linkText = StringUtils.makeEllipsis(b.url, 50) + " (harvest: " + b.harvestName + ")";
+	        	String link = createLink(environment, b.harvestName, b.url, linkText);
 	        	sb.append(link);
-	        	sb.append("/\">");
-	        	sb.append(StringUtils.makeEllipsis(b.url, 50) + " (harvest: " + b.harvestName + ")");
-	        	sb.append("</a>");
 	        	sb.append("</td>");
 	        	sb.append("<td>");
 	        	sb.append(new Date(b.insertedDate) + "");
@@ -228,16 +228,16 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        	logger.warning("Unexpected exception: " + e);
 	        }
 	    }
-
-		public static String createLink(Environment environment2, String harvestName,
-                String url) {
-			String linkPrefix = environment2.getCriteriaResultPath();
+		
+		public static String createLink(Environment environment, String  harvestName,
+                String url, String linkText) {
+			String linkPrefix = environment.getCriteriaResultPath();
         	String base64Encoded = Base64.encodeString(url);
         	if (base64Encoded == null) {
         		logger.warning("base64 encoding of url '" +  url + "' gives null");
         		base64Encoded = url;
         	}
-        	String link = "<A href=\"" + linkPrefix + harvestName + "/" + HTMLUtils.encode(base64Encoded) + "/\">result from harvest '" + harvestName + "'</A>";
+        	String link = "<A href=\"" + linkPrefix + harvestName + "/" + HTMLUtils.encode(base64Encoded) + "/\">" + linkText + "</A>";
 	        return link;
         }
 	}

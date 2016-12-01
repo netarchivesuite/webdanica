@@ -118,5 +118,6 @@ public enum Status {
 	public static int getMaxValidOrdinal() {
 		return MAX_VALID_ORDINAL;
 	}
+	
 }
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -108,7 +109,10 @@ public class HarvestsResource implements ResourceAbstract {
 	        	}
 	        } catch (Exception e) {
 	        	// Create error-page
-	        	// FIXME better handling	
+	        	String errMsg = "Unexpected exception thrown:" + e;
+	        	logger.log(Level.WARNING, errMsg, e);
+	        	CommonResource.show_error(errMsg, resp, environment);
+	        	return;	
 	        }
 
 	        for (SingleSeedHarvest harvest: harvestList) {

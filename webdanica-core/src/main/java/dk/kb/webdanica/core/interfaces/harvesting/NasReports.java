@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
@@ -41,6 +42,8 @@ metadata://netarkivet.dk/crawl/logs/progress-statistics.log?heritrixVersion=3.3.
 
 public class NasReports {
 	
+		private static final Logger logger = Logger.getLogger(NasReports.class.getName());
+	
 		public static final String CRAWL_REPORT_PATTERN = "reports/crawl-report.txt";
 		public static final String SEEDS_REPORT_PATTERN = "reports/seeds-report.txt";
 		public static final String HOSTS_REPORT_PATTERN = "reports/hosts-report.txt";
@@ -56,8 +59,20 @@ public class NasReports {
 			return this.reports;
 		}
 		
-		public String getSeedReport() {
-			return getreport(SEEDS_REPORT_PATTERN);
+		public SeedReport getSeedReport() {
+			String report = getreport(SEEDS_REPORT_PATTERN);
+			SeedReport sr = null;
+			
+			if (report != null) {
+				try {
+					sr = new SeedReport(report);
+				} catch (Throwable e) {
+					logger.warning("Failed to parse the report as a seedsport: " +  e);
+				}
+			} else {
+				logger.warning("No seeds_report found among the reports");
+			}
+			return sr;
 		}
 		
 		public String getCrawlReport() {

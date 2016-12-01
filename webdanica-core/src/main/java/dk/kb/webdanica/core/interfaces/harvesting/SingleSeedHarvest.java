@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +28,7 @@ import dk.kb.webdanica.core.batch.WARCExtractUrlsJob;
 import dk.kb.webdanica.core.datamodel.AnalysisStatus;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
+import dk.kb.webdanica.core.interfaces.harvesting.SeedReport.SeedReportEntry;
 import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
 import dk.netarkivet.common.distribute.arcrepository.BitarchiveRecord;
@@ -65,13 +68,15 @@ import dk.netarkivet.viewerproxy.webinterface.Reporting;
  */
 public class SingleSeedHarvest {
 	
+	private static final Logger logger = Logger.getLogger(SingleSeedHarvest.class.getName());
+	
 	String seed; // The single seed being harvested;
 	String harvestName; // The name of the eventharvest
 	JobStatus finishedState;
 	List<String> files;
 	private JobStatusInfo statusInfo;
 	private NasReports reports;
-	String errMsg;
+	StringBuilder errMsg;
 	boolean successful;
 	private Throwable exception;
 	private long maxBytes;
@@ -97,6 +102,7 @@ public class SingleSeedHarvest {
 		List<DomainConfiguration> noDcs = new ArrayList<DomainConfiguration>();
 		this.maxBytes = maxBytes;
 		this.maxObjects = maxObjects;
+		this.errMsg = new StringBuilder();
 		
 		if (!ScheduleDAO.getInstance().exists(scheduleName)) {
 			throw new WebdanicaException("The chosen schedule with name '" + scheduleName + "' does not exist");
@@ -127,7 +133,7 @@ public class SingleSeedHarvest {
 	
 	private SingleSeedHarvest(String seed, String harvestName, String error, Throwable e) {
 	    this.seed = seed;
-	    this.errMsg = error;
+	    this.errMsg = new StringBuilder(error);
 	    this.exception = e;
 	    this.harvestName = harvestName;
 	    this.analysisState = AnalysisStatus.NO_ANALYSIS;
@@ -144,7 +150,11 @@ public class SingleSeedHarvest {
 		} else {
 		    this.files = new ArrayList<String>();
 		}
-		this.errMsg = error;
+		if (error == null) {
+			this.errMsg = new StringBuilder();
+		} else {
+			this.errMsg = new StringBuilder(error);
+		}
 		this.finishedState = finalState;
 		this.harvestedTime = harvestedTime;
 		this.reports = reports;
@@ -265,18 +275,58 @@ public class SingleSeedHarvest {
 		}
 		this.files = lines;
 		
-		//get the reports associated with the harvest as well, extracted from the metadatawarc.file. 
-		this.reports = getReports(theJob.getJobID());
+		//get the reports associated with the harvest as well, extracted from the metadatawarc.file.
+		this.reports = null;
+		try {
+			this.reports = getReports(theJob.getJobID());
+		} catch (Throwable e) {
+			if (writeToSystemOut) {
+				e.printStackTrace();
+			} else {
+				String error = "Unable to retrieve the reports for job '" + theJob.getJobID() + "': " + e; 
+				logger.warning(error);
+				this.errMsg.append(error);
+			}
+		}
 		// get the urls harvested by the job
-		this.fetchedUrls = getHarvestedUrls(getHeritrixWarcs());
+		this.fetchedUrls = null;
+		try {
+			this.fetchedUrls = getHarvestedUrls(getHeritrixWarcs(), writeToSystemOut);
+		} catch (Throwable e) {
+			if (writeToSystemOut) {
+				e.printStackTrace();
+			} else {
+				String error = "Unable to retrieve the fetchedUrls for job '" + theJob.getJobID() + "'";
+				logger.log(Level.WARNING, error, e);
+				this.errMsg.append(error);
+			}
+		}
 		this.successful = status.equals(JobStatus.DONE);
+		String failureReason = "";
+		if (reports != null && reports.getSeedReport() != null) {
+			// Look at the seedreport
+			SeedReport sr = reports.getSeedReport();
+			SeedReportEntry entry = sr.getEntry(this.seed);
+			if (entry == null) {
+				failureReason = " The seed was not found in the seedreport. Only exists these entries:  " +  StringUtils.join(sr.getSeeds(), ",");
+				this.successful = false;
+			} else if (!entry.isCrawled()) {
+				failureReason = " According to the seedreport, the seed was not crawled. Code = '" +  entry.getCode() + "', Status='" +  entry.getStatus() + "'";
+				this.successful = false;
+			}	
+		}
+		// Add failureReason to errMsg, if it contains information
+		if (!failureReason.isEmpty()) {
+			errMsg.append(failureReason);
+		}
+		
 		this.harvestedTime = theJob.getActualStop().getTime();
 		if (this.successful) {
 			this.analysisState = AnalysisStatus.AWAITING_ANALYSIS;
-			this.analysisStateReason = "Harvest was successful, so analysis can be done";
+			this.analysisStateReason = "Harvest was successful, so analysis can be done.";
 		} else {
 			this.analysisState = AnalysisStatus.NO_ANALYSIS;
-			this.analysisStateReason = "Harvest was not successful, so analysis can't be done";
+			this.analysisStateReason = "Harvest was not successful, so analysis can't be done." + failureReason;
 		}
 		return this.successful;
     }
@@ -295,10 +345,31 @@ public class SingleSeedHarvest {
 	    return new NasReports(reportMap);
     }
 	
-	public static List<String> getHarvestedUrls(List<String> warcfiles) throws Exception {
+	public static List<String> getHarvestedUrls(List<String> warcfiles, boolean writeToSystemOut) throws Exception {
 		List<String> urls = new ArrayList<String>();
+		if (warcfiles.isEmpty()) {
+			String logMsg = "No heritrixWarcs seems to have been harvested. Something must have gone wrong. Returning an empty list";
+			if (writeToSystemOut) {
+				System.err.println(logMsg);
+			} else {
+				logger.warning(logMsg);
+			}
+		} else {
+			String logMsg = "Fetching the harvested from urls from the " + warcfiles.size() + " HeritrixWarcs harvested: " + StringUtils.join(warcfiles, ","); 
+			if (writeToSystemOut) {
+				System.out.println(logMsg);
+			} else {
+				logger.info(logMsg);
+			}
+		}
 		for (String warcfilename: warcfiles){
 			urls.addAll(getUrlsFromFile(warcfilename));
+		}
+		String logMsg = "Retrieve " + urls.size() + " urls";
+		if (writeToSystemOut) {
+			System.out.println(logMsg);
+		} else {
+			logger.info(logMsg);
 		}
 		return urls;
 	}
@@ -344,7 +415,7 @@ public class SingleSeedHarvest {
 	}
 	
 	public String getErrMsg() {
-		return this.errMsg;
+		return this.errMsg.toString();
 	}
 
 	public long getHarvestedTime() {
@@ -439,12 +510,11 @@ public class SingleSeedHarvest {
     }
 
 	public boolean hasErrors() {
-		if (this.errMsg == null || this.errMsg.isEmpty()) {
+		if (this.errMsg.toString().isEmpty()) {
 			return false;
 		} else {
 			return true;
 		}
-	    
     }
 
 	public List<String> getHeritrixWarcs() {
@@ -468,7 +538,7 @@ public class SingleSeedHarvest {
 	}
 
 	public void setErrMsg(String error) {
-	    this.errMsg = error;
+	    this.errMsg = new StringBuilder(error);
 	    
     }
 

@@ -255,6 +255,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 			Throwable savedException = null;
 			s.setStatus(Status.HARVESTING_IN_PROGRESS);
 			String eventHarvestName = null;
+			String failureReason = "";
 			try {
 	            seeddao.updateSeed(s);
 	            eventHarvestName = harvestPrefix + System.currentTimeMillis();
@@ -266,6 +267,10 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	            boolean inserted = harvestdao.insertHarvest(h);
 	            logger.info((harvestSuccess?"Successful":"Failed") + " harvest w/ name " +  h.getHarvestName() + " was " + (inserted? "successfully":"failed to be ") + " inserted into the database");
 	            harvests.add(h);
+	            if (!h.isSuccessful()) {
+	            	failure = true;
+	            	failureReason = h.getErrMsg();
+	            }
             } catch (Exception e) {
             	logger.log(Level.SEVERE, e.toString(), e);
             	failure = true;
@@ -275,6 +280,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             		s.setStatus(Status.HARVESTING_FAILED);
             		if (savedException != null) {
             			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed due to exception: " + savedException);
+            		} else if (!failureReason.isEmpty()){
+            			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed. Reason: " + failureReason);
             		} else {
             			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed -  reason is unknown");
             		}
@@ -293,9 +300,9 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 			
 		}
 		
-		long systemTime = System.currentTimeMillis();
-		String logNameInitial = harvestLogPrefix + systemTime + harvestLogNotReadySuffix;
-		String logNameFinal = harvestLogPrefix + systemTime + harvestLogReadySuffix;
+		String systemTimestamp = SingleSeedHarvest.getTimestamp();
+		String logNameInitial = harvestLogPrefix + systemTimestamp + harvestLogNotReadySuffix;
+		String logNameFinal = harvestLogPrefix + systemTimestamp + harvestLogReadySuffix;
 		File harvestLog = new File(harvestLogDir, logNameInitial);
 		File harvestLogFinal = new File(harvestLogDir, logNameFinal);
 		String harvestLogHeaderPrefix = "Harvestlog for ";
@@ -322,7 +329,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	        }
 	        harvestLog.renameTo(harvestLogFinal);
 	        //Do we need to set the permissions again?
-	        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLog.getAbsolutePath() + "'");
+	        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLogFinal.getAbsolutePath() + "'");
         } catch (Exception e) {
         	String errMsg = "Unable to write a harvestlog to file " + harvestLog.getAbsolutePath() + ": " + e.toString();
         	logger.log(Level.SEVERE, errMsg, e);
