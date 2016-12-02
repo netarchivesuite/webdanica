@@ -55,7 +55,7 @@ public class HarvestLog {
 				if (trimmedLine.isEmpty() || trimmedLine.startsWith("######")) {
 					// Skip line
 				} else {
-					
+
 					if (line.startsWith(seedPattern)) {
 						errorLineWasLast = false;
 						// add harvestReport if current != null
@@ -84,13 +84,20 @@ public class HarvestLog {
 						current.harvestedTime = Long.parseLong(line.split(harvestedTimePattern)[1]);	
 					} else if (line.startsWith(filesPattern)) {
 						errorLineWasLast = false;
-						String files = line.split(filesPattern)[1];
 						List<String> fileList = new ArrayList<String>();
-						if (!files.equals("null")) {
-							String[] filesParts = files.split(",");
-							for (String file: filesParts) {
-								fileList.add(file);
+						String[] filesParts = line.split(filesPattern);
+						if (filesParts.length > 1) {
+							String files = line.split(filesPattern)[1];
+							if (!files.equals("null")) {
+								filesParts = files.split(",");
+								for (String file: filesParts) {
+									fileList.add(file);
+								}
+							} else {
+								System.err.println("No harvest-files identified in line '" + line + "'");
 							}
+						} else {
+							System.err.println("No harvest-files identified in line '" + line + "'");
 						}
 						current.files = fileList;
 					} else if (line.startsWith(errorPattern)) {
@@ -104,7 +111,7 @@ public class HarvestLog {
 							System.err.println("Ignoring line: " + line);
 						}
 					}
-			
+
 				}
 			};
 			results.add(current); // add the last one to the list

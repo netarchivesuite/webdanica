@@ -33,6 +33,7 @@ public class Seed {
 	private Long updatedTime;
 	private boolean exported;
 	private Long exportedTime;
+	private String danicaStatusReason;
 		
 	public Seed(String url) {
 		this.url = url;
@@ -44,6 +45,7 @@ public class Seed {
 		this.insertedTime = null;
 		this.updatedTime = null;
 		this.danicaStatus = DanicaStatus.UNDECIDED;
+		this.danicaStatusReason = "";
 		this.status = Status.NEW;
 		this.statusReason = "";
 		this.exported = false;
@@ -51,7 +53,7 @@ public class Seed {
 	}
 	
 	public Seed(String url, String redirectedUrl, String hostname, String domain, String tld, Long insertedTime, Long updatedTime, DanicaStatus danicastate, Status state, String stateReason,
-			boolean exported, Long exportedTime) {
+			boolean exported, Long exportedTime, String danicaStatusReason) {
 		this.url = url;
 		setRedirectedUrl(redirectedUrl);
 		this.hostname = hostname;
@@ -64,12 +66,18 @@ public class Seed {
 		setStatusReason(stateReason);
 		this.exported = exported;
 		this.exportedTime = exportedTime;
+		this.danicaStatusReason = danicaStatusReason;
 	}
 	
 
-	private void setDanicaStatus(DanicaStatus danicastate) {
+	public void setDanicaStatus(DanicaStatus danicastate) {
 	    this.danicaStatus = danicastate;
     }
+	
+	public void setDanicaStatusReason(String newDanicaStatusReasons) {
+	    this.danicaStatusReason = newDanicaStatusReasons;
+    }
+
 
 	public String getUrl() {
 	    return url;
@@ -101,6 +109,10 @@ public class Seed {
 
 	public DanicaStatus getDanicaStatus() {
 	    return danicaStatus;
+    }
+
+	public String getDanicaStatusReason() {
+	    return danicaStatusReason;
     }
 	
 	public String toString() {
@@ -143,13 +155,9 @@ public class Seed {
 	    this.exported = b;
     }
 	
-	public void changeStateTo(Status status, String statusReason) {
-		
-	}
-	public static Seed createDummySeed() {
-		return new Seed("DUMMY-URL", "DUMMY-REDIRECTED_URL", "N/A", "N/A", "N/A", 0L, 0L, DanicaStatus.IMPROBABLE, Status.REJECTED, "N/A",
-				false, 0L);
-    }
+//	public void changeStateTo(Status status, String statusReason) {
+//		
+//	}
 
 	public String showExportedState() {
 	    if (exported == false) {

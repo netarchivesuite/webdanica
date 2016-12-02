@@ -78,5 +78,14 @@ public class SystemUtils {
     		}
     	};
     	return tl;
-    }    
+    }
+    
+    public static boolean isGzippedWarcfile(String warcfilename) {
+	    return warcfilename.toLowerCase().endsWith(".gz"); 
+    }
+	
+    
+    
 }
+
+

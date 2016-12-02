@@ -107,6 +107,7 @@ public class SeedsResource implements ResourceAbstract {
             urls_list(dab_user, req, resp, numerics);
         } else if (resource_id == R_STATUS_SEED_SHOW) {
         	SeedRequest seedRequest = SeedRequest.getUrlFromPathinfo(pathInfo, SEED_PATH);
+        	
         	url_show(dab_user, req, resp, seedRequest);
         	
         } else if (resource_id == R_STATUS_LIST_ID_DUMP) {
@@ -119,11 +120,27 @@ public class SeedsResource implements ResourceAbstract {
     private void changeState(SeedRequest seedRequest, SeedsDAO dao) throws Exception {
     	Seed s = dao.getSeed(seedRequest.getUrl());
     	Status old = s.getStatus();
-    	s.setStatus(seedRequest.getNewState());
-    	s.setStatusReason("Changed from status '" + old + "' to status '" + seedRequest.getNewState() + "' by user-request "); 
-	    dao.updateSeed(s);
+    	if (seedRequest.isAcceptSeedAsDanicaRequest()) {
+    		Status newStatus = Status.DONE;
+    		s.setStatus(newStatus);
+        	s.setStatusReason("Changed from status '" + old + "' to status '" + newStatus + "' because user has accepted this as a danica seed");
+        	s.setDanicaStatus(DanicaStatus.YES);
+        	s.setDanicaStatusReason("Accepted as danica by webuser");
+    	} else if (seedRequest.isRejectSeedAsDanicaRequest()) {
+     		Status newStatus = Status.REJECTED;
+    		s.setStatus(newStatus);
+        	s.setStatusReason("Changed from status '" + old + "' to status '" + newStatus + "' because user has rejected this as a danica seed");
+        	s.setDanicaStatus(DanicaStatus.NO);
+        	s.setDanicaStatusReason("Rejected as danica by webuser");
+    	} else { //isValidNewState
+    		Status newStatus = Status.fromOrdinal(seedRequest.getNewState());
+        	s.setStatus(newStatus);
+        	s.setStatusReason("Changed from status '" + old + "' to status '" + newStatus + "' by user-request ");
+    	}
+    	dao.updateSeed(s);
     }
-
+    
+    
 	private void url_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, SeedRequest sr) throws IOException  {
     	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
@@ -136,9 +153,23 @@ public class SeedsResource implements ResourceAbstract {
 	        	return;
 	        } else {
 	        	if (sr.getNewState() != null) {
-	        		changeState(sr, dao);
-	        		resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
-	        		return;
+	        		if (Status.isValidNewState(sr.getNewState()) || sr.isAcceptSeedAsDanicaRequest() || sr.isRejectSeedAsDanicaRequest()) {
+	        			changeState(sr, dao);
+	        			resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
+	        			return;
+	        		} else if (sr.isAcceptSeedAsDanicaRequest()) {
+	        			changeState(sr, dao);
+	        			resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
+	        			return;
+	        		} else if (sr.isRejectSeedAsDanicaRequest()) {
+	        			changeState(sr, dao);
+	        			resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
+	        			return;
+	        		} else {
+	        			String error = "The given statuscode '" +sr.getNewState() + "' is not valid"; 
+	        	        CommonResource.show_error(error, resp, environment);
+	        	        return;
+	        		}
 	        	} else {
 	        		try {
 	        	        seedToShow = dao.getSeed(sr.getUrl());
@@ -208,6 +239,7 @@ public class SeedsResource implements ResourceAbstract {
         TemplatePlaceHolder statusPlace = TemplatePlaceBase.getTemplatePlaceHolder("status");
         TemplatePlaceHolder statusReasonPlace = TemplatePlaceBase.getTemplatePlaceHolder("status_reason");
         TemplatePlaceHolder danicastatusPlace = TemplatePlaceBase.getTemplatePlaceHolder("danica_status");
+        TemplatePlaceHolder danicastatusReasonPlace = TemplatePlaceBase.getTemplatePlaceHolder("danica_status_reason");
         TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
         TemplatePlaceHolder updatedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("updated_time");
         TemplatePlaceHolder exportedPlace = TemplatePlaceBase.getTemplatePlaceHolder("exported");
@@ -240,6 +272,7 @@ public class SeedsResource implements ResourceAbstract {
         placeHolders.add(harvestsPlace);
         placeHolders.add(criteriaResultsPlace);
         placeHolders.add(linksPlace);
+        placeHolders.add(danicastatusReasonPlace);
         
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
         
@@ -292,23 +325,23 @@ public class SeedsResource implements ResourceAbstract {
         Status state = seedToShow.getStatus();
         if (state.equals(Status.ANALYSIS_FAILURE) || state.equals(Status.HARVESTING_FAILED) || state.equals(Status.HARVESTING_IN_PROGRESS) || state.equals(Status.HARVESTING_FINISHED)) {
         	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + Status.READY_FOR_HARVESTING.ordinal() + "/";
-     		String retryHarvestLink = "<A href=\"" + links + "\"> Retry harvesting</A>";
+     		String retryHarvestLink = "[<A href=\"" + links + "\"> Retry harvesting</A>]";
      		linkSet.add(retryHarvestLink);
         }
         if (!state.equals(Status.NEW)) {
         	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + Status.NEW.ordinal() + "/";
-    		String retryLink = "<A href=\"" +  links + "\"> Reset seed to status NEW</A>";
+    		String retryLink = "[<A href=\"" +  links + "\"> Reset seed to status NEW</A>]";
     		linkSet.add(retryLink);
         }
         DanicaStatus dState = seedToShow.getDanicaStatus();
         if (!dState.equals(DanicaStatus.YES)) {
         	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + 100 + "/";
-    		String retryLink = "<A href=\"" +  links + "\"> Accept seed as Danica - LINK NOT WORKING YET</A>";
+    		String retryLink = "[<A href=\"" +  links + "\"> Accept seed as Danica</A>]";
     		linkSet.add(retryLink);
         }
         if (!dState.equals(DanicaStatus.NO)) {
         	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + 101 + "/";
-    		String retryLink = "<A href=\"" +  links + "\"> Reject seed as Danica - LINK NOT WORKING YET</A>";
+    		String retryLink = "[<A href=\"" +  links + "\"> Reject seed as Danica</A>]";
     		linkSet.add(retryLink);
         }
         ResourceUtils.insertText(linksPlace, "links",  StringUtils.join(linkSet, "&nbsp;&nbsp;"), templateName, logger);
@@ -320,6 +353,7 @@ public class SeedsResource implements ResourceAbstract {
         ResourceUtils.insertText(statusPlace, "status",  seedToShow.getStatus() + "", templateName, logger);
         ResourceUtils.insertText(statusReasonPlace, "status_reason",  seedToShow.getStatusReason() + "", templateName, logger);
         ResourceUtils.insertText(danicastatusPlace, "danica_status",  seedToShow.getDanicaStatus() + "", templateName, logger);
+        ResourceUtils.insertText(danicastatusReasonPlace, "danica_status_reason",  seedToShow.getDanicaStatusReason() + "", templateName, logger);
         ResourceUtils.insertText(insertedTimePlace, "inserted_time",  ResourceUtils.printDate(seedToShow.getInsertedTime()), templateName, logger);
         ResourceUtils.insertText(updatedTimePlace, "updated_time",  ResourceUtils.printDate(seedToShow.getUpdatedTime()), templateName, logger);
         ResourceUtils.insertText(exportedPlace, "exported",  "" + seedToShow.showExportedState(), templateName, logger);

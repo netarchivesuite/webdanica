@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
@@ -24,6 +25,7 @@ public class HBasePhoenixConnectionManager {
 	}
 
 	protected static Object driver;
+	protected static PhoenixDriver driverP;
 	protected static String connectionString;
 
 	public static synchronized void register() {
@@ -44,8 +46,8 @@ public class HBasePhoenixConnectionManager {
 				e.printStackTrace();
 			}
 			if (driver instanceof org.apache.phoenix.jdbc.PhoenixDriver) {
-				PhoenixDriver driverP = (org.apache.phoenix.jdbc.PhoenixDriver) driver;
-				logger.info("Now created instance of driver '" +  driverP.getClass().getName());
+				driverP = (org.apache.phoenix.jdbc.PhoenixDriver) driver;
+				logger.info("Now created instance of '" +  driverP.getClass().getName());
 			}
 		}
 		
@@ -114,6 +116,16 @@ public class HBasePhoenixConnectionManager {
 	            // driver was not registered by the webapp's ClassLoader and may be in use elsewhere
 	        	logger.warning("jdbc-driver '" + driver.getClass().getName() + "' not registered by this app, so we don't touch it");       }
 	    }
+	    if (driverP != null) {
+	    	try {
+	            driverP.close();
+            } catch (SQLException e) {
+            	logger.log(Level.WARNING, "Exception while trying to close the Phoenix JDBC driver", e);
+            }
+	    	driverP = null;
+	    }
+	    driver = null;
+	    
 	}
 
 }

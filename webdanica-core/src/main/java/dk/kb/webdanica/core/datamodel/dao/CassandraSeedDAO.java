@@ -94,7 +94,8 @@ public class CassandraSeedDAO implements SeedsDAO {
 				Status.fromOrdinal(row.getInt("status")), 
 				row.getString("status_reason"),
 				row.getBool("exported"),
-				row.getLong("exported_time")
+				row.getLong("exported_time"),
+				row.getString("danica_reason")
 				);
     }
 

@@ -118,6 +118,13 @@ public enum Status {
 	public static int getMaxValidOrdinal() {
 		return MAX_VALID_ORDINAL;
 	}
+
+	public static boolean isValidNewState(Integer newState) {
+	    if (newState < 1 || newState > MAX_VALID_ORDINAL) {
+	    	return false;
+	    } 
+	    return true;
+    }
 	
 }
 

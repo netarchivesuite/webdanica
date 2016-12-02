@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS domains;
 
 CREATE TABLE domains (
     domain VARCHAR PRIMARY KEY,
-    description VARCHAR,
     danicastatus INTEGER,
+    inserted_time TIMESTAMP,
     updated_time TIMESTAMP,
     danicastatus_reason VARCHAR(256),
     tld VARCHAR(64),

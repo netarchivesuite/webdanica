@@ -29,12 +29,14 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		    status INTEGER, // see dk.kb.webdanica.datamodel.Status enum class
 		    status_reason VARCHAR, // textual explanation behind its state
 		    exported boolean,
-		    exported_time TIMESTAMP
+		    exported_time TIMESTAMP,
+		    danica_reason VARCHAR
+		    
 	*/
 	static {
 		UPSERT_SQL = ""
-				+ "UPSERT INTO seeds (url, redirected_url, host, domain, tld, inserted_time, updated_time, danica, status, status_reason, exported, exported_time) "
-				+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ";
+				+ "UPSERT INTO seeds (url, redirected_url, host, domain, tld, inserted_time, updated_time, danica, status, status_reason, exported, exported_time, danica_reason) "
+				+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 		
 		EXISTS_SQL = ""
 		        + "SELECT count(*) "
@@ -87,6 +89,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 			stm.setString(10, singleSeed.getStatusReason());
 			stm.setBoolean(11, singleSeed.getExportedState());
 			stm.setTimestamp(12, exportedTimeAsTimestamp);
+			stm.setString(13, singleSeed.getDanicaStatusReason());
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -227,7 +230,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 				Status.fromOrdinal(rs.getInt("status")), 
 				rs.getString("status_reason"),
 				rs.getBoolean("exported"),
-				exportedTime
+				exportedTime, 
+				rs.getString("danica_reason")
 				);
 	}	
 	
