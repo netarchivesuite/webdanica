@@ -43,7 +43,7 @@ public class SingleCriteriaResult {
 		//"C6d",
 		//"C7a", 
 		"C7b", 
-		//"C7c", "C7d", 
+		"C7c", "C7d", 
 		"C7e", "C7f", "C7g", "C7h",
 		"C8a", "C8b", "C8c",
 		"C9a", "C9b", "C9c", "C9d", "C9e", "C9f",
