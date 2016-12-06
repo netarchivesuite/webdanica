@@ -33,6 +33,8 @@ import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
+import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.MenuItem;
@@ -40,6 +42,7 @@ import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Pagination;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
+import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
 import dk.netarkivet.common.utils.I18n;
 import dk.netarkivet.common.webinterface.HTMLUtils;
 
@@ -144,6 +147,7 @@ public class SeedsResource implements ResourceAbstract {
 	private void url_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, SeedRequest sr) throws IOException  {
     	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
+    	HarvestDAO hdao = Servlet.environment.getConfig().getDAOFactory().getHarvestDAO();
     	// Retrieving UUID or maybe name from pathinfo instead of String equivalent of numerics
     	Seed seedToShow = null;
     	try {
@@ -163,6 +167,10 @@ public class SeedsResource implements ResourceAbstract {
 	        			return;
 	        		} else if (sr.isRejectSeedAsDanicaRequest()) {
 	        			changeState(sr, dao);
+	        			resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
+	        			return;
+	        		} else if (sr.isRetryAnalysisRequest()) {
+	        			retryAnalysis(sr.getUrl(), dao, hdao,  Servlet.environment.getConfig());
 	        			resp.sendRedirect(Servlet.environment.getSeedsPath()); // redirect to main seedspage
 	        			return;
 	        		} else {
@@ -328,6 +336,7 @@ public class SeedsResource implements ResourceAbstract {
      		String retryHarvestLink = "[<A href=\"" + links + "\"> Retry harvesting</A>]";
      		linkSet.add(retryHarvestLink);
         }
+        
         if (!state.equals(Status.NEW)) {
         	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + Status.NEW.ordinal() + "/";
     		String retryLink = "[<A href=\"" +  links + "\"> Reset seed to status NEW</A>]";
@@ -335,15 +344,21 @@ public class SeedsResource implements ResourceAbstract {
         }
         DanicaStatus dState = seedToShow.getDanicaStatus();
         if (!dState.equals(DanicaStatus.YES)) {
-        	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + 100 + "/";
+        	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + SeedRequest.ACCEPT_AS_DANICA_CODE + "/";
     		String retryLink = "[<A href=\"" +  links + "\"> Accept seed as Danica</A>]";
     		linkSet.add(retryLink);
         }
         if (!dState.equals(DanicaStatus.NO)) {
-        	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + 101 + "/";
+        	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + SeedRequest.REJECT_AS_DANICA_CODE + "/";
     		String retryLink = "[<A href=\"" +  links + "\"> Reject seed as Danica</A>]";
     		linkSet.add(retryLink);
         }
+        if (state.equals(Status.ANALYSIS_FAILURE) || state.equals(Status.HARVESTING_FINISHED)) {
+        	String links = environment.getSeedPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/" + SeedRequest.RETRY_ANALYSIS_CODE + "/";
+    		String retryLink = "[<A href=\"" +  links + "\"> Retry Analysis of last harvestdata</A>]";
+    		linkSet.add(retryLink);
+        }
+        
         ResourceUtils.insertText(linksPlace, "links",  StringUtils.join(linkSet, "&nbsp;&nbsp;"), templateName, logger);
         ResourceUtils.insertText(urlPlace, "url",  seedToShow.getUrl(), templateName, logger);
         ResourceUtils.insertText(redirectedUrlPlace, "redirected_url",  redirectedUrlText, templateName, logger);
@@ -361,7 +376,7 @@ public class SeedsResource implements ResourceAbstract {
         String criteriaString = "N/A";
         StringBuilder sbCriteriaResults = new StringBuilder();
         try {
-        	HarvestDAO hdao = this.environment.getConfig().getDAOFactory().getHarvestDAO();
+        	//HarvestDAO hdao = this.environment.getConfig().getDAOFactory().getHarvestDAO();
         	long hcount = hdao.getCountWithSeedurl(seedToShow.getUrl());
         	if (hcount > 0) {
         		String link = environment.getHarvestsPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/";
@@ -443,7 +458,67 @@ public class SeedsResource implements ResourceAbstract {
         }
    }
 
+	public static String findHarvestNameInStatusReason(String statusReason) {
+		final String SPLITTER = "harvestname";
+		String harvestName = null;
+		if (!statusReason.contains(SPLITTER)) {
+			//System.out.println("Can't find harvestname in field statusreason. marker has changed: '" +  statusReason + "'");
+			return null;
+		} else {
+			String[] statusReasonParts = statusReason.split(SPLITTER);
+			if (statusReasonParts.length > 1) {
+				harvestName = statusReasonParts[1].trim();
+				//System.out.println(harvestName);
+				String[] harvestNameparts = harvestName.split(" ");
+				if (harvestNameparts.length == 2) {
+					return harvestNameparts[1];
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
+	}
 	
+	
+	private void retryAnalysis(String url, SeedsDAO dao, HarvestDAO hdao, Configuration conf) throws Exception {
+		Seed s = dao.getSeed(url); // we have already checked that it exists
+		
+		String statusReason = s.getStatusReason();//
+		String harvestName = findHarvestNameInStatusReason(statusReason);
+		if (harvestName == null) {
+			logger.warning("Can't find harvestname in field statusreason. marker has changed: '" +  statusReason + "'");
+			return;
+		};
+		
+		SingleSeedHarvest ssh = hdao.getHarvest(harvestName);
+		if (ssh == null) {
+			logger.warning("Can't find harvest '" + harvestName + "' in harvests table");
+			return;
+		} else {
+			if (!ssh.isSuccessful()) {
+				logger.warning("Can't retry analysis of failed harvest '" + harvestName + "'");
+				return;
+			} else {
+				// writeharvest to harvestLogs
+				try {
+					List<SingleSeedHarvest> harvests = new ArrayList<SingleSeedHarvest>();
+					harvests.add(ssh);
+					HarvestWorkThread.writeHarvestLog(harvests, conf);
+				} catch (Throwable e) {
+					logger.log(Level.WARNING, "Failed to harvestlog for harvest '" + harvestName + "' to harvestlogsdir", e);
+					return;
+				}
+		        // update status of seed
+				s.setStatus(Status.READY_FOR_ANALYSIS);
+				s.setStatusReason("Ready for analysis retry of harvest '" +  harvestName + "'");
+				dao.updateSeed(s);
+			}
+		}
+		
+    }
+
 	private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
         //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);

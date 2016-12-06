@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -41,7 +42,7 @@ public class HarvestResource implements ResourceAbstract {
     
     @Override
     public void resources_init(Environment environment) {
-        this.environment = environment;
+        this.environment = environment;	
         this.hdao = environment.getConfig().getDAOFactory().getHarvestDAO();
         this.cdao = environment.getConfig().getDAOFactory().getCriteriaResultsDAO();
     }
@@ -223,19 +224,6 @@ public class HarvestResource implements ResourceAbstract {
         } else {
         	logger.warning("No heading´ placeholder found in template '" + HARVEST_SHOW_TEMPLATE + "'" );
         }
-
-        /*
-         * TemplatePlaceHolder namePlace = TemplatePlaceBase.getTemplatePlaceHolder("name");
-        TemplatePlaceHolder seedPlace = TemplatePlaceBase.getTemplatePlaceHolder("seed");
-        TemplatePlaceHolder harvestedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("harvested_time");
-        TemplatePlaceHolder criteriaresultsPlace = TemplatePlaceBase.getTemplatePlaceHolder("criteria_results");
-        TemplatePlaceHolder successfullPlace = TemplatePlaceBase.getTemplatePlaceHolder("successful");
-        TemplatePlaceHolder endStatePlace = TemplatePlaceBase.getTemplatePlaceHolder("endState");
-        TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("errors");
-         * 
-         * 
-         * 
-         */
         
         ResourceUtils.insertText(namePlace, "name",  b.getHarvestName(), HARVEST_SHOW_TEMPLATE, logger);
         ResourceUtils.insertText(seedPlace, "seed",  b.getSeed(), HARVEST_SHOW_TEMPLATE, logger);
@@ -255,9 +243,7 @@ public class HarvestResource implements ResourceAbstract {
         try {
             critCount = cdao.getCountByHarvest(b.getHarvestName());
         } catch (Exception e) {
-        	e.printStackTrace();
-        	// FIXME better handling
-        	// redirect to error page
+        	logger.log(Level.WARNING, "Unable to retrieve number of critresults for this harvest", e);
         }
 
         String linkToCriteriaresults = "No criteriaresults found for this harvest";
@@ -298,7 +284,7 @@ public class HarvestResource implements ResourceAbstract {
     	StringBuilder sbSeedReport = new StringBuilder();
     	if (b.getReports() != null && b.getReports().getSeedReport() != null) {
     		sbSeedReport.append("<pre>\r\n");
-    		sbSeedReport.append(b.getReports().getSeedReport());
+    		sbSeedReport.append(b.getReports().getSeedReport().getReportAsString());
     		sbSeedReport.append("</pre>\r\n");
     	} else {
     		sbSeedReport.append("<pre>\r\n");
@@ -309,7 +295,7 @@ public class HarvestResource implements ResourceAbstract {
   
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
-            	logger.info("Printing out id :" + templateParts.parts.get(i).getId());
+            	//logger.info("Printing out id :" + templateParts.parts.get(i).getId());
                 out.write(templateParts.parts.get(i).getBytes());
             }
             out.flush();

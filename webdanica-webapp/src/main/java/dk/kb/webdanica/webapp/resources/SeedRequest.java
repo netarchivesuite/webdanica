@@ -9,6 +9,7 @@ public class SeedRequest {
 	private String pathInfo;
 	public static final int ACCEPT_AS_DANICA_CODE = 100;
 	public static final int REJECT_AS_DANICA_CODE = 101;
+	public static final int RETRY_ANALYSIS_CODE = 102;
 	
 	public SeedRequest(String url, Integer newStatus, String pathInfo) {
 	    this.url = url;
@@ -56,4 +57,8 @@ public class SeedRequest {
 	public boolean isRejectSeedAsDanicaRequest() {
 		return (newStatus == REJECT_AS_DANICA_CODE);
 	}
+
+	public boolean isRetryAnalysisRequest() {
+	    return (newStatus == RETRY_ANALYSIS_CODE);
+    }
 }

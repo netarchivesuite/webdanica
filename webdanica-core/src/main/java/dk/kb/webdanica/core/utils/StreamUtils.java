@@ -46,7 +46,7 @@ public class StreamUtils {
 	 /** Constant for UTF-8. */
     private static final String UTF8_CHARSET = "UTF-8";
 
-    public static String getInputStreamAsString(InputStream in) {
+    public static synchronized String getInputStreamAsString(InputStream in) {
     	StringBuilder res = new StringBuilder();
     	
     	if (in == null){
@@ -59,7 +59,7 @@ public class StreamUtils {
     	try {
     		try {
     			while ((read = in.read(buf)) != -1) {
-    				System.out.println("read: " + read);
+    				LOG.info("read: " + read);
     				res.append(new String(buf, UTF8_CHARSET), 0, read);
     			}
     		} finally {

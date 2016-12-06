@@ -583,6 +583,8 @@ public class CombinedCombo extends EvalFunc<String> {
 			}
 			if (!errorSb.toString().isEmpty()) {
 				object.put("CError", errorSb.toString());
+			} else {
+				object.put("CError", "No errors during analysis");
 			}
 		}
 		return object.toJSONString();

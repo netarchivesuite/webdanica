@@ -59,12 +59,6 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 	private int harvestMaxObjects;
 
 	private long harvestMaxBytes;
-
-	private String harvestLogPrefix;
-
-	private String harvestLogReadySuffix;
-
-	private String harvestLogNotReadySuffix;
 	
 	
     /**
@@ -94,14 +88,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
        	seeddao = configuration.getDAOFactory().getSeedsDAO();
        	harvestdao = configuration.getDAOFactory().getHarvestDAO();
        	
-       	String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR);
-      
-       	harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX);
-       	harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX,Constants.DEFAULT_HARVESTLOG_READY_SUFFIX);
-       	harvestLogNotReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX, Constants.DEFAULT_HARVESTLOG_NOTREADY_SUFFIX);
+       	//String harvestLogDirName = configuration.getHarvestLogDirName();
+ 
        
        	maxHarvestsAtaTime = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_SINGLESEEDHARVESTS, Constants.DEFAULT_MAX_HARVESTS);
-       	harvestLogDir = new File(harvestLogDirName);
+       	harvestLogDir = configuration.getHarvestLogDir();
        	
        	Set<String> requiredSettings = new HashSet<String>();
 		requiredSettings.add(WebdanicaSettings.HARVESTING_SCHEDULE);
@@ -300,38 +291,10 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 			
 		}
 		
-		String systemTimestamp = SingleSeedHarvest.getTimestamp();
-		String logNameInitial = harvestLogPrefix + systemTimestamp + harvestLogNotReadySuffix;
-		String logNameFinal = harvestLogPrefix + systemTimestamp + harvestLogReadySuffix;
-		File harvestLog = new File(harvestLogDir, logNameInitial);
-		File harvestLogFinal = new File(harvestLogDir, logNameFinal);
-		String harvestLogHeaderPrefix = "Harvestlog for ";
-    	String harvestLogHeader = harvestLogHeaderPrefix 
-    			+ " harvests initiated by the Webdanica webapp at " + new Date();
-		
-		// write harvestreport to disk where cronjob have privileges to read, and move the file to
-		// a different location
-		int written = 0;
 		try {
-	        written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, true, harvests, false);
-	        if (written == 0) {
-	        	logger.log(Level.WARNING, "No harvests out of " + harvests.size() + " were successful, and no harvestlog is written");
-	        	// remove harvestlog
-	        	boolean deleted = harvestLog.delete();
-	        	if (!deleted) {
-	        		logger.log(Level.WARNING, "Unable to delete empty harvestlog '" + harvestLog.getAbsolutePath() + "'");
-	        	}
-	        	return;
-	        }
-	        boolean success = harvestLog.setWritable(true, false);
-	        if (!success) {
-	        	logger.log(Level.SEVERE, "Unable to give the harvestlog the correct permissions");
-	        }
-	        harvestLog.renameTo(harvestLogFinal);
-	        //Do we need to set the permissions again?
-	        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLogFinal.getAbsolutePath() + "'");
-        } catch (Exception e) {
-        	String errMsg = "Unable to write a harvestlog to file " + harvestLog.getAbsolutePath() + ": " + e.toString();
+			 writeHarvestLog(harvests, configuration);
+        } catch (Throwable e) {
+        	String errMsg = "Unable to write a harvestlog to directory '" + configuration.getHarvestLogDir() + "': " + e.toString();
         	logger.log(Level.SEVERE, errMsg, e);
         	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failure - unable to write harvestlog to disk", errMsg);
         } 
@@ -351,5 +314,43 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         }
         return queueSize;
     }
-
+	
+    public static void writeHarvestLog(List<SingleSeedHarvest> harvests, Configuration conf) throws Exception {
+    	String systemTimestamp = SingleSeedHarvest.getTimestamp();
+		String logNameInitial = conf.getHarvestLogPrefix() + systemTimestamp + conf.getHarvestLogNotReadySuffix();
+		String logNameFinal = conf.getHarvestLogPrefix() + systemTimestamp + conf.getHarvestLogReadySuffix();
+		File harvestLogDir = conf.getHarvestLogDir();
+		File harvestLog = new File(harvestLogDir, logNameInitial);
+		File harvestLogFinal = new File(harvestLogDir, logNameFinal);
+		String harvestLogHeaderPrefix = "Harvestlog for ";
+    	String harvestLogHeader = harvestLogHeaderPrefix 
+    			+ " harvests initiated by the Webdanica webapp at " + new Date();
+		
+		// write harvestreport to disk where cronjob have privileges to read, and move the file to
+		// a different location
+    	
+		int written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, true, harvests, false);
+        if (written == 0) {
+        	logger.log(Level.WARNING, "No harvests out of " + harvests.size() + " were successful, and no harvestlog is written");
+        	// remove harvestlog
+        	boolean deleted = harvestLog.delete();
+        	if (!deleted) {
+        		logger.log(Level.WARNING, "Unable to delete empty harvestlog '" + harvestLog.getAbsolutePath() + "'");
+        	}
+        	return;
+        }
+        boolean success = harvestLog.setWritable(true, false);
+        if (!success) {
+        	logger.log(Level.SEVERE, "Unable to give the harvestlog the correct permissions");
+        }
+        harvestLog.renameTo(harvestLogFinal);
+        //Do we need to set the permissions again?
+        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLogFinal.getAbsolutePath() + "'");
+    }
+	
+	
+	
+	
+	
+	
 }

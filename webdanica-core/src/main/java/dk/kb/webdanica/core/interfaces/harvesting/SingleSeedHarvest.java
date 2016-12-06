@@ -295,7 +295,7 @@ public class SingleSeedHarvest {
 			if (writeToSystemOut) {
 				e.printStackTrace();
 			} else {
-				String error = "Unable to retrieve the reports for job '" + theJob.getJobID() + "': " + e; 
+				String error = "Unable to retrieve the reports for job '" + theJob.getJobID() + "': " + e;
 				logger.warning(error);
 				this.errMsg.append(error);
 			}

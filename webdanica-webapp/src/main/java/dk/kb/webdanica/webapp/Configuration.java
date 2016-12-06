@@ -1,5 +1,7 @@
 package dk.kb.webdanica.webapp;
 
+import java.io.File;
+
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.WgetSettings;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
@@ -22,6 +24,10 @@ public class Configuration {
     private DAOFactory daoFactory;
 
     private static Configuration config;
+	private String harvestLogDirName;
+	private String harvestLogPrefix;
+	private String harvestLogReadySuffix;
+	private String harvestLogNotReadySuffix;
 
     public static synchronized Configuration getInstance() {
     	if (config == null) {
@@ -66,6 +72,12 @@ public class Configuration {
 		
 		emailer = Emailer.getInstance(smtpHost, smtpPort, null, null, mailAdmin, dontSendMails);
 		daoFactory = DatabaseUtils.getDao();
+		
+		harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR); 
+       	harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX);
+       	harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX,Constants.DEFAULT_HARVESTLOG_READY_SUFFIX);
+       	harvestLogNotReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX, Constants.DEFAULT_HARVESTLOG_NOTREADY_SUFFIX);
+      
 	}
 
 	public WgetSettings getWgetSettings() {
@@ -87,6 +99,23 @@ public class Configuration {
 	public Emailer getEmailer() {
 		return this.emailer;
 	}
+	
+	public String getHarvestLogDirName() {
+		return this.harvestLogDirName;
+	}
+	public File getHarvestLogDir() {
+	    return new File(harvestLogDirName);
+    }
+	public String getHarvestLogPrefix() {
+		return this.harvestLogPrefix;
+	}
+	public String getHarvestLogReadySuffix() {
+		return this.harvestLogReadySuffix;
+	}
+	public String getHarvestLogNotReadySuffix() {
+		return this.harvestLogNotReadySuffix;
+	}
+	
 	
 	public DAOFactory getDAOFactory() {
 		return daoFactory;

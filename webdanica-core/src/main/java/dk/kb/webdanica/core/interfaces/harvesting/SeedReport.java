@@ -17,15 +17,22 @@ public class SeedReport {
 	
 	public static String SEEDS_HEADER_PATTERN = "[code] [status] [seed] [redirect]";
 	
-	public Map<String,SeedReportEntry> entryMap = new HashMap<String,SeedReportEntry>(); 
+	public Map<String,SeedReportEntry> entryMap = new HashMap<String,SeedReportEntry>();
+
+	private String report; 
 	
 	public SeedReport(String report) {
+		this.report = report;
 		String[] lines = report.split("\n");
 		for (String line: lines) {
 			processLine(line);
 		}
 	}
-		
+	
+	public String getReportAsString() {
+		return this.report;
+	}
+	
 	public Set<String> getSeeds() {
 		return entryMap.keySet();
 	}
