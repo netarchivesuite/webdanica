@@ -4,25 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FrequentWords {
-	/** List taken from korpus website. */
-    public static String[] frequent150words = new String[] {
-            "og", "i", "at", "det", "er", "en", "til", "af", "på", "for", 
-            "der", "den", "med", "de", "ikke", "som", "har", "et", "jeg", "om", 
-            "var", "så", "han", "men", "kan", "vi", "fra", "sig", "man", "skal", 
-            "ved", "vil", "også", "hun", "eller", "være", "blev", "havde", "efter", "over", 
-            "hvor", "ud", "da", "nu", "du", "år", "når", "op", "kunne", "selv", 
-            "meget", "hvis", "sin", "alle", "noget", "siger", "to", "mange", "dem", "hvad", 
-            "bliver", "få", "mig", "mere", "her", "hans", "have", "deres", "andre", "ind", 
-            "godt", "kun", "må", "end", "været", "ham", "mod", "skulle", "jo", "under", 
-            "går", "denne", "helt", "store", "ville", "dag", "hele", "blive", "kr", "får", 
-            "sammen", "os", "lidt", "sagde", "uden", "kommer", "nogle", "første", "fik", 
-            "alt", 
-            "se", "mellem", "danske", "min", "lige", "kom", "gang", "fordi", "flere", 
-            "nok", "nye", "siden",  "ingen", "dette", "derfor", "anden", "blevet", "danmark", 
-            "sidste", "før", "tid", "samme", "sådan", "måske", "tre", "ned", "igen", "sit", 
-            "andet", "både", "gøre", "hos", "lille", "ny", "bare", "gå", "gør", "sine", 
-            "gik", "ja", "tilbage", "mens", "stor", "komme", "sige"
-    };
+	/** List originally taken from korpus website. 
+	 * Updated with new set of words from STHU December 2016 */
+	public static String[] frequent150words = new String[] {
+	    "alle", "alt", "anden", "andet", "andre", "bare", "blev", "blevet", "blive", "bliver", "både", "da", "dag", 
+	    "danmark", "danske", "de", "dem", "den", "denne", "der", "deres", "derfor", "det", "dette", "du", "efter", 
+	    "eller", "er", "fik", "flere", "fordi", "fra", "før", "første", "få", "får", "gang", "gik", "godt", "gør", 
+	    "gøre", "gå", "går", "ham", "han", "har", "havde", "hele", "helt", "hos", "hun", "hvad", "hvis", "hvor", 
+	    "igen", "ikke", "ingen", "jeg", "jo", "kan", "kom", "komme", "kommer", "kr", "kun", "kunne", "lidt", "lige", 
+	    "lille", "mange", "med", "meget", "mellem", "men", "mens", "mere", "mig", "min", "mod", "må", "måske", "ned", 
+	    "noget", "nogle", "nok", "nye", "når", "også", "over", "på", "sagde", "samme", "sammen", "se", "siden", 
+	    "sidste", "sig", "sige", "siger", "sin", "sine", "sit", "skal", "skulle", "stor", "store", "så", "sådan", 
+	    "tid", "til", "tilbage", "tre", "ud", "uden", "under", "ved", "vil", "ville", "være", "været", "år"
+	};
+    
     //6d
     public static String[] frequent150wordsNov = new String[] {
         "og", "det", "er", "en", "til", "af", "på", 
@@ -306,37 +301,30 @@ public class FrequentWords {
             "ta", "tar", "opp", "seg", "bli", "takk", "aldri", "hei", "tilbake", "kanskje", "trenger", "mye",
             "unnskyld", "rett", "sånn", "liker", "greit", "finne", "mann", "fikk", "gikk", "hadde", "enn", "tok", "veldig"
     };
-    /** List taken from korpus website. */
+    /** List taken from korpus website. 
+     * Updated by STHU December 2016 */
     public static final String[] frequent250subs = new String[] {
-            "år", "dag", "krone", "kr", "tid", "gang", "danmark", "mand", "barn", "land", "sted", 
-            "menneske", "side", "del", "liv", "eksempel", "københavn", "verden", "folk", "problem", "vej", 
-            "sag", "kvinde", "million", "uge", "arbejde", "måde", "par", "penge", "forhold", "mulighed", 
-            "procent", "grund", "by", "regering", "ting", "måned", "kommune", "time", "hus", "foto", 
-            "bil", "øje", "ord", "bog", "hånd", "herr(e)", "område", "mor", "vand", "plads", 
-            "familie", "spørgsmål", "pige", "aften", "række", "fader", "billede", "løb", "fald", "politi", 
-            "historie", "gud", "film", "tale", "peter", "ret", "nummer", "parti", "forbindelse", "skole", 
-            "hjælp", "kamp", "gruppe", "udvikling", "tv", "forslag", "stykke", "medlem", "virksomhed", "form", 
-            "situation", "dansker", "usa", "navn", "erik", "nielsen", "slags", "person", "brug", "resultat", 
-            "lov", "tilfælde", "minut", "regel", "øjeblik", "formand", "møde", "folketing", "jensen", "ide", 
-            "opgave", "søn", "jørgen", "ven", "hansen", "krav", "musik", "forældre", "samarbejde", "læge", 
-            "morgen", "plan", "nat", "stat", "lars", "leder", "lys", "poul", "krig", "samfund", 
-            "mål", "dreng", "jens", "jord(en)", "ole", "europa", "teater", "fremtid", "svar", "masse", 
-            "kilometer", "hovede", "lejlighed", "politiker", "kraft", "kilo(gram)", "prise", "andersen", 
-            "interesse", "socialdemokrati", 
-            "virkelighed", "mad", "ef", "per", "århus", "krop", "niels", "tidspunkt", "bord", "stemme", 
-            "rolle", "grad", "råd", "nej", "direktør", "befolkning", "mening", "forsøg", "dør", "henrik", 
-            "søndag", "antal", "klasse", "forfatter", "valg", "rest", "søren", "dyr", "michael", "udtryk", 
-            "kærlighed", "grænse", "periode", "hensyn", "undersøgelse", "elev", "ben", "oplysning", "centimeter", "han", 
-            "tur", "hold", "selskab", "john", "behov", "behandling", "projekt", "aftale", "blad", "debat", 
-            "lørdag", "kone", "økonomi", "sommer", "gengæld", "stof", "magt", "kirke", "jan", "tvivl", 
-            "tyskland", "lyst", "meter", "beslutning", "program", "avis", "system", "larsen", "marked", "præsident", 
-            "ansigt", "betydning", "job", "skyld", "luft", "sygdom", "natur", "linje", "politik", "baggrund", 
-            "gade", "konge", "medarbejder", "flertal", "sf", "brev", "uddannelse", "chance", "sprog", "datter", 
-            "sol", "sang", "støtte", "hund", "kunst", "art", "tal", "løsning", "stilling", "ansvar", 
-            "møller", "stand", "fredag", "kunde", "svend", "fordel", "holdning", "mandag", "start", "glæde", 
-            "oplevelse", "have", "pris", "firma", "rasmussen", "pedersen", "sverige", "scene", "radio", "vare", 
-            "spil", "ende"
+        "aftale", "aften", "ansigt", "ansvar", "antal", "arbejde", "avis", "baggrund", "barn", "befolkning", 
+        "behandling", "behov", "ben", "beslutning", "betydning", "bil", "billede", "blad", "bog", "bord", "brev", 
+        "brug", "centimeter", "dag", "danmark", "dansker", "datter", "del", "direktør", "dreng", "dyr", "dør", "ef", 
+        "eksempel", "elev", "ende", "europa", "fader", "fald", "familie", "firma", "flertal", "folketing", 
+        "forbindelse", "fordel", "forfatter", "forhold", "formand", "forslag", "forsøg", "forældre", "fredag", 
+        "fremtid", "gade", "gengæld", "glæde", "grad", "grund", "gruppe", "grænse", "gud", "hensyn", "herr", "herre", 
+        "historie", "hjælp", "holdning", "hovede", "hund", "hus", "hånd", "ide", "interesse", "jan", "job", "john", 
+        "jord(en)", "kamp", "kilogram", "kirke", "klasse", "kommune", "kone", "konge", "kr", "kraft", "krav", "krig", 
+        "krone", "krop", "kunde", "kunst", "kvinde", "kærlighed", "københavn", "larsen", "leder", "lejlighed", "linje", 
+        "lov", "luft", "lys", "lyst", "læge", "løb", "lørdag", "løsning", "magt", "mand", "mandag", "marked", "masse", 
+        "medarbejder", "medlem", "mening", "menneske", "million", "minut", "mor", "mulighed", "musik", "møde", 
+        "møller", "måde", "mål", "måned", "nat", "natur", "navn", "nej", "nummer", "område", "opgave", "oplevelse", 
+        "oplysning", "ord", "penge", "periode", "pige", "plads", "politi", "politik", "politiker", "pris", "prise", 
+        "projekt", "præsident", "regel", "regering", "resultat", "ret", "rolle", "række", "råd", "sag", "samarbejde", 
+        "samfund", "sang", "selskab", "sf", "side", "skole", "skyld", "slags", "socialdemokrati", "sol", "sommer", 
+        "spil", "sprog", "spørgsmål", "stat", "sted", "stemme", "stilling", "stof", "stykke", "støtte", "svar", 
+        "svend", "sverige", "sygdom", "søn", "søndag", "søren", "tal", "tale", "teater", "tid", "tidspunkt", 
+        "tilfælde", "ting", "tur", "tvivl", "tyskland", "uddannelse", "udtryk", "udvikling", "uge", "undersøgelse", 
+        "valg", "vand", "vare", "vej", "ven", "verden", "virkelighed", "virksomhed", "øje", "øjeblik", "økonomi", "år"
     };
+
     //6d and names
     public static final String[] frequent250subsNov = new String[] {
         "år", "dag", "krone", "kr", "tid", "danmark", "mand", "barn", "sted", 
@@ -368,66 +356,63 @@ public class FrequentWords {
         "oplevelse", "pris", "vare", "spil"
     };
     
-    /** List taken from korpus website. */
+    /** List originally taken from korpus website. 
+     * Updated by STHU December 2016 */
     public static String[] frequent250verbs = new String[] {
-            "være", "have", "kunne", "blive", "skulle", "ville", "få", "sige", "komme", "gå", 
-            "gø", "se", "måtte", "tage", "give", "stå", "finde", "holde", "sætte", "vise", 
-            "bruge", "ligge", "vide", "tro", "mene", "ske", "fortælle", "høre", "lave", "lægge", 
-            "skrive", "sidde", "lade", "spille", "synes", "følge", "begynde", "køre", "stille", "tænke", 
-            "kalde", "ønske", "slå", "leve", "føre", "burde", "spørge", "arbejde", "skabe", "sende", 
-            "falde", "kende", "vælge", "føle", "betyde", "trække", "samle", "vente", "forstå", "gælde", 
-            "betale", "nå", "prøve", "rejse", "købe", "bo", "tale", "læse", "svare", "vende", 
-            "vinde", "sælge", "hjælpe", "møde", "forsøge", "lære", "hedde", "findes", "fortsætte", "stige", 
-            "lyde", "kræve", "passe", "sikre", "klare", "koste", "starte", "søge", "tælle", "bryde", 
-            "bygge", "lukke", "mærke", "virke", "opleve", "bringe", "handle", "ændre", "ligne", "bede", 
-            "dreje", "nævne", "udvikle", "bestå", "flytte", "elske", "spise", "regne", "mangle", "bære", 
-            "ansætte", "udsende", "fylde", "hænge", "løbe", "forklare", "lykkes", "ringe", "vokse", "deltage", 
-            "håbe", "lide", "modtage", "oplyse", "foregå", "løse", "danne", "huske", "foretage", "hente", 
-            "skyldes", "slippe", "forsvinde", "glemme", "kigge", "miste", "gennemføre", "åbne", "fjerne", "forlade", 
-            "snakke", "slutte", "dække", "tjene", "anvende", "øge", "rette", "undgå", "gribe", "opstå", 
-            "tabe", "behandle", "ende", "indgå", "kaste", "ramme", "interessere", "styre", "skifte", "beslutte", 
-            "opnå", "fungere", "føde", "råbe", "ses", "betragte", "dø", "true", "behøve", "tegne", 
-            "foreslå", "indeholde", "opdage", "skyde", "drikke", "forvente", "optage", "træde", "sørge", "afvise", 
-            "dele", "benytte", "støtte", "tvinge", "skaffe", "stikke", "stoppe", "beskrive", "tø", "kæmpe", 
-            "drive", "dræbe", "undersøge", "glæde", "melde", "omfatte", "bestemme", "konstatere", "tilbyde", "understrege", 
-            "blande", "vedtage", "indføre", "placere", "synge", "spare", "besøge", "sove", "lytte", "eksistere", 
-            "yde", "acceptere", "løfte", "præsentere", "udtrykke", "byde", "diskutere", "ødelægge", "bevare", "presse", 
-            "fremstille", "brænde", "overtage", "præge", "udføre", "ryge", "udsætte", "springe", "love", "flyve", 
-            "erkende", "udtale", "opgive", "bevæge", "udgøre", "pege", "mødes", "trænge", "smide", "afsløre", 
-            "forestille", "smile", "dukke", "medføre", "tillade", "vurdere", "producere", "sejle", "skjule", "begrænse", 
-            "etablere", "koge", "lede", "frygte", "overveje", "tilføje", "stemme", "skære", "træffe"
+        "acceptere", "afsløre", "afvise", "ansætte", "anvende", "arbejde", "bede", "begrænse", "begynde", "behandle", 
+        "behøve", "benytte", "beskrive", "beslutte", "bestemme", "bestå", "besøge", "betale", "betragte", "betyde", 
+        "bevare", "bevæge", "blande", "blive", "bringe", "bruge", "bryde", "brænde", "burde", "byde", "bygge", "bære", 
+        "danne", "dele", "deltage", "diskutere", "dreje", "drikke", "drive", "dræbe", "dukke", "dække", "dø", 
+        "eksistere", "elske", "ende", "erkende", "etablere", "falde", "finde", "findes", "fjerne", "flytte", "flyve", 
+        "foregå", "foreslå", "forestille", "foretage", "forklare", "forlade", "forstå", "forsvinde", "forsøge", 
+        "fortsætte", "fortælle", "forvente", "fremstille", "frygte", "fungere", "fylde", "føde", "føle", "følge", 
+        "føre", "få", "gennemføre", "glemme", "glæde", "gribe", "gælde", "gø", "gå", "hedde", "hente", "hjælpe", 
+        "holde", "huske", "hænge", "høre", "håbe", "indeholde", "indføre", "indgå", "interessere", "kalde", "kaste", 
+        "kende", "kigge", "klare", "koge", "komme", "konstatere", "koste", "kræve", "kunne", "kæmpe", "købe", "køre", 
+        "lade", "lave", "lede", "leve", "lide", "ligge", "ligne", "love", "lukke", "lyde", "lykkes", "lytte", "lægge", 
+        "lære", "læse", "løbe", "løfte", "løse", "mangle", "medføre", "melde", "mene", "miste", "modtage", "mærke", 
+        "møde", "mødes", "måtte", "nævne", "nå", "omfatte", "opdage", "opgive", "opleve", "oplyse", "opnå", "opstå", 
+        "optage", "overtage", "overveje", "passe", "pege", "placere", "presse", "producere", "præge", "præsentere", 
+        "prøve", "ramme", "regne", "rejse", "rette", "ringe", "ryge", "råbe", "samle", "se", "sejle", "sende", "ses", 
+        "sidde", "sige", "sikre", "skabe", "skaffe", "ske", "skifte", "skjule", "skrive", "skulle", "skyde", "skyldes", 
+        "skære", "slippe", "slutte", "slå", "smide", "smile", "snakke", "sove", "spare", "spille", "spise", "springe", 
+        "spørge", "starte", "stemme", "stige", "stikke", "stille", "stoppe", "styre", "støtte", "stå", "svare", 
+        "synes", "synge", "sælge", "sætte", "søge", "sørge", "tabe", "tage", "tale", "tegne", "tilbyde", "tilføje", 
+        "tillade", "tjene", "tro", "true", "træde", "træffe", "trække", "trænge", "tvinge", "tælle", "tænke", "tø", 
+        "udføre", "udgøre", "udsende", "udsætte", "udtale", "udtrykke", "udvikle", "understrege", "undersøge", "undgå", 
+        "vedtage", "vende", "vente", "vide", "ville", "vinde", "virke", "vise", "vokse", "vurdere", "vælge", "være", 
+        "yde", "ændre", "ødelægge", "øge", "ønske", "åbne"
     };
     
-    /** List taken from korpus website. */
+    /** List taken from korpus website. 
+     * Updated by STHU December 2016 */
     public static final String[] frequent250adjs = new String[] {
-            "meget", "god", "mange", "stor", "hel", "ny", "lille", "dansk", "lidt", "først", 
-            "lang", "gammel", "sidst", "samme", "egen", "sen", "høj", "ung", "tidlig", "rigtig", 
-            "klar", "forskellig", "enkelt", "politisk", "hurtig", "kort", "stærk", "næste", "vigtig", "økonomisk", 
-            "øvrig", "mulig", "svær", "fast", "nær", "let", "særlig", "faktisk", "ene", "eneste", 
-            "amerikansk", "fri", "ren", "sikker", "fuld", "offentlig", "hård", "halv", "dårlig", "sort", 
-            "rød", "tæt", "almindelig", "fin", "nødvendig", "international", "vis", "hvid", "sådan", "få", 
-            "åben", "tysk", "glad", "direkte", "flot", "smuk", "speciel", "dyb", "privat", "fælles", 
-            "kendt", "død", "bestemt", "grøn", "normal", "social", "enig", "fransk", "europæisk", "alvorlig", 
-            "såkaldt", "varm", "personlig", "lokal", "bred", "kold", "svensk", "lav", "spændende", "ekstra", 
-            "kraftig", "naturlig", "utrolig", "daglig", "yderlig", "indre", "dejlig", "færdig", "væsentlig", "ond", 
-            "afgørende", "positiv", "voksen", "billig", "konservativ", "gal", "bange", "moderne", "frisk", "nuværende", 
-            "voldsom", "rig", "eventuel", "nem", "tung", "sjælden", "radikal", "selve", "teknisk", "pæn", 
-            "dyr", "anderledes", "tydelig", "slem", "vanskelig", "tilsyneladende", "nordisk", "tredje", "aktiv", "umiddelbar", 
-            "blå", "fremmest", "rimelig", "forkert", "nødt", "langsom", "svag", "blød", "betydelig", "syg", 
-            "farlig", "formentlig", "vild", "total", "foreløbig", "umulig", "levende", "absolut", "fremmed", "fuldstændig", 
-            "venstre", "effektiv", "tynd", "sjov", "opmærksom", "rolig", "engelsk", "højre", "professionel", "praktisk", 
-            "interessant", "reel", "konkret", "modsat", "historisk", "grov", "sød", "generel", "militær", "tilsvarende", 
-            "udenlandsk", "national", "borgerlig", "britisk", "populær", "åbenbar", "gul", "oprindelig", "yderst", "træt", 
-            "årlig", "aktuel", "vred", "traditionel", "menneskelig", "skarp", "central", "parat", "tyk", "egentlig", 
-            "kvindelig", "sovjetisk", "selvstændig", "fysisk", "officiel", "tilfreds", "værd", "adskillig", "typisk", "enorm", 
-            "norsk", "simpel", "gift", "socialdemokratisk", "lykkelig", "italiensk", "klassisk", "fantastisk", "mærkelig", "sund", 
-            "løs", "samtlige", "venlig", "øverst", "bekendt", "vestlig", "fornuftig", "tom", "klog", "demokratisk", 
-            "berømt", "dygtig", "ordentlig", "russisk", "nylig", "endelig", "pågældende", "gratis", "japansk", "evig", 
-            "kommunal", "fattig", "forleden", "travl", "seksuel", "kongelig", "dobbelt", "udmærket", "ægte", "bevidst", 
-            "tilstrækkelig", "forsigtig", "værre", "ret", "virkelig", "velkommen", "grundig", "tør", "psykisk", "ukendt", 
-            "mørk", "omfattende", "afhængig", "rar", "frivillig", "usædvanlig", "hellig", "kulturel" 
-
+        "absolut", "adskillig", "afgørende", "afhængig", "aktiv", "aktuel", "almindelig", "alvorlig", "amerikansk", 
+        "anderledes", "bange", "bekendt", "berømt", "bestemt", "betydelig", "bevidst", "billig", "blød", "blå", 
+        "borgerlig", "bred", "britisk", "daglig", "dansk", "dejlig", "demokratisk", "direkte", "dobbelt", "dyb", 
+        "dygtig", "dyr", "død", "dårlig", "effektiv", "egen", "egentlig", "ekstra", "endelig", "eneste", "engelsk", 
+        "enig", "enkelt", "enorm", "europæisk", "eventuel", "evig", "faktisk", "fantastisk", "farlig", "fast", 
+        "fattig", "flot", "foreløbig", "forkert", "forleden", "formentlig", "fornuftig", "forsigtig", "forskellig", 
+        "fransk", "fremmed", "fremmest", "fri", "frisk", "frivillig", "fuld", "fuldstændig", "fysisk", "fælles", 
+        "færdig", "først", "få", "gal", "gammel", "generel", "gift", "glad", "god", "gratis", "grov", "grundig", 
+        "grøn", "gul", "halv", "hellig", "historisk", "hurtig", "hvid", "høj", "højre", "hård", "indre", "interessant", 
+        "italiensk", "japansk", "kendt", "klar", "klassisk", "klog", "kold", "kommunal", "kongelig", "konkret", 
+        "konservativ", "kort", "kraftig", "kulturel", "kvindelig", "langsom", "lav", "let", "levende", "lidt", "lille", 
+        "lokal", "lykkelig", "løs", "mange", "meget", "menneskelig", "militær", "moderne", "modsat", "mulig", 
+        "mærkelig", "mørk", "naturlig", "nem", "nordisk", "norsk", "nuværende", "nylig", "nær", "næste", "nødt", 
+        "nødvendig", "offentlig", "officiel", "omfattende", "ond", "opmærksom", "oprindelig", "ordentlig", "parat", 
+        "personlig", "politisk", "populær", "praktisk", "professionel", "psykisk", "pæn", "pågældende", "radikal", 
+        "rar", "ren", "ret", "rig", "rigtig", "rimelig", "rolig", "russisk", "rød", "samme", "samtlige", "seksuel", 
+        "selve", "selvstændig", "sidst", "sikker", "simpel", "sjov", "sjælden", "skarp", "slem", "smuk", "social", 
+        "socialdemokratisk", "sort", "sovjetisk", "speciel", "spændende", "stor", "stærk", "sund", "svag", "svensk", 
+        "svær", "syg", "særlig", "sød", "sådan", "såkaldt", "teknisk", "tidlig", "tilfreds", "tilstrækkelig", 
+        "tilsvarende", "tilsyneladende", "tom", "total", "traditionel", "travl", "tredje", "træt", "tung", "tydelig", 
+        "tyk", "tynd", "typisk", "tysk", "tæt", "tør", "udenlandsk", "udmærket", "ukendt", "umiddelbar", "umulig", 
+        "ung", "usædvanlig", "utrolig", "vanskelig", "varm", "velkommen", "venlig", "venstre", "vestlig", "vigtig", 
+        "vild", "virkelig", "vis", "voksen", "voldsom", "vred", "værd", "værre", "væsentlig", "yderlig", "yderst", 
+        "ægte", "økonomisk", "øverst", "øvrig", "åben", "åbenbar", "årlig"
     };
+
     //6d
     public static final String[] frequent250adjsNov = new String[] {
         "meget", "mange", "stor", "hel", "ny", "lille", "dansk", "lidt", "først", 
