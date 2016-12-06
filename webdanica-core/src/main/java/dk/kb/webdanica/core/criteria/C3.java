@@ -17,8 +17,10 @@ public class C3 {
     //C3b search transformed frequent danish words
     // with danish characters, where ø is o/oe
     public static Set<String> ComputeC3b(String text) {
-        return TextUtils.SearchPattern(
-            text, FrequentWords.frequentwordsWithDanishLettersCoded);
+       // return TextUtils.SearchPattern(
+       //     text, FrequentWords.frequentwordsWithDanishLettersCoded);
+    	return TextUtils.findMatches(text, 
+    			FrequentWords.frequentwordsWithDanishLettersCoded);
     }
     
     //c3c: look urlencodede danishcaracters in the url
