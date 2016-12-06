@@ -43,7 +43,7 @@ public class TestHBasePhoenixSeedsDAO {
 			// debug
 			System.out.println(cnt);
 
-			cnt = dao.getSeedsCount(Status.AWAITS_CURATOR_FINALAPPROVAL);
+			cnt = dao.getSeedsCount(Status.AWAITS_CURATOR_DECISION);
 			// debug
 			System.out.println(cnt);
 

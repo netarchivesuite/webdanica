@@ -286,8 +286,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed -  reason is unknown");
             		}
             	} else {
-            		s.setStatus(Status.HARVESTING_FINISHED);
-            		s.setStatusReason("Harvesting finished successfully. harvestname is " + eventHarvestName);
+            		s.setStatus(Status.READY_FOR_ANALYSIS);
+            		s.setStatusReason("Harvesting finished successfully. harvestname is '" + eventHarvestName + "'. Now ready for analysis");
             	}
             	try {
 	                seeddao.updateSeed(s);
@@ -313,7 +313,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 		// a different location
 		int written = 0;
 		try {
-	        written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, true, harvests);
+	        written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, true, harvests, false);
 	        if (written == 0) {
 	        	logger.log(Level.WARNING, "No harvests out of " + harvests.size() + " were successful, and no harvestlog is written");
 	        	// remove harvestlog
@@ -336,9 +336,6 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failure - unable to write harvestlog to disk", errMsg);
         } 
     }
-
-	
-	
 	
 	@Override
     protected void process_cleanup() {

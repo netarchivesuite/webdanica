@@ -501,15 +501,30 @@ public class SingleSeedHarvest {
 		return results;
 	}
 
-	public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean onlySuccessFul, List<SingleSeedHarvest> results) throws Exception {
+	public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean onlySuccessFul, List<SingleSeedHarvest> results, boolean writeToStdout) throws Exception {
 		// Initialize harvestLogWriter
     	PrintWriter harvestLogWriter = new PrintWriter(new BufferedWriter(new FileWriter(harvestLog)));
     	int harvestsWritten = 0;
     	harvestLogWriter.println(harvestLogHeader);
     	harvestLogWriter.println(StringUtils.repeat("#", 80));
     	for (SingleSeedHarvest s: results) {
-    		if (onlySuccessFul && !s.successful) {
-    			continue;
+    		if (!s.successful) {
+    			if (onlySuccessFul) {
+    				String logMsg = "Skipping failed harvest '" + s.harvestName + "' of seed '" + s.seed + "'";
+    				if (writeToStdout) {
+    					System.out.println(logMsg);
+    				} else {
+    					logger.warning(logMsg);
+    				}
+    				continue;
+    			} else {
+    				String logMsg = "Including failed harvest '" + s.harvestName + "' of seed '" + s.seed + "' in harvestlog";
+    				if (writeToStdout) {
+    					System.out.println(logMsg);
+    				} else {
+    					logger.warning(logMsg);
+    				}
+    			}
     		}
     		harvestLogWriter.println(HarvestLog.seedPattern + s.getSeed());
     		harvestLogWriter.println(HarvestLog.harvestnamePattern + s.getHarvestName());

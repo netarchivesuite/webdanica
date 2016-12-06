@@ -12,6 +12,7 @@ import java.util.Set;
 import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.core.criteria.FrequentWords;
+import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
@@ -154,6 +155,37 @@ public class CriteriaIngest {
 							log_error("Record not inserted");
 						} else {
 							insertedCount++;
+						}
+						SeedsDAO sdao = daofactory.getSeedsDAO();
+						boolean insertUrl = !sdao.existsUrl(res.url);
+						Seed s = null;
+						if (insertUrl) {
+							s = new Seed(res.url);
+						} else {
+							s = sdao.getSeed(res.url);
+						}
+						String statusReasonPrefix = "Harvested by harvest '" +  res.harvestName + "' and now successfully analyzed. ";
+						int danishcode = res.calcDanishCode;
+						if (Codes.IsLikelyDanica(danishcode)) {
+							s.setDanicaStatus(DanicaStatus.YES);
+							s.setDanicaStatusReason("Set to DanicaStatus YES, because of danishcode '" + danishcode + "' belongs to the likelydk category");
+							s.setStatus(Status.DONE);
+							s.setStatusReason( statusReasonPrefix + "Processing finished as we now consider this seed Danica");
+						} else if (Codes.IsLikelyNotDanica(danishcode)) {
+							s.setDanicaStatus(DanicaStatus.NO);
+							s.setDanicaStatusReason("Set to DanicaStatus NO, because of danishcode '" + danishcode + "' belongs to the notlikelydk category");
+							s.setStatus(Status.DONE);
+							s.setStatusReason(statusReasonPrefix + "Processing finished as we now consider this seed not-Danica");
+						} else {
+							s.setDanicaStatus(DanicaStatus.UNDECIDED);
+							s.setDanicaStatusReason("Still UNDECIDED, as the danishcode '" + danishcode + "'doesn't give us any safe indications of danicastatus");
+							s.setStatus(Status.AWAITS_CURATOR_DECISION);
+							s.setStatusReason(statusReasonPrefix + "Now awaiting a curatorial decision");
+						}
+						if (insertUrl) {
+							sdao.insertSeed(s);
+						} else {
+							sdao.updateSeed(s);
 						}
 					}
 					results.add(res);

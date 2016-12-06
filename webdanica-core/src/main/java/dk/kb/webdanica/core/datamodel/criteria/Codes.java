@@ -170,4 +170,17 @@ public class Codes {
 		}
 		
 	}
+	
+	public static boolean IsLikelyDanica(Integer code) {
+		Set<Integer> danicacodes = getCodesForLikelyDanishResults();
+		return danicacodes.contains(code);
+	}
+	
+	public static boolean IsLikelyNotDanica(Integer code) {
+		Set<Integer> notdanicacodes = getCodesForNOTDanishResults();
+		return notdanicacodes.contains(code);
+	}
+	
+	
+	
 }

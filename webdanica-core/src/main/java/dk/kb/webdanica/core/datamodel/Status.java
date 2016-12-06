@@ -10,7 +10,7 @@ public enum Status {
 	READY_FOR_ANALYSIS,
 	ANALYSIS_COMPLETED,
 	REJECTED,
-	AWAITS_CURATOR_FINALAPPROVAL,
+	AWAITS_CURATOR_DECISION,
 	HARVESTING_FAILED,
 	DONE, // The seed is now either danica or not danica
 	ANALYSIS_FAILURE;
@@ -46,7 +46,7 @@ public enum Status {
 		case 6:
 			return REJECTED;
 		case 7:
-			return AWAITS_CURATOR_FINALAPPROVAL;
+			return AWAITS_CURATOR_DECISION;
 		case 8:
 			return HARVESTING_FAILED;
 		case 9:
@@ -75,7 +75,7 @@ public enum Status {
 		case 6:
 			return "seed.header.rejected";
 		case 7:
-			return "seed.header.awaiting.final.curator.approval";
+			return "seed.header.awaiting.curator.decision";
 		case 8:
 			return "seed.header.harvesting.failure";
 		case 9:
@@ -103,7 +103,7 @@ public enum Status {
 		case 6:
 			return "seed.description.rejected";
 		case 7:
-			return "seed.description.awaiting.final.curator.approval";
+			return "seed.description.awaiting.curator.decision";
 		case 8: 
 			return "seed.description.harvesting.failure";
 		case 9:
