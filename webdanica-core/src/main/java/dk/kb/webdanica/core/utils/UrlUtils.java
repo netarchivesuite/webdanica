@@ -26,8 +26,8 @@ public class UrlUtils {
 				return URL_REJECT_REASON.BAD_SCHEME; // wrong scheme and scheme == null
 			}
 			String host = url.getHost();
-			if (host == null) { // TODO: Or a different reason: MISSING_HOST or just BAD_URL 
-				return URL_REJECT_REASON.MISSING_DOMAIN;
+			if (host == null) {  
+				return URL_REJECT_REASON.MISSING_HOST;
 			}
 			String domainName = DomainUtils.domainNameFromHostname(host);
 			if (domainName == null) {
@@ -86,11 +86,6 @@ public class UrlUtils {
         host = java.net.IDN.toUnicode( host, java.net.IDN.ALLOW_UNASSIGNED );
         return host;
     }
-	
-	
-	
-	
-	
 	
 	/**
 	 * Find tld from the given domain by testing 

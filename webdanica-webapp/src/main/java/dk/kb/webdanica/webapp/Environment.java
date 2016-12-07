@@ -500,7 +500,6 @@ public class Environment {
 	    return this.domainPath;
     }
 	
-
 	public Configuration getConfig() {
 	    return this.theconfig;
     }

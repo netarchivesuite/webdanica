@@ -96,7 +96,11 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             HarvestsResource harvestsResource = new HarvestsResource();
             harvestsResource.resources_init(environment);
             harvestsResource.resources_add(this);
- 
+            
+            DomainResource domainResource = new DomainResource();
+            domainResource.resources_init(environment);
+            domainResource.resources_add(this);
+            
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
     	} catch (Throwable t) {
             logger.log(Level.SEVERE, this.getClass().getName() + " failed to initialize properly.", t);
