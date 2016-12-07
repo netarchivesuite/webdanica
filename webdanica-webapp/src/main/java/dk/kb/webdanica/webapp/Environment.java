@@ -29,6 +29,7 @@ import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.resources.BlackListResource;
 import dk.kb.webdanica.webapp.resources.CriteriaResultResource;
 import dk.kb.webdanica.webapp.resources.CriteriaResultsResource;
+import dk.kb.webdanica.webapp.resources.DomainResource;
 import dk.kb.webdanica.webapp.resources.HarvestResource;
 import dk.kb.webdanica.webapp.resources.HarvestsResource;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
@@ -158,6 +159,10 @@ public class Environment {
 	private ResourcesMap resourcesMap;
 	
 	private Configuration theconfig;
+
+	private String domainsPath;
+
+	private String domainPath;
 	
     /**
      * @param servletContext
@@ -311,6 +316,8 @@ public class Environment {
 		this.harvestsPath = getContextPath() + HarvestsResource.HARVESTS_PATH;
 		this.criteriaResultPath = getContextPath() + CriteriaResultResource.CRITERIA_RESULT_PATH;
 		this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
+		this.domainPath = getContextPath() + DomainResource.DOMAIN_PATH;
+		this.domainsPath = getContextPath() + DomainResource.DOMAIN_LIST_PATH;
 		/*
 		 * Initialize template master.
 		 */
@@ -410,12 +417,7 @@ public class Environment {
     public int getDefaultItemsPerPage() {
 	    return defaultItemsPerPage;
     }
-	
-	private void setDefaultItemsPerPage(int defaultItemsPerPage) {
-	    this.defaultItemsPerPage = defaultItemsPerPage;
-    }
-
-
+    
 	public String getVersion() {
 	    return version;
     }
@@ -490,22 +492,27 @@ public class Environment {
 		return this.harvestPath;
     }
 
-	
-	// TODO Add to configuration object for webdanica.
-	public File getNetarchivesuiteSettingsFile() {
-	    return this.netarchiveSuiteSettingsFile;
-    }
-	// TODO Add to configuration object for webdanica.
-	public File getWebdanicaSettingsFile() {
-	    return this.webdanicaSettingsFile;	    
+	public String getDomainsPath() {
+	    return this.domainsPath;
     }
 	
-	// TODO Add to configuration object for webdanica.
-	public ResourcesMap getResourcesMap() {
-	    return this.resourcesMap;	    
+	public String getDomainPath() {
+	    return this.domainPath;
     }
+	
 
 	public Configuration getConfig() {
 	    return this.theconfig;
     }
+
+	public File getNetarchivesuiteSettingsFile() {
+		return this.netarchiveSuiteSettingsFile;
+	}
+	public File getWebdanicaSettingsFile() {
+		return this.webdanicaSettingsFile;	    
+	}
+
+	public ResourcesMap getResourcesMap() {
+		return this.resourcesMap;	    
+	}
 }

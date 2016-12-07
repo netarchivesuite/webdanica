@@ -223,37 +223,7 @@ public class CriteriaResultResource implements ResourceAbstract {
 	    	sb.append("</pre>\r\n");
 	    	
 	    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
-	        
-	        if (alertPlace != null) {
-	            StringBuilder alertSb = new StringBuilder();
-	            if (errorStr != null) {
-	                alertSb.append("<div class=\"row-fluid\">");
-	                alertSb.append("<div class=\"span12 bgcolor\">");
-	                alertSb.append("<div class=\"alert alert-error\">");
-	                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-	                alertSb.append(errorStr);
-	                alertSb.append("</div>");
-	                alertSb.append("</div>");
-	                alertSb.append("</div>");
-	                alertPlace.setText(alertSb.toString());
-	            } else {
-	            	logger.warning("No alert placeholder found in template '" + templateName + "'" );
-	            }
-	            if (successStr != null) {
-	                alertSb.append("<div class=\"row-fluid\">");
-	                alertSb.append("<div class=\"span12 bgcolor\">");
-	                alertSb.append("<div class=\"alert alert-success\">");
-	                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-	                alertSb.append(successStr);
-	                alertSb.append("</div>");
-	                alertSb.append("</div>");
-	                alertSb.append("</div>");
-	                alertPlace.setText(alertSb.toString());
-	            } else {
-	            	logger.warning("No success placeholder found in template '" + templateName + "'" );
-	            }
-	        }
-
+	    	CommonResource.insertInAlertPlace(alertPlace, errorStr, successStr, templateName, logger);
 	        try {
 	            for (int i = 0; i < templateParts.parts.size(); ++i) {
 	                out.write(templateParts.parts.get(i).getBytes());

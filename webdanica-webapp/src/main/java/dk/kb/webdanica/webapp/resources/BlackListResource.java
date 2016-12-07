@@ -31,11 +31,6 @@ public class BlackListResource implements ResourceAbstract {
     private static final Logger logger = Logger.getLogger(BlackListResource.class.getName());
     
     private static final String BLACKLIST_SHOW_TEMPLATE = "blacklist_master.html";
-/*
-    protected static final int[] USER_ADD_PERMISSIONS = {Permission.P_USER_ADMIN, Permission.P_USER_ADD};
-
-    protected static final int[] USER_ADMIN_PERMISSIONS = {Permission.P_USER_ADMIN};
-*/
 
     protected int R_BLACKLIST = -1;
     public static final String BLACKLIST_PATH = "/blacklist/";
@@ -54,15 +49,8 @@ public class BlackListResource implements ResourceAbstract {
     public void resources_add(ResourceManagerAbstract resourceManager) {
         //R_BLACKLIST = resourceManager.resource_add(this, "/blacklist/<string>/", true);
         R_BLACKLIST = resourceManager.resource_add(this, BLACKLIST_PATH, 
-        		environment.getResourcesMap().getResourceByPath(BLACKLIST_PATH).isSecure());
-/*        
-        R_USER_PASSWORD = resourceManager.resource_add(this, "/user/<numeric>/change_password/", true);
-        R_USER_PERMISSIONS = resourceManager.resource_add(this, "/user/<numeric>/permissions/", true);
-        R_USER_NOTIFICATION_SUBSCRIPTIONS = resourceManager.resource_add(this, "/user/<numeric>/notification_subscriptions/", true);
- */       
+        		environment.getResourcesMap().getResourceByPath(BLACKLIST_PATH).isSecure());   
     }
-
-    //private String servicePath;
 
     @Override
     public void resource_service(ServletContext servletContext, User dab_user,

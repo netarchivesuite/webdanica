@@ -194,6 +194,8 @@ public class CombinedCombo extends EvalFunc<String> {
 		int Cext2 = 0;
 		
 		StringBuilder errorSb = new StringBuilder();
+		String CWD = new File(".").getCanonicalPath();
+		errorSb.append(CWD + "\n");
 		
 		//calc Cext1 '- Size of web-page'
 		int Cext1 = text.length();
@@ -212,11 +214,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			if (cityFile.isFile()) {
 				useStandardC7BTest = false;
 				useStandardC7GTest = false;
+				errorSb.append("Using cityFile '" +  cityFile.getAbsolutePath() + "' for C7B and C7G\n");
 			} else {
-				errorSb.append("The given cityFile '" +  cityFile.getAbsolutePath() + "' does not exist. Reverting to old test for C7B and C7G");
+				errorSb.append("The given cityFile '" +  cityFile.getAbsolutePath() + "' does not exist. Reverting to old test for C7B and C7G\n");
 			}
 		} else {
-			errorSb.append("No argument given for the cityFile (optional argument 7). Reverting to old test for C7B and C7G");
+			errorSb.append("No argument given for the cityFile (optional argument 7). Reverting to old test for C7B and C7G\n");
 		}
 		// Validate optional argument 8 - used by test C10C
 		File danishNamesFile = null;
@@ -224,11 +227,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			danishNamesFile = new File(danishNamesFilePathAsArg);
 			if (danishNamesFile.isFile()) {
 				useStandardC10CTest = false;
+				errorSb.append("Using danishNamesFile '" +  danishNamesFile.getAbsolutePath() + "' for test C10C\n");
 			} else {
-				errorSb.append("The given danishNamesFile '" +  danishNamesFile.getAbsolutePath() + "' does not exist. Reverting to old test for C10C");
+				errorSb.append("The given danishNamesFile '" +  danishNamesFile.getAbsolutePath() + "' does not exist. Reverting to old test for C10C\n");
 			}
 		} else {
-			errorSb.append("No argument given for the danishNamesFile (optional argument 8). Reverting to old test for C10C");
+			errorSb.append("No argument given for the danishNamesFile (optional argument 8). Reverting to old test for C10C\n");
 		}
 		// Validate optional argument 9 - used by test C8A
 		File foreningerFile = null;
@@ -236,11 +240,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			foreningerFile = new File(foreningerFilePathAsArg);
 			if (foreningerFile.isFile()) {
 				useStandardC8ATest = false;
+				errorSb.append("Using foreningerFile '" + foreningerFilePathAsArg + "' for test C8A\n");
 			} else {
-				errorSb.append("The given foreningerFile '" + foreningerFilePathAsArg + "' does not exist. Reverting to old test for C8A");
+				errorSb.append("The given foreningerFile '" + foreningerFilePathAsArg + "' does not exist. Reverting to old test for C8A\n");
 			}
 		} else {
-			errorSb.append("No argument given for the foreningerFile (optional argument 9). Reverting to old test for C8A");
+			errorSb.append("No argument given for the foreningerFile (optional argument 9). Reverting to old test for C8A\n");
 		}
 		// Validate optional argument 10 - used by C8B and C8C
 		File foreningerOneWordFile = null;
@@ -249,11 +254,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			if (foreningerOneWordFile.isFile()) {
 				useStandardC8BTest = false;
 				useStandardC8CTest = false;
+				errorSb.append("Using foreningerOneWordFile '" + foreningerOneWordFilePathAsArg + "' for tests C8b and C8c\n");
 			} else {
-				errorSb.append("The given foreningerOneWordFile '" + foreningerOneWordFilePathAsArg + "' does not exist. Reverting to old test for C8b, C8c");
+				errorSb.append("The given foreningerOneWordFile '" + foreningerOneWordFilePathAsArg + "' does not exist. Reverting to old test for C8b, C8c\n");
 			}
 		} else {
-			errorSb.append("No argument given for the foreningerOneWordFile (optional argument 10). Reverting to old test for C8b, C8c");
+			errorSb.append("No argument given for the foreningerOneWordFile (optional argument 10). Reverting to old test for C8b, C8c\n");
 		}
 		
 		// Validate optional argument 11 -- used by tests C7c, C7d
@@ -263,11 +269,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			if (placeNamesFile.isFile()) {
 				useStandardC7CTest = false;
 				useStandardC7DTest = false;
+				errorSb.append("Using placeNamesFile '" + placeNamesFilePathAsArg + "' for tests C7C, C7D\n");
 			} else {
-				errorSb.append("The given placeNamesFile '" + placeNamesFilePathAsArg + "' does not exist. Reverting to old test for C7C, C7D");
+				errorSb.append("The given placeNamesFile '" + placeNamesFilePathAsArg + "' does not exist. Reverting to old test for C7C, C7D\n");
 			}
 		} else {
-			errorSb.append("No argument given for the placeNamesFile (optional argument 11). Reverting to old test for C7C, C7D");
+			errorSb.append("No argument given for the placeNamesFile (optional argument 11). Reverting to old test for C7C, C7D\n");
 		}
 		
 		// Validate optional argument 12 - used by tests C89B
@@ -276,11 +283,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			virksomhederFile = new File(virksomhederFilePathAsArg);
 			if (virksomhederFile.isFile()) {
 				useStandardC9BTest = false;
+				errorSb.append("Using virksomhederFile '" + virksomhederFilePathAsArg + "' for test C9B\n");
 			} else {
-				errorSb.append("The given virksomhederFile '" + virksomhederFilePathAsArg + "' does not exist. Reverting to old test for C9B");
+				errorSb.append("The given virksomhederFile '" + virksomhederFilePathAsArg + "' does not exist. Reverting to old test for C9B\n");
 			}
 		} else {
-			errorSb.append("No argument given for the virksomhederFile (optional argument 12). Reverting to old test for C9B");
+			errorSb.append("No argument given for the virksomhederFile (optional argument 12). Reverting to old test for C9B\n");
 		}
 		
 		// Validate optional argument 13 - - used by tests C9c, C9e
@@ -290,11 +298,12 @@ public class CombinedCombo extends EvalFunc<String> {
 			if (virksomhederOneWordFile.isFile()) {
 				useStandardC9CTest = false;
 				useStandardC9ETest = false;
+				errorSb.append("Using virksomhederOnewordFile '" + virksomhederOneWordFilePathAsArg + "' for tests C9C and C9E\n");
 			} else {
-				errorSb.append("The given virksomhederFile '" + virksomhederOneWordFilePathAsArg + "' does not exist. Reverting to old test for C9C and C9E");
+				errorSb.append("The given virksomhederOnewordFile '" + virksomhederOneWordFilePathAsArg + "' does not exist. Reverting to old test for C9C and C9E\n");
 			}
 		} else {
-			errorSb.append("No argument given for the virksomhederFile (optional argument 12). Reverting to old test for C9C and C9E");
+			errorSb.append("No argument given for the virksomhederOnewordFile (optional argument 13). Reverting to old test for C9C and C9E\n");
 		}
 		
 		JSONObject object = new JSONObject();

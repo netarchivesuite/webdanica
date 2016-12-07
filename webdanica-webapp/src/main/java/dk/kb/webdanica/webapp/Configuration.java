@@ -8,6 +8,7 @@ import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
+import dk.kb.webdanica.webapp.resources.ResourcesMap;
 
 public class Configuration {
 
@@ -115,7 +116,6 @@ public class Configuration {
 	public String getHarvestLogNotReadySuffix() {
 		return this.harvestLogNotReadySuffix;
 	}
-	
 	
 	public DAOFactory getDAOFactory() {
 		return daoFactory;

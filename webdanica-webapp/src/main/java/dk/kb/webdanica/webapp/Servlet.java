@@ -22,6 +22,7 @@ import dk.kb.webdanica.webapp.resources.BlackListResource;
 import dk.kb.webdanica.webapp.resources.BlackListsResource;
 import dk.kb.webdanica.webapp.resources.CriteriaResultResource;
 import dk.kb.webdanica.webapp.resources.CriteriaResultsResource;
+import dk.kb.webdanica.webapp.resources.DomainResource;
 import dk.kb.webdanica.webapp.resources.HarvestResource;
 import dk.kb.webdanica.webapp.resources.HarvestsResource;
 import dk.kb.webdanica.webapp.resources.IndexResource;
@@ -178,7 +179,7 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (pathInfo == null || pathInfo.length() == 0) {
                     pathInfo = "/";
                 }
-                logger.info("Looking for resource to match pathInfo:" + pathInfo);
+                //logger.info("Looking for resource to match pathInfo:" + pathInfo);
                 List<Integer> numerics = new ArrayList<Integer>();
                 Resource resource = pathMap.get(pathInfo, numerics);
                 // Hacks for handling access to /blacklist/<uid>/ pages
@@ -205,9 +206,15 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (resource == null && pathInfo.startsWith(SeedsResource.SEEDS_PATH)) {
                 	resource = pathMap.get(SeedsResource.SEEDS_PATH, numerics);
                 }
+                if (resource == null && pathInfo.startsWith(DomainResource.DOMAIN_PATH)) {
+                	resource = pathMap.get(DomainResource.DOMAIN_PATH, numerics);
+                }
+                if (resource == null && pathInfo.startsWith(DomainResource.DOMAIN_LIST_PATH)) {
+                	resource = pathMap.get(DomainResource.DOMAIN_LIST_PATH, numerics);
+                }
                 
                 if (resource != null) {
-                	logger.info("found resource in pathMap: " + resource);
+                	logger.info("Found resource for pathinfo '" + pathInfo + "' in pathMap: " + resource);
                     if (resource.isSecured() && current_user == null) {
                     	// Note 'this' == LoginTemplateCallback<User>
                         environment.getLoginHandler().loginFromForm(req, resp, session, this);
