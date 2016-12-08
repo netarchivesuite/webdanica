@@ -106,8 +106,13 @@ public class SeedsResource implements ResourceAbstract {
     		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
     	
         if (resource_id == R_STATUS_LIST || resource_id == R_STATUS_LIST_ID) {
-        	//
-            urls_list(dab_user, req, resp, numerics);
+        	SeedsRequest seedsRequest = SeedsRequest.getUrlFromPathinfo(pathInfo, SEEDS_PATH);
+        	if (seedsRequest.isChangeStateRequest()) {
+        		 SeedsDAO dao = environment.getConfig().getDAOFactory().getSeedsDAO();	
+        		 changeStateForAll(seedsRequest, dao, resp);
+        	} else {
+        		urls_list(dab_user, req, resp, numerics);
+        	}
         } else if (resource_id == R_STATUS_SEED_SHOW) {
         	SeedRequest seedRequest = SeedRequest.getUrlFromPathinfo(pathInfo, SEED_PATH);
         	
@@ -120,10 +125,50 @@ public class SeedsResource implements ResourceAbstract {
         } 
     }
 
-    private void changeState(SeedRequest seedRequest, SeedsDAO dao) throws Exception {
+    private void changeStateForAll(SeedsRequest seedsRequest, SeedsDAO dao, HttpServletResponse resp) throws IOException {
+    	Status old = Status.fromOrdinal(seedsRequest.getCurrentState());
+    	HarvestDAO hdao = environment.getConfig().getDAOFactory().getHarvestDAO();
+    	StringBuilder log = new StringBuilder();
+    	Long items = Constants.MAX_SEEDS_TO_FETCH; 
+    	int succeeded = 0;
+    	try {
+    		long count = dao.getSeedsCount(old);
+    		if (count < Constants.MAX_SEEDS_TO_FETCH) {
+    			items = count;
+    		}
+    		log.append("Statechange for " + items + " seeds\n");
+    		List<Seed> seeds = dao.getSeeds(old, items.intValue());
+    		boolean unnormalStateChange = seedsRequest.isRetryAnalysisRequest();
+    		
+    		for (Seed s: seeds) {
+    			try {
+    				if (!unnormalStateChange) { // i.e not a retryanalysisrequest
+    					changeStateInDB(s, new SeedRequest(s.getUrl(), seedsRequest.getNewState(), seedsRequest.getPathInfo()), dao);
+    				} else {
+    					retryAnalysis(s, dao, hdao, environment.getConfig());
+    				}
+    				succeeded++;
+    			} catch (Throwable e) {
+    				log.append("Unable to change state for the " + items + " seeds in state '" + old + "'. The exception follows:\n");
+    	    		StatusResource.throwable_stacktrace_dump(e, log);
+    			}
+    		}
+    	} catch (Throwable e) {
+    		log.append("Unable to change state for the " + items + " seeds in state '" + old + "'. The exception follows:\n");
+    		StatusResource.throwable_stacktrace_dump(e, log);
+    	}
+    	log.append("The statechange was successful for " + succeeded + " out of " +  items + " seeds"); 
+    	CommonResource.show_error(log.toString(), resp, environment);
+    }
+
+	private void changeState(SeedRequest seedRequest, SeedsDAO dao) throws Exception {
     	Seed s = dao.getSeed(seedRequest.getUrl());
-    	Status old = s.getStatus();
-    	if (seedRequest.isAcceptSeedAsDanicaRequest()) {
+    	changeStateInDB(s, seedRequest, dao);
+    }
+    
+	private void changeStateInDB(Seed s, SeedRequest seedRequest, SeedsDAO dao) throws Exception {
+		Status old = s.getStatus();
+		if (seedRequest.isAcceptSeedAsDanicaRequest()) {
     		Status newStatus = Status.DONE;
     		s.setStatus(newStatus);
         	s.setStatusReason("Changed from status '" + old + "' to status '" + newStatus + "' because user has accepted this as a danica seed");
@@ -141,9 +186,8 @@ public class SeedsResource implements ResourceAbstract {
         	s.setStatusReason("Changed from status '" + old + "' to status '" + newStatus + "' by user-request ");
     	}
     	dao.updateSeed(s);
-    }
-    
-    
+	}
+
 	private void url_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, SeedRequest sr) throws IOException  {
     	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
@@ -417,36 +461,7 @@ public class SeedsResource implements ResourceAbstract {
         StringBuilder sb = new StringBuilder();
     	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
         
-        if (alertPlace != null) {
-            StringBuilder alertSb = new StringBuilder();
-            if (errorStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-error\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(errorStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            } else {
-            	logger.warning("No alert placeholder found in template '" + templateName + "'" );
-            }
-            if (successStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-success\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(successStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            } else {
-            	logger.warning("No success placeholder found in template '" + templateName + "'" );
-            }
-        }
-
+    	CommonResource.insertInAlertPlace(alertPlace, errorStr, successStr, templateName, logger);
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
                 out.write(templateParts.parts.get(i).getBytes());
@@ -461,6 +476,8 @@ public class SeedsResource implements ResourceAbstract {
 	public static String findHarvestNameInStatusReason(String statusReason) {
 		final String SPLITTER = "harvestname";
 		String harvestName = null;
+		boolean isTypeTwo = statusReason.contains("'");
+		//System.out.println(isTypeTwo);
 		if (!statusReason.contains(SPLITTER)) {
 			//System.out.println("Can't find harvestname in field statusreason. marker has changed: '" +  statusReason + "'");
 			return null;
@@ -468,12 +485,15 @@ public class SeedsResource implements ResourceAbstract {
 			String[] statusReasonParts = statusReason.split(SPLITTER);
 			if (statusReasonParts.length > 1) {
 				harvestName = statusReasonParts[1].trim();
-				//System.out.println(harvestName);
-				String[] harvestNameparts = harvestName.split(" ");
-				if (harvestNameparts.length == 2) {
-					return harvestNameparts[1];
+				if (!isTypeTwo) {
+					String[] harvestNameparts = harvestName.split(" ");
+					if (harvestNameparts.length == 2) {
+						return harvestNameparts[1];
+					} else {
+						return null;
+					}
 				} else {
-					return null;
+					return harvestName.substring(harvestName.indexOf("'")+1, harvestName.lastIndexOf("'"));
 				}
 			} else {
 				return null;
@@ -481,10 +501,7 @@ public class SeedsResource implements ResourceAbstract {
 		}
 	}
 	
-	
-	private void retryAnalysis(String url, SeedsDAO dao, HarvestDAO hdao, Configuration conf) throws Exception {
-		Seed s = dao.getSeed(url); // we have already checked that it exists
-		
+	private void retryAnalysis(Seed s, SeedsDAO dao, HarvestDAO hdao, Configuration conf) throws Exception {
 		String statusReason = s.getStatusReason();//
 		String harvestName = findHarvestNameInStatusReason(statusReason);
 		if (harvestName == null) {
@@ -516,7 +533,12 @@ public class SeedsResource implements ResourceAbstract {
 				dao.updateSeed(s);
 			}
 		}
-		
+
+    }
+	
+	private void retryAnalysis(String url, SeedsDAO dao, HarvestDAO hdao, Configuration conf) throws Exception {
+		Seed s = dao.getSeed(url); // we have already checked that it exists
+		retryAnalysis(s, dao, hdao, conf);
     }
 
 	private void urls_list_dump(User dab_user, HttpServletRequest req,
@@ -623,8 +645,8 @@ public class SeedsResource implements ResourceAbstract {
         resp.setContentType("text/html; charset=utf-8");
 
         Caching.caching_disable_headers(resp);
-
-        Template template = environment.getTemplateMaster().getTemplate("urls_list.html");
+        String templateName = "urls_list.html";
+        Template template = environment.getTemplateMaster().getTemplate(templateName);
 
         TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
         TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -640,7 +662,9 @@ public class SeedsResource implements ResourceAbstract {
         TemplatePlaceHolder statusPlace = TemplatePlaceBase.getTemplatePlaceHolder("status");
         TemplatePlaceHolder dumpPlace = TemplatePlaceBase.getTemplatePlaceHolder("dump");
         TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
-
+        
+        TemplatePlaceHolder linksPlace = TemplatePlaceBase.getTemplatePlaceHolder("links");
+        
         List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
         placeHolders.add(titlePlace);
         placeHolders.add(appnamePlace);
@@ -656,6 +680,7 @@ public class SeedsResource implements ResourceAbstract {
         placeHolders.add(statusPlace);
         placeHolders.add(dumpPlace);
         placeHolders.add(alertPlace);
+        placeHolders.add(linksPlace);
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
@@ -863,6 +888,27 @@ public class SeedsResource implements ResourceAbstract {
         	myformTag.htmlItem.setAttribute( "action", "?page=" + page + "&itemsperpage=" + itemsperpageStr );
         }
 
+        if (linksPlace != null) {
+        	String linkprefix = environment.getSeedsPath() + wantedStatus.ordinal() + "/";
+        	Set<String> linkSet = new HashSet<String>();
+        	
+           String links = linkprefix + Status.READY_FOR_HARVESTING.ordinal() + "/";
+           String link = "[<A href=\"" + links + "\"> Retry harvesting</A>]";
+           linkSet.add(link);
+           
+           links = linkprefix + Status.NEW.ordinal() + "/";
+           link = "[<A href=\"" +  links + "\"> Reset seeds to status NEW</A>]";
+           linkSet.add(link);
+           
+           links = linkprefix + SeedRequest.RETRY_ANALYSIS_CODE + "/";
+           link = "[<A href=\"" +  links + "\"> Retry Analysis of last harvestdata</A>]";
+           linkSet.add(link);
+           
+           linksPlace.setText(StringUtils.join(linkSet, "&nbsp;&nbsp;"));
+        } else {
+        	logger.warning("Linksplace not in the used template '" + templateName + "'");
+        }
+
         /*
          * if ( contentPlace != null ) { contentPlace.setText( sb.toString() );
          * }
@@ -870,33 +916,8 @@ public class SeedsResource implements ResourceAbstract {
         if (statusPlace != null) {
             statusPlace.setText(urlListSb.toString());
         }
-
-        if (alertPlace != null) {
-            StringBuilder alertSb = new StringBuilder();
-            if (errorStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-error\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(errorStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            }
-            if (successStr != null) {
-                alertSb.append("<div class=\"row-fluid\">");
-                alertSb.append("<div class=\"span12 bgcolor\">");
-                alertSb.append("<div class=\"alert alert-success\">");
-                alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-                alertSb.append(successStr);
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertSb.append("</div>");
-                alertPlace.setText(alertSb.toString());
-            }
-        }
-
+        CommonResource.insertInAlertPlace(alertPlace, errorStr, successStr, templateName, logger);
+        
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
                 out.write(templateParts.parts.get(i).getBytes());
@@ -968,8 +989,11 @@ public class SeedsResource implements ResourceAbstract {
 		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
 		Locale locDa = new Locale("da");
 		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
-			Long count = dao.getSeedsCount(Status.fromOrdinal(i));
-			result.add(new MenuItem(i, count, locDa, i18n));
+			if (!Status.ignoredState(i)) {
+				Long count = dao.getSeedsCount(Status.fromOrdinal(i));
+				result.add(new MenuItem(i, count, locDa, i18n));
+			}
+			
 		}
 	    return result;
     }

@@ -10,9 +10,12 @@ import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.BlackList;
+import dk.kb.webdanica.core.datamodel.DanicaStatus;
+import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 import dk.kb.webdanica.core.seeds.filtering.ResolveRedirects;
@@ -44,6 +47,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	private Configuration configuration;
 
 	private boolean rejectDKUrls;
+
+	private DomainsDAO domainDAO;
 	
     /**
      * Constructor for the Filter thread worker object.
@@ -80,6 +85,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
     	configuration = Configuration.getInstance();
     	seeddao = configuration.getDAOFactory().getSeedsDAO();
     	blacklistDao = configuration.getDAOFactory().getBlackListDAO();
+    	domainDAO = configuration.getDAOFactory().getDomainsDAO();
     	resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());
     	rejectDKUrls = SettingsUtilities.getBooleanSetting(WebdanicaSettings.REJECT_DK_URLS, 
     			Constants.DEFAULT_REJECT_DK_URLS_VALUE);
@@ -134,7 +140,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
 	    	seeddao.updateSeed(s);
 	    }
     }
-	private void doFilteringOnSeed(Seed s, List<BlackList> blacklists) {
+	private void doFilteringOnSeed(Seed s, List<BlackList> blacklists) throws Exception {
 		// We test on the redirectedUrl, if it exists
 		String urlInvestigated = s.getUrl();
 		String redUrl = s.getRedirectedUrl();
@@ -165,6 +171,20 @@ public class FilterWorkThread extends WorkThreadAbstract {
 			s.setStatus(Status.REJECTED);
 			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
 					+ "' belongs to the .dk toplevel and by default is part of legal deposit"); 
+			return;
+		}
+		// Test 4: test that the url does not belong to a domain which danicastatus is YES or NO
+		Domain d = domainDAO.getDomain(s.getDomain());
+		DanicaStatus ds = d.getDanicaStatus();
+		if (ds.equals(DanicaStatus.NO)) {
+			s.setStatus(Status.REJECTED);
+			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
+					+ "' belongs to the domain '" + d.getDomain() + "' which has been rejected as DANICA domain");
+			return;
+		} else if (ds.equals(DanicaStatus.YES)) {
+			s.setStatus(Status.REJECTED);
+			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
+					+ "' belongs to the domain '" + d.getDomain() + "' which has been accepted as a full DANICA domain");
 			return;
 		}
 		

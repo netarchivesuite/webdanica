@@ -21,6 +21,10 @@ public class ExportFromWebdanica {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
+		boolean includeAlreadyExported = false;
+		if (args.length == 1 && args[0].equalsIgnoreCase("--include_already_exported")) {
+			includeAlreadyExported = true;
+		}
 		DAOFactory daoFactory = null;
 		String databaseSystem = SettingsUtilities.getStringSetting(
 				WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
@@ -30,7 +34,7 @@ public class ExportFromWebdanica {
 			daoFactory = new HBasePhoenixDAOFactory();
 		}
 		SeedsDAO dao = daoFactory.getSeedsDAO();
-		List<Seed> readySeeds = dao.getSeedsReadyToExport();
+		List<Seed> readySeeds = dao.getSeedsReadyToExport(includeAlreadyExported);
 		if (readySeeds.isEmpty()) {
 			System.out.println("No seeds found ready for export");
 			System.exit(0);
@@ -45,7 +49,7 @@ public class ExportFromWebdanica {
 				urlsToExport.add(s.getUrl());
 			}
 		}
-		// write to file
+		// write to file 
 		
 		
 	}

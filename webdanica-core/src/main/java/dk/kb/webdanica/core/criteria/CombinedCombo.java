@@ -590,11 +590,13 @@ public class CombinedCombo extends EvalFunc<String> {
 					object.put("CLinks", CriteriaUtils.toBase64(clinks));
 				}
 			}
+			object.put("CError", errorSb.toString());
+			/*
 			if (!errorSb.toString().isEmpty()) {
 				object.put("CError", errorSb.toString());
 			} else {
 				object.put("CError", "No errors during analysis");
-			}
+			}*/
 		}
 		return object.toJSONString();
 	}

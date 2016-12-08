@@ -13,6 +13,7 @@ public class Constants {
 	public static final boolean DEFAULT_REJECT_DK_URLS_VALUE = false;
 	public static final String DEFAULT_FILTERING_CRONTAB = 	"0 * * * *";
 	public static final String DEFAULT_HARVESTING_CRONTAB = "0 * * * *";
+	public static final long MAX_SEEDS_TO_FETCH = 10000;
 	
 	
 }

@@ -1,5 +1,6 @@
 package dk.kb.webdanica.core.utils;
 
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -83,9 +84,62 @@ public class SystemUtils {
     public static boolean isGzippedWarcfile(String warcfilename) {
 	    return warcfilename.toLowerCase().endsWith(".gz"); 
     }
-	
+
+    public static void writeToPrintStream(PrintStream out, Throwable t) {
+    	String message;
+    	if (t != null) {
+    		out.append(t.getClass().getName());
+    		message = t.getMessage();
+    		if (message != null) {
+    			out.append(": ");
+    			out.append(t.getMessage());
+    		}
+    		out.append("\n");
+    		StringBuilder sb = new StringBuilder();
+    		stacktrace_dump(t.getStackTrace(), sb);
+    		out.append(sb.toString());
+    		while ((t = t.getCause()) != null) {
+    			out.append("caused by ");
+    			out.append(t.getClass().getName());
+    			message = t.getMessage();
+    			if (message != null) {
+    				out.append(": ");
+    				out.append(t.getMessage());
+    			}
+    			out.append("\n");
+    			sb = new StringBuilder();
+    			stacktrace_dump(t.getStackTrace(), sb);
+    			out.append(sb.toString());
+    		}
+    	}
+    }
     
-    
+    public static void stacktrace_dump(StackTraceElement[] stackTraceElementArr, StringBuilder sb) {
+    	StackTraceElement stackTraceElement;
+    	String fileName;
+    	if (stackTraceElementArr != null && stackTraceElementArr.length > 0) {
+    		for (int i=0; i<stackTraceElementArr.length; ++i) {
+    			stackTraceElement = stackTraceElementArr[i];
+    			sb.append("\tat ");
+    			sb.append(stackTraceElement.getClassName());
+    			sb.append(".");
+    			sb.append(stackTraceElement.getMethodName());
+    			sb.append("(");
+    			fileName = stackTraceElement.getFileName();
+    			if (fileName != null) {
+    				sb.append(fileName);
+    				sb.append(":");
+    				sb.append(stackTraceElement.getLineNumber());
+    			} else {
+    				sb.append("Unknown source");
+    			}
+    			sb.append(")");
+    			sb.append("\n");
+    		}
+    	}
+    }
+
+
 }
 
 

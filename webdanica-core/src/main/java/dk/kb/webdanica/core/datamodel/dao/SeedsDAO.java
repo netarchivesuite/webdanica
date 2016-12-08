@@ -20,7 +20,7 @@ public interface SeedsDAO {
 
 	Long getSeedsDanicaCount(DanicaStatus s) throws Exception;
 
-	List<Seed> getSeedsReadyToExport() throws Exception;
+	List<Seed> getSeedsReadyToExport(boolean includeAlreadyExportedSeeds) throws Exception;
 
 	boolean existsUrl(String url) throws Exception;
 	

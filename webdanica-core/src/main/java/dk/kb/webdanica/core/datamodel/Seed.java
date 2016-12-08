@@ -154,10 +154,6 @@ public class Seed {
 	public void setExportedState(boolean b) {
 	    this.exported = b;
     }
-	
-//	public void changeStateTo(Status status, String statusReason) {
-//		
-//	}
 
 	public String showExportedState() {
 	    if (exported == false) {

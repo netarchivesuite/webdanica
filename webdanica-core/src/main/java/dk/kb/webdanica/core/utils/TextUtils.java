@@ -249,4 +249,32 @@ public class TextUtils {
 	    }
 	    return resultList;
     }
+	
+	public static String findHarvestNameInStatusReason(String statusReason) {
+		final String SPLITTER = "harvestname";
+		String harvestName = null;
+		boolean isTypeTwo = statusReason.contains("'");
+		//System.out.println(isTypeTwo);
+		if (!statusReason.contains(SPLITTER)) {
+			//System.out.println("Can't find harvestname in field statusreason. marker has changed: '" +  statusReason + "'");
+			return null;
+		} else {
+			String[] statusReasonParts = statusReason.split(SPLITTER);
+			if (statusReasonParts.length > 1) {
+				harvestName = statusReasonParts[1].trim();
+				if (!isTypeTwo) {
+					String[] harvestNameparts = harvestName.split(" ");
+					if (harvestNameparts.length == 2) {
+						return harvestNameparts[1];
+					} else {
+						return null;
+					}
+				} else {
+					return harvestName.substring(harvestName.indexOf("'")+1, harvestName.lastIndexOf("'"));
+				}
+			} else {
+				return null;
+			}
+		}
+	}
 }

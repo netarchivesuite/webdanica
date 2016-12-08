@@ -23,6 +23,7 @@ import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.StreamUtils;
+import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 /**
@@ -47,9 +48,24 @@ public class CriteriaIngest {
 			}
 		}
 		List<HarvestError> errors = HarvestLog.processCriteriaResults(harvests, baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
-
-		for (HarvestError e: errors) {
-			System.out.println("Harvest of seed " + e.getHarvest().getSeed() + " has errors: " + e.getError());
+		if (addCriteriaResultsToDatabase) {
+			SeedsDAO sdao = daofactory.getSeedsDAO();
+			for (HarvestError e: errors) {
+				String seed = e.getHarvest().getSeed();
+				String harvestname = e.getHarvest().getHarvestName();
+				String error = e.getError();
+				Seed s = sdao.getSeed(seed);
+				s.setStatus(Status.ANALYSIS_FAILURE);
+				s.setStatusReason("Set to status " 
+						+ Status.ANALYSIS_FAILURE + " using harvestname '" + harvestname + "'. Failures occured during processing: " + error);
+				sdao.updateSeed(s);
+			}
+			
+		} else { // just mention the errors in the screen
+			System.out.println("Identified " + errors.size() + " errors");
+			for (HarvestError e: errors) {
+				System.out.println("Harvest of seed " + e.getHarvest().getSeed() + " has errors: " + e.getError());
+			}
 		}
 		HarvestLog.printToReportFile(harvests, harvestLogReport);
 	}	
@@ -109,12 +125,12 @@ public class CriteriaIngest {
 		if (addToDatabase) {
 			// Verify that seed exists in the seed-table, otherwise create it
 			SeedsDAO sdao = daofactory.getSeedsDAO();
-			if (!sdao.existsUrl(seed)) {
+			if (!sdao.existsUrl(seed)) { // Note: this should only happen in the manual workflow
 				Seed s = new Seed(seed);
-				s.setStatus(Status.HARVESTING_FINISHED);
+				s.setStatus(Status.ANALYSIS_COMPLETED);
 				s.setStatusReason("Set to status '" 
-						+ Status.HARVESTING_FINISHED 
-						+ "' as we should have already harvested this seed");
+						+ Status.ANALYSIS_COMPLETED 
+						+ "' as we have now analyzed the seed");
 				try {
 					boolean inserted = sdao.insertSeed(s);
 					if (!inserted) {
@@ -132,6 +148,7 @@ public class CriteriaIngest {
 		String line = "";
 		String trimmedLine = null;
 		//read file and ingest
+		boolean foundAnalysisOfSeed = false;
 		while ((line = fr.readLine()) != null) {
 			trimmedLine = line.trim();
 			if (!trimmedLine.isEmpty()) {
@@ -145,9 +162,18 @@ public class CriteriaIngest {
 					success = false;
 				}
 				if (success && doInsert) {
-					prepareLine(res, DataSource.NETARKIVET);
+					try {
+						prepareLine(res, DataSource.NETARKIVET);
+					} catch (Throwable e) {
+						System.out.println("Ignoring analysis of url '" + res.url + "' from harvest '" + harvestName + "' due to exception ");
+						SystemUtils.writeToPrintStream(System.out, e);
+						continue;
+					}
 					// REMOVED log for loadTest FIXME
 					//log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
+					if (res.url.equals(seed)) {
+						foundAnalysisOfSeed = true;
+					}
 					if (addToDatabase) {
 						CriteriaResultsDAO dao = daofactory.getCriteriaResultsDAO();
 						boolean inserted = dao.insertRecord(res);
@@ -200,6 +226,21 @@ public class CriteriaIngest {
 			}
 		}
 		fr.close();
+		if (addToDatabase && !foundAnalysisOfSeed) {
+			SeedsDAO sdao = daofactory.getSeedsDAO();
+			Seed s = sdao.getSeed(seed);
+			s.setStatus(Status.ANALYSIS_FAILURE);
+			String harvestname = TextUtils.findHarvestNameInStatusReason(s.getStatusReason());
+			if (harvestname == null) {
+				harvestname = "N/A";
+			}
+			s.setStatusReason("Set to status '" 
+					+ Status.ANALYSIS_FAILURE 
+					+ "' as we have now no criteria analysis of the seed itself. harvestname is '" 
+					+ harvestname + "'");
+			sdao.updateSeed(s);
+		}
+		
 		boolean verbose = false;
 		if (verbose) { //FIXME
 			log("Processed " + linecount + " lines");

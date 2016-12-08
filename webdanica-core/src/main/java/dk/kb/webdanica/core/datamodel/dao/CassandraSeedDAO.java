@@ -210,7 +210,7 @@ public class CassandraSeedDAO implements SeedsDAO {
     }
 
 	@Override
-    public List<Seed> getSeedsReadyToExport() throws Exception {
+    public List<Seed> getSeedsReadyToExport(boolean includeExported) throws Exception {
 	    // TODO Auto-generated method stub
 	    return null;
     }

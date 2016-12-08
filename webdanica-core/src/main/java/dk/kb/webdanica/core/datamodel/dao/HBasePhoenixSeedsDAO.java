@@ -275,16 +275,18 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     }
 
 	private static final String SEEDS_READY_TO_EXPORT_SQL;
-
+	private static final String SEEDS_DANICA_SQL;
 	static {
 		SEEDS_READY_TO_EXPORT_SQL = "SELECT * "
 				+ "FROM seeds "
 				+ "WHERE status=? and danica=? and exported=?";
+		SEEDS_DANICA_SQL = "SELECT * "
+				+ "FROM seeds "
+				+ "WHERE status=? and danica=?";
 	}
-
 	
 	@Override
-    public List<Seed> getSeedsReadyToExport() throws Exception {
+    public List<Seed> getSeedsReadyToExport(boolean includeAlreadyExported) throws Exception {
 		//DanicaStatus==YES && exported==false && status==DONE  // Seed kan også have DanicaStatus=YES, men have Status REJECTED, hvis domænet allerede er danica
 		List<Seed> seedList = new LinkedList<Seed>();
 		PreparedStatement stm = null;
@@ -294,11 +296,18 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 		boolean exportedValue = false; // Don't export seeds more than once
 		try {
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			stm = conn.prepareStatement(SEEDS_READY_TO_EXPORT_SQL);
-			stm.clearParameters();
-			stm.setInt(1, done.ordinal());
-			stm.setInt(2, yes.ordinal());
-			stm.setBoolean(3, exportedValue);
+			if (!includeAlreadyExported) {
+				stm = conn.prepareStatement(SEEDS_READY_TO_EXPORT_SQL);
+				stm.clearParameters();
+				stm.setInt(1, done.ordinal());
+				stm.setInt(2, yes.ordinal());
+				stm.setBoolean(3, exportedValue);
+			} else {
+				stm = conn.prepareStatement(SEEDS_DANICA_SQL);
+				stm.clearParameters();
+				stm.setInt(1, done.ordinal());
+				stm.setInt(2, yes.ordinal());
+			}
 			rs = stm.executeQuery();
 			if (rs != null) {
 				while (rs.next()) {

@@ -6,9 +6,9 @@ public enum Status {
 	NEW,
 	READY_FOR_HARVESTING,
 	HARVESTING_IN_PROGRESS,
-	HARVESTING_FINISHED,
+	HARVESTING_FINISHED, // remove or don't show
 	READY_FOR_ANALYSIS,
-	ANALYSIS_COMPLETED,
+	ANALYSIS_COMPLETED, // remove or don't show
 	REJECTED,
 	AWAITS_CURATOR_DECISION,
 	HARVESTING_FAILED,
@@ -124,6 +124,13 @@ public enum Status {
 	    	return false;
 	    } 
 	    return true;
+    }
+
+	public static boolean ignoredState(int i) {
+		if (i == 3 || i == 5) {
+			return true;
+		}
+	    return false;
     }
 	
 }
