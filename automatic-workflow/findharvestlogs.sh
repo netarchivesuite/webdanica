@@ -11,7 +11,6 @@ if [ ! -d "$WORKFLOW_HOME" ]; then
    exit 1
 fi
 
-
 if [ -z "$WEBDANICA_VERSION" ]; then
    echo "The 'webdanica_version' argument is missing (arg #2). Exiting program"
    exit 1
@@ -32,7 +31,7 @@ if [ ! -f "$JARFILE2" ]; then
    exit 1
 fi
 
-OPTS2=-Dwebdanica.settings.file=$WORKFLOW_HOME/webdanica_settings.xml 
-OPTS3=-Dlogback.configurationFile=$WORKFLOW_HOME/silent_logback.xml 
+OPTS2=-Dwebdanica.settings.file=$WORKFLOW_HOME/conf/webdanica_settings.xml 
+OPTS3=-Dlogback.configurationFile=$WORKFLOW_HOME/conf/silent_logback.xml 
 
-java $OPTS2 $OPTS3 -cp $JARFILE1:$JARFILE2:lib/slf4j-api-1.7.7.jar:lib/commons-io-2.0.1.jar:lib/common-core-5.1.jar:lib/harvester-core-5.1.jar:lib/archive-core-5.1.jar dk.kb.webdanica.webapp.tools.FindHarvestLogs $1 $2
+java $OPTS2 $OPTS3 -cp $JARFILE1:$JARFILE2:lib/slf4j-api-1.7.7.jar:lib/slf4j-log4j12-1.7.12.jar:lib/commons-io-2.0.1.jar:lib/common-core-5.1.jar:lib/harvester-core-5.1.jar:lib/archive-core-5.1.jar dk.kb.webdanica.webapp.tools.FindHarvestLogs $1 $2

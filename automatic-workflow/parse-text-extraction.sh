@@ -1,6 +1,6 @@
 FILE_TO_EXTRACT=$1
 OUTPUTDIR=$2
-HADOOP_HOME=$3
+HADOOP_BIN_HOME=$3
 WORKFLOW_HOME=$4
 
 PROG=`basename "$0"`
@@ -16,8 +16,8 @@ if [ -z "$OUTPUTDIR" ]; then
  exit 1
 fi
 
-if [ -z "$HADOOP_HOME" ]; then
- echo "ERROR: HADOOP_HOME argument (arg #3) is not set!  Called by $PARENT_COMMAND. Exiting program $PROG"
+if [ -z "$HADOOP_BIN_HOME" ]; then
+ echo "ERROR: HADOOP_BIN_HOME argument (arg #3) is not set!  Called by $PARENT_COMMAND. Exiting program $PROG"
  exit 1
 fi
 
@@ -52,21 +52,21 @@ if [ ! -f "$FILE_TO_EXTRACT" ]; then
  exit 1
 fi
 
-if [ ! -d "$HADOOP_HOME" ]; then
+if [ ! -d "$HADOOP_BIN_HOME" ]; then
  echo
- echo ERROR: HADOOP_HOME directory \'$HADOOP_HOME\' does not exist.  Exiting program $PROG
+ echo ERROR: HADOOP_BIN_HOME directory \'$HADOOP_BIN_HOME\' does not exist.  Exiting program $PROG
  echo
  exit 1
 fi
 
 if [ ! -d "$WORKFLOW_HOME" ]; then
  echo
- echo ERROR: WORKFLOW_HOME directory \'$WORKLOW_HOME\' does not exist. Exiting program $PROG
+ echo ERROR: WORKFLOW_HOME directory \'$WORKFLOW_HOME\' does not exist. Exiting program $PROG
  echo
  exit 1
 fi
 
-$HADOOP_HOME/bin/hadoop jar $WORKFLOW_HOME/lib-parse/jbs-fatjar.jar org.archive.jbs.Parse $OUTPUTDIR $FILE_TO_EXTRACT 
+$HADOOP_BIN_HOME/bin/hadoop jar $WORKFLOW_HOME/lib-parse/jbs-fatjar.jar org.archive.jbs.Parse $OUTPUTDIR $FILE_TO_EXTRACT 
 #2>&1 log/parse-${LOG}.log
 RESCODE=$?
 if [ -z $RESCODE ]

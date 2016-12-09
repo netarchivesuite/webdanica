@@ -20,6 +20,16 @@ captures = FOREACH captures GENERATE m#'url' as url:chararray,
 
 
 --captures = FOREACH captures GENERATE CombinedCombo(url, date, text, links, hostname);
-captures = FOREACH captures GENERATE CombinedComboJson(url, date, text, links, hostname, true);
+--captures = FOREACH captures GENERATE CombinedComboJsonAlt(url, date, text, links, hostname, true, '/home/test/workflow/Bynavne_Stednavn_JEI_UTF16.txt');
+captures = FOREACH captures GENERATE CombinedCombo(url, date, text, links, hostname, true, 
+'/home/test/automatic-workflow/wordslist/danishMajorCities_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/DanishNames_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/foreninger_lowercased_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/foreninger_one_word_lowercased_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/placenames_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/virksomheder_lowercased_UTF8.txt',
+'/home/test/automatic-workflow/wordslist/virksomheder_one_word_lowercased_UTF8.txt'
+);
+
  
 STORE captures INTO '$output' USING PigStorage();
