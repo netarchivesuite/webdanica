@@ -169,7 +169,8 @@ public class CriteriaIngest {
 						System.out.println(logMsg);
 						SystemUtils.writeToPrintStream(System.out, e);
 						// mail this to webdanica-admin:
-						SystemUtils.sendAdminMail(logMsg, e);
+						String header = "Url '" + res.url + "' ignored during ingest due to exception";
+						SystemUtils.sendAdminMail(header, logMsg, e);
 						continue;
 					}
 					// REMOVED log for loadTest FIXME

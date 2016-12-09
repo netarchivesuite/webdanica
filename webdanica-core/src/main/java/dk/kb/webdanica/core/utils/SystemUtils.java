@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
-import dk.kb.webdanica.core.WebdanicaSettings;
-
 /**
  * Provide some general System Utilities.
  */
@@ -116,6 +114,34 @@ public class SystemUtils {
     	}
     }
     
+    public static void writeToStringBuilder(StringBuilder out, Throwable t) {
+    	String message;
+    	if (t != null) {
+    		out.append(t.getClass().getName());
+    		message = t.getMessage();
+    		if (message != null) {
+    			out.append(": ");
+    			out.append(t.getMessage());
+    		}
+    		out.append("\n");
+    		stacktrace_dump(t.getStackTrace(), out);
+    		while ((t = t.getCause()) != null) {
+    			out.append("caused by ");
+    			out.append(t.getClass().getName());
+    			message = t.getMessage();
+    			if (message != null) {
+    				out.append(": ");
+    				out.append(t.getMessage());
+    			}
+    			out.append("\n");
+    			
+    			stacktrace_dump(t.getStackTrace(), out);
+    		}
+    	}
+    }
+    
+    
+    
     public static void stacktrace_dump(StackTraceElement[] stackTraceElementArr, StringBuilder sb) {
     	StackTraceElement stackTraceElement;
     	String fileName;
@@ -141,18 +167,13 @@ public class SystemUtils {
     	}
     }
 
-	public static void sendAdminMail(String logMsg, Throwable e) {
-		//WebdanicaSettings.
-	    String toMail = SettingsUtilities.getStringSetting("WebdanicaSettings", "default_string_value");
-	    
+	public static void sendAdminMail(String header, String logMsg, Throwable e) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(header + "\n");
+		sb.append(logMsg + "\n");
+		writeToStringBuilder(sb, e);
+		Emailer.getInstance().sendAdminEmail(header, sb.toString());
     }
-	
-	public static MailConf getMailConf() {
-		return MailConf.getInstance();
-	}
-	
-
-
 }
 
 
