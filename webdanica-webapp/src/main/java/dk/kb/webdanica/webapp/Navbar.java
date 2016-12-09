@@ -43,6 +43,8 @@ public class Navbar {
                 { Servlet.environment.getContextPath() + "/blacklists/", "Blacklists" },
                 { Servlet.environment.getContextPath() + "/harvests/", "Høstninger" },
                 { Servlet.environment.getContextPath() + "/criteriaresults/", "Kriterie resultater" },
+                { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
+                { Servlet.environment.getContextPath() + "/ingestlogs/", "Ingestlogs" },
                 // { Servlet.environment.contextPath + "/search/", "Søg" },
                 // { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
                 // { Servlet.environment.getContextPath() + "/users/", "Brugere" },

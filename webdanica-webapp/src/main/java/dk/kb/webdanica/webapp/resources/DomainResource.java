@@ -210,8 +210,8 @@ public class DomainResource implements ResourceAbstract {
 	        resp.setContentType("text/html; charset=utf-8");
 
 	        Caching.caching_disable_headers(resp);
-
-	        Template template = environment.getTemplateMaster().getTemplate("domain_list.html");
+	        String templatename = "domain_list.html"; 
+	        Template template = environment.getTemplateMaster().getTemplate(templatename);
 
 	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
 	        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
@@ -274,7 +274,7 @@ public class DomainResource implements ResourceAbstract {
 	        menuSb.append("<li id=\"state_0\"");
 	        menuSb.append(" class=\"active\"");
 	        menuSb.append("><a href=\"");
-	        menuSb.append(Servlet.environment.getBlacklistsPath());
+	        menuSb.append(Servlet.environment.getDomainsPath());
 	        menuSb.append("\">");
 	        menuSb.append("Liste over blacklister");
 	        menuSb.append("</a></li>\n");

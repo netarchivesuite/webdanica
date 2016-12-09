@@ -26,6 +26,7 @@ import dk.kb.webdanica.webapp.resources.DomainResource;
 import dk.kb.webdanica.webapp.resources.HarvestResource;
 import dk.kb.webdanica.webapp.resources.HarvestsResource;
 import dk.kb.webdanica.webapp.resources.IndexResource;
+import dk.kb.webdanica.webapp.resources.IngestLogResource;
 import dk.kb.webdanica.webapp.resources.Resource;
 import dk.kb.webdanica.webapp.resources.ResourceAbstract;
 import dk.kb.webdanica.webapp.resources.ResourceManagerAbstract;
@@ -100,6 +101,10 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             DomainResource domainResource = new DomainResource();
             domainResource.resources_init(environment);
             domainResource.resources_add(this);
+            
+            IngestLogResource ingestResource = new IngestLogResource();
+            ingestResource.resources_init(environment);
+            ingestResource.resources_add(this);
             
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
     	} catch (Throwable t) {
@@ -216,6 +221,13 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (resource == null && pathInfo.startsWith(DomainResource.DOMAIN_LIST_PATH)) {
                 	resource = pathMap.get(DomainResource.DOMAIN_LIST_PATH, numerics);
                 }
+                if (resource == null && pathInfo.startsWith(IngestLogResource.INGESTLOG_PATH)) {
+                	resource = pathMap.get(IngestLogResource.INGESTLOG_PATH, numerics);
+                }
+                if (resource == null && pathInfo.startsWith(IngestLogResource.INGESTLOGS_PATH)) {
+                	resource = pathMap.get(IngestLogResource.INGESTLOGS_PATH, numerics);
+                }
+                
                 
                 if (resource != null) {
                 	logger.info("Found resource for pathinfo '" + pathInfo + "' in pathMap: " + resource);

@@ -32,8 +32,11 @@ public class StatusBar {
                     { Servlet.environment.getContextPath() + "/status/threads/", "Threads" },
                     { Servlet.environment.getContextPath() + "/status/progress/", "Progress" },
                     { Servlet.environment.getContextPath() + "/status/log/", "Log" },
+                    { Servlet.environment.getContextPath() + "/domains/", "Domains" },
+                    { Servlet.environment.getContextPath() + "/seeds/", "Seeds" },
                     { Servlet.environment.getContextPath() + "/harvests/", "Harvests" },
                     { Servlet.environment.getContextPath() + "/criteriaresults/", "Kriterie Resultater" },
+                    { Servlet.environment.getContextPath() + "/ingestlogs/", "IngestLogs" },
                     //{ Servlet.environment.getContextPath() + "/status/pids/", "Pids" }
                     // "/status/sysno/pid/<numeric>/"
                     // "/status/pids/*"

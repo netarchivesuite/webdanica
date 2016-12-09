@@ -15,6 +15,7 @@ import com.antiaction.common.templateengine.TemplateParts;
 import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
+import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
@@ -25,10 +26,22 @@ public class CommonResource {
 	
 	private static final String ERROR_TEMPLATE = "error_master.html";
 	
-	public static void show_error(String error, HttpServletResponse resp, Environment env) throws IOException {
+	
+	public static void show_error(String logMsg, HttpServletResponse resp,
+            Environment environment) throws IOException {
+	    show_error(logMsg, resp, environment, null);   
+    }
+	
+	
+	public static void show_error(String error, HttpServletResponse resp, Environment env, Throwable t) throws IOException {
 		ServletOutputStream out = resp.getOutputStream();
 		resp.setContentType("text/html; charset=utf-8");
 		String errorStr = error;
+		if (t != null) {
+			StringBuilder sb = new StringBuilder();
+			SystemUtils.writeToStringBuilder(sb, t);
+			errorStr = error + " " + sb.toString(); 
+		}
 		Caching.caching_disable_headers(resp);
 		String templateName = ERROR_TEMPLATE;
 		Template template = env.getTemplateMaster().getTemplate(templateName);

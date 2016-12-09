@@ -32,6 +32,7 @@ import dk.kb.webdanica.webapp.resources.CriteriaResultsResource;
 import dk.kb.webdanica.webapp.resources.DomainResource;
 import dk.kb.webdanica.webapp.resources.HarvestResource;
 import dk.kb.webdanica.webapp.resources.HarvestsResource;
+import dk.kb.webdanica.webapp.resources.IngestLogResource;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
@@ -316,6 +317,8 @@ public class Environment {
 		this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
 		this.domainPath = getContextPath() + DomainResource.DOMAIN_PATH;
 		this.domainsPath = getContextPath() + DomainResource.DOMAIN_LIST_PATH;
+		this.ingestlogPath = getContextPath() + IngestLogResource.INGESTLOG_PATH;
+		this.ingestlogsPath = getContextPath() + IngestLogResource.INGESTLOGS_PATH;
 		/*
 		 * Initialize template master.
 		 */
