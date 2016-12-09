@@ -9,7 +9,7 @@ PROG=`basename "$0"`
 
 SEQ_BASEDIR=$WORKFLOW_HOME/SEQ_AUTOMATIC
 CRITERIA_RESULTS_BASEDIR=$WORKFLOW_HOME/criteria-results-automatic
-
+CRITERIA_WORKFLOW_SCRIPT=criteria-workflow-alt.sh
 ################### check args ##########################################
 
 # check HARVESTLOG_FILE
@@ -82,6 +82,7 @@ fi
 TIMESTAMP=`/bin/date '+%d-%m-%Y-%s'`
 SEQ_DIR=$SEQ_BASEDIR/$TIMESTAMP
 mkdir -p $SEQ_DIR
+echo
 echo "Starting parsed-workflow on file $HARVESTLOG_FILE .."
 bash parsed-workflow.sh $HARVESTLOG_FILE $WEBDATADIR $SEQ_DIR $WORKFLOW_HOME $HADOOP_HOME $WEBDANICA_VERSION
 rc=$?
@@ -90,29 +91,28 @@ if [[ $rc != 0 ]]; then
         exit $rc
 fi
 echo "Finished parsed-workflow on file $HARVESTLOG_FILE with success"
-
+echo
 #3) lav kriterie-analyse med pig
 
 #Generer et unikt criteria_results_DIR i CRITERIA_RESULTS_BASEDIR (e.g. /home/test/criteria-results/)
 CRITERIARESULTS_DIR=$CRITERIA_RESULTS_BASEDIR/$TIMESTAMP
 mkdir -p $CRITERIARESULTS_DIR
 
-echo "Executing : bash criteria-workflow.sh $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME"
-bash criteria-workflow.sh $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME
+echo "Executing : bash $CRITERIA_WORKFLOW_SCRIPT $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME"
+bash $CRITERIA_WORKFLOW_SCRIPT $SEQ_DIR $CRITERIARESULTS_DIR $WORKFLOW_HOME $PIG_HOME
 rc=$?
-if [[ $rc != 0 ]]; then echo "criteria-workflow failed"; exit $rc; fi
+echo
+if [[ $rc != 0 ]]; then echo "ERROR: criteria-workflow failed"; exit $rc; fi
 
-#eller 
-#
-#for  alternativ kriterie-analyse med pig (der anvender en liste af bynavne i UTF-16 tekst (gemt fra Excel som UTF8 tekst))
-#tilpas stien til bynavne-filen, så den er rigtig, i filen pigscripts/criteriaRun-combinedComboJson-alt-seq.pig.
-#p.t. peges der på stien /home/test/workflow/Bynavne_JEI_UTF16.txt
-#
-#bash criteria-workflow-alt.sh <SEQ_DIR> <criteria_results_DIR>
 
 #4) Efterprocessering af kriteria-analysen og ingest i databasen
+echo
 echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME"
 bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME
 rc=$?
-if [[ $rc != 0 ]]; then echo "criteria ingest failed"; exit $rc; fi
+if [[ $rc != 0 ]]; then echo "ERROR: criteria ingest failed"; exit $rc; fi
+echo
+echo "Ingest of $HARVESTLOG was successful"
+echo
+
 

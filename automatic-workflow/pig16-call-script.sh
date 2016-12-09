@@ -4,20 +4,16 @@ SCRIPT=$3
 WORKFLOW_HOME=$4
 PIG_HOME=$5
 
-$FILE $DESTINATION $SCRIPTPATH $WORKFLOW_HOME $PIG_HOME
-
-
 ## configure for correct pig version and log4j properties file
 ## points the GEOIP_FILE to /full/path/to/GeoIP.dat       (MAYBE to be used by webdanica project)
 
 ## bash scripts/$callscript \'$prefix$J'/*gz'\' $basedir/$dirname /home/hadoop/scripts/criteriaRun-combo-v1.pig &> $basedir/error-$dirname.log
 
-
 #export PIG_OPTS=-verbose:class
 FULL_PATH_TO_PIGBOOTUP=$WORKFLOW_HOME/conf/.pigbootup
 echo "Using PIGBOOTUP: $FULL_PATH_TO_PIGBOOTUP"
 export PIG_OPTS=-Dpig.load.default.statements=$FULL_PATH_TO_PIGBOOTUP
-export LOG4J_CONFIG=/home/test/conf/log4j_pig.properties
+export LOG4J_CONFIG=$WORKFLOW_HOME/conf/log4j_hadoop-pig.properties
 
 export LOG4J="-Dlog4j.configuration=file:${LOG4J_CONFIG}"
 

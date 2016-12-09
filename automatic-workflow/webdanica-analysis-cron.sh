@@ -1,12 +1,16 @@
 ## possibly put this in bash_profile
-export WORKFLOW_HOME=/home/test/automatic-workflow/
-export WEBDATADIR=/home/test/ARKIV
+export WORKFLOW_USER_HOME=/home/test
+export WORKFLOW_HOME=$WORKFLOW_USER_HOME/automatic-workflow
+export WEBDATADIR=$WORKFLOW_USER_HOME/ARKIV
 export WEBDANICA_VERSION=0.4.0-SNAPSHOT
-export HADOOP_HOME=/home/test/hadoop-1.2.1/
-export PIG_HOME=/home/test/pig-0.16.0/
+export HADOOP_HOME=$WORKFLOW_USER_HOME/hadoop-1.2.1/
+export PIG_HOME=$WORKFLOW_USER_HOME/pig-0.16.0/
 export BUSYFILE=$WORKFLOW_HOME/.busy
 export WORKDIR=$WORKFLOW_HOME/working
 export OLDJOBSDIR=$WORKFLOW_HOME/oldjobs
+export JAVA_HOME=/usr/java/jdk1.8.0_92_x64
+export PATH=$JAVA_HOME/bin:$PATH
+#echo PATH used: $PATH
 
 if [ -f $BUSYFILE ]; then
    STAT=`stat -c %y $BUSYFILE` 
@@ -42,16 +46,16 @@ if [ -z $RESCODE ]; then
    rm $BUSYFILE
    exit 1	
 fi
-if [ ! -z $FILES ]
+if [[ ! -z $FILES ]]
 then
   echo Found harvest-logs: $FILES
-else
-  echo Found no harvest-logs. No processing needed
+  ###echo Found no harvest-logs. No processing needed
 fi 
 
 for J in $FILES
 do
-echo Processing $J
+echo Processing harvestlog: $J
+
 
 ## move $J to WORKDIR
 NAME=$(basename $J)
@@ -74,7 +78,10 @@ fi
 
 ## move $HARVESTLOG to OLDJOBSDIR
 mv $HARVESTLOG $OLDJOBSDIR
+echo
+echo "Processing done of harvestlog: $J "
 done
+
 ## Remove busy-file
 rm $BUSYFILE
 

@@ -20,6 +20,7 @@ captures = FOREACH captures GENERATE m#'url' as url:chararray,
 
 
 --captures = FOREACH captures GENERATE CombinedCombo(url, date, text, links, hostname);
+--captures = FOREACH captures GENERATE CombinedComboJson(url, date, text, links, hostname, true);
 captures = FOREACH captures GENERATE CombinedCombo(url, date, text, links, hostname, true);
  
 STORE captures INTO '$output' USING PigStorage();

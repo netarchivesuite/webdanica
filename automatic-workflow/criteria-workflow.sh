@@ -29,7 +29,7 @@ if [ -z "$4" ]; then
 fi
 
 
-SCRIPTPATH=$WORKFLOW_HOME/pigscripts/criteriaRun-combinedComboJson-seq.pig
+SCRIPTPATH=$WORKFLOW_HOME/pigscripts/criteriaRun-combinedCombo-seq.pig
 SEQDIRS=`ls $SEQ_BASEDIR`
 for J in $SEQDIRS
 do
