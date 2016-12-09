@@ -7,7 +7,8 @@ import org.apache.pig.EvalFunc;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
-import dk.kb.webdanica.core.utils.Constants;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 public class Tokenizer extends EvalFunc<Tuple> {
@@ -16,7 +17,7 @@ public class Tokenizer extends EvalFunc<Tuple> {
         Tuple result;
         if (input == null || input.size() == 0 || input.get(0) == null) {
             result = TupleFactory.getInstance().newTuple();
-            result.append(Constants.getCriteriaName(this) + ": " + Constants.NODATA);
+            result.append(CriteriaUtils.getCriteriaName(this) + ": " + Constants.NODATA);
             return result;
         }
         String text = (String) input.get(0);

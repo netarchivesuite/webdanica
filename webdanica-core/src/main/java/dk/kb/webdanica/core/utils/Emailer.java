@@ -1,11 +1,4 @@
-/*
- * Created on 18/06/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
-package dk.kb.webdanica.webapp;
+package dk.kb.webdanica.core.utils;
 
 import java.util.Properties;
 import java.util.logging.Level;
@@ -75,6 +68,16 @@ public class Emailer {
         }
         return emailer;
     }
+    
+    public static synchronized Emailer getInstance() {
+        if (emailer == null) {
+        	MailConf conf = MailConf.getInstance();
+            emailer = new Emailer(conf.getSmtpHost(), conf.getSmtpPort(), 
+            		conf.getUsername(), conf.getPassword(), conf.getMailAdmin(), conf.getDontSendMails());
+        }
+        return emailer;
+    }
+    
 
     public void send(String recipient, String subject, String body) {
     	if (dontSendMails) {

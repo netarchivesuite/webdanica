@@ -12,7 +12,7 @@ import org.apache.pig.data.Tuple;
 import org.json.simple.JSONObject;
 
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
-import dk.kb.webdanica.core.utils.Constants;
+import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 /** 
@@ -118,7 +118,7 @@ public class CombinedCombo extends EvalFunc<String> {
     @Override
 	public String exec(Tuple input) throws IOException {
 		if (input == null || input.size() == 0 || input.get(0) == null) {
-			return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
+			return CriteriaUtils.getCriteriaName(this) + ": " + Constants.NODATA;
 		}
 
 		String url = (String) input.get(0); // argument #1
@@ -195,7 +195,7 @@ public class CombinedCombo extends EvalFunc<String> {
 		
 		StringBuilder errorSb = new StringBuilder();
 		String CWD = new File(".").getCanonicalPath();
-		errorSb.append(CWD + "\n");
+		errorSb.append("All relative paths are considered relative to: '"+ CWD + "'\n");
 		
 		//calc Cext1 '- Size of web-page'
 		int Cext1 = text.length();

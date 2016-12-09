@@ -9,7 +9,8 @@ import org.apache.pig.data.Tuple;
 
 import com.maxmind.geoip.Country;
 
-import dk.kb.webdanica.core.utils.Constants;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.Constants;
 
 /**
  *  Databases can be downloaded here:
@@ -25,7 +26,7 @@ public class C18 extends EvalFunc<String> {
     @Override
     public String exec(Tuple input) throws IOException {
         if (input == null || input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
+            return CriteriaUtils.getCriteriaName(this) + ": " + Constants.NODATA;
         }
 
         String hostname = (String) input.get(0);
@@ -33,7 +34,7 @@ public class C18 extends EvalFunc<String> {
         try {
             geop = GeoIPDatabase.getInstance();
         } catch (Throwable e) {
-            return Constants.getCriteriaName(this) + ": failed with reason: " + e.getMessage();
+            return CriteriaUtils.getCriteriaName(this) + ": failed with reason: " + e.getMessage();
         }
 
         try {
@@ -41,7 +42,7 @@ public class C18 extends EvalFunc<String> {
             return (belongs?"C18: y":"C18: n");
         } catch (Throwable e) {
             e.printStackTrace();
-            return Constants.getCriteriaName(this) + ": failed";
+            return CriteriaUtils.getCriteriaName(this) + ": failed";
         }
     } 
     /**

@@ -60,7 +60,6 @@ public class CriteriaIngest {
 						+ Status.ANALYSIS_FAILURE + " using harvestname '" + harvestname + "'. Failures occured during processing: " + error);
 				sdao.updateSeed(s);
 			}
-			
 		} else { // just mention the errors in the screen
 			System.out.println("Identified " + errors.size() + " errors");
 			for (HarvestError e: errors) {
@@ -165,14 +164,24 @@ public class CriteriaIngest {
 					try {
 						prepareLine(res, DataSource.NETARKIVET);
 					} catch (Throwable e) {
-						System.out.println("Ignoring analysis of url '" + res.url + "' from harvest '" + harvestName + "' due to exception ");
+						String logMsg = "Ignoring analysis of url '" + res.url + "' from harvest '" + harvestName + "', seed '" + seed + "', ingestfile '" 
+								+ ingestFile.getAbsolutePath() + "' due to exception ";
+						System.out.println(logMsg);
 						SystemUtils.writeToPrintStream(System.out, e);
+						// mail this to webdanica-admin:
+						SystemUtils.sendAdminMail(logMsg, e);
 						continue;
 					}
 					// REMOVED log for loadTest FIXME
 					//log("Url '" + res.url + "' has danishCode: " +  res.calcDanishCode);
+					String seedWithExtraSlash = seed + "/"; 
 					if (res.url.equals(seed)) {
 						foundAnalysisOfSeed = true;
+					} else if (res.url.equals(seedWithExtraSlash)) {
+						foundAnalysisOfSeed = true;
+						res.errorMsg += "Note: harvested url is the seed with a slash '" + seedWithExtraSlash + "'. Changing result-url to the original seedurl '" + seed + "'\n"; 
+						res.urlOrig = res.url;
+						res.url = seed;
 					}
 					if (addToDatabase) {
 						CriteriaResultsDAO dao = daofactory.getCriteriaResultsDAO();

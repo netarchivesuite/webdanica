@@ -125,12 +125,13 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
 	        
 	        TemplatePlaceHolder urlPlace = TemplatePlaceBase.getTemplatePlaceHolder("url");
+	        TemplatePlaceHolder urlOrigPlace = TemplatePlaceBase.getTemplatePlaceHolder("urlOrig");
 	        TemplatePlaceHolder harvestNamePlace = TemplatePlaceBase.getTemplatePlaceHolder("harvestName");
 	        TemplatePlaceHolder insertedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("inserted_time");
 	        TemplatePlaceHolder seedUrlPlace = TemplatePlaceBase.getTemplatePlaceHolder("seed_url");
 	        TemplatePlaceHolder danishcodePlace = TemplatePlaceBase.getTemplatePlaceHolder("danish_code");
 	        TemplatePlaceHolder danishcodeExplanationPlace = TemplatePlaceBase.getTemplatePlaceHolder("danish_code_explanation");
-	        TemplatePlaceHolder errorPlace = TemplatePlaceBase.getTemplatePlaceHolder("error");
+	        TemplatePlaceHolder logPlace = TemplatePlaceBase.getTemplatePlaceHolder("log");
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
 	        placeHolders.add(appnamePlace);
@@ -143,16 +144,16 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        placeHolders.add(contentPlace);
 	        // add the new placeholders
 	        placeHolders.add(urlPlace);
+	        placeHolders.add(urlOrigPlace); 
 	        placeHolders.add(harvestNamePlace);
 	        placeHolders.add(insertedTimePlace);
 	        placeHolders.add(seedUrlPlace);
-	        placeHolders.add(errorPlace);
+	        placeHolders.add(logPlace);
 	        placeHolders.add(danishcodePlace);
 	        placeHolders.add(danishcodeExplanationPlace);
 	        
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-	        
-	        
+	      
 	        /*
 	         * Heading.
 	         */
@@ -193,22 +194,37 @@ public class CriteriaResultResource implements ResourceAbstract {
 	        } else {
 	        	logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
 	        }
-	        
+	        String urlOrig = b.urlOrig;
+	        if (urlOrig == null) {
+	        	urlOrig = "N/A";
+	        }
 	        ResourceUtils.insertText(urlPlace, "url",  b.url, templateName, logger);
+	        ResourceUtils.insertText(urlOrigPlace, "urlOrig", urlOrig, templateName, logger);
 	        ResourceUtils.insertText(harvestNamePlace, "harvestName",  b.harvestName, templateName, logger);
 	        ResourceUtils.insertText(insertedTimePlace, "inserted_time",  "" + new Date(b.insertedDate), templateName, logger);
-	        String errStr = b.errorMsg;
-	        if (errStr == null) {
-	        	errStr = "";
-	        }
-	        ResourceUtils.insertText(errorPlace, "error", errStr, templateName, logger);
 	        ResourceUtils.insertText(seedUrlPlace, "seed_url", b.seedurl, templateName, logger);
 	        String danishCodeStr = b.calcDanishCode + "(" + Codes.getCategory(b.calcDanishCode) + ")";
 	        String danishCodeExplanation = CalcDanishCode.getCalcDkCodeText(b.calcDanishCode, Display.noCodes, Level.none, false);
 	        ResourceUtils.insertText(danishcodePlace, "danish_code", danishCodeStr, templateName, logger);
 	        ResourceUtils.insertText(danishcodeExplanationPlace, "danish_code_explanation", danishCodeExplanation, templateName, logger);
 	        
+	        String errStr = b.errorMsg;
+	        if (errStr == null) {
+	        	errStr = "";
+	        }
 	        StringBuilder sb = new StringBuilder();
+	        String[] logentries = errStr.split("\n");
+	        sb.append("<pre>\r\n");
+	        for (String log: logentries) {
+	        	sb.append(log);
+	    		sb.append("\r\n");
+	        }
+	    	sb.append("</pre>\r\n");
+	        
+	        ResourceUtils.insertText(logPlace, "log", sb.toString(), templateName, logger);
+	      
+	        // Writing the criteria,Ctext, and CLinks
+	        sb = new StringBuilder();
 	        sb.append("<pre>\r\n");
 	        String ROW_DELIM = ",";
 	        String KEYVAL_DELIM = ":";

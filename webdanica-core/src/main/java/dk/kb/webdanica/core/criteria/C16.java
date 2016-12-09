@@ -7,7 +7,8 @@ import org.apache.pig.EvalFunc;
 import org.apache.pig.PigWarning;
 import org.apache.pig.data.Tuple;
 
-import dk.kb.webdanica.core.utils.Constants;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.Constants;
 
 /** 
  * C16. 
@@ -21,7 +22,7 @@ public class C16 extends EvalFunc<String>{
     @Override
     public String exec(Tuple input) throws IOException {
         if (input == null || input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
+            return CriteriaUtils.getCriteriaName(this) + ": " + Constants.NODATA;
         }
         String url = (String) input.get(0);
         LinksBase lb = null;

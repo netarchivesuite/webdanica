@@ -14,7 +14,8 @@ import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 
-import dk.kb.webdanica.core.utils.Constants;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
+import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.utils.TextUtils;
 
 /** 
@@ -36,7 +37,7 @@ public class C1 extends EvalFunc<String>{
     public String exec(Tuple input) throws IOException {
        
         if (input == null || input.size() == 0 || input.get(0) == null) {
-            return Constants.getCriteriaName(this) + ": " + Constants.NODATA;
+            return CriteriaUtils.getCriteriaName(this) + ": " + Constants.NODATA;
         }
         String text = (String) input.get(0);
         Set<String> words = TextUtils.tokenizeText(text);

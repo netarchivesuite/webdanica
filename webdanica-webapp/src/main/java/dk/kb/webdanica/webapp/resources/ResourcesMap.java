@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
 import dk.kb.webdanica.core.utils.Settings;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.netarkivet.common.exceptions.UnknownID;
+import dk.kb.webdanica.webapp.Constants;
 
 public class ResourcesMap {
 
@@ -25,8 +27,8 @@ public class ResourcesMap {
 		String[] paths = new String[]{};
 		String[] bools = new String[]{};
 		map = new HashMap<String, ResourceDescription>();
+		defaultSecuredValue = SettingsUtilities.getBooleanSetting(WebdanicaSettings.WEBAPP_DEFAULT_SECURED_SETTING, Constants.DEFAULT_WEBAPP_DEFAULT_SECURED_SETTING);
 		try {
-			defaultSecuredValue = Settings.getBoolean(WebdanicaSettings.WEBAPP_DEFAULT_SECURED_SETTING);
 			paths = Settings.getAll(WebdanicaSettings.WEBAPP_RESOURCE_PATH);
 			bools = Settings.getAll(WebdanicaSettings.WEBAPP_RESOURCE_SECURED);
 		} catch (UnknownID e) {

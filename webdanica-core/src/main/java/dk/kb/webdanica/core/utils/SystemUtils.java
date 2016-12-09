@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
+import dk.kb.webdanica.core.WebdanicaSettings;
+
 /**
  * Provide some general System Utilities.
  */
@@ -138,6 +140,17 @@ public class SystemUtils {
     		}
     	}
     }
+
+	public static void sendAdminMail(String logMsg, Throwable e) {
+		//WebdanicaSettings.
+	    String toMail = SettingsUtilities.getStringSetting("WebdanicaSettings", "default_string_value");
+	    
+    }
+	
+	public static MailConf getMailConf() {
+		return MailConf.getInstance();
+	}
+	
 
 
 }

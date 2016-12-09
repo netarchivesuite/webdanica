@@ -9,8 +9,6 @@ import org.apache.pig.EvalFunc;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 
-import dk.kb.webdanica.core.utils.Constants;
-
 /**
  * Concatenate all relevant textfields in the parsed data to one text, 
  * and any available linktext. All textfields are separated by a newline.

@@ -62,7 +62,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 	static {
 		GET_INGEST_DATES_SQL = ""
 				+ "SELECT inserted_date "
-				+ "from ingestLog";
+				+ "FROM ingestLog"
+				+ " ORDER BY inserted_date DESC";
 	}
 
 	@Override

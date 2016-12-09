@@ -1,7 +1,5 @@
 package dk.kb.webdanica.core.tools;
 
-import java.util.Map;
-
 import dk.kb.webdanica.core.interfaces.harvesting.NasReports;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
@@ -41,15 +39,13 @@ public class HarvestShowReports {
 		// Check if argument is a file or just considered a single seed
 		String argument = args[0];
 		Long jobID = Long.parseLong(argument);
-		NasReports reports = SingleSeedHarvest.getReports(jobID);
+		NasReports reports = SingleSeedHarvest.getReports(jobID, true);
 		for (String report: reports.getReports().keySet()) {
 			System.out.println("report '" + report + "': " + reports.getReport(report));
 			System.out.println();
 		}
 		System.exit(0);
 	}
-
-	
 }
 		
 		

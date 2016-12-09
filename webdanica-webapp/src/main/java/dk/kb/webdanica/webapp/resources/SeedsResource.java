@@ -475,13 +475,14 @@ public class SeedsResource implements ResourceAbstract {
 
 	public static String findHarvestNameInStatusReason(String statusReason) {
 		final String SPLITTER = "harvestname";
+		final String SPLITTER2 = "harvest";
 		String harvestName = null;
-		boolean isTypeTwo = statusReason.contains("'");
-		//System.out.println(isTypeTwo);
-		if (!statusReason.contains(SPLITTER)) {
+		boolean isTypeOne = !statusReason.contains("'") && statusReason.contains(SPLITTER);
+		boolean isTypeTwo = statusReason.contains("'") && statusReason.contains(SPLITTER);
+		boolean isTypeThree = statusReason.contains("'") && statusReason.contains(SPLITTER2);
+		
+		if (isTypeOne || isTypeTwo) {
 			//System.out.println("Can't find harvestname in field statusreason. marker has changed: '" +  statusReason + "'");
-			return null;
-		} else {
 			String[] statusReasonParts = statusReason.split(SPLITTER);
 			if (statusReasonParts.length > 1) {
 				harvestName = statusReasonParts[1].trim();
@@ -498,7 +499,16 @@ public class SeedsResource implements ResourceAbstract {
 			} else {
 				return null;
 			}
+		} else if (isTypeThree) {
+			String[] statusReasonParts = statusReason.split(SPLITTER2);
+			if (statusReasonParts.length > 1) {
+				harvestName = statusReasonParts[1].trim();
+				if (harvestName.indexOf("'") != harvestName.lastIndexOf("'") && harvestName.indexOf("'") != -1) {  
+					return harvestName.substring(harvestName.indexOf("'")+1, harvestName.lastIndexOf("'"));
+				}
+			}
 		}
+		return null;
 	}
 	
 	private void retryAnalysis(Seed s, SeedsDAO dao, HarvestDAO hdao, Configuration conf) throws Exception {

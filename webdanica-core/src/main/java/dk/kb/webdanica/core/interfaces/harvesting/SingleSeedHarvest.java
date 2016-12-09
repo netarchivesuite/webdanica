@@ -290,7 +290,7 @@ public class SingleSeedHarvest {
 		//get the reports associated with the harvest as well, extracted from the metadatawarc.file.
 		this.reports = null;
 		try {
-			this.reports = getReports(theJob.getJobID());
+			this.reports = getReports(theJob.getJobID(), writeToSystemOut);
 		} catch (Throwable e) {
 			if (writeToSystemOut) {
 				e.printStackTrace();
@@ -319,8 +319,11 @@ public class SingleSeedHarvest {
 			// Look at the seedreport
 			SeedReport sr = reports.getSeedReport();
 			SeedReportEntry entry = sr.getEntry(this.seed);
+			if (entry == null && !this.seed.endsWith("/")) { // try adding '/' to the end
+				entry = sr.getEntry(this.seed + "/");
+			}
 			if (entry == null) {
-				failureReason = " The seed was not found in the seedreport. Only exists these entries:  " +  StringUtils.join(sr.getSeeds(), ",");
+				failureReason = " The seed was not found in the seedreport. Only exist entries for: " + StringUtils.join(sr.getSeeds(), ",");
 				this.successful = false;
 			} else if (!entry.isCrawled()) {
 				failureReason = " According to the seedreport, the seed was not crawled. Code = '" +  entry.getCode() + "', Status='" +  entry.getStatus() + "'";
@@ -357,16 +360,24 @@ public class SingleSeedHarvest {
 		return this.successful;
     }
 
-	public static NasReports getReports(Long jobID) {
+	public static NasReports getReports(Long jobID, boolean writeToSystemOut) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
-	    	//System.out.println("Fetching the record: " + key);
-	        BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
-	        		record.getOffset());
-	        String data = StreamUtils.getInputStreamAsString(baRecord.getData());
-	        reportMap.put(key, data);
+	    	try {
+	    		BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
+	    				record.getOffset());
+	    		String data = StreamUtils.getInputStreamAsString(baRecord.getData());
+	    		reportMap.put(key, data);
+	    	} catch (Throwable e) {
+	    		String logMsg = "Failed to extract the report '" + key + "': " + e;
+	    		if (writeToSystemOut) {
+	    			System.err.println(logMsg);
+	    		} else {
+	    			logger.log(Level.WARNING, logMsg, e);
+	    		}
+	    	}
 	    }
 	    return new NasReports(reportMap);
     }

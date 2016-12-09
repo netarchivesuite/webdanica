@@ -6,9 +6,9 @@ import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.WgetSettings;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
+import dk.kb.webdanica.core.utils.Emailer;
 import dk.kb.webdanica.core.utils.Settings;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
-import dk.kb.webdanica.webapp.resources.ResourcesMap;
 
 public class Configuration {
 
@@ -53,13 +53,9 @@ public class Configuration {
 		/*
 		 * Read SMTP settings (smtp-host, smtp-port, mail-admin ).
 		 */
-		final int default_smtp_port = 25;// TODO move to constants class
-		final String default_smtp_host = "localhost";
-		final String defaultMailAdmin = "svc@kb.dk";
-
-		smtpPort = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, default_smtp_port);
-		smtpHost = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, default_smtp_host);
-		mailAdmin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, defaultMailAdmin);		
+		smtpPort = SettingsUtilities.getIntegerSetting(WebdanicaSettings.MAIL_PORT, dk.kb.webdanica.core.Constants.DEFAULT_MAIL_PORT);
+		smtpHost = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_SERVER, dk.kb.webdanica.core.Constants.DEFAULT_MAIL_HOST);
+		mailAdmin = SettingsUtilities.getStringSetting(WebdanicaSettings.MAIL_ADMIN, dk.kb.webdanica.core.Constants.DEFAULT_MAIL_ADMIN);		
 		ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
 		ignoredProtocols = Settings.getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
 		

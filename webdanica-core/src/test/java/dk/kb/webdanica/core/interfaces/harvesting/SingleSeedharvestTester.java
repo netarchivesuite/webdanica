@@ -29,7 +29,7 @@ public class SingleSeedharvestTester {
 			*/
 			
 		    
-		    NasReports nr = SingleSeedHarvest.getReports(147L); 
+		    NasReports nr = SingleSeedHarvest.getReports(147L, true); 
 		    //System.out.println(nr.getSeedReport());
 		    SeedReport sr = nr.getSeedReport();
 			//for (String s: reports.keySet()) {

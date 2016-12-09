@@ -74,7 +74,9 @@ public class Environment {
 	private String criteriaResultsPath;
 	private String harvestsPath;
 	private String harvestPath;
-    
+	private String domainsPath;
+	private String domainPath;
+	
     /*
      * Templates.
      */
@@ -160,10 +162,6 @@ public class Environment {
 	
 	private Configuration theconfig;
 
-	private String domainsPath;
-
-	private String domainPath;
-	
     /**
      * @param servletContext
      * @param theServletConfig

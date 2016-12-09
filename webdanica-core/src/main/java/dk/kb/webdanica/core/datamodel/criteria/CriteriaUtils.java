@@ -269,4 +269,8 @@ public class CriteriaUtils {
 	    return udenSuffix.substring(index+1, udenSuffix.length());
     }
 	
+	 public static String getCriteriaName(Object o){
+	       return o.getClass().getSimpleName();
+	   }
+	
 }
