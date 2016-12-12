@@ -174,20 +174,26 @@ public class FilterWorkThread extends WorkThreadAbstract {
 			return;
 		}
 		// Test 4: test that the url does not belong to a domain which danicastatus is YES or NO
-		//FIXME Disabled, as it doesn't work on empty domains table
-//		Domain d = domainDAO.getDomain(s.getDomain());
-//		DanicaStatus ds = d.getDanicaStatus();
-//		if (ds.equals(DanicaStatus.NO)) {
-//			s.setStatus(Status.REJECTED);
-//			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
-//					+ "' belongs to the domain '" + d.getDomain() + "' which has been rejected as DANICA domain");
-//			return;
-//		} else if (ds.equals(DanicaStatus.YES)) {
-//			s.setStatus(Status.REJECTED);
-//			s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
-//					+ "' belongs to the domain '" + d.getDomain() + "' which has been accepted as a full DANICA domain");
-//			return;
-//		}
+		Domain d = domainDAO.getDomain(s.getDomain());
+		if (d != null) {
+			if (d.getDomain().equals("N/A")) {
+				logger.warning("Seed '" + s.getUrl() + "' belongs to bogus domain '" + d.getDomain() + "'");
+			}
+			DanicaStatus ds = d.getDanicaStatus();
+			if (ds.equals(DanicaStatus.NO)) {
+				s.setStatus(Status.REJECTED);
+				s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
+						+ "' belongs to the domain '" + d.getDomain() + "' which has been rejected as DANICA domain");
+				return;
+			} else if (ds.equals(DanicaStatus.YES)) {
+				s.setStatus(Status.REJECTED);
+				s.setStatusReason("REJECTED because the seed '" + urlInvestigated 
+						+ "' belongs to the domain '" + d.getDomain() + "' which has been accepted as a full DANICA domain");
+				return;
+			} 
+		} else {
+			logger.warning("Domain '" + s.getDomain() + "' of seed '" + s.getUrl() + "' is not in the database");
+		}
 		
 		// Otherwise set status to READY_FOR_HARVESTING and status_reason to the empty String
 		s.setStatus(Status.READY_FOR_HARVESTING);

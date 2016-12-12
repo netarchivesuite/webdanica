@@ -1,5 +1,9 @@
 package dk.kb.webdanica.core.tools;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,20 +15,22 @@ import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
+import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 
 public class ExportFromWebdanica {
 
 	/**
 	 * 
-	 * @param args
+	 * @param args either 0 or --list_already_exported
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
 		boolean includeAlreadyExported = false;
-		if (args.length == 1 && args[0].equalsIgnoreCase("--include_already_exported")) {
+		if (args.length == 1 && args[0].equalsIgnoreCase("--list_already_exported")) {
 			includeAlreadyExported = true;
 		}
+		boolean writeback = false;
 		DAOFactory daoFactory = null;
 		String databaseSystem = SettingsUtilities.getStringSetting(
 				WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
@@ -39,10 +45,19 @@ public class ExportFromWebdanica {
 			System.out.println("No seeds found ready for export");
 			System.exit(0);
 		}
+		long alreadyExportedCount = 0;
 		Set<String> urlsToExport = new TreeSet<String>();
 		for (Seed s: readySeeds) {
-			s.setExportedState(true);
-			dao.updateSeed(s);
+			if (writeback) {
+				// if already exported don't update the exported_time value
+				if (!s.getExportedState()) {
+					s.setExportedState(true);
+					dao.updateSeed(s);
+				} else {
+					alreadyExportedCount++;
+				}
+			}
+			// Add the redirected url instead of the original
 			if (s.getRedirectedUrl() != null && !s.getRedirectedUrl().isEmpty()) {
 				urlsToExport.add(s.getRedirectedUrl());
 			} else {
@@ -50,7 +65,20 @@ public class ExportFromWebdanica {
 			}
 		}
 		// write to file 
-		
+		String filename = "export-from-webdanica-" + SingleSeedHarvest.getTimestamp() + ".log";
+		File outputfile = new File(filename);
+		PrintWriter acceptWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputfile)));
+    	acceptWriter.print("#The " + readySeeds.size() + " danica seeds exported");
+    	if (includeAlreadyExported) {
+    		acceptWriter.println(" of which " + alreadyExportedCount + " were previously exported :");
+    	} else {
+    		acceptWriter.println(": ");
+    	}
+    	for (String acc: urlsToExport) {
+    		acceptWriter.println(acc);
+    	}
+    	acceptWriter.close();
+    	System.exit(0);
 		
 	}
 

@@ -295,7 +295,6 @@ public class HarvestResource implements ResourceAbstract {
   
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
-            	//logger.info("Printing out id :" + templateParts.parts.get(i).getId());
                 out.write(templateParts.parts.get(i).getBytes());
             }
             out.flush();

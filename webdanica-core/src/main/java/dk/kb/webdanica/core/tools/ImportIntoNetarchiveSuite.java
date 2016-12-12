@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 
+import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.UrlInfo;
@@ -30,8 +31,6 @@ import dk.netarkivet.harvester.datamodel.DomainDAO;
 import dk.netarkivet.harvester.datamodel.SeedList;
 
 public class ImportIntoNetarchiveSuite {
-	 // TODO constant in webdanica_settings
-	public static final String WEBDANICA_SEEDS_NAME = "webdanicaseeds";
 	
 	// TODO any other options which template to use and so on, and #hops, javascript-extraction, and robots.txt status
 	public static void main(String[] args) {
@@ -63,7 +62,6 @@ public class ImportIntoNetarchiveSuite {
 			System.out.println("Read " + seeds.size() + " seeds from file.");
 		}
 		importSeeds(seeds);
-		
 	}
 	
 	/**
@@ -110,8 +108,10 @@ public class ImportIntoNetarchiveSuite {
 			String line = "";
 			while ((line = fr.readLine()) != null) {
 				String seed = line.trim();
-				if (!seed.isEmpty()) {
+				if (!seed.isEmpty() && !seed.startsWith("#")) {
 					seeds.add(seed);
+				} else {
+					System.out.println("Ignoring line '" + line + "'");
 				}
 			}
 		} catch (IOException e) {
@@ -134,14 +134,14 @@ public class ImportIntoNetarchiveSuite {
 				// Domain exists and has default config
 				String config = dao.getDefaultDomainConfigurationName(domain);
 				Domain d = dao.readKnown(domain);
-				boolean hasWebdanicaSeeds = d.hasSeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME);
-				SeedList sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, newseeds);
+				boolean hasWebdanicaSeeds = d.hasSeedList(Constants.WEBDANICA_SEEDS_NAME);
+				SeedList sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, newseeds);
 				if (hasWebdanicaSeeds) {
-					SeedList slOld = d.getSeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME);
+					SeedList slOld = d.getSeedList(Constants.WEBDANICA_SEEDS_NAME);
 					Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
 					combinedSeeds.addAll(newseeds);
 					List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
-					sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, combinedSeedsWithoutDuplicates);
+					sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, combinedSeedsWithoutDuplicates);
 					String existingComments = sl.getComments();
 					String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
 					sl.setComments(existingComments + addedComment);
@@ -155,7 +155,7 @@ public class ImportIntoNetarchiveSuite {
 				// Is seedlist s1 already part of configuration?
 				boolean existsWebdanicaSeedlistAsPartOfConfig = false;
 				for (SeedList s: IteratorUtils.toList(dc.getSeedLists())) {
-					if (s.getName().equalsIgnoreCase(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME)) {
+					if (s.getName().equalsIgnoreCase(Constants.WEBDANICA_SEEDS_NAME)) {
 						existsWebdanicaSeedlistAsPartOfConfig = true;
 					}
 				}
@@ -194,7 +194,7 @@ public class ImportIntoNetarchiveSuite {
 				 }
 				 d.updateSeedList(newDefaultSeedList);
 				 				 
-				 SeedList sl = new SeedList(ImportIntoNetarchiveSuite.WEBDANICA_SEEDS_NAME, newseeds);
+				 SeedList sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, newseeds);
 				 d.addSeedList(sl);
 				 dao.create(d);
 								 
