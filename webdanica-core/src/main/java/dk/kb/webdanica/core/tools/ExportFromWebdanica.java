@@ -30,7 +30,7 @@ public class ExportFromWebdanica {
 		if (args.length == 1 && args[0].equalsIgnoreCase("--list_already_exported")) {
 			includeAlreadyExported = true;
 		}
-		boolean writeback = false;
+		boolean writeback = true; // remove this code, when it works
 		DAOFactory daoFactory = null;
 		String databaseSystem = SettingsUtilities.getStringSetting(
 				WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
@@ -68,16 +68,19 @@ public class ExportFromWebdanica {
 		String filename = "export-from-webdanica-" + SingleSeedHarvest.getTimestamp() + ".log";
 		File outputfile = new File(filename);
 		PrintWriter acceptWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputfile)));
-    	acceptWriter.print("#The " + readySeeds.size() + " danica seeds exported");
+		String logHeader = "The " + readySeeds.size() + " danica seeds exported";
     	if (includeAlreadyExported) {
-    		acceptWriter.println(" of which " + alreadyExportedCount + " were previously exported :");
+    		logHeader += " of which " + alreadyExportedCount + " were previously exported :";
     	} else {
-    		acceptWriter.println(": ");
+    		logHeader += ": ";
     	}
+    	acceptWriter.println("#" + logHeader);
     	for (String acc: urlsToExport) {
     		acceptWriter.println(acc);
     	}
     	acceptWriter.close();
+    	System.out.println(logHeader);
+    	System.out.println("The file '" + outputfile.getAbsolutePath() + "' contains the exported seeds");
     	System.exit(0);
 		
 	}

@@ -8,7 +8,7 @@ import dk.kb.webdanica.core.utils.UrlUtils;
 
 public class Domain {
 	
-	private long updatedTime;
+	private Long updatedTime;
 	private List<String> danicaParts;
 	private String tld;
 	private String statusReason;
@@ -29,7 +29,12 @@ public class Domain {
     }
 	
 	public static Domain createNewAcceptedDomain(String domain) {
-		String tld = UrlUtils.findTld(domain);
+		String tld = null;
+		try {
+			tld = UrlUtils.findTld(domain);
+		} catch(Throwable e) {
+			tld = "N/A";
+		}
 		String notes = "[" +  new Date() + "]: Domain accepted as Danica domain by user";
 		String danicaReason = "Domain accepted as Danica domain by user";
 		List<String> parts = new ArrayList<String>();
@@ -37,7 +42,12 @@ public class Domain {
 	}
 	
 	public static Domain createNewUndecidedDomain(String domain) {
-		String tld = UrlUtils.findTld(domain);
+		String tld = null;
+		try {
+			tld = UrlUtils.findTld(domain);
+		} catch(Throwable e) {
+			tld = "N/A";
+		}
 		String danicaReason = "Domain is ingested with danicastatus undecided";
 		List<String> parts = new ArrayList<String>();
 		String notes = "[" +  new Date() + "]: Domain inserted into table domains with status UNDECIDED";
