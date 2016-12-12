@@ -11,7 +11,8 @@ CREATE TABLE domains (
     tld VARCHAR(64),
     danica_parts VARCHAR[],
     analyzed INTEGER,
-    danicacount INTEGER
+    danicacount INTEGER,
+    notes VARCHAR
 );
 
 CREATE INDEX domains_updated_time_idx ON domains (updated_time);
