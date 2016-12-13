@@ -108,7 +108,7 @@ public class SettingsUtilities {
 		String setting = System.getProperty(propertyKey);
 		if (setting == null) {
 			if (exitIfCheckFails) {
-				System.err.println("Required java property '" + propertyKey + "' is undefined");
+				System.err.println("ERROR: Required java property '" + propertyKey + "' is undefined");
 				System.exit(1);
 			} else {
 				logger.warning("Required java property '" + propertyKey + "' is undefined");
@@ -118,7 +118,7 @@ public class SettingsUtilities {
 		File settingsFile = new File(setting);
 	
 		if (!settingsFile.exists()) {
-			String errMsg = "The settings file defined by property '" + propertyKey + "' does not exist: " 
+			String errMsg = "ERROR: The settings file defined by property '" + propertyKey + "' does not exist: " 
 					+ settingsFile.getAbsolutePath() + "' does not exist";
 			if (exitIfCheckFails) {
 				System.err.println(errMsg);
@@ -136,7 +136,7 @@ public class SettingsUtilities {
 			Class.forName(dbdriver);
 		} catch (ClassNotFoundException e) {
 			if (exitIfcheckFails) {
-				System.out.println("Required class '" + dbdriver + "' not found in classpath");
+				System.out.println("ERROR: Required class '" + dbdriver + "' not found in classpath");
 				System.out.println("Program terminated");
 				System.exit(1);
 			}
@@ -150,11 +150,11 @@ public class SettingsUtilities {
 	    for (String key: requiredSettings){
 	    	if (!Settings.hasKey(key)) {
 	    		exit = true;
-	    		System.err.println("Missing setting '" + key + "' in settingsfile");
+	    		System.err.println("ERROR: Missing setting '" + key + "' in settingsfile");
 	    	}
 	    }
 	    if (exit && exitIfCheckFails) {
-	    	System.err.println("Exiting program prematurely because of missing settings");
+	    	System.err.println("ERROR: Exiting program prematurely because of missing settings");
 	    	System.exit(1);
 	    } else if (exit) {
 	    	return false;

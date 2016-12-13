@@ -32,14 +32,15 @@ import dk.netarkivet.harvester.datamodel.SeedList;
 
 public class ImportIntoNetarchiveSuite {
 	
+	public static final String SEEDLIST_NAME_TO_ADD_TO = Constants.WEBDANICA_SEEDS_NAME;
+	
 	// TODO any other options which template to use and so on, and #hops, javascript-extraction, and robots.txt status
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.err.println("Need file with seeds to import as argument or just a seed");
-			System.err.println("Usage: java Import <seed|file> ");
+			System.err.println("Usage: java ImportIntoNetarchiveSuite <seed|seedfile> ");
 			System.exit(1);
 		}
-		
 		// Verify that -Ddk.netarkivet.settings.file is set and points to an existing file.
 		final String NETARCHIVESUITE_SETTING_PROPERTY_KEY = "dk.netarkivet.settings.file";
 		SettingsUtilities.testPropertyFile(NETARCHIVESUITE_SETTING_PROPERTY_KEY, true);
@@ -61,7 +62,36 @@ public class ImportIntoNetarchiveSuite {
 			seeds.addAll(getSeedsFromFile(argumentAsFile));
 			System.out.println("Read " + seeds.size() + " seeds from file.");
 		}
-		importSeeds(seeds);
+		
+		String seedListNameToAddTo = Constants.WEBDANICA_SEEDS_NAME;
+		System.out.println("Now importing " + seeds.size() + " into netarchivesuite (adding seeds to the seedlist '" +  seedListNameToAddTo + "')");
+		Set<String> invalidSeeds = new TreeSet<String>(); 
+		
+		Map<String, Set<String>> domainMap = ImportIntoNetarchiveSuite.splitUpSeed(seeds, invalidSeeds);
+		int failurecount=0;
+		DomainDAO dao = DomainDAO.getInstance();
+		for (String domain: domainMap.keySet()) {
+			try {
+				List<String> newseeds = new ArrayList<String>(domainMap.get(domain));
+				insertSeeds(dao, domain, newseeds);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				System.err.println("Failed to add seeds from domain '" + domain + "' to netarchivesuite");
+				failurecount++;
+			}
+		}
+		System.out.println("Program completed. The result of the operation: ");
+		System.out.println(seeds.size() + " seeds were split up into " + domainMap.keySet().size() + " different domain-sets. " + invalidSeeds.size() + " seeds were ignored. ");
+		System.out.println("Those ignored seeds are: ");
+		for (String ignoredUrl: invalidSeeds) {
+			System.out.println(ignoredUrl);
+		}
+		if (failurecount == 0) {
+			System.out.println("All " + domainMap.keySet().size() + " domain-sets were successfully added to netarchivesuite");
+		} else {
+			System.out.println(failurecount + "/" +  domainMap.keySet().size() + " domain-sets failed to be added to netarchivesuite");
+		}
+		System.exit(0);
 	}
 	
 	/**
@@ -69,17 +99,16 @@ public class ImportIntoNetarchiveSuite {
 	 * @param seeds
 	 * @return
 	 */
-	public static Map<String,Set<String>> splitUpSeed(List<String> seeds) {
+	public static Map<String,Set<String>> splitUpSeed(List<String> seeds, Set<String> ignoredSeeds) {
 		
 		// separate the seeds to different domains sets
 		Map<String, Set<String>> domainMap = new TreeMap<String,Set<String>>();
-		long ignored = 0;
 		for (String seed: seeds) {
 			UrlInfo info = UrlUtils.getInfo(seed);
 			String domain = info.getDomain();
 			if (domain.equals("N/A")) {
 				System.err.println("Ignoring seed '" + seed + "': Not recognizable by NAS as valid domain");
-				ignored++;
+				ignoredSeeds.add(seed);
 			} else {
 				Set<String> domainSet = domainMap.get(domain);
 				if (domainSet == null) {
@@ -89,7 +118,6 @@ public class ImportIntoNetarchiveSuite {
 				domainMap.put(domain, domainSet);
 			}
 		}
-		System.out.println("Processed " + seeds.size() + " seeds. " + ignored + " seeds were ignored. "); // revert to proper logging
 		return domainMap;
 	}
 	
@@ -123,88 +151,82 @@ public class ImportIntoNetarchiveSuite {
 		return seeds;
 	}
 	
-	
-	public static void importSeeds(List<String> seeds) {
-		// separate the seeds to different domains sets
-		Map<String, Set<String>> domainMap = ImportIntoNetarchiveSuite.splitUpSeed(seeds);
-		DomainDAO dao = DomainDAO.getInstance();
-		for (String domain: domainMap.keySet()) {
-			List<String> newseeds = new ArrayList<String>(domainMap.get(domain));
-			if (dao.exists(domain)) {
-				// Domain exists and has default config
-				String config = dao.getDefaultDomainConfigurationName(domain);
-				Domain d = dao.readKnown(domain);
-				boolean hasWebdanicaSeeds = d.hasSeedList(Constants.WEBDANICA_SEEDS_NAME);
-				SeedList sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, newseeds);
-				if (hasWebdanicaSeeds) {
-					SeedList slOld = d.getSeedList(Constants.WEBDANICA_SEEDS_NAME);
-					Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
-					combinedSeeds.addAll(newseeds);
-					List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
-					sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, combinedSeedsWithoutDuplicates);
-					String existingComments = sl.getComments();
-					String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
-					sl.setComments(existingComments + addedComment);
-					d.updateSeedList(sl);
-				} else {
-					d.addSeedList(sl);
-				}
-				dao.update(d);
-				d = dao.readKnown(domain); // re-read object from database
-				DomainConfiguration dc = d.getConfiguration(config);
-				// Is seedlist s1 already part of configuration?
-				boolean existsWebdanicaSeedlistAsPartOfConfig = false;
-				for (SeedList s: IteratorUtils.toList(dc.getSeedLists())) {
-					if (s.getName().equalsIgnoreCase(Constants.WEBDANICA_SEEDS_NAME)) {
-						existsWebdanicaSeedlistAsPartOfConfig = true;
-					}
-				}
-				if (existsWebdanicaSeedlistAsPartOfConfig) {
-					// we're done (I think)
-				} else {
-					dc.addSeedList(d, sl);
-					dao.update(d);
-				}
-				
-				
+	private static void insertSeeds(DomainDAO dao, String domain,
+			List<String> newseeds) {
+		if (dao.exists(domain)) {
+			// Domain exists and has default config
+			String config = dao.getDefaultDomainConfigurationName(domain);
+			Domain d = dao.readKnown(domain);
+			boolean hasWebdanicaSeeds = d.hasSeedList(SEEDLIST_NAME_TO_ADD_TO);
+			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseeds);
+			if (hasWebdanicaSeeds) {
+				SeedList slOld = d.getSeedList(SEEDLIST_NAME_TO_ADD_TO);
+				Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
+				combinedSeeds.addAll(newseeds);
+				List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
+				sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, combinedSeedsWithoutDuplicates);
+				String existingComments = sl.getComments();
+				String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
+				sl.setComments(existingComments + addedComment);
+				d.updateSeedList(sl);
 			} else {
-				// Create domain
-				Domain d = Domain.getDefaultDomain(domain);
-				// disable the automatic seeds 
-				
-				 String defaultSeedListName = Settings.get(HarvesterSettings.DEFAULT_SEEDLIST);
-				 SeedList defaultSeedList = d.getSeedList(defaultSeedListName);
-				 String comments = defaultSeedList.getComments().trim();
-				 List<String> newDisabledList = new ArrayList<String>();
-				 for (String seed: defaultSeedList.getSeeds()) {
-					 if (!seed.startsWith("#")) {
-						 newDisabledList.add("#" + seed);
-					 } else {
-						 newDisabledList.add(seed);
-					 }
-				 }
-				 
-				 SeedList newDefaultSeedList = new SeedList(defaultSeedListName, newDisabledList);
-				 
-				 String logentry = "[" + new Date() + "] Domain seedlist disabled with webdanica-import program";
-				 if (comments.isEmpty()) {
-					 newDefaultSeedList.setComments(logentry);
-				 } else {
-					 newDefaultSeedList.setComments("\n\r" + logentry);
-				 }
-				 d.updateSeedList(newDefaultSeedList);
-				 				 
-				 SeedList sl = new SeedList(Constants.WEBDANICA_SEEDS_NAME, newseeds);
-				 d.addSeedList(sl);
-				 dao.create(d);
-								 
-				 //dao.update(d); // refresh object from DB - So new seedlist is in the database
-				 d = dao.readKnown(domain);
-				 String config = dao.getDefaultDomainConfigurationName(domain);
-				 DomainConfiguration dc = d.getConfiguration(config);
-				 dc.addSeedList(d, sl);
-				 dao.update(d);
+				d.addSeedList(sl);
 			}
+			dao.update(d);
+			d = dao.readKnown(domain); // re-read object from database
+			DomainConfiguration dc = d.getConfiguration(config);
+			// Is seedlist s1 already part of configuration?
+			boolean existsWebdanicaSeedlistAsPartOfConfig = false;
+			for (SeedList s: IteratorUtils.toList(dc.getSeedLists())) {
+				if (s.getName().equalsIgnoreCase(SEEDLIST_NAME_TO_ADD_TO)) {
+					existsWebdanicaSeedlistAsPartOfConfig = true;
+				}
+			}
+			if (existsWebdanicaSeedlistAsPartOfConfig) {
+				// we're done (I think)
+			} else {
+				dc.addSeedList(d, sl);
+				dao.update(d);
+			}
+
+		} else {
+			// Create domain
+			Domain d = Domain.getDefaultDomain(domain);
+			String logentry = "[" + new Date() + "] Domain added by webdanica-import program, but default seedlist disabled";
+			d.setComments(logentry);
+			// disable the automatic seeds 
+			String defaultSeedListName = Settings.get(HarvesterSettings.DEFAULT_SEEDLIST);
+			SeedList defaultSeedList = d.getSeedList(defaultSeedListName);
+			String comments = defaultSeedList.getComments().trim();
+			List<String> newDisabledList = new ArrayList<String>();
+			for (String seed: defaultSeedList.getSeeds()) {
+				if (!seed.startsWith("#")) {
+					newDisabledList.add("#" + seed);
+				} else {
+					newDisabledList.add(seed);
+				}
+			}
+
+			SeedList newDefaultSeedList = new SeedList(defaultSeedListName, newDisabledList);
+
+			logentry = "[" + new Date() + "] Domain seedlist disabled with webdanica-import program";
+			if (comments.isEmpty()) {
+				newDefaultSeedList.setComments(logentry);
+			} else {
+				newDefaultSeedList.setComments("\n\r" + logentry);
+			}
+			d.updateSeedList(newDefaultSeedList);
+
+			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseeds);
+			d.addSeedList(sl);
+			dao.create(d);
+
+			//dao.update(d); // refresh object from DB - So new seedlist is in the database
+			d = dao.readKnown(domain);
+			String config = dao.getDefaultDomainConfigurationName(domain);
+			DomainConfiguration dc = d.getConfiguration(config);
+			dc.addSeedList(d, sl);
+			dao.update(d);
 		}
-	}
+    }
 }
