@@ -82,9 +82,11 @@ public class ImportIntoNetarchiveSuite {
 		}
 		System.out.println("Program completed. The result of the operation: ");
 		System.out.println(seeds.size() + " seeds were split up into " + domainMap.keySet().size() + " different domain-sets. " + invalidSeeds.size() + " seeds were ignored. ");
-		System.out.println("Those ignored seeds are: ");
-		for (String ignoredUrl: invalidSeeds) {
-			System.out.println(ignoredUrl);
+		if (!invalidSeeds.isEmpty()) {
+			System.out.println("Those ignored seeds are: ");
+			for (String ignoredUrl: invalidSeeds) {
+				System.out.println(ignoredUrl);
+			}
 		}
 		if (failurecount == 0) {
 			System.out.println("All " + domainMap.keySet().size() + " domain-sets were successfully added to netarchivesuite");

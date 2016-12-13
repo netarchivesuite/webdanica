@@ -4,7 +4,7 @@ System for finding Danish webpages outside the .dk domain
 The system consists of a ROOT tomcat application (the webapp) running on port 8080, with two embedded workflows, a filtering workflow - used to reject undesirable seeds, and a harvesting workflow, that makes small single seed harvests
  in a local NetarchiveSuite system the result of which is pushed to third major component, an automatic analysis workflow, that takes harvestlogs - written by the harvesting workflow to a common directory writeable by both, makes parsedText out of the warc.gz files from heritrix3, and then criteria-analysis on this text, and finally ingested into the database.
 
-The database backend is HBase (currently 1.1.5) through Apache Phoenix. Using apache phoenix requires that phoenix-4.7.0-HBase-1.1-client.jar is downloaded from
+The database backend is HBase (currently 1.1.5) through Apache Phoenix. Using apache phoenix requires that phoenix-4.7.0-HBase-1.1-client.jar is part of the distribution phoenix-4.7.0-HBase-1.1-bin.tar.gz downloaded from https://archive.apache.org/dist/phoenix/phoenix-4.7.0-HBase-1.1/bin/ .
 
 Installation of hbase is not yet documented properly
 
