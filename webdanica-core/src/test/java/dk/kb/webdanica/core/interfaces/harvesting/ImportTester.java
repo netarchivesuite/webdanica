@@ -1,13 +1,10 @@
 package dk.kb.webdanica.core.interfaces.harvesting;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.webdanica.core.tools.ImportIntoNetarchiveSuite;
-import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.netarkivet.harvester.HarvesterSettings;
-import dk.netarkivet.harvester.datamodel.DBSpecifics;
 import dk.netarkivet.harvester.datamodel.Domain;
 import dk.netarkivet.harvester.datamodel.DomainConfiguration;
 import dk.netarkivet.harvester.datamodel.DomainDAO;
@@ -47,28 +44,18 @@ public class ImportTester {
 		}
 */		
 		// Verify that -Ddk.netarkivet.settings.file is set and points to an existing file.
+/*		
 		final String NETARCHIVESUITE_SETTING_PROPERTY_KEY = "dk.netarkivet.settings.file";
 		SettingsUtilities.testPropertyFile(NETARCHIVESUITE_SETTING_PROPERTY_KEY, true);
 		// Verify that database driver exists in classpath. If not exit program
 		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
 		SettingsUtilities.verifyClass(dbdriver, true);
 		
-		// Check if argument is a file or just considered a single seed
-		//String argument = "http://netarkivet.dk/samplepage1.php";
+*/		//String argument = "http://netarkivet.dk/samplepage1.php";
 		String argument = "http://vesterbro1.dk/samplepage.php";
 		// Assume the argument is a file, and see if it exists
-		File argumentAsFile = new File(argument); 
-		boolean argumentIsSeedFile = argumentAsFile.exists();
-		List<String> seeds = new ArrayList<String>();
-		if (!argumentIsSeedFile) {
-			System.out.println("Trying to import seed '" + argument + "' into netarkivet.");
-			seeds.add(argument);
-		} else {
-			System.out.println("Trying to import seeds from file '" + argumentAsFile.getAbsolutePath() + "' into netarkivet.");
-			seeds.addAll(ImportIntoNetarchiveSuite.getSeedsFromFile(argumentAsFile));
-			System.out.println("Read " + seeds.size() + " seeds from file.");
-		}
-		ImportIntoNetarchiveSuite.importSeeds(seeds);	
+		String[] args1 = new String[] {argument};
+		ImportIntoNetarchiveSuite.main(args1);	
 	}
 
 
