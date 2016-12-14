@@ -13,10 +13,12 @@ import org.json.simple.parser.ParseException;
 
 import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
+import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
@@ -79,23 +81,6 @@ public class CriteriaIngest {
 	    return harvestLogReport;
     }
 
-	
-	/**
-	 * 
-	 * @param ingestFile
-	 * @param seed
-	 * @param harvestName
-	 * @param addToDatabase 
-	 *  
-	 * @return ProcessResult
-	 * @throws IOException
-	 * @throws ParseException 
-	
-	 */
-	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, boolean addToDatabase, DAOFactory daofactory) throws Exception {
-		return process(ingestFile, seed, harvestName, addToDatabase, daofactory);
-	}
-	
 	/**
 	 * 
 	 * @param ingestFile
@@ -107,7 +92,7 @@ public class CriteriaIngest {
 	 * @throws IOException
 	 * @throws ParseException 
 	 */
-	public static ProcessResult process(File ingestFile, String seed, String harvestName, 
+	public static ProcessResult processFile(File ingestFile, String seed, String harvestName, 
 				boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		long linecount=0L;
 		long skippedCount=0L;
@@ -186,17 +171,24 @@ public class CriteriaIngest {
 					}
 					if (addToDatabase) {
 						CriteriaResultsDAO dao = daofactory.getCriteriaResultsDAO();
+						SeedsDAO sdao = daofactory.getSeedsDAO();
+						DomainsDAO ddao = daofactory.getDomainsDAO();
+						
 						boolean inserted = dao.insertRecord(res);
 						if (!inserted) {
 							log_error("Record not inserted");
 						} else {
 							insertedCount++;
 						}
-						SeedsDAO sdao = daofactory.getSeedsDAO();
+						
 						boolean insertUrl = !sdao.existsUrl(res.url);
 						Seed s = null;
 						if (insertUrl) {
 							s = new Seed(res.url);
+							if (!ddao.existsDomain(s.getDomain())) {
+								Domain d = Domain.createNewUndecidedDomain(s.getDomain());
+								ddao.insertDomain(d);
+							}
 						} else {
 							s = sdao.getSeed(res.url);
 						}

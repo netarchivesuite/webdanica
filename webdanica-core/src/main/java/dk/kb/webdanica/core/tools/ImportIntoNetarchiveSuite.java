@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.exceptions.WebdanicaException;
@@ -64,20 +65,22 @@ public class ImportIntoNetarchiveSuite {
 		}
 		
 		String seedListNameToAddTo = Constants.WEBDANICA_SEEDS_NAME;
-		System.out.println("Now importing " + seeds.size() + " into netarchivesuite (adding seeds to the seedlist '" +  seedListNameToAddTo + "')");
+		System.out.println("Now importing " + seeds.size() + " seeds into netarchivesuite (adding seeds to the seedlist '" +  seedListNameToAddTo + "')");
 		Set<String> invalidSeeds = new TreeSet<String>(); 
 		
 		Map<String, Set<String>> domainMap = ImportIntoNetarchiveSuite.splitUpSeed(seeds, invalidSeeds);
-		int failurecount=0;
+		Set<String> succeededSets = new HashSet<String>();
+		Set<String> failedSets = new HashSet<String>();
 		DomainDAO dao = DomainDAO.getInstance();
 		for (String domain: domainMap.keySet()) {
 			try {
 				List<String> newseeds = new ArrayList<String>(domainMap.get(domain));
 				insertSeeds(dao, domain, newseeds);
+				succeededSets.add(domain);
 			} catch (Throwable e) {
 				e.printStackTrace();
 				System.err.println("Failed to add seeds from domain '" + domain + "' to netarchivesuite");
-				failurecount++;
+				failedSets.add(domain);
 			}
 		}
 		System.out.println("Program completed. The result of the operation: ");
@@ -88,10 +91,12 @@ public class ImportIntoNetarchiveSuite {
 				System.out.println(ignoredUrl);
 			}
 		}
-		if (failurecount == 0) {
-			System.out.println("All " + domainMap.keySet().size() + " domain-sets were successfully added to netarchivesuite");
+		if (failedSets.isEmpty()) {
+			System.out.println("All " + succeededSets.size() + " domain-sets(" + StringUtils.join(succeededSets, ",") + ") were successfully added to netarchivesuite");
 		} else {
-			System.out.println(failurecount + "/" +  domainMap.keySet().size() + " domain-sets failed to be added to netarchivesuite");
+			System.out.println(failedSets.size() + "/" +  domainMap.keySet().size() + " domain-sets failed to be added to netarchivesuite");
+			System.out.println("Succeeded domains: " +  StringUtils.join(succeededSets, ","));
+			System.out.println("Failed domains: " +  StringUtils.join(failedSets, ","));
 		}
 		System.exit(0);
 	}

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
@@ -278,7 +280,7 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	
 	@Override
     public boolean update(Domain domain) throws Exception {
-		if (existsDomain(domain.getDomain())) {
+		if (!existsDomain(domain.getDomain())) {
 			//TODO log
 	        return false;
 	    }
@@ -305,5 +307,36 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 		}
 		return res != 0;
 	}
-
+	
+	
+	private static final String DISTINCT_TLD_SQL;
+	static {
+		DISTINCT_TLD_SQL = "SELECT DISTINCT(tld) FROM domains "; 
+	}
+	
+	@Override
+	public Set<String> getTlds() throws Exception {
+		Set<String> tldList = new TreeSet<String>();
+		PreparedStatement stm = null;
+		ResultSet rs = null;			
+		try {
+			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+			stm = conn.prepareStatement(DISTINCT_TLD_SQL);
+			stm.clearParameters();
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					tldList.add(rs.getString(1));
+				}
+			}
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stm != null) {
+				stm.close();
+			}
+		}
+		return tldList; 
+	}
 }

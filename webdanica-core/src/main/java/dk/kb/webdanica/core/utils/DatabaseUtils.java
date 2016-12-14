@@ -79,7 +79,7 @@ public class DatabaseUtils {
 		} else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
 			return new HBasePhoenixDAOFactory();
 		} else {
-			return new CassandraDAOFactory();
+			return new HBasePhoenixDAOFactory();
 		}
 	}
 	

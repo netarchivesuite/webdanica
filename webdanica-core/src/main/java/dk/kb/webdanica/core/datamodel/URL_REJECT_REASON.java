@@ -6,5 +6,6 @@ public enum URL_REJECT_REASON {
     MISSING_DOMAIN, // url incomplete: no domain found
     MISSING_HOST, //// url incomplete: no host found
 	DUPLICATE, // url already in seeds table
-	NONE // url is ok
+	NONE, // url is ok
+	UNKNOWN // Unknown error
 }

@@ -92,7 +92,7 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 				+ "/84-70-20160808164652141-00000-dia-prod-udv-01.kb.dk.warc.gz/part-m-00000.gz");
 		DAOFactory daofactory = new CassandraDAOFactory();
 		List<SingleCriteriaResult> results 
-			= CriteriaIngest.process(ingestFile, "Theseed", "harvestName", false, daofactory).results;
+			= CriteriaIngest.processFile(ingestFile, "Theseed", "harvestName", false, daofactory).results;
 		System.out.println("Found records: " + results.size());
 		for (SingleCriteriaResult s: results) {
 			boolean inserted = dao.insertRecord(s);

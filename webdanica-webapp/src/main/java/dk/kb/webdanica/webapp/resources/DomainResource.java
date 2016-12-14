@@ -3,6 +3,7 @@ package dk.kb.webdanica.webapp.resources;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +20,7 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.Domain;
+import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -37,8 +39,9 @@ public class DomainResource implements ResourceAbstract {
 	    protected int R_DOMAIN_SHOW = -1;
 
 		private String DOMAIN_SHOW_TEMPLATE = "show_domain.html";
+		private String DOMAIN_LIST_TEMPLATE = "domain_list.html";
 
-		//protected int R_BLACKLIST_ADD = -1;
+		private DAOFactory daofactory;
 
 		public static final String DOMAIN_LIST_PATH = "/domains/";
 
@@ -47,6 +50,7 @@ public class DomainResource implements ResourceAbstract {
 	    @Override
 	    public void resources_init(Environment environment) {
 	        this.environment = environment;
+	        this.daofactory = environment.getConfig().getDAOFactory();
 	        
 	    }
 
@@ -56,7 +60,6 @@ public class DomainResource implements ResourceAbstract {
 	        		   		environment.getResourcesMap().getResourceByPath(DOMAIN_LIST_PATH).isSecure());
 	        R_DOMAIN_SHOW = resourceManager.resource_add(this, DOMAIN_PATH, 
     		   		environment.getResourcesMap().getResourceByPath(DOMAIN_PATH).isSecure());
-	        //R_BLACKLIST_ADD = resourceManager.resource_add(this, "/blacklists/add", true);
 	    }
 
 	    @Override
@@ -77,7 +80,7 @@ public class DomainResource implements ResourceAbstract {
 	    }
 	    private Domain getDomainFromPathinfo(String pathInfo, 
                 Environment environment2, String domainPath) {
-	    	DomainsDAO ddao = environment2.getConfig().getDAOFactory().getDomainsDAO();	
+	    	DomainsDAO ddao = daofactory.getDomainsDAO();	
 	        String[] pathParts = pathInfo.split(domainPath);
 	        Domain domain = null;
 	    	return domain;
@@ -210,7 +213,7 @@ public class DomainResource implements ResourceAbstract {
 	        resp.setContentType("text/html; charset=utf-8");
 
 	        Caching.caching_disable_headers(resp);
-	        String templatename = "domain_list.html"; 
+	        String templatename = DOMAIN_LIST_TEMPLATE;
 	        Template template = environment.getTemplateMaster().getTemplate(templatename);
 
 	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
@@ -236,10 +239,14 @@ public class DomainResource implements ResourceAbstract {
 	        
 	        // Primary textarea
 	        StringBuffer sb = new StringBuffer();
-
+	        
+	        Set<String> tldList = null; 
 	        List<Domain> domainList = null;
             try {
-                domainList = environment.getConfig().getDAOFactory().getDomainsDAO().getDomains(null, null, Integer.MAX_VALUE);
+                domainList = daofactory.getDomainsDAO().getDomains(null, null, Integer.MAX_VALUE);
+                tldList = daofactory.getDomainsDAO().getTlds();
+                logger.info("Found " + domainList.size() + " domains to list");
+                logger.info("Found " + tldList.size() + " tld to list");
             } catch (Exception e) {
             	String errMsg = "System-error: Exception thrown";
             	logger.log(Level.WARNING, errMsg, e);
