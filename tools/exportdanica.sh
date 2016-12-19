@@ -8,7 +8,7 @@ if [ ! -f "$SETTINGSFILE" ]; then
    exit 1
 fi
 
-WEBDANICAJAR=lib/webdanica-core-0.4.0-SNAPSHOT.jar
+WEBDANICAJAR=lib/webdanica-core-1.0.0.jar
 PHOENIXJAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
 
 if [ ! -f "$WEBDANICAJAR" ]; then

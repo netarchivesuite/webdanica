@@ -146,6 +146,7 @@ public static void main(String[] args) throws Exception {
 	            	boolean isError = false;
 	            	try {
 	            	    inserted = dao.insertSeed(singleSeed);
+	            	    
 	            	    if (inserted) {
 	            	    	String domainName = singleSeed.getDomain();
 	            	    	if (!ddao.existsDomain(domainName)) {
