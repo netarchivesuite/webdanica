@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -337,10 +339,10 @@ public class IngestLogResource implements ResourceAbstract {
         ResourceUtils.insertText(duplicatecountPlace, "duplicatecount",  b.getDuplicatecount() + "", templateName, logger);
         ResourceUtils.insertText(rejectedcountPlace, "rejectedcount",  b.getRejectedcount() + "", templateName, logger);
         ResourceUtils.insertText(logsizePlace, "logsize",  logSize + "", templateName, logger);
-         
+        Set<String> sortedSet = new TreeSet<String>(logEntries); 
         StringBuilder sb = new StringBuilder();
         sb.append("<pre>\r\n");
-    	for (String listElement: logEntries) {
+    	for (String listElement: sortedSet) {
     		sb.append(listElement);
     		sb.append("\r\n");
     	}	

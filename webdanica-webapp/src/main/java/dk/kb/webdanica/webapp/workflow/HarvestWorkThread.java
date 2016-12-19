@@ -134,6 +134,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
        
 		if (maxHarvestsAtaTime < 1) {
 			configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", "Maxharvests is less than 1: " +  maxHarvestsAtaTime);
+			logger.info("MaxHarvests is less than 1. So HarvestWorkFlow is disabled!");
+			return;
 		}
 		
        	if (existsLogdirAndIsWritable(harvestLogDir)) {

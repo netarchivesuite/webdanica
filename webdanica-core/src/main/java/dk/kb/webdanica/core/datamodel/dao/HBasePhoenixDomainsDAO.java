@@ -164,6 +164,7 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	private static final String DOMAIN_BY_STATUS_SQL;
 	private static final String DOMAIN_BY_TLD_SQL;
 	private static final String DOMAIN_BY_STATUS_AND_TLD_SQL;
+	private static final String SELECT_DOMAINS_SQL;
 	
 	static {
 		DOMAIN_BY_STATUS_SQL = "SELECT * "
@@ -175,6 +176,8 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 		DOMAIN_BY_STATUS_AND_TLD_SQL = "SELECT * "
 				+ "FROM domains "
 				+ "WHERE danicastatus=? AND tld=? LIMIT ?";
+		SELECT_DOMAINS_SQL = "SELECT * "
+				+ "FROM domains LIMIT ?";
 	}
 
 	@Override
@@ -205,11 +208,15 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 				stm.clearParameters();
 				stm.setInt(1, status.ordinal());
 				stm.setInt(2, limit);
-			} else {
+			} else if (selectOnTld){
 				stm = conn.prepareStatement(DOMAIN_BY_TLD_SQL);
 				stm.clearParameters();
 				stm.setString(1, tld);
 				stm.setInt(2, limit);
+			} else { // select all within limits
+				stm = conn.prepareStatement(SELECT_DOMAINS_SQL);
+				stm.clearParameters();
+				stm.setInt(1, limit);
 			}
 			rs = stm.executeQuery();
 			if (rs != null) {

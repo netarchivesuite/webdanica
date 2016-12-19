@@ -268,7 +268,7 @@ public static void main(String[] args) throws Exception {
 	        		updateLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".updated.txt" + "." + count);
 	        		count++;
 	        	}
-	        	PrintWriter updatedWriter = new PrintWriter(new BufferedWriter(new FileWriter(rejectLog)));
+	        	PrintWriter updatedWriter = new PrintWriter(new BufferedWriter(new FileWriter(updateLog)));
 	        	String updatedHeader = "Update and domain Log for file '" + seedsfile.getAbsolutePath() + "' ingested at '" 
 	        			+ new Date() + "'";
 	        	updatedWriter.println(updatedHeader);

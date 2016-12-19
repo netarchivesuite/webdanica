@@ -21,6 +21,8 @@ There are the following create scripts for each of the required hbase tables
 Sample command to create the blacklists table with connectionstring=kb-test-hadoop-01.kb.dk:2181:/hbase
 e.g. psql.py kb-test-hadoop-01.kb.dk:2181:/hbase create_blacklists.sql
 
+[Building the war-file](warfile_building.md)
+
 [Installation and configuration of the webapp](webapp_install.md)
 
 [Installation and configuration of the automatic workflow](workflow_install.md)
