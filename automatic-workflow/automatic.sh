@@ -2,7 +2,7 @@ HARVESTLOG_FILE=$1
 WORKFLOW_HOME=$2
 WEBDATADIR=$3
 WEBDANICA_VERSION=$4
-HADOOP_HOME=$5
+HADOOP_BINBIN=$5
 export PIG_HOME=$6
 
 PROG=`basename "$0"`
@@ -51,14 +51,14 @@ if [ -z $WEBDANICA_VERSION ]; then
    exit 1
 fi
 
-#Check HADOOP_HOME
-if [ -z $HADOOP_HOME ]; then
-   echo "ERROR: The HADOOP_HOME argument (arg #5) is not set. Exiting program $PROG"
+#Check HADOOP_BINBIN
+if [ -z $HADOOP_BINBIN ]; then
+   echo "ERROR: The HADOOP_BINBIN argument (arg #5) is not set. Exiting program $PROG"
    exit 1
 fi
 
-if [ ! -d $HADOOP_HOME  ]; then
-   echo "ERROR: The WEBDATADIR '$WEBDATADIR' does not exist. Exiting program $PROG"
+if [ ! -d $HADOOP_BINBIN  ]; then
+   echo "ERROR: The HADOOP_BINBIN '$HADOOP_BINBIN' does not exist. Exiting program $PROG"
    exit 1
 fi
 
@@ -84,7 +84,7 @@ SEQ_DIR=$SEQ_BASEDIR/$TIMESTAMP
 mkdir -p $SEQ_DIR
 echo
 echo "Starting parsed-workflow on file $HARVESTLOG_FILE .."
-bash parsed-workflow.sh $HARVESTLOG_FILE $WEBDATADIR $SEQ_DIR $WORKFLOW_HOME $HADOOP_HOME $WEBDANICA_VERSION
+bash parsed-workflow.sh $HARVESTLOG_FILE $WEBDATADIR $SEQ_DIR $WORKFLOW_HOME $HADOOP_BINBIN $WEBDANICA_VERSION
 rc=$?
 if [[ $rc != 0 ]]; then 
 	echo "ERROR: parsed-workflow failed"
@@ -107,12 +107,12 @@ if [[ $rc != 0 ]]; then echo "ERROR: criteria-workflow failed"; exit $rc; fi
 
 #4) Efterprocessering af kriteria-analysen og ingest i databasen
 echo
-echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME"
-bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME
+echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION"
+bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION
 rc=$?
 if [[ $rc != 0 ]]; then echo "ERROR: criteria ingest failed"; exit $rc; fi
 echo
-echo "Ingest of $HARVESTLOG was successful"
+echo "Ingest of $HARVESTLOG_FILE was successful"
 echo
 
 

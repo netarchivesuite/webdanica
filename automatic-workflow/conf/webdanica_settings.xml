@@ -6,7 +6,7 @@
 <env>test</env>
 <mail>
 <host>localhost</host>
-<admin>test@localhost</admin>
+<admin>svc@kb.dk</admin>
 <port>25</port>
 </mail>
 <harvesting>
