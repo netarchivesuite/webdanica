@@ -7,13 +7,13 @@ REGISTER lib-pig/json.jar
 --REGISTER lib-extra/guava-19.0.jar
 --REGISTER lib-extra/tika-app-1.13.jar
 -- REGISTER lib/webdanica-core-0.2.0-SNAPSHOT.jar
-REGISTER lib/webdanica-core-0.4.0-SNAPSHOT.jar
+REGISTER lib/webdanica-core-1.0.0.jar
 REGISTER lib/tika-core-1.13.jar
 REGISTER lib/tika-langdetect-1.13.jar 
 --REGISTER lib/language-detector-0.5.jar
 REGISTER lib-pig/language-detector-0.6-SNAPSHOT.jar
 --REGISTER lib-extra/guava-19.0.jar
-REGISTER lib/slf4j-api-1.7.7.jar
+--REGISTER lib/slf4j-api-1.7.7.jar
 -- new libraries I think
 REGISTER lib/jwat-common-1.0.4.jar
 REGISTER lib/json-simple-1.1.1.jar
@@ -31,5 +31,3 @@ DEFINE ISNT_ROBOTSTXT   dk.kb.webdanica.core.criteria.IsNotRobotsTxt();
 DEFINE Combo            dk.kb.webdanica.core.criteria.Combo();
 DEFINE ComboNovV5	dk.kb.webdanica.core.criteria.ComboNovV5();
 DEFINE CombinedCombo    dk.kb.webdanica.core.criteria.CombinedCombo();
-DEFINE CombinedComboJson dk.kb.webdanica.core.criteria.CombinedComboJson();
-DEFINE CombinedComboJsonAlt dk.kb.webdanica.core.criteria.CombinedComboJsonAlt();
