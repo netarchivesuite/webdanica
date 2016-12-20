@@ -165,13 +165,11 @@ The harvestLogs are made writeable by all, so the automatic-workflow can remove 
 <harvestlogPrefix>harvestLog-</harvestlogPrefix>
 <harvestlogReadySuffix>.txt</harvestlogReadySuffix>
 </harvesting>
-
-</harvesting>
 ```
 ##Notes
  * Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow. Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
  * The harvestworkflow will currently wait forever for the completion of the harvestjob, so some monitoring of the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
-the updated time of the seed currently beging harvested (Seen when clicking on the Show details page)
+the updated time of the seed currently being harvested (Seen when clicking on the Show details page). If the harvesting is deadlocked, terminate the netarchivesuite job either through the Heritrix3 gui if possible, or by restarting the netarchivesuite system. This will make the job fail, and the harvesting workflow will continue with the next harvest
 
 
 

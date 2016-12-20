@@ -1,4 +1,9 @@
-BRANCHNAME=master
+BRANCHNAME=$1
+if [[ -z $BRANCHNAME ]]; then
+  echo "Forgot to name the wanted branch name"
+  exit 1  
+ 	
+fi
 DATE=`/bin/date '+%d-%m-%Y'`
 EXPORTDIR=$BRANCHNAME-$DATE
 URL=https://github.com/netarchivesuite/webdanica/archive/$BRANCHNAME.zip
