@@ -8,7 +8,8 @@ The database backend is HBase (currently 1.1.5) through Apache Phoenix. Using ap
 
 Installation of hbase is not yet documented properly
 
-Installation of the webdanica-tables are done using the psql.py script and the create-scripts found here: webdanica-core/src/main/resources/scripts/hbase-phoenix
+Installation of the webdanica-tables are done using the psql.py script and the create-scripts found here: [webdanica-core/src/main/resources/scripts/hbase-phoenix](webdanica-core/src/main/resources/scripts/hbase-phoenix)
+Use the latest scripts, as the scripts in the 1.X branch could be out-of-date:
 
 There are the following create scripts for each of the required hbase tables 
  * create_blacklists.sql
