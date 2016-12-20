@@ -5,7 +5,7 @@ Probably, Netarchivesuite 5.2+ will also work, but this hasn't been tested.
 
 The recipe used is as written on the page https://sbforge.org/display/NASDOC51/Installation+of+the+Quickstart+system
 
-Only exception is the use of nas_install/deploy_webdanica_netarchivesuite.xml instead of the deploy_standalone_example.xml 
+Only exception is the use of install/deploy_webdanica_netarchivesuite.xml instead of the deploy_standalone_example.xml 
 
 Before deploying netarchivesuite with the RunNetarchivesuite.sh, you need to change the following
 
@@ -22,7 +22,7 @@ The differences from the quickstart are as follows:
 
 Note: Currently, we have no ViewerProxyApplication and IndexServerApplication as well, but they could be turned on, if viewerproxying the metadata files is required by the curators
 
-A sample Heritrix3 template with the deduplication beans can be found here: nas_install/default_webdanica.xml
+A sample Heritrix3 template with the deduplication beans can be found here: install/default_webdanica.xml
 
 What you call this template is up to your, but the name must be same as the setting settings.harvesting.template in your webdanica_settings.xml file.
 
