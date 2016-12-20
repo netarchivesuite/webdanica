@@ -34,7 +34,11 @@ The webapp will fail to initiate properly, if these two files are absent
 There is an env setting in webdanica_setting.xml.
 
 The environment is used in the header of the mails being sent
-Header: `[Webdanica-TEST] stopping`
+Header: 
+```
+[Webdanica-TEST] stopping
+```
+
 Body: 
 ```
 [Webdanica-TEST] stopping
@@ -142,8 +146,13 @@ A sample setup could look like this in the settingsfile
 
 ## harvesting-workflow-configuration
 The below configuration defines how to construct the single seed harvests prepared and run by the harvesting worklow.
-All these settings are necessary to enable the harvesting-workflow. Furthemore, the schedule defined by harvesting.schedule, and the template defined by harvesting.template must exist in the local
+All these settings are necessary to enable the harvesting-workflow. Furthermore, the schedule defined by harvesting.schedule, and the template defined by harvesting.template must exist in the local
 netarchivesuite system, otherwise the harvestworkflow will be disabled
+
+When the harvestWorkflow is enabled, it will harvest maxSingleSeedHarvests (5 in the sample configuration below) in a row, one after the other, and then write a harvestlog with the successfull harvests to the 
+harvestLogDir (/home/harvestlogs/ in the sample configuration below).
+
+The harvestLogs are made writeable by all, so the automatic-workflow can remove the harvestlogs during its processing
 
 ```
 <maxSingleSeedHarvests>5</maxSingleSeedHarvests>
@@ -152,8 +161,17 @@ netarchivesuite system, otherwise the harvestworkflow will be disabled
 <prefix>webdanica-trial-</prefix>
 <maxbytes>10000</maxbytes>
 <maxobjects>10000</maxobjects>
+<harvestlogDir>/home/harvestlogs/</harvestlogDir>
+<harvestlogPrefix>harvestLog-</harvestlogPrefix>
+<harvestlogReadySuffix>.txt</harvestlogReadySuffix>
+</harvesting>
+
 </harvesting>
 ```
-Note: Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow.
-Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
+##Notes
+ * Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow. Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
+ * The harvestworkflow will currently wait forever for the completion of the harvestjob, so some monitoring of the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
+the updated time of the seed currently beging harvested (Seen when clicking on the Show details page)
+
+
 
