@@ -68,7 +68,7 @@ BASENAME=`basename $J`
 DESTINATION=$SEQDIR/$BASENAME
 mkdir -p $DESTINATION
 echo "do parsed-extract on file $BASENAME with destination $DESTINATION"
-bash parse-text-extraction.sh $J $DESTINATION $HADOOP_HOME $WORKFLOW_HOME
+bash parse-text-extraction.sh $J $DESTINATION $HADOOP_HOME $WORKFLOW_HOME &>> logs/parsed.log
 RESCODE=$?
 if [ $RESCODE -ne 0 ]
 then

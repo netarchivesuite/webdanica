@@ -42,7 +42,7 @@ fi
 ## TODO look for the SUCCESS file in the $SEQBASEDIR/$J directory
 DESTINATION=$CRITERIARESULTSDIR/$J
 echo "do criteria-analysis on file $FILE with destination $DESTINATION"
-bash pig16-call-script.sh $FILE $DESTINATION $SCRIPTPATH $WORKFLOW_HOME $PIG_HOME
+bash pig16-call-script.sh $FILE $DESTINATION $SCRIPTPATH $WORKFLOW_HOME $PIG_HOME &>> logs/criteria_script.log
 rc=$?
 if [[ $rc != 0 ]]; then 
 	echo "ERROR: criteria-analysis on file $FILE with destination $DESTINATION: failed with exitcode $rc"

@@ -7,7 +7,7 @@ else
   exit 1
 fi
 
-echo PIGHOME $PIG_HOME
+#echo PIGHOME $PIG_HOME
 
 if [ -f $BUSYFILE ]; then
    STAT=`stat -c %y $BUSYFILE` 
