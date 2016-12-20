@@ -13,13 +13,13 @@ Otherwise, the seed is registered as a danica-seed, and the domain of the seed c
 
 The template currently looks like this: [tools/loadseed.sh](tools/loadseed.sh)
 
-## tools/loadBlacklists.sh
+## tools/loadBlacklist.sh
 This script adds a new active blacklist to our webdanica workflow.
 We currently don't support updating or deleting a blacklist using this script.
 The current procedure is to erase all blacklists using the Apache phoenix CLI client 'sqlline.py' part of the phoenix-bin package 'apache-phoenix-PHOENIXVERSION-HBase-HADOOPVERSION-bin.tar.gz'
 (currently PHOENIXVERSION 4.7.1, and HADOOPVERSION 1.1) with command "delete from blacklists;"
 
-The template currently looks like this: [tools/loadBlacklists.sh](tools/loadBlacklists.sh)
+The template currently looks like this: [tools/loadBlacklist.sh](tools/loadBlacklist.sh)
 
 ## tools/loaddomains.sh
 Loads a domain-list into webdanica, inserting them into the domains table.
