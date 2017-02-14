@@ -89,7 +89,7 @@ public class FrequentWords {
         
         // Verber
         "vaere", "faa", "gaa", 
-        "goe", "go", "maatte", "staa", "saette",  
+        "goe", "maatte", "staa", "saette",  
         "fortaelle", "hoere", "laegge", 
         "foelge", "koere", "folge", "kore","taenke", 
         "oenske","onske", "slaa", "foere", "spoerge","fore", "sporge",  
