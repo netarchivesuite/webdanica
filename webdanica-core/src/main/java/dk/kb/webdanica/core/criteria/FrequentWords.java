@@ -44,13 +44,13 @@ public class FrequentWords {
     // Updated with new set of words from STHU November 2016
     public static String[] frequentwordsWithDanishLettersCoded = new String[] {
         "paa", "saa", "ogsaa", "vaere", "aar", "naar",  
-         "faa","maa", "vaeret", "gaar", "faar", 
+        "faa","maa", "vaeret", "gaar", "faar", 
         "forste", "foerste","foer", "saadan", 
         "maaske", "baade", "goere", "gaa", "goer",
         
         // Adjektiver
-        "forst", "foerst",
-        "hoj","hoej", "staerk", "naeste", "oekonomisk","okonomisk", "oevrig", "ovrig", "svaer", 
+        "foerst",
+        "hoej", "staerk", "naeste", "oekonomisk","okonomisk", "oevrig", "ovrig", "svaer", 
         
         "naer", "saerlig",  "haard", "daarlig", "roed", "taet", 
         "noedvendig","nodvendig",  "saadan", "faa",
@@ -64,18 +64,19 @@ public class FrequentWords {
         "blaa", "noedt", "bloed","nodt", 
         "foreloebig", "forelobig","fuldstaendig", 
         "opmaerksom", "hoejre","hojre",  
-        "soed","sod", "militaer",  
+        "soed", "militaer",  
         "populaer", "aabenbar", "traet", 
         "aarlig",  
         "selvstaendig",  "vaerd",  
-         "maerkelig",  
+        "maerkelig",  
         "overst","loes", "oeverst",  
         "berømt", "paagaeldende",  
         "udmaerket", "aegte",  
         "tilstraekkelig", "vaerre",  
         "toer",  
-        "moerk", "moerk","afhaengig",  "usaedvanlig", 
-        // navneord
+        "moerk", "afhaengig", "usaedvanlig", 
+        
+	// Navneord
         "aar",  "kobenhavn","koebenhavn",  
         "maade",  "maaned", "oeje", "haand", "omraade", 
         "spoergsmaal", "raekke", "loeb","lob", 
@@ -91,8 +92,8 @@ public class FrequentWords {
         "vaere", "faa", "gaa", 
         "goe", "maatte", "staa", "saette",  
         "fortaelle", "hoere", "laegge", 
-        "foelge", "koere", "folge", "kore","taenke", 
-        "oenske","onske", "slaa", "foere", "spoerge","fore", "sporge",  
+        "foelge", "koere", "taenke", 
+        "oenske","onske", "slaa", "foere", "spoerge", "sporge",  
         "vaelge", "foele","fole", "traekke", "forstaa", "gaelde", 
         "naa", "proeve", "koebe", "prove", "kobe", "laese",  
         "saelge", "hjaelpe", "moede", "forsoege","mode", "forsoge", "laere", "fortsaette", 
@@ -103,9 +104,9 @@ public class FrequentWords {
         "haabe", "foregaa", "loese", 
         "gennemfoere","gennemfore", "aabne",  
         "daekke", "oege","oge", "undgaa", "opstaa", 
-        "indgaa",  "opnaa", "foede", "raabe", "doe", "behoeve", "behove", 
+        "indgaa",  "opnaa", "foede", "raabe", "behoeve", "behove", 
         "foreslaa", "traede", "soerge","sorge",  
-        "stoette", "toe","stotte", "kaempe", 
+        "stoette", "stotte", "kaempe", 
         "draebe", "undersoege","undersoge", "glaede",  
         "indfoere", "besoege","indfore", "besoge", 
         "loefte", "lofte", "praesentere", "ødelaegge",  
