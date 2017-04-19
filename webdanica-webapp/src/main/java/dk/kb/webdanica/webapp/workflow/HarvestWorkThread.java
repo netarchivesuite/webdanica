@@ -89,18 +89,17 @@ public class HarvestWorkThread extends WorkThreadAbstract {
        	harvestdao = configuration.getDAOFactory().getHarvestDAO();
        	
        	//String harvestLogDirName = configuration.getHarvestLogDirName();
- 
-       
+
        	maxHarvestsAtaTime = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_SINGLESEEDHARVESTS, Constants.DEFAULT_MAX_HARVESTS);
        	harvestLogDir = configuration.getHarvestLogDir();
-       	
+
        	Set<String> requiredSettings = new HashSet<String>();
 		requiredSettings.add(WebdanicaSettings.HARVESTING_SCHEDULE);
 		requiredSettings.add(WebdanicaSettings.HARVESTING_TEMPLATE);
 		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
 		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_BYTES);
 		requiredSettings.add(WebdanicaSettings.HARVESTING_PREFIX);
-		
+
 		if (!SettingsUtilities.verifyWebdanicaSettings(requiredSettings, false)) {
 			String errMsg = "HarvestWorkFlow will not be enabled as some of the required harvesting settings are not defined. Please correct your webdanicasettings file. The required settings are:"
 					+ StringUtils.conjoin(",", requiredSettings); 
@@ -108,13 +107,13 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
 			return;
 		};
-		
+
 		scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
 		templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
 		harvestMaxObjects = Settings.getInt(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
 		harvestMaxBytes = Settings.getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
 		harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
-		
+
 		// Verify that database driver exists in classpath. If not exit program
 		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
 		if (!SettingsUtilities.verifyClass(dbdriver, false)) {
@@ -177,8 +176,6 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         	String errMsg = "IOException thrown during check that harvestLogDir '" + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
         	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
         	logger.log(Level.WARNING, errMsg);
-        	
-        	
         	return false;
         } catch (SecurityException e) {
         	String errMsg = "SecurityException thrown during check that harvestLogDir '" + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
@@ -349,10 +346,5 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         //Do we need to set the permissions again?
         logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLogFinal.getAbsolutePath() + "'");
     }
-	
-	
-	
-	
-	
-	
+
 }

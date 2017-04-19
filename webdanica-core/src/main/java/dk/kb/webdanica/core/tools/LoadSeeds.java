@@ -124,11 +124,17 @@ public static void main(String[] args) throws Exception {
         List<String> logentries = new ArrayList<String>();
         List<String> updatelogentries = new ArrayList<String>();
         List<String> domainLogentries = new ArrayList<String>();
+        long lines = 0;
         try {
         	fr = new BufferedReader(new FileReader(seedsfile));
 	        while ((line = fr.readLine()) != null) {
 	            trimmedLine = line.trim();
-	            
+
+	            ++lines;
+	            if (lines % 10000 == 0) {
+	            	System.out.println("Processed " + lines + " seeds.");
+	            }
+
 	            trimmedLine = removeAnnotationsIfNecessary(trimmedLine);
 	            url = trimmedLine;
 	            linecount++;
