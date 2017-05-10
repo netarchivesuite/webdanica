@@ -13,7 +13,9 @@ CREATE TABLE harvests (
     files VARCHAR[],
     fetched_urls VARCHAR[], 
     seed_report VARCHAR,
-    crawllog VARCHAR
+    crawllog VARCHAR,
+    analysis_state INTEGER,
+    analysis_state_reason VARCHAR
 );
 
 CREATE INDEX harvest_finalstate_idx ON harvests (finalState);
