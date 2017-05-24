@@ -110,7 +110,9 @@ public class ResolveRedirects {
     	String[] redirectRegexps = new String[] {"/http", // embedded urls  visible in the url 
     			"redir.aspx", // markers that this is redirected (could be others)
     			"http://bit.ly", "http://goo.gl",
-    			"http://ow.ly", "http://t.co", "http://tinyurl.com", "http://tr.im"
+    			"http://ow.ly", "http://t.co", "http://tinyurl.com", "http://tr.im", 
+    			"http://shar.es","http://amzn.to","http://lnkd.in","http://lnk.to",
+    			"http://po.st","http://on.rt.com", "http://on.wsj.com",
     			};
     	for (String redString: redirectRegexps) {
     		if (url.matches(redString)) {

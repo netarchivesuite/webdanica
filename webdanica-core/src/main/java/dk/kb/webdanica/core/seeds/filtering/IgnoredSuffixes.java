@@ -1,6 +1,8 @@
 package dk.kb.webdanica.core.seeds.filtering;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.Settings;
@@ -48,6 +50,10 @@ public class IgnoredSuffixes {
 	 */
 	public static String matchesIgnoredExtension(String seed) {
 		String low = seed.toLowerCase();
+		if (low.contains("?")) { // Ignore everything from the ? and beyond
+			low = low.substring(0, low.indexOf('?'));
+			System.out.println(low);
+		}
 		for (String ign: ignoredExts) {
 			if (low.endsWith(ign)) {
 				return ign;

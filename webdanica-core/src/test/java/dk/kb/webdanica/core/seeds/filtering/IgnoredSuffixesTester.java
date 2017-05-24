@@ -17,6 +17,8 @@ import dk.kb.webdanica.core.utils.UnitTestUtils;
 public class IgnoredSuffixesTester {
 	
 	private static final String urlToIgnore = "http://www.familien-carlsen.dk/pania-de-croce.jpg";
+	private static final String urlToIgnore1 = "https://vice-images.vice.com/images/series/crops/2015/11/13/desastre-em-mariana-1447437601-crop_social.jpg?resize=*:*&output-quality=75";
+	private static final String urlToIgnore2 = "https://visitanalytics.userreport.com/hit.gif?t=BOS087a815b";
 	private static final String urlToAccept = "http://www.familien-carlsen.dk/checkLodder.html";	
 	private static final String VALID_WEBANICA_SETTINGS_FILENAME = "settings.xml";
 	
@@ -33,7 +35,15 @@ public class IgnoredSuffixesTester {
 		if (result == null) {
 			fail("The url '" + urlToIgnore + "' should have been ignored but wasn't");
 		}
+		result = IgnoredSuffixes.matchesIgnoredExtension(urlToIgnore1);
+		if (result == null) {
+			fail("The url '" + urlToIgnore1 + "' should have been ignored but wasn't");
+		}
 		
+		result = IgnoredSuffixes.matchesIgnoredExtension(urlToIgnore2);
+		if (result == null) {
+			fail("The url '" + urlToIgnore2 + "' should have been ignored but wasn't");
+		}
 	}
 	@Test
 	public void testAccept() {
