@@ -417,9 +417,9 @@ public class CombinedCombo extends EvalFunc<String> {
 				}
 				
 				if (useStandardC7BTest || cityFileTokenSet == null) { 
-					C7bmatches = C7.computeC7b(urlLower);
+					C7bmatches = C7.computeC7b(TextUtils.copyTokens(urltokens));
 				} else {
-					C7bmatches = C7.computeC7bAlt(urlLower, cityFileTokenSet);	
+					C7bmatches = C7.computeC7bAlt(TextUtils.copyTokens(urltokens), cityFileTokenSet);	
 				}
 				addResultForCriterie(object, "C7b", C7bmatches);
 				
@@ -476,7 +476,6 @@ public class CombinedCombo extends EvalFunc<String> {
 				} else {
 					C8amatches = C8.computeC8aAlt(text, foreningerFileTokenSet);
 				}
-				//Set<String> C8amatches = C8.computeC8a(text);
 				addResultForCriterie(object, "C8a", C8amatches);
 				
 				//Calc C8b         'unions in url (input: lowercase url) (WRONGLY computed earlier on text instead of urlLower) 				
@@ -495,7 +494,6 @@ public class CombinedCombo extends EvalFunc<String> {
 						C8bmatches = C8.computeC8b(urlLower);
 					}
 				}
-				//Set<String> C8bmatches = C8.computeC8b(urlLower);
 				addResultForCriterie(object, "C8b", C8bmatches);
 				
 				//Calc C8c         'unions in htm (input: al text lowercased, tokenized)
@@ -536,11 +534,10 @@ public class CombinedCombo extends EvalFunc<String> {
 					virksomhederOneWordFileTokenset = WordsArrayGenerator.getListOfTokens(virksomhederOneWordFile, errorSb);
 				}
 				if (useStandardC9CTest || virksomhederOneWordFileTokenset == null) {
-					C9cmatches = C9.computeC9c(urlLower);
+					C9cmatches = C9.computeC9c(TextUtils.copyTokens(urltokens));
 				} else {
-					C9cmatches = C9.computeC9cAlt(urlLower, TextUtils.copyTokens(virksomhederOneWordFileTokenset));
+					C9cmatches = C9.computeC9cAlt(TextUtils.copyTokens(urltokens), TextUtils.copyTokens(virksomhederOneWordFileTokenset));
 				}
-				//Set<String> C9cmatches = C9.computeC9c(urlLower);
 				addResultForCriterie(object, "C9c", C9cmatches);
 				//Calc C9d         'company cvr
 				Set<String> C9dmatches = C9.computeC9d(text);
@@ -552,7 +549,6 @@ public class CombinedCombo extends EvalFunc<String> {
 				} else {
 					C9ematches = C9.computeC9eAlt(TextUtils.copyTokens(tokens), virksomhederOneWordFileTokenset);
 				}
-				//Set<String> C9ematches = C9.computeC9eV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C9e", C9ematches);
 				//Calc C9f          'search for lowercased cvr-number, input: al text lowercased, output: y/n
 				boolean C9f = C9.computeC9f(text);

@@ -34,17 +34,36 @@ public class C9 {
         return TextUtils.SearchPattern(text, 
                 Words.virksomheder_lowercased);
     }
+    
+    public static Set<String> computeC9bAlt(String text,
+            List<Set<String>> virksomhederFileTokenset) {
+		Set<String> resultSet = new HashSet<String>();
+		for (Set<String> set: virksomhederFileTokenset) {
+			resultSet.addAll(TextUtils.SearchPattern(text, set));
+		}
+	    return resultSet;
+    }
+    
+    
     /**
      * Search for Danish companies in the url.
      * C9c: Input is the lowercase URL.
      * @return the companies matched if any
      */
-    public static Set<String> computeC9c(String urlLower) {
-        return TextUtils.SearchPattern(urlLower,
-        		Words.virksomheder_one_word_lowercased
-                //Words.virksomheder_lowercased
-        );
+    public static Set<String> computeC9c(Set<String> urlTokens) {
+    	
+    	List<String> words = Arrays.asList(
+        		Words.virksomheder_one_word_lowercased);
+        urlTokens.retainAll(words);
+        return urlTokens;
     }  
+    
+    public static Set<String> computeC9cAlt(Set<String> urlTokens,
+            List<Set<String>> virksomhederOneWordFileTokenset) {
+		// Assume only a one word list
+    	urlTokens.retainAll(virksomhederOneWordFileTokenset.get(0));
+    	return urlTokens; 
+    }
     
     public static Set<String> computeC9d(String text) {
         return TextUtils.SearchPattern(text, CVRIndicators);
@@ -54,6 +73,12 @@ public class C9 {
     public static Set<String> computeC9e(String text) {
         return TextUtils.SearchWordRegExp(text, Words.virksomheder_lowercased,false); 
     }    
+    
+    public static Set<String> computeC9eAlt(Set<String> set,
+            List<Set<String>> virksomhederOneWordFileTokenset) {
+	    	set.retainAll(virksomhederOneWordFileTokenset.get(0)); // Assume only a one word list
+		return set;
+    }
     
     public static Set<String> computeC9eV2(String text) {
         return TextUtils.SearchWordPatterns(text, Words.patternsVirksomheder_lowercased,false); 
@@ -87,27 +112,6 @@ public class C9 {
         Matcher m = DanicaRegexps.pDanishCvrRegexpNoCase.matcher(text);
     	return m.matches();
     }
-
-	public static Set<String> computeC9bAlt(String text,
-            List<Set<String>> virksomhederFileTokenset) {
-		Set<String> resultSet = new HashSet<String>();
-		for (Set<String> set: virksomhederFileTokenset) {
-			resultSet.addAll(TextUtils.SearchPattern(text, set));
-		}
-	    return resultSet;
-    }
-
-	public static Set<String> computeC9cAlt(String urlLower,
-            List<Set<String>> virksomhederOneWordFileTokenset) {
-		// Assume only a one word list
-		return TextUtils.SearchPattern(urlLower, virksomhederOneWordFileTokenset.get(0)); 
-    }
-
-	public static Set<String> computeC9eAlt(Set<String> set,
-            List<Set<String>> virksomhederOneWordFileTokenset) {
-	    	set.retainAll(virksomhederOneWordFileTokenset.get(0)); // Assume only a one word list
-		return set;
-    }    
     
 }
 

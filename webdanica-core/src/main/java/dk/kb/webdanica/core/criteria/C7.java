@@ -38,13 +38,16 @@ public class C7 {
     	return tokens; 
     }
     //////////////////C7b - to varianter ///////////
-    public static Set<String> computeC7b(String urlLower) {
-        return TextUtils.SearchPattern(urlLower, Words.danishMajorCities);
+    public static Set<String> computeC7b(Set<String> urlTokens) {
+    	List<String> words = Arrays.asList(Words.danishMajorCities);
+        urlTokens.retainAll(words);
+    	return urlTokens;
     }    
     
-    public static Set<String> computeC7bAlt(String urlLower,
+    public static Set<String> computeC7bAlt(Set<String> urlTokens,
             List<Set<String>> cityFileTokenSet) {
-		return TextUtils.SearchPattern(urlLower, cityFileTokenSet.get(0)); 
+    	urlTokens.retainAll(cityFileTokenSet.get(0));
+    	return urlTokens; 
     }
     
     //////////////////C7c - to varianter ///////////
