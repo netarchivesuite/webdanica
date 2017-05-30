@@ -3,6 +3,7 @@ package dk.kb.webdanica.core.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dk.kb.webdanica.core.criteria.WordPattern;
+import dk.netarkivet.common.webinterface.HTMLUtils;
 
 public class TextUtils {
 
@@ -199,10 +201,40 @@ public class TextUtils {
         return tokens;
     }
     
-    public static Set<String> tokenizeUrl(String text) {	
-        String words[] = text.split("/");
-        
-        Set<String> tokens = new HashSet<String>(); 
+    public static Set<String> tokenizeUrl(String url, boolean cased) {
+    	// remove the protocol, if possible to identify it. This information is meaningless
+    	final String protocolMarker = "://";
+    	if (url.contains(protocolMarker)) {
+    		url = url.substring(url.indexOf(protocolMarker)+3, url.length());
+    	}
+    	
+    	// If the url is url-encoded i.e. contains "%" in the url then url-decode it before processing
+    	String urldecoded = url;
+    	if (url.contains("%")) {
+    		urldecoded = HTMLUtils.decode(url);
+    	}
+    	Set<String> tokens = new HashSet<String>();
+        String[] splitSlash = urldecoded.split("/");
+        for (String s: splitSlash) {
+        	String sTrimmed = s.trim();
+        	if (sTrimmed.isEmpty()) {
+        		continue;
+        	}
+        	if (sTrimmed.contains(" ")) {
+        		Collections.addAll(tokens, sTrimmed.split(" "));
+        	} else {
+        		tokens.add(sTrimmed);
+        	}
+        } 		
+        Set<String> tokens1 = new HashSet<String>();
+        for (String s: tokens) {
+        	if (s.contains(".")) {
+        		Collections.addAll(tokens1, s.split("\\."));
+        	} else {
+        		tokens1.add(s);
+        	}
+        }
+ /*        
         for (String word: words) {
             String wordTrimmed = word.trim(); 
             if (wordTrimmed.endsWith(",")) {
@@ -217,7 +249,8 @@ public class TextUtils {
                 tokens.add(wordTrimmed);
             }
         }
-        return tokens;
+ */       
+        return tokens1;
     }
     
     public static Set<String> findMatches(String text,

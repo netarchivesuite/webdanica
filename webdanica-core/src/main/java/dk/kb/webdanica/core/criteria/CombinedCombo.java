@@ -187,9 +187,18 @@ public class CombinedCombo extends EvalFunc<String> {
 		if (input.size() > 12) {
 			virksomhederOneWordFilePathAsArg = (String) input.get(12); // argument #13
 		} 
+		// Generate a set of tokens for the given text.
+		// tokens are based on the lowercased text
+		// tokensUncased are based on the original text (currently not used)
 		
 		Set<String> tokens = TextUtils.tokenizeText(text);
 		Set<String> tokensUncased = TextUtils.tokenizeText(textNormal);
+		
+		// Generate a set of tokens for the given url
+		// urltokens are based on the lowercased url
+		// urltokensUncased are based on the original url (currently not used)
+		Set<String> urltokens = TextUtils.tokenizeUrl(urlLower, false);
+		Set<String> urltokensUncased = TextUtils.tokenizeUrl(url, true);
 		
 		int Cext2 = 0;
 		
