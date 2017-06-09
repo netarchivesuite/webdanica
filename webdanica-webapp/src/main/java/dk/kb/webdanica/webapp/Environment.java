@@ -51,12 +51,11 @@ public class Environment {
 
     /** Logging mechanism. */
     private static final Logger logger = Logger.getLogger(Environment.class.getName());
-    
+
     /** servletConfig. */
     private ServletConfig servletConfig = null;
 
-	private String version = null;
-	
+    private String version = null;
 
     private WorkThreadAbstract[] workthreads;
     
@@ -65,19 +64,19 @@ public class Environment {
      */
 
     private String contextPath;
-    private String seedsPath; 
-	private String seedPath;  
-	private String blacklistsPath;
-	private String blacklistPath;
-	private String ingestlogsPath;
-	private String ingestlogPath;
-	private String criteriaResultPath;
-	private String criteriaResultsPath;
-	private String harvestsPath;
-	private String harvestPath;
-	private String domainsPath;
-	private String domainPath;
-	
+    private String seedsPath;
+    private String seedPath;
+    private String blacklistsPath;
+    private String blacklistPath;
+    private String ingestlogsPath;
+    private String ingestlogPath;
+    private String criteriaResultPath;
+    private String criteriaResultsPath;
+    private String harvestsPath;
+    private String harvestPath;
+    private String domainsPath;
+    private String domainPath;
+
     /*
      * Templates.
      */

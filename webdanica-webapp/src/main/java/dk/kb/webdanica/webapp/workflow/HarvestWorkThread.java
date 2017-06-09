@@ -28,48 +28,49 @@ import dk.netarkivet.harvester.datamodel.DBSpecifics;
 
 public class HarvestWorkThread extends WorkThreadAbstract {
 
-	static {
-		logger = Logger.getLogger(HarvestWorkThread.class.getName());
-	}
+    static {
+        logger = Logger.getLogger(HarvestWorkThread.class.getName());
+    }
 
     private List<Seed> queueList = new LinkedList<Seed>();
 
     private List<Seed> workList = new LinkedList<Seed>();
 
-	private SeedsDAO seeddao;
-	
-	private HarvestDAO harvestdao;
+    private SeedsDAO seeddao;
 
-	private Configuration configuration;
-	
-	private boolean harvestingEnabled = false;
-	
-	private AtomicBoolean harvestingInProgress = new AtomicBoolean(false);
-	
-	private File harvestLogDir;
+    private HarvestDAO harvestdao;
 
-	private int maxHarvestsAtaTime;
+    private Configuration configuration;
 
-	private String harvestPrefix;
-	
-	private String scheduleName;
+    private boolean harvestingEnabled = false;
 
-	private String templateName;
+    private AtomicBoolean harvestingInProgress = new AtomicBoolean(false);
 
-	private int harvestMaxObjects;
+    private File harvestLogDir;
 
-	private long harvestMaxBytes;
-	
-	
+    private int maxHarvestsAtaTime;
+
+    private String harvestPrefix;
+
+    private String scheduleName;
+
+    private String templateName;
+
+    private int harvestMaxObjects;
+
+    private long harvestMaxBytes;
+
     /**
      * Constructor for the Harvester thread worker object.
-     * @param environment The Webdanica webapp environment object
+     * 
+     * @param environment
+     *            The Webdanica webapp environment object
      */
     public HarvestWorkThread(Environment environment, String threadName) {
         this.environment = environment;
         this.threadName = threadName;
     }
-	
+
     public void enqueue(Seed urlRecord) {
         synchronized (queueList) {
             queueList.add(urlRecord);
@@ -81,270 +82,402 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             queueList.addAll(urlRecords);
         }
     }
-       
-	@Override
+
+    @Override
     protected void process_init() {
-       	configuration = Configuration.getInstance();
-       	seeddao = configuration.getDAOFactory().getSeedsDAO();
-       	harvestdao = configuration.getDAOFactory().getHarvestDAO();
-       	
-       	//String harvestLogDirName = configuration.getHarvestLogDirName();
+        configuration = Configuration.getInstance();
+        seeddao = configuration.getDAOFactory().getSeedsDAO();
+        harvestdao = configuration.getDAOFactory().getHarvestDAO();
 
-       	maxHarvestsAtaTime = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_SINGLESEEDHARVESTS, Constants.DEFAULT_MAX_HARVESTS);
-       	harvestLogDir = configuration.getHarvestLogDir();
+        // String harvestLogDirName = configuration.getHarvestLogDirName();
 
-       	Set<String> requiredSettings = new HashSet<String>();
-		requiredSettings.add(WebdanicaSettings.HARVESTING_SCHEDULE);
-		requiredSettings.add(WebdanicaSettings.HARVESTING_TEMPLATE);
-		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
-		requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_BYTES);
-		requiredSettings.add(WebdanicaSettings.HARVESTING_PREFIX);
+        maxHarvestsAtaTime = SettingsUtilities.getIntegerSetting(
+                WebdanicaSettings.HARVESTING_MAX_SINGLESEEDHARVESTS,
+                Constants.DEFAULT_MAX_HARVESTS);
+        harvestLogDir = configuration.getHarvestLogDir();
 
-		if (!SettingsUtilities.verifyWebdanicaSettings(requiredSettings, false)) {
-			String errMsg = "HarvestWorkFlow will not be enabled as some of the required harvesting settings are not defined. Please correct your webdanicasettings file. The required settings are:"
-					+ StringUtils.conjoin(",", requiredSettings); 
-        	logger.log(Level.WARNING, errMsg);
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-			return;
-		};
+        Set<String> requiredSettings = new HashSet<String>();
+        requiredSettings.add(WebdanicaSettings.HARVESTING_SCHEDULE);
+        requiredSettings.add(WebdanicaSettings.HARVESTING_TEMPLATE);
+        requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
+        requiredSettings.add(WebdanicaSettings.HARVESTING_MAX_BYTES);
+        requiredSettings.add(WebdanicaSettings.HARVESTING_PREFIX);
 
-		scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
-		templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
-		harvestMaxObjects = Settings.getInt(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
-		harvestMaxBytes = Settings.getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
-		harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
+        if (!SettingsUtilities.verifyWebdanicaSettings(requiredSettings, false)) {
+            String errMsg = "HarvestWorkFlow will not be enabled as some of the required harvesting settings are not defined. Please correct your webdanicasettings file. The required settings are:"
+                    + StringUtils.conjoin(",", requiredSettings);
+            logger.log(Level.WARNING, errMsg);
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            return;
+        }
+        ;
 
-		// Verify that database driver exists in classpath. If not exit program
-		String dbdriver = DBSpecifics.getInstance().getDriverClassName();
-		if (!SettingsUtilities.verifyClass(dbdriver, false)) {
-			String errMsg = "HarvestWorkFlow will not be enabled as the necessary databasedriver to connect to Netarchivesuite '" + dbdriver + "' does not exist in the classpath";
-        	logger.log(Level.WARNING, errMsg);
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-			return;
-		}
-		// Verify that arcrepositoryclient exists in classpath. If not exit program
-		String arcrepositoryClient = dk.netarkivet.common.utils.Settings.get("settings.common.arcrepositoryClient.class");
-		if (!SettingsUtilities.verifyClass(arcrepositoryClient, false)) {
-			String errMsg = "HarvestWorkFlow will not be enabled as the necessary acrepositoryClient '" + arcrepositoryClient + "' does not exist in the classpath";
-        	logger.log(Level.WARNING, errMsg);
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-			return;
-		}
-       
-		if (maxHarvestsAtaTime < 1) {
-			configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", "Maxharvests is less than 1: " +  maxHarvestsAtaTime);
-			logger.info("MaxHarvests is less than 1. So HarvestWorkFlow is disabled!");
-			return;
-		}
-		
-       	if (existsLogdirAndIsWritable(harvestLogDir)) {
-       		harvestingEnabled = true;
-       		logger.info("All requirements fullfilled for harvesting. So harvestingEnabled is set to true");
-       	} 
+        scheduleName = Settings.get(WebdanicaSettings.HARVESTING_SCHEDULE);
+        templateName = Settings.get(WebdanicaSettings.HARVESTING_TEMPLATE);
+        harvestMaxObjects = Settings
+                .getInt(WebdanicaSettings.HARVESTING_MAX_OBJECTS);
+        harvestMaxBytes = Settings
+                .getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
+        harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
+
+        // Verify that database driver exists in classpath. If not exit program
+        String dbdriver = DBSpecifics.getInstance().getDriverClassName();
+        if (!SettingsUtilities.verifyClass(dbdriver, false)) {
+            String errMsg = "HarvestWorkFlow will not be enabled as the necessary databasedriver to connect to Netarchivesuite '"
+                    + dbdriver + "' does not exist in the classpath";
+            logger.log(Level.WARNING, errMsg);
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            return;
+        }
+        // Verify that arcrepositoryclient exists in classpath. If not exit
+        // program
+        String arcrepositoryClient = dk.netarkivet.common.utils.Settings
+                .get("settings.common.arcrepositoryClient.class");
+        if (!SettingsUtilities.verifyClass(arcrepositoryClient, false)) {
+            String errMsg = "HarvestWorkFlow will not be enabled as the necessary acrepositoryClient '"
+                    + arcrepositoryClient + "' does not exist in the classpath";
+            logger.log(Level.WARNING, errMsg);
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            return;
+        }
+
+        if (maxHarvestsAtaTime < 1) {
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled",
+                    "Maxharvests is less than 1: " + maxHarvestsAtaTime);
+            logger.info("MaxHarvests is less than 1. So HarvestWorkFlow is disabled!");
+            return;
+        }
+
+        if (existsLogdirAndIsWritable(harvestLogDir)) {
+            harvestingEnabled = true;
+            logger.info("All requirements fullfilled for harvesting. So harvestingEnabled is set to true");
+        }
 
     }
 
-	private boolean existsLogdirAndIsWritable(File harvestLogDir) {
-		boolean deleteTestFile = true;
-       	if (!harvestLogDir.isDirectory()) {
-       		String errMsg = "HarvestWorkFlow will not be enabled as the given directory '" + harvestLogDir.getAbsolutePath() + "' does not exist or is not a proper directory";
-        	logger.log(Level.WARNING, errMsg);
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-       		return false;
-       	}
-       	logger.info("Trying to write a file to dir '" + harvestLogDir.getAbsolutePath() + "' with the correct permissions");
-       	File testFile = new File(harvestLogDir, System.currentTimeMillis() + ".txt");
-       	
-       	try {
-	        testFile.createNewFile(); 
-	        // Try setting the just created file to writable by all 
-	        boolean success = testFile.setWritable(true, false);
-	        if (!success) {
-	        	String errMsg = "HarvestWorkFlow will not be enabled as we're unable to set the correct permissions when writing a file (e.g rw_rw_rw) to dir '" + harvestLogDir.getAbsolutePath() + "'";
-	        	logger.log(Level.WARNING, errMsg);
-	        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-	        	return false;
-	        } else {
-				if (deleteTestFile) {
-	        		if (!testFile.delete()) {
-	        			logger.log(Level.WARNING, "Unable to delete testfile '" + testFile.getAbsolutePath() + "'");
-	        		}
-	        	}
-	        	return true;
-	        }
+    private boolean existsLogdirAndIsWritable(File harvestLogDir) {
+        boolean deleteTestFile = true;
+        if (!harvestLogDir.isDirectory()) {
+            String errMsg = "HarvestWorkFlow will not be enabled as the given directory '"
+                    + harvestLogDir.getAbsolutePath()
+                    + "' does not exist or is not a proper directory";
+            logger.log(Level.WARNING, errMsg);
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            return false;
+        }
+        logger.info("Trying to write a file to dir '"
+                + harvestLogDir.getAbsolutePath()
+                + "' with the correct permissions");
+        File testFile = new File(harvestLogDir, System.currentTimeMillis()
+                + ".txt");
+
+        try {
+            boolean fileWasCreated = testFile.createNewFile();
+            if (!fileWasCreated) {
+                String errMsg = "HarvestWorkFlow will not be enabled as we're unable to write to the directory '"
+                        + harvestLogDir.getAbsolutePath() + "'";
+                logger.log(Level.WARNING, errMsg);
+                configuration.getEmailer().sendAdminEmail(
+                        "[Webdanica-" + configuration.getEnv()
+                                + "] HarvestWorkFlow not enabled", errMsg);
+                return false;
+            }
+            // Try setting the just created file to writable by all
+            boolean success = testFile.setWritable(true, false);
+            if (!success) {
+                String errMsg = "HarvestWorkFlow will not be enabled as we're unable to set the correct permissions when writing a file (e.g rw_rw_rw) to dir '"
+                        + harvestLogDir.getAbsolutePath() + "'";
+                logger.log(Level.WARNING, errMsg);
+                configuration.getEmailer().sendAdminEmail(
+                        "[Webdanica-" + configuration.getEnv()
+                                + "] HarvestWorkFlow not enabled", errMsg);
+                return false;
+            } else {
+                if (deleteTestFile) {
+                    if (!testFile.delete()) {
+                        logger.log(Level.WARNING, "Unable to delete testfile '"
+                                + testFile.getAbsolutePath() + "'");
+                    }
+                }
+                return true;
+            }
         } catch (IOException e) {
-        	String errMsg = "IOException thrown during check that harvestLogDir '" + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-        	logger.log(Level.WARNING, errMsg);
-        	return false;
+            String errMsg = "IOException thrown during check that harvestLogDir '"
+                    + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            logger.log(Level.WARNING, errMsg);
+            return false;
         } catch (SecurityException e) {
-        	String errMsg = "SecurityException thrown during check that harvestLogDir '" + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow not enabled", errMsg);
-        	logger.log(Level.WARNING, errMsg);
-        	return false;
+            String errMsg = "SecurityException thrown during check that harvestLogDir '"
+                    + harvestLogDir.getAbsolutePath() + "' is writable:" + e;
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg);
+            logger.log(Level.WARNING, errMsg);
+            return false;
         }
     }
 
-	@Override
+    @Override
     protected void process_run() {
-		logger.log(Level.FINE, "Running process of thread '" +  threadName + "' at '" + new Date() + "'");
-		if (!harvestingEnabled) {
-			return;
-		}
-		if (harvestingInProgress.get()) {
-			logger.log(Level.INFO, "Harvesting process already in progress at '" + new Date() + "'. Skipping");
-			return;
-		} else {
-			harvestingInProgress.set(Boolean.TRUE);
-		}
-		List<Seed> seedsReadyForHarvesting = null;
-		
-		try {
-		    seedsReadyForHarvesting = seeddao.getSeeds(Status.READY_FOR_HARVESTING, maxHarvestsAtaTime); 
-		} catch (Throwable e) {
-			String errMsg = "Exception thrown during method HarvestWorkThread.process_run:" + e;
-		    logger.log(Level.WARNING, errMsg);
-		    harvestingInProgress.set(Boolean.FALSE);
-		    configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failed - unable to receive seeds with status '" 
-		    		+ Status.READY_FOR_HARVESTING + "'", errMsg);
-		    return;
-		}
-		
-   		enqueue(seedsReadyForHarvesting);
-   		if (seedsReadyForHarvesting.size() > 0) {
-   			logger.log(Level.FINE, "Found '" + seedsReadyForHarvesting.size() + "' seeds ready for harvesting");
-   		}
-           try {
-               synchronized (queueList) {
-               	for (int i=0; i<queueList.size(); ++i) {
-               		Seed urlRecord = queueList.get(i);
-               		workList.add(urlRecord);
-               	}
+        logger.log(Level.FINE, "Running process of thread '" + threadName
+                + "' at '" + new Date() + "'");
+        if (!harvestingEnabled) {
+            return;
+        }
+        if (harvestingInProgress.get()) {
+            logger.log(Level.INFO,
+                    "Harvesting process already in progress at '" + new Date()
+                            + "'. Skipping");
+            return;
+        } else {
+            harvestingInProgress.set(Boolean.TRUE);
+        }
+        List<Seed> seedsReadyForHarvesting = null;
+
+        try {
+            seedsReadyForHarvesting = seeddao.getSeeds(
+                    Status.READY_FOR_HARVESTING, maxHarvestsAtaTime);
+        } catch (Throwable e) {
+            String errMsg = "Exception thrown during method HarvestWorkThread.process_run:"
+                    + e;
+            logger.log(Level.WARNING, errMsg);
+            harvestingInProgress.set(Boolean.FALSE);
+            configuration
+                    .getEmailer()
+                    .sendAdminEmail(
+                            "[Webdanica-"
+                                    + configuration.getEnv()
+                                    + "] HarvestWorkFlow failed - unable to receive seeds with status '"
+                                    + Status.READY_FOR_HARVESTING + "'", errMsg);
+            return;
+        }
+
+        enqueue(seedsReadyForHarvesting);
+        if (!seedsReadyForHarvesting.isEmpty()) {
+            logger.log(Level.FINE, "Found '" + seedsReadyForHarvesting.size()
+                    + "' seeds ready for harvesting");
+        }
+        try {
+            synchronized (queueList) {
+                for (int i = 0; i < queueList.size(); ++i) {
+                    Seed urlRecord = queueList.get(i);
+                    workList.add(urlRecord);
+                }
                 queueList.clear();
-               }
-           	if (workList.size() > 0) {
-                   logger.log(Level.INFO, "Starting harvest of " + workList.size() + " seeds");
-                   lastWorkRun = System.currentTimeMillis();
-                   startProgress(workList.size());
-                   harvest(workList);  
-                   stopProgress();
-                   workList.clear();
-           	}
-           } catch (Throwable e) {
-               logger.log(Level.SEVERE, e.toString(), e);
-           } finally {
-        	   harvestingInProgress.set(Boolean.FALSE);
-           }
+            }
+            if (!workList.isEmpty()) {
+                logger.log(Level.INFO, "Starting harvest of " + workList.size()
+                        + " seeds");
+                lastWorkRun = System.currentTimeMillis();
+                startProgress(workList.size());
+                harvest(workList);
+                stopProgress();
+                workList.clear();
+            }
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE, e.toString(), e);
+        } finally {
+            harvestingInProgress.set(Boolean.FALSE);
+        }
     }
 
-	private void harvest(List<Seed> workList) {
-		List<SingleSeedHarvest> harvests = new ArrayList<SingleSeedHarvest>();
-		for (Seed s: workList) {
-			boolean failure = false;
-			boolean harvestSuccess = false;
-			Throwable savedException = null;
-			s.setStatus(Status.HARVESTING_IN_PROGRESS);
-			String eventHarvestName = null;
-			String failureReason = "";
-			try {
-	            seeddao.updateSeed(s);
-	            eventHarvestName = harvestPrefix + System.currentTimeMillis();
-	            // isolate in a separate thread, so we can stop the process, if it takes too long
-	            SingleSeedHarvest h = new SingleSeedHarvest(s.getUrl(), eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects);
-	            
-	            harvestSuccess = h.finishHarvest(false);
-	            // save harvest in harvest-database
-	            boolean inserted = harvestdao.insertHarvest(h);
-	            logger.info((harvestSuccess?"Successful":"Failed") + " harvest w/ name " +  h.getHarvestName() + " was " + (inserted? "successfully":"failed to be ") + " inserted into the database");
-	            harvests.add(h);
-	            if (!h.isSuccessful()) {
-	            	failure = true;
-	            	failureReason = h.getErrMsg();
-	            }
+    private void harvest(List<Seed> workList) {
+        List<SingleSeedHarvest> harvests = new ArrayList<SingleSeedHarvest>();
+        for (Seed s : workList) {
+            boolean failure = false;
+            boolean harvestSuccess = false;
+            Throwable savedException = null;
+            s.setStatus(Status.HARVESTING_IN_PROGRESS);
+            String eventHarvestName = null;
+            String failureReason = "";
+            try {
+                seeddao.updateSeed(s);
+                eventHarvestName = harvestPrefix + System.currentTimeMillis();
+
+                logger.info("Making harvest-request for seed: " + s.getUrl());
+                // isolate in a separate thread, so we can stop the process, if
+                // it takes too long
+                HarvesterThread hThread = new HarvesterThread(s.getUrl(),
+                        eventHarvestName, scheduleName, templateName,
+                        harvestMaxBytes, harvestMaxObjects);
+                Thread currentThread = new Thread(hThread);
+                currentThread.start();
+                long startInMillis = System.currentTimeMillis();
+                long harvestMaxTimeInMillis = 60 * 60 * 1000L; // 1 hour
+                long deadline = startInMillis + harvestMaxTimeInMillis;
+                boolean aborted = false;
+
+                // wait until no longer alive or 1 hour has passed for a single
+                // harvest
+                logger.info("Waiting for harvest to complete or timeout (max 1 hour from now) of seed: "
+                        + s.getUrl());
+                while (currentThread.isAlive()
+                        && System.currentTimeMillis() < deadline) {
+                    waitSecs(30);
+                }
+                if (currentThread.isAlive()) { // process still running after 1
+                                               // hour. Stopping process
+                    currentThread.stop();
+                    failure = true;
+                    failureReason = "Harvest of seed '" + s.getUrl()
+                            + "' failed to finished within one hour";
+                    aborted = true;
+                }
+                // process has ended within the 60 minute time-frame
+                if (!aborted) {
+                    // save harvest in harvest-database if we have data to store
+                    SingleSeedHarvest h = hThread.getHarvestResult();
+                    harvestSuccess = h.isSuccessful();
+                    boolean inserted = harvestdao.insertHarvest(h);
+                    logger.info((harvestSuccess ? "Successful" : "Failed")
+                            + " harvest w/ name " + h.getHarvestName()
+                            + " was "
+                            + (inserted ? "successfully" : "failed to be ")
+                            + " inserted into the database");
+                    harvests.add(h);
+                    if (!h.isSuccessful()) {
+                        failure = true;
+                        failureReason = h.getErrMsg();
+                    }
+                }
+
             } catch (Exception e) {
-            	logger.log(Level.SEVERE, e.toString(), e);
-            	failure = true;
-            	savedException = e;
+                logger.log(Level.SEVERE, e.toString(), e);
+                failure = true;
+                savedException = e;
             } finally {
-            	if (failure) {
-            		s.setStatus(Status.HARVESTING_FAILED);
-            		if (savedException != null) {
-            			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed due to exception: " + savedException);
-            		} else if (!failureReason.isEmpty()){
-            			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed. Reason: " + failureReason);
-            		} else {
-            			s.setStatusReason("Harvesting of seed (harvestname='" + eventHarvestName + "' failed -  reason is unknown");
-            		}
-            	} else {
-            		s.setStatus(Status.READY_FOR_ANALYSIS);
-            		s.setStatusReason("Harvesting finished successfully. harvestname is '" + eventHarvestName + "'. Now ready for analysis");
-            	}
-            	try {
-	                seeddao.updateSeed(s);
+                if (failure) {
+                    s.setStatus(Status.HARVESTING_FAILED);
+                    if (savedException != null) {
+                        s.setStatusReason("Harvesting of seed (harvestname='"
+                                + eventHarvestName
+                                + "' failed due to exception: "
+                                + savedException);
+                    } else if (!failureReason.isEmpty()) {
+                        s.setStatusReason("Harvesting of seed (harvestname='"
+                                + eventHarvestName + "' failed. Reason: "
+                                + failureReason);
+                    } else {
+                        s.setStatusReason("Harvesting of seed (harvestname='"
+                                + eventHarvestName
+                                + "' failed -  reason is unknown");
+                    }
+                } else {
+                    s.setStatus(Status.READY_FOR_ANALYSIS);
+                    s.setStatusReason("Harvesting finished successfully. harvestname is '"
+                            + eventHarvestName + "'. Now ready for analysis");
+                }
+                try {
+                    seeddao.updateSeed(s);
                 } catch (Exception e) {
-                	String errMsg = "Unable to save state of seed: " + e.toString();
-                	logger.log(Level.SEVERE, errMsg, e);
-                	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failed - unable to save state of seed w/url '" + s.getUrl() + "'", errMsg);
+                    String errMsg = "Unable to save state of seed: "
+                            + e.toString();
+                    logger.log(Level.SEVERE, errMsg, e);
+                    configuration
+                            .getEmailer()
+                            .sendAdminEmail(
+                                    "[Webdanica-"
+                                            + configuration.getEnv()
+                                            + "] HarvestWorkFlow failed - unable to save state of seed w/url '"
+                                            + s.getUrl() + "'", errMsg);
                 }
             }
-			
-		}
-		
-		try {
-			 writeHarvestLog(harvests, configuration);
+
+        }
+
+        try {
+            writeHarvestLog(harvests, configuration);
         } catch (Throwable e) {
-        	String errMsg = "Unable to write a harvestlog to directory '" + configuration.getHarvestLogDir() + "': " + e.toString();
-        	logger.log(Level.SEVERE, errMsg, e);
-        	configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] HarvestWorkFlow failure - unable to write harvestlog to disk", errMsg);
-        } 
-    }
-	
-	@Override
-    protected void process_cleanup() {
-	    // TODO Auto-generated method stub
-	    
+            String errMsg = "Unable to write a harvestlog to directory '"
+                    + configuration.getHarvestLogDir() + "': " + e.toString();
+            logger.log(Level.SEVERE, errMsg, e);
+            configuration
+                    .getEmailer()
+                    .sendAdminEmail(
+                            "[Webdanica-"
+                                    + configuration.getEnv()
+                                    + "] HarvestWorkFlow failure - unable to write harvestlog to disk",
+                            errMsg);
+        }
     }
 
-	@Override
+    private void waitSecs(long secs) {
+        try {
+            Thread.sleep(secs * 1000L); // Sleep the given number of secs
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void process_cleanup() {
+        // nothing to do currently
+    }
+
+    @Override
     public int getQueueSize() {
-	 	int queueSize = 0;
+        int queueSize = 0;
         synchronized (queueList) {
-        	queueSize = queueList.size();
+            queueSize = queueList.size();
         }
         return queueSize;
     }
-	
-    public static void writeHarvestLog(List<SingleSeedHarvest> harvests, Configuration conf) throws Exception {
-    	String systemTimestamp = SingleSeedHarvest.getTimestamp();
-		String logNameInitial = conf.getHarvestLogPrefix() + systemTimestamp + conf.getHarvestLogNotReadySuffix();
-		String logNameFinal = conf.getHarvestLogPrefix() + systemTimestamp + conf.getHarvestLogReadySuffix();
-		File harvestLogDir = conf.getHarvestLogDir();
-		File harvestLog = new File(harvestLogDir, logNameInitial);
-		File harvestLogFinal = new File(harvestLogDir, logNameFinal);
-		String harvestLogHeaderPrefix = "Harvestlog for ";
-    	String harvestLogHeader = harvestLogHeaderPrefix 
-    			+ " harvests initiated by the Webdanica webapp at " + new Date();
-		
-		// write harvestreport to disk where cronjob have privileges to read, and move the file to
-		// a different location
-    	
-		int written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, true, harvests, false);
+
+    public static void writeHarvestLog(List<SingleSeedHarvest> harvests,
+            Configuration conf) throws Exception {
+        String systemTimestamp = SingleSeedHarvest.getTimestamp();
+        String logNameInitial = conf.getHarvestLogPrefix() + systemTimestamp
+                + conf.getHarvestLogNotReadySuffix();
+        String logNameFinal = conf.getHarvestLogPrefix() + systemTimestamp
+                + conf.getHarvestLogReadySuffix();
+        File harvestLogDir = conf.getHarvestLogDir();
+        File harvestLog = new File(harvestLogDir, logNameInitial);
+        File harvestLogFinal = new File(harvestLogDir, logNameFinal);
+        String harvestLogHeaderPrefix = "Harvestlog for ";
+        String harvestLogHeader = harvestLogHeaderPrefix
+                + " harvests initiated by the Webdanica webapp at "
+                + new Date();
+
+        // write harvestreport to disk where cronjob have privileges to read,
+        // and move the file to
+        // a different location
+
+        int written = SingleSeedHarvest.writeHarvestLog(harvestLog,
+                harvestLogHeader, true, harvests, false);
         if (written == 0) {
-        	logger.log(Level.WARNING, "No harvests out of " + harvests.size() + " were successful, and no harvestlog is written");
-        	// remove harvestlog
-        	boolean deleted = harvestLog.delete();
-        	if (!deleted) {
-        		logger.log(Level.WARNING, "Unable to delete empty harvestlog '" + harvestLog.getAbsolutePath() + "'");
-        	}
-        	return;
+            logger.log(Level.WARNING, "No harvests out of " + harvests.size()
+                    + " were successful, and no harvestlog is written");
+            // remove harvestlog
+            boolean deleted = harvestLog.delete();
+            if (!deleted) {
+                logger.log(Level.WARNING, "Unable to delete empty harvestlog '"
+                        + harvestLog.getAbsolutePath() + "'");
+            }
+            return;
         }
         boolean success = harvestLog.setWritable(true, false);
         if (!success) {
-        	logger.log(Level.SEVERE, "Unable to give the harvestlog the correct permissions");
+            logger.log(Level.SEVERE,
+                    "Unable to give the harvestlog the correct permissions");
         }
         harvestLog.renameTo(harvestLogFinal);
-        //Do we need to set the permissions again?
-        logger.info("A harvestlog with " + written + "/" + harvests.size() + " results has now been written to file '" + harvestLogFinal.getAbsolutePath() + "'");
+        // Do we need to set the permissions again?
+        logger.info("A harvestlog with " + written + "/" + harvests.size()
+                + " results has now been written to file '"
+                + harvestLogFinal.getAbsolutePath() + "'");
     }
 
 }

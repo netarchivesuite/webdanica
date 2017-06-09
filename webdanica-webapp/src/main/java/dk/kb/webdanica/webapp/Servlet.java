@@ -34,7 +34,8 @@ import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.resources.StaticResource;
 import dk.kb.webdanica.webapp.resources.StatusResource;
 
-public class Servlet extends HttpServlet implements ResourceManagerAbstract, LoginTemplateCallback<User> {
+public class Servlet extends HttpServlet implements ResourceManagerAbstract,
+        LoginTemplateCallback<User> {
 
     /**
      * UID.
@@ -42,7 +43,8 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     private static final long serialVersionUID = -1590306102259729140L;
 
     /** Logging mechanism. */
-    private static final Logger logger = Logger.getLogger(Servlet.class.getName());
+    private static final Logger logger = Logger.getLogger(Servlet.class
+            .getName());
 
     public static Environment environment;
 
@@ -50,14 +52,15 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-    	try {
+        try {
             super.init(servletConfig);
 
             environment = new Environment(getServletContext(), servletConfig);
-            // TODO Initialization seems to fail sometimes, resulting in NPE in the Servlet.doGet method
+            // TODO Initialization seems to fail sometimes, resulting in NPE in
+            // the Servlet.doGet method
             pathMap = new PathMap<Resource>();
-            
-            // takes care that the js, img, and css are loaded by tomcat 
+
+            // takes care that the js, img, and css are loaded by tomcat
             StaticResource staticResource = new StaticResource();
             staticResource.resources_init(environment);
             staticResource.resources_add(this);
@@ -81,35 +84,36 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
             BlackListsResource blackListsResource = new BlackListsResource();
             blackListsResource.resources_init(environment);
             blackListsResource.resources_add(this);
-            
+
             CriteriaResultResource criteriaResultResource = new CriteriaResultResource();
             criteriaResultResource.resources_init(environment);
             criteriaResultResource.resources_add(this);
-            
+
             CriteriaResultsResource criteriaResultsResource = new CriteriaResultsResource();
             criteriaResultsResource.resources_init(environment);
             criteriaResultsResource.resources_add(this);
-            
+
             HarvestResource harvestResource = new HarvestResource();
             harvestResource.resources_init(environment);
             harvestResource.resources_add(this);
-            
+
             HarvestsResource harvestsResource = new HarvestsResource();
             harvestsResource.resources_init(environment);
             harvestsResource.resources_add(this);
-            
+
             DomainResource domainResource = new DomainResource();
             domainResource.resources_init(environment);
             domainResource.resources_add(this);
-            
+
             IngestLogResource ingestResource = new IngestLogResource();
             ingestResource.resources_init(environment);
             ingestResource.resources_add(this);
-            
+
             logger.log(Level.INFO, this.getClass().getName() + " initialized.");
-    	} catch (Throwable t) {
-            logger.log(Level.SEVERE, this.getClass().getName() + " failed to initialize properly.", t);
-    	}
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, this.getClass().getName()
+                    + " failed to initialize properly.", t);
+        }
     }
 
     protected AutoIncrement resourceAutoInc = new AutoIncrement();
@@ -143,17 +147,20 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     }
 
     @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         super.doHead(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         doGet(req, resp);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         HttpSession session = req.getSession();
         try {
             // debug
@@ -173,8 +180,9 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
 
             // Look for cookies in case of no current user in session.
             if (current_user == null && session != null && session.isNew()) {
-            	// Note 'this' == LoginTemplateCallback<User>
-                current_user = environment.getLoginHandler().loginFromCookie(req, resp, session, this);
+                // Note 'this' == LoginTemplateCallback<User>
+                current_user = environment.getLoginHandler().loginFromCookie(
+                        req, resp, session, this);
                 logger.info("current_user:" + current_user);
             }
 
@@ -188,90 +196,126 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
                 if (pathInfo == null || pathInfo.length() == 0) {
                     pathInfo = "/";
                 }
-                //logger.info("Looking for resource to match pathInfo:" + pathInfo);
+                // logger.info("Looking for resource to match pathInfo:" +
+                // pathInfo);
                 List<Integer> numerics = new ArrayList<Integer>();
                 Resource resource = pathMap.get(pathInfo, numerics);
                 // Hacks for handling access to /blacklist/<uid>/ pages
-                if (resource == null && pathInfo.startsWith(BlackListResource.BLACKLIST_PATH)) {
-                	resource = pathMap.get(BlackListResource.BLACKLIST_PATH, numerics);
+                if (resource == null
+                        && pathInfo
+                                .startsWith(BlackListResource.BLACKLIST_PATH)) {
+                    resource = pathMap.get(BlackListResource.BLACKLIST_PATH,
+                            numerics);
                 }
-                if (resource == null && pathInfo.startsWith(HarvestResource.HARVEST_PATH)) {
-                	resource = pathMap.get(HarvestResource.HARVEST_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(HarvestResource.HARVEST_PATH)) {
+                    resource = pathMap.get(HarvestResource.HARVEST_PATH,
+                            numerics);
                 }
-                if (resource == null && pathInfo.startsWith(HarvestsResource.HARVESTS_PATH)) {
-                	resource = pathMap.get(HarvestsResource.HARVESTS_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(HarvestsResource.HARVESTS_PATH)) {
+                    resource = pathMap.get(HarvestsResource.HARVESTS_PATH,
+                            numerics);
                 }
-                
-                if (resource == null && pathInfo.startsWith(CriteriaResultResource.CRITERIA_RESULT_PATH)) {
-                	resource = pathMap.get(CriteriaResultResource.CRITERIA_RESULT_PATH, numerics);
+
+                if (resource == null
+                        && pathInfo
+                                .startsWith(CriteriaResultResource.CRITERIA_RESULT_PATH)) {
+                    resource = pathMap.get(
+                            CriteriaResultResource.CRITERIA_RESULT_PATH,
+                            numerics);
                 }
-                
-                if (resource == null && pathInfo.startsWith(CriteriaResultsResource.CRITERIA_RESULTS_PATH)) {
-                	resource = pathMap.get(CriteriaResultsResource.CRITERIA_RESULTS_PATH, numerics);
+
+                if (resource == null
+                        && pathInfo
+                                .startsWith(CriteriaResultsResource.CRITERIA_RESULTS_PATH)) {
+                    resource = pathMap.get(
+                            CriteriaResultsResource.CRITERIA_RESULTS_PATH,
+                            numerics);
                 }
-                if (resource == null && pathInfo.startsWith(SeedsResource.SEED_PATH)) {
-                	resource = pathMap.get(SeedsResource.SEED_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(SeedsResource.SEED_PATH)) {
+                    resource = pathMap.get(SeedsResource.SEED_PATH, numerics);
                 }
-                if (resource == null && pathInfo.startsWith(SeedsResource.SEEDS_PATH)) {
-                	resource = pathMap.get(SeedsResource.SEEDS_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(SeedsResource.SEEDS_PATH)) {
+                    resource = pathMap.get(SeedsResource.SEEDS_PATH, numerics);
                 }
-                if (resource == null && pathInfo.startsWith(DomainResource.DOMAIN_PATH)) {
-                	resource = pathMap.get(DomainResource.DOMAIN_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(DomainResource.DOMAIN_PATH)) {
+                    resource = pathMap
+                            .get(DomainResource.DOMAIN_PATH, numerics);
                 }
-                if (resource == null && pathInfo.startsWith(DomainResource.DOMAIN_LIST_PATH)) {
-                	resource = pathMap.get(DomainResource.DOMAIN_LIST_PATH, numerics);
+                if (resource == null
+                        && pathInfo.startsWith(DomainResource.DOMAIN_LIST_PATH)) {
+                    resource = pathMap.get(DomainResource.DOMAIN_LIST_PATH,
+                            numerics);
                 }
-                if (resource == null && pathInfo.startsWith(IngestLogResource.INGESTLOG_PATH)) {
-                	resource = pathMap.get(IngestLogResource.INGESTLOG_PATH, numerics);
+                if (resource == null
+                        && pathInfo
+                                .startsWith(IngestLogResource.INGESTLOG_PATH)) {
+                    resource = pathMap.get(IngestLogResource.INGESTLOG_PATH,
+                            numerics);
                 }
-                if (resource == null && pathInfo.startsWith(IngestLogResource.INGESTLOGS_PATH)) {
-                	resource = pathMap.get(IngestLogResource.INGESTLOGS_PATH, numerics);
+                if (resource == null
+                        && pathInfo
+                                .startsWith(IngestLogResource.INGESTLOGS_PATH)) {
+                    resource = pathMap.get(IngestLogResource.INGESTLOGS_PATH,
+                            numerics);
                 }
-                
-                
+
                 if (resource != null) {
-                	logger.info("Found resource for pathinfo '" + pathInfo + "' in pathMap: " + resource);
+                    logger.info("Found resource for pathinfo '" + pathInfo
+                            + "' in pathMap: " + resource);
                     if (resource.isSecured() && current_user == null) {
-                    	// Note 'this' == LoginTemplateCallback<User>
-                        environment.getLoginHandler().loginFromForm(req, resp, session, this);
+                        // Note 'this' == LoginTemplateCallback<User>
+                        environment.getLoginHandler().loginFromForm(req, resp,
+                                session, this);
                     } else if (!resource.isSecured()) {
-                        resource.getResources().resource_service(this.getServletContext(), current_user, req, resp, resource.getId(), numerics, pathInfo);
+                        resource.getResources().resource_service(
+                                this.getServletContext(), current_user, req,
+                                resp, resource.getId(), numerics, pathInfo);
                     } else {
                         // authorized( req, resp, current_user );
-                        resource.getResources().resource_service(this.getServletContext(), current_user, req, resp, resource.getId(), numerics, pathInfo);
+                        resource.getResources().resource_service(
+                                this.getServletContext(), current_user, req,
+                                resp, resource.getId(), numerics, pathInfo);
                     }
                 } else {
-                	logger.warning("No resource found for path: " + pathInfo);
+                    logger.warning("No resource found for path: " + pathInfo);
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, pathInfo);
                 }
             }
         } catch (Throwable t) {
-        	logger.log(Level.SEVERE, t.toString(), t);
-			StringBuilder sb = new StringBuilder();
-			sb.append( "<!DOCTYPE html><html lang=\"en\"><head>" );
-			sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
-			sb.append( "<title>" );
-			sb.append( Integer.toString( HttpServletResponse.SC_INTERNAL_SERVER_ERROR ) );
-			sb.append( " Internal server error...</title>" );
-			sb.append( "</head><body><h1>" );
-			sb.append( Integer.toString( HttpServletResponse.SC_INTERNAL_SERVER_ERROR ) );
-			sb.append( " Internal server error..." );
-			sb.append( "</h1><pre>" );
-			StatusResource.throwable_stacktrace_dump( t, sb );
-			sb.append( "</pre></body></html>" );
-	        resp.setContentType("text/html; charset=utf-8");
-			resp.setStatus( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-			OutputStream out = resp.getOutputStream();
-			out.write( sb.toString().getBytes( "UTF-8" ) );
-			out.flush();
-			out.close();
-            //resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, sb.toString());
+            logger.log(Level.SEVERE, t.toString(), t);
+            StringBuilder sb = new StringBuilder();
+            sb.append("<!DOCTYPE html><html lang=\"en\"><head>");
+            sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+            sb.append("<title>");
+            sb.append(Integer
+                    .toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            sb.append(" Internal server error...</title>");
+            sb.append("</head><body><h1>");
+            sb.append(Integer
+                    .toString(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            sb.append(" Internal server error...");
+            sb.append("</h1><pre>");
+            StatusResource.throwable_stacktrace_dump(t, sb);
+            sb.append("</pre></body></html>");
+            resp.setContentType("text/html; charset=utf-8");
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            OutputStream out = resp.getOutputStream();
+            out.write(sb.toString().getBytes("UTF-8"));
+            out.flush();
+            out.close();
+            // resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            // sb.toString());
         }
     }
-    
-    /////////////////////////////////////////////////////////////////////////
+
+    // ///////////////////////////////////////////////////////////////////////
     // The methods that implement the LoginTemplateCallback<User> interface
-    /////////////////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////////////////
 
     @Override
     public User validateUserCookie(String token) {
@@ -281,36 +325,22 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract, Log
     @Override
     public User validateUserCredentials(String id, String password) {
         User current_user = null;
-        // FIXME: Temporary hack: replace with LDAP id/password validation 
+        // FIXME: Temporary hack: replace with LDAP id/password validation
         current_user = User.getAdminByCredentials(id, password);
         logger.info("returned a User for id=" + id);
-/*        
-        Connection conn = null;
-        try {
-            conn = environment.dataSource.getConnection();
-            current_user = User.getAdminByCredentials(conn, id, password);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, e.toString(), e);
-            }
-        }
-        if (current_user != null) {
-            if (!current_user.active) {
-            	current_user = null;
-                logger.info("User account with id '" + id + "' is not active");
-            }
-        } else {
-            logger.info("No known user '" + id + "' with the given credentials");
-        }
-        
- */       
-        
+        /*
+         * Connection conn = null; try { conn =
+         * environment.dataSource.getConnection(); current_user =
+         * User.getAdminByCredentials(conn, id, password); } catch (SQLException
+         * e) { logger.log(Level.SEVERE, e.toString(), e); } finally { try { if
+         * (conn != null && !conn.isClosed()) { conn.close(); } } catch
+         * (SQLException e) { logger.log(Level.SEVERE, e.toString(), e); } } if
+         * (current_user != null) { if (!current_user.active) { current_user =
+         * null; logger.info("User account with id '" + id + "' is not active");
+         * } } else { logger.info("No known user '" + id +
+         * "' with the given credentials"); }
+         */
+
         return current_user;
     }
 
