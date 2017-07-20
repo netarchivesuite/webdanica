@@ -6,6 +6,7 @@ import java.util.Map;
 import dk.kb.webdanica.core.datamodel.dao.CacheDAO;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 
@@ -22,10 +23,51 @@ import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
  */
 public class Cache {
 	
-	public Cache(long long1, Map<Integer, Long> seedStatusCountsMap,
-            Map<Integer, Long> seedDanicaStatusCountsMap, long long2, long long3,
-            long l) {
+	private long totalSeedsCount; 
+	private Map<Integer, Long> seedStatusCountsMap;
+	private Map<Integer, Long> seedDanicaStatusCountsMap;
+	private long harvestcount;
+	private long criteriaResults;
+    private long updatedTime;
+	private Long uuid;
+
+    public static void main (String[] args) throws Exception {
+    	DAOFactory dao = new HBasePhoenixDAOFactory();
+    	Cache.updateCache(dao);
     }
+    
+    /**
+     * 
+     * @param totalSeedsCount
+     * @param seedStatusCountsMap
+     * @param seedDanicaStatusCountsMap
+     * @param harvestcount
+     * @param criteriaResults
+     * @param updatedTime
+     */
+	public Cache(long totalSeedsCount, Map<Integer, Long> seedStatusCountsMap,
+            Map<Integer, Long> seedDanicaStatusCountsMap, long harvestcount, long criteriaResults,
+            long updatedTime, Long uuid) {
+		
+		this.totalSeedsCount = totalSeedsCount;
+		this.seedStatusCountsMap = seedStatusCountsMap;
+		this.seedDanicaStatusCountsMap = seedDanicaStatusCountsMap;
+		this.harvestcount = harvestcount;
+		this.criteriaResults = criteriaResults;
+		this.updatedTime = updatedTime;
+		this.uuid = uuid;
+    }
+
+	public Cache(long totalSeedsCount, Map<Integer, Long> seedStatusCountMap,
+			Map<Integer, Long> seedDanicaStatusCountMap, long harvestCount,
+			long totalCritResults, long updatedTime) {
+		this.totalSeedsCount = totalSeedsCount;
+		this.seedStatusCountsMap = seedStatusCountMap;
+		this.seedDanicaStatusCountsMap = seedDanicaStatusCountMap;
+		this.harvestcount = harvestCount;
+		this.criteriaResults = totalCritResults;
+		this.updatedTime = updatedTime;
+	}
 
 	public static void updateCache(DAOFactory daoFactory) throws Exception {
 		SeedsDAO dao = daoFactory.getSeedsDAO();
@@ -42,14 +84,71 @@ public class Cache {
 	    long harvestCount = hdao.getCount();
 	    CriteriaResultsDAO cdao = daoFactory.getCriteriaResultsDAO(); 
 	    long totalCritResults = cdao.getCountByHarvest(null); // null meaning = get total count
+	    
 	    Cache cache = new Cache(totalSeedsCount, seedStatusCountMap, seedDanicaStatusCountMap, harvestCount, totalCritResults, System.currentTimeMillis());
+	    daoFactory.getCacheDAO().updateCache(cache);
 	}
 	
 	public static Cache getCache(DAOFactory daofactory) throws Exception {
 		CacheDAO dao = daofactory.getCacheDAO();
 		return dao.getCache();
 	}
-	
-	
+
+	public long getTotalSeedsCount() {
+		return totalSeedsCount;
+	}
+
+	public void setTotalSeedsCount(long totalSeedsCount) {
+		this.totalSeedsCount = totalSeedsCount;
+	}
+
+	public Map<Integer, Long> getSeedStatusCountsMap() {
+		return seedStatusCountsMap;
+	}
+
+	public void setSeedStatusCountsMap(Map<Integer, Long> seedStatusCountsMap) {
+		this.seedStatusCountsMap = seedStatusCountsMap;
+	}
+
+	public Map<Integer, Long> getSeedDanicaStatusCountsMap() {
+		return seedDanicaStatusCountsMap;
+	}
+
+	public void setSeedDanicaStatusCountsMap(
+			Map<Integer, Long> seedDanicaStatusCountsMap) {
+		this.seedDanicaStatusCountsMap = seedDanicaStatusCountsMap;
+	}
+
+	public long getHarvestcount() {
+		return harvestcount;
+	}
+
+	public void setHarvestcount(long harvestcount) {
+		this.harvestcount = harvestcount;
+	}
+
+	public long getCriteriaResults() {
+		return criteriaResults;
+	}
+
+	public void setCriteriaResults(long criteriaResults) {
+		this.criteriaResults = criteriaResults;
+	}
+
+	public long getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(long updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public Long getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(Long uuid) {
+		this.uuid = uuid;
+	}
 	
 }

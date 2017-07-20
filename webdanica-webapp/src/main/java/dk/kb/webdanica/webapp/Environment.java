@@ -37,6 +37,7 @@ import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
 import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
+import dk.kb.webdanica.webapp.workflow.StateCacheUpdateWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
@@ -87,13 +88,6 @@ public class Environment {
 
     private LoginTemplateHandler<User> loginHandler = null;
 
-    /*
-     * Misc.
-     */
-
-    /** Database <code>DataSource</code> object. */
-    //public DataSource dataSource = null;
-
     
     /*
      * WorkThreads.
@@ -105,21 +99,7 @@ public class Environment {
     
     private HarvestWorkThread harvesterThread;
     
-    /*
-    public MonitoringWorkThread monitoring;
-
-    public LookupWorkThread lookup;
-    
-    public PIDWorkThread pid;
-
-    public AliveWorkThread alive;
-
-    public FetchWorkThread fetch;
-
-    public WaybackWorkThread wayback;
-
-    public ArchiveWorkThread archive;
-*/
+    private StateCacheUpdateWorkThread statecacheThread;
    
 
     /*
@@ -129,18 +109,12 @@ public class Environment {
     public ScheduleAbstract filterSchedule;
 
     public ScheduleAbstract harvestSchedule;
+    
+    public ScheduleAbstract cacheUpdatingSchedule;
 
- /*
-    public ScheduleAbstract aliveCheckSchedule;
-
-    public ScheduleAbstract fetchSchedule;
-
-    public ScheduleAbstract waybackCheckSchedule;
-
-    public ScheduleAbstract archiveCheckSchedule;
-
-    public ScheduleAbstract emailSchedule;
-    */
+    public boolean bScheduleHarvesting = false;
+	public boolean bScheduleFiltering = false;
+	public boolean bScheduleCacheUpdating = false;
 
     /*
      * Log.
@@ -294,9 +268,12 @@ public class Environment {
 		 */
 		String filteringCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_FILTERING, dk.kb.webdanica.webapp.Constants.DEFAULT_FILTERING_CRONTAB); 
 		String harvestingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
+		String statecachingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_STATECACHING, dk.kb.webdanica.webapp.Constants.DEFAULT_STATECACHING_CRONTAB);
 		
 		filterSchedule = CrontabSchedule.crontabFactory(filteringCrontab);
 		harvestSchedule = CrontabSchedule.crontabFactory(harvestingCrontab);
+	    cacheUpdatingSchedule = CrontabSchedule.crontabFactory(statecachingCrontab);
+		
 		
 		// Read resources and their secured status from settings.
 		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
@@ -341,8 +318,10 @@ public class Environment {
 		filterThread.start();
 		harvesterThread = new HarvestWorkThread(this, "Harvest worker");
 		harvesterThread.start();
-		
-		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread};
+		statecacheThread = new StateCacheUpdateWorkThread(this, "StateCache Update worker"); 
+		statecacheThread.start();
+		    
+		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread, statecacheThread};
 		
 		/** Send a mail to the mailAdmin that the system has started */
 		String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
@@ -382,6 +361,11 @@ public class Environment {
 		if (harvesterThread != null) {
 			harvesterThread.stop();
 		}
+		if (statecacheThread != null) {
+			statecacheThread.stop();
+		}
+		
+		
 		if (workflow != null) {
             workflow.stop();
         }
@@ -394,7 +378,7 @@ public class Environment {
 					(workflow.bRunning? " Workflow": "")
 					+ (filterThread.bRunning? " FilterThread": "")
 					+ (harvesterThread.bRunning? " HarvesterThread": "")
-					)
+					+ (statecacheThread.bRunning? " StateCacheThread": ""))
 					;
 			logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
 			try {
@@ -403,7 +387,7 @@ public class Environment {
 				//
 			}
 		}
-
+		statecacheThread = null;
 		harvesterThread = null;
 		filterThread = null;
 		workflow = null;

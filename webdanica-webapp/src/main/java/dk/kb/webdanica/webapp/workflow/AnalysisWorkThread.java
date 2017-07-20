@@ -17,6 +17,11 @@ import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Environment;
 
+/**
+ * This class (AnalysisWorkThread) is currently under development.
+ * Note: The analysis is currently done outside the webapp by cronjobs working on the harvestlogs produced by the harvestingworkflow.
+ *
+ */
 public class AnalysisWorkThread extends WorkThreadAbstract {
 
 	static {
@@ -39,7 +44,7 @@ public class AnalysisWorkThread extends WorkThreadAbstract {
 	
 	
     /**
-     * Constructor for the Harvester thread worker object.
+     * Constructor for the AnalysisWorkThread worker object.
      * @param environment The Webdanica webapp environment object
      */
     public AnalysisWorkThread(Environment environment, String threadName) {
@@ -82,7 +87,7 @@ public class AnalysisWorkThread extends WorkThreadAbstract {
 		try {
 		    seedsReadyForAnalysis = seeddao.getSeeds(Status.ANALYSIS_COMPLETED, Integer.MAX_VALUE); 
 		} catch (Throwable e) {
-			String errMsg = "Exception thrown during method HarvestWorkThread.process_run:" + e;
+			String errMsg = "Exception thrown during method AnalysisWorkThread.process_run:" + e;
 		    logger.log(Level.WARNING, errMsg);
 		    analysisInProgress.set(Boolean.FALSE);
 		    configuration.getEmailer().sendAdminEmail("[Webdanica-" + configuration.getEnv() + "] AnalysisWorkFlow failed - unable to receive seeds with status '" 
@@ -103,7 +108,7 @@ public class AnalysisWorkThread extends WorkThreadAbstract {
                 queueList.clear();
                }
            	if (workList.size() > 0) {
-                   logger.log(Level.INFO, "Starting harvest of " + workList.size() + " seeds");
+                   logger.log(Level.INFO, "Starting analysis of " + workList.size() + " seeds");
                    lastWorkRun = System.currentTimeMillis();
                    startProgress(workList.size());
                    analysis(workList);  

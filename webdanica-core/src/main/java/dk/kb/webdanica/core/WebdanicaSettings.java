@@ -35,8 +35,12 @@ public class WebdanicaSettings {
 	public static String WEBAPP_RESOURCE_SECURED = "settings.webapp.resources.resource.secured";
 	public static String WEBAPP_DEFAULT_SECURED_SETTING = "settings.webapp.resources.defaultsecuredsetting";
 
+	/** schedule for how often to start the filtering thread. */ 
 	public static final String WEBAPP_CRONTAB_FILTERING = "settings.webapp.crontab.filtering";
+	/** schedule for how often to start the harvesting thread. */
 	public static final String WEBAPP_CRONTAB_HARVESTING = "settings.webapp.crontab.harvesting";
+	/** schedule for how often to start the statecaching thread. */
+	public static final String WEBAPP_CRONTAB_STATECACHING = "settings.webapp.crontab.statecaching";
 	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";

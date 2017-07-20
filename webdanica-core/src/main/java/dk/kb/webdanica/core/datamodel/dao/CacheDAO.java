@@ -6,4 +6,5 @@ public interface CacheDAO {
 
 	Cache getCache() throws Exception;
 
+	boolean updateCache(Cache cache) throws Exception;
 }
