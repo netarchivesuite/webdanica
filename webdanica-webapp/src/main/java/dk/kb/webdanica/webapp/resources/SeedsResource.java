@@ -25,11 +25,13 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 import com.antiaction.common.templateengine.TemplatePlaceTag;
 
+import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
+import dk.kb.webdanica.core.datamodel.dao.CacheDAO;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
@@ -613,6 +615,7 @@ public class SeedsResource implements ResourceAbstract {
         String errorStr = null;
         String successStr = null;
         SeedsDAO sdao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
+        CacheDAO cdao = Servlet.environment.getConfig().getDAOFactory().getCacheDAO();
         
         int status = 0; //Default state shown: Status.NEW
         if (numerics.size() == 1) {
@@ -698,9 +701,20 @@ public class SeedsResource implements ResourceAbstract {
         boolean bShowPid = true;
         boolean bShowAcceptReject = false;
         boolean bShowArchiveUrl = false;
-
+        
+        
         StringBuilder statemenuSb = new StringBuilder();
-        String heading = buildStatemenu(statemenuSb, status, sdao);
+        Cache cache = null;
+        try {
+        	cache = cdao.getCache();
+        } catch (Throwable e) {
+        	logger.warning("IOException thrown during call to cdao.getCache(): " + e);
+        }
+        if (cache == null) {
+        	logger.warning("No cache available from cdao.getCache(). Using dummy values instead");
+        	cache = Cache.getDummyCache();
+        }
+        String heading = buildStatemenu(statemenuSb, status, sdao, cache);
 
         /*
          * Menu.
@@ -958,14 +972,15 @@ public class SeedsResource implements ResourceAbstract {
         return resultString;
     }
 
-    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedsDAO dao) {
+    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedsDAO dao, Cache cache) {
         /*
          * State menu.
          */
 
         List<MenuItem> menuStatesArr =null;
         try {
-            menuStatesArr = makemenuArray(dao);
+            //menuStatesArr = makemenuArray(dao);
+        	menuStatesArr = makemenuArrayCache(cache);
         } catch (Exception e) {
         	logger.log(Level.WARNING, "Unexpected exception thrown", e);
         }
@@ -993,7 +1008,8 @@ public class SeedsResource implements ResourceAbstract {
 
         return heading;
     }
-
+    
+    // make the statemenu using counts read directly from hbase
 	private static List<MenuItem> makemenuArray(SeedsDAO dao) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();
 		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
@@ -1004,6 +1020,19 @@ public class SeedsResource implements ResourceAbstract {
 				result.add(new MenuItem(i, count, locDa, i18n));
 			}
 			
+		}
+	    return result;
+    }
+	// make the statemenu using cached values
+	private static List<MenuItem> makemenuArrayCache(Cache cache) throws Exception {
+		List<MenuItem> result = new ArrayList<MenuItem>();
+		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
+		Locale locDa = new Locale("da");
+		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
+			if (!Status.ignoredState(i)) {
+				Long count = cache.getSeedStatusCountsMap().get(i);
+				result.add(new MenuItem(i, count, locDa, i18n));
+			}
 		}
 	    return result;
     }

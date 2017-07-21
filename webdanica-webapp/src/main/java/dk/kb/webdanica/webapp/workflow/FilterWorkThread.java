@@ -3,6 +3,7 @@ package dk.kb.webdanica.webapp.workflow;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +46,10 @@ public class FilterWorkThread extends WorkThreadAbstract {
     private boolean rejectDKUrls;
 
     private DomainsDAO domainDAO;
+    
+    private int maxRecordsProcessedInEachRun;
+    
+    private AtomicBoolean filteringInProgress = new AtomicBoolean(false);
 
     /**
      * Constructor for the Filter thread worker object.
@@ -88,20 +93,27 @@ public class FilterWorkThread extends WorkThreadAbstract {
         rejectDKUrls = SettingsUtilities.getBooleanSetting(
                 WebdanicaSettings.REJECT_DK_URLS,
                 Constants.DEFAULT_REJECT_DK_URLS_VALUE);
+        maxRecordsProcessedInEachRun = SettingsUtilities.getIntegerSetting(
+                WebdanicaSettings.WEBAPP_MAX_FILTERING_RECORDS_PER_RUN,
+                Constants.DEFAULT_MAX_FILTERING_RECORDS_PER_RUN);
+        
     }
 
     @Override
     protected void process_run() {
+    	// ensure that only filtering process is run at a time
+    	if (filteringInProgress.get()) {
+            logger.log(Level.INFO,
+                    "Filtering process already in progress at '" + new Date()
+                            + "'. Skipping");
+            return;
+        } else {
+            filteringInProgress.set(Boolean.TRUE);
+        }
         try {
             logger.log(Level.FINE, "Running process of thread '" + threadName
                     + "' at '" + new Date() + "'");
-            List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW, 1000); // TODO
-                                                                                // read
-                                                                                // this
-                                                                                // limit
-                                                                                // from
-                                                                                // a
-                                                                                // setting
+            List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW, maxRecordsProcessedInEachRun); 
             enqueue(seedsNeedFiltering);
             if (seedsNeedFiltering.size() > 0) {
                 logger.log(Level.INFO, "Found '" + seedsNeedFiltering.size()
@@ -126,7 +138,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
         } catch (Throwable e) {
             logger.log(Level.SEVERE, e.toString(), e);
         } finally {
-            // TODO is there something we should do here
+        	filteringInProgress.set(false);
         }
     }
 
@@ -136,11 +148,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
      * @throws Exception
      */
     private void filter(List<Seed> workList) throws Exception {
-        List<BlackList> activeBlackLists = blacklistDao.getLists(true); // only
-                                                                        // retrieve
-                                                                        // the
-                                                                        // active
-                                                                        // lists
+    	// only use the active blacklists for filtering
+        List<BlackList> activeBlackLists = blacklistDao.getLists(true);
         for (Seed s : workList) {
             String url = s.getUrl();
             if (ResolveRedirects.isPossibleUrlredirect(url)) {

@@ -1,5 +1,6 @@
 package dk.kb.webdanica.core.datamodel;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class Cache {
 
     public static void main (String[] args) throws Exception {
     	DAOFactory dao = new HBasePhoenixDAOFactory();
+    	System.out.println("Starting to update statecache at " +  new Date());
     	Cache.updateCache(dao);
     }
     
@@ -149,6 +151,23 @@ public class Cache {
 
 	public void setUuid(Long uuid) {
 		this.uuid = uuid;
+	}
+
+	/** 
+	 * 
+	 * @return dummy cache values (-1L for all values)
+	 */
+	public static Cache getDummyCache() {
+		Long dummyValue = -1L;
+	    Map<Integer, Long> seedStatusCountMap = new HashMap<Integer,Long>();
+	    for (Status s: Status.values()) { 
+	    	seedStatusCountMap.put(s.ordinal(), dummyValue);
+	    }
+	    Map<Integer, Long> seedDanicaStatusCountMap = new HashMap<Integer,Long>();
+	    for (DanicaStatus s: DanicaStatus.values()) { 
+	    	seedDanicaStatusCountMap.put(s.ordinal(), dummyValue);
+	    }
+		return new Cache(dummyValue, seedStatusCountMap, seedDanicaStatusCountMap, dummyValue, dummyValue, System.currentTimeMillis());
 	}
 	
 }

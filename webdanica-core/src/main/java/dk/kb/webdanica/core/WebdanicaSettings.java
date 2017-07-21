@@ -42,6 +42,8 @@ public class WebdanicaSettings {
 	/** schedule for how often to start the statecaching thread. */
 	public static final String WEBAPP_CRONTAB_STATECACHING = "settings.webapp.crontab.statecaching";
 	
+	public static final String WEBAPP_MAX_FILTERING_RECORDS_PER_RUN = "settings.webapp.filtering.maxRecordsProcessedPerRun";
+	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";
 }

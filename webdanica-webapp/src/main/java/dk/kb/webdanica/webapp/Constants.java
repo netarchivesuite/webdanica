@@ -16,5 +16,6 @@ public class Constants {
 	public static final String DEFAULT_STATECACHING_CRONTAB = "0 * * * *";
 	public static final long MAX_SEEDS_TO_FETCH = 10000;
 	public static final boolean DEFAULT_WEBAPP_DEFAULT_SECURED_SETTING = false;
+	public static final int DEFAULT_MAX_FILTERING_RECORDS_PER_RUN = 1000;
 	
 }
