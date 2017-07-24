@@ -11,9 +11,13 @@ public class Constants {
 	public static final int DEFAULT_MAX_HARVESTS = 10;
 	
 	public static final boolean DEFAULT_REJECT_DK_URLS_VALUE = false;
+	/**  Default filtering schedule: every 10 minutes. */
 	public static final String DEFAULT_FILTERING_CRONTAB = 	"*/10 * * * *";
+	/**  Default harvesting schedule: every 60 minutes. */
 	public static final String DEFAULT_HARVESTING_CRONTAB = "0 * * * *";
+	/**  Default statecaching schedule: every 15 minutes. */
 	public static final String DEFAULT_STATECACHING_CRONTAB = "0,15,30,45 * * * *";
+	
 	public static final long MAX_SEEDS_TO_FETCH = 10000;
 	public static final boolean DEFAULT_WEBAPP_DEFAULT_SECURED_SETTING = false;
 	public static final int DEFAULT_MAX_FILTERING_RECORDS_PER_RUN = 1000;
