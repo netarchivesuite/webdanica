@@ -101,6 +101,9 @@ public class FilterWorkThread extends WorkThreadAbstract {
 
     @Override
     protected void process_run() {
+    	if (!environment.bScheduleFiltering) {
+			return;
+		}
     	// ensure that only filtering process is run at a time
     	if (filteringInProgress.get()) {
             logger.log(Level.INFO,
@@ -111,7 +114,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
             filteringInProgress.set(Boolean.TRUE);
         }
         try {
-            logger.log(Level.FINE, "Running process of thread '" + threadName
+            logger.log(Level.INFO, "Starting process_run of thread '" + threadName
                     + "' at '" + new Date() + "'");
             List<Seed> seedsNeedFiltering = seeddao.getSeeds(Status.NEW, maxRecordsProcessedInEachRun); 
             enqueue(seedsNeedFiltering);
@@ -138,7 +141,9 @@ public class FilterWorkThread extends WorkThreadAbstract {
         } catch (Throwable e) {
             logger.log(Level.SEVERE, e.toString(), e);
         } finally {
-        	filteringInProgress.set(false);
+        	logger.info("Finished process_run of thread '" + threadName
+                    + "' at '" + new Date() + "'");
+        	filteringInProgress.set(false);	
         }
     }
 
