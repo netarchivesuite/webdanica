@@ -33,7 +33,7 @@ public class StateCacheUpdateWorkThread extends WorkThreadAbstract {
 	protected void process_run() {
 		// check if not needs to run now
 		if (!environment.bScheduleCacheUpdating) {
-			logger.log(Level.INFO, "Skipping cache update process - environment.bScheduleCacheUpdating is false");
+			//logger.log(Level.INFO, "Skipping cache update process - environment.bScheduleCacheUpdating is false");
 			return;
 		}
 		if (updateInProgress.get()) {

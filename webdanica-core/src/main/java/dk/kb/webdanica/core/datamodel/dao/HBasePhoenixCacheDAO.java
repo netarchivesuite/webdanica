@@ -3,12 +3,12 @@ package dk.kb.webdanica.core.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +34,7 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 	private static final String INSERT_SQL; 
 	static {
 		INSERT_SQL = ""
-				+ "UPSERT INTO statecache (uuid, totalSeedsCount, harvestCount, totalCritResults, seedStatusCounts, seedDanicaStatusCounts, last_update)"
+				+ "UPSERT INTO statecache (uuid, totalSeedsCount, harvestCount, totalCritResults, seedStatusCounts, seedDanicaStatusCounts, last_updated)"
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?) ";
 	}
 	
@@ -132,7 +132,7 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 			stm.setArray(5, sqlArrA);
 			stm.setArray(6, sqlArrB);
 			
-			stm.setLong(7, updated_time);
+			stm.setTimestamp(7, new Timestamp(updated_time));
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
