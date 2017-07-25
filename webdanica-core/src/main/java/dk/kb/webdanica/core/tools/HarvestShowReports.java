@@ -4,11 +4,13 @@ import dk.kb.webdanica.core.interfaces.harvesting.NasReports;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.netarkivet.harvester.datamodel.DBSpecifics;
+import dk.netarkivet.common.utils.FileUtils;
+
 
 public class HarvestShowReports {
 
 	/**
-	 * Harvest a single seed or a file with a list of seeds 
+	 * Fetch the reports of a single NAS job 
 	 * using the NAS settings xml defined by 
 	 * -Ddk.netarkivet.settings.file=/full/path/to/nas/settingsfile
 	 * and the in the webdanica-settings-file defined by the 
@@ -17,9 +19,23 @@ public class HarvestShowReports {
 	 * 
 	 */
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("JobID");
+		if (args.length < 1 || args.length > 2) {
+			System.err.println("JobID [--dont-print] ");
 			System.exit(1);
+		}
+		String argument = args[0];
+		Long jobID = Long.parseLong(argument);
+		
+		boolean printReports = true;
+		if (args.length > 1) {
+			if (args[1].equalsIgnoreCase("--dont-print")) {
+				printReports = false;
+				System.out.println("Running script for job '" + jobID + "' in don't print reports mode");	
+			} else {
+				System.err.println("Ignoring invalid second argument: " + args[1]);
+			}
+		} else {
+			System.out.println("Running script for job '" + jobID + "' in print reports mode");
 		}
 		
 		// Verify that -Dwebdanica.settings.file is set and points to a valid file.
@@ -35,14 +51,16 @@ public class HarvestShowReports {
 		// Verify that arcrepositoryclient exists in classpath. If not exit program
 		String arcrepositoryClient = dk.netarkivet.common.utils.Settings.get("settings.common.arcrepositoryClient.class");
 		SettingsUtilities.verifyClass(arcrepositoryClient, true);
+		
+		FileUtils.getTempDir().mkdirs();
 	
-		// Check if argument is a file or just considered a single seed
-		String argument = args[0];
-		Long jobID = Long.parseLong(argument);
 		NasReports reports = SingleSeedHarvest.getReports(jobID, true);
-		for (String report: reports.getReports().keySet()) {
-			System.out.println("report '" + report + "': " + reports.getReport(report));
-			System.out.println();
+		System.out.println("Retrieved " + reports.getReports().keySet() + " reports for job '" + jobID + "'"); 
+		if (printReports) {
+			for (String report: reports.getReports().keySet()) {
+				System.out.println("report '" + report + "': " + reports.getReport(report));
+				System.out.println();
+			} 
 		}
 		System.exit(0);
 	}

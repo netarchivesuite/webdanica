@@ -300,6 +300,15 @@ public class SingleSeedHarvest {
 				this.errMsg.append(error);
 			}
 		}
+		if (this.reports != null) {
+			String logMsg = "Retrieved '" + this.reports.getReports().keySet().size() + "' reports for job '" + jobId + "'";
+			if (writeToSystemOut) {
+				System.out.println(logMsg);
+			} else {
+				logger.info(logMsg);
+			}
+		} 
+		
 		// get the urls harvested by the job
 		this.fetchedUrls = null;
 		try {
@@ -371,7 +380,7 @@ public class SingleSeedHarvest {
 	    		String data = StreamUtils.getInputStreamAsString(baRecord.getData());
 	    		reportMap.put(key, data);
 	    	} catch (Throwable e) {
-	    		String logMsg = "Failed to extract the report '" + key + "': " + e;
+	    		String logMsg = "When trying to get all reports for job '" +  jobID + "' we failed to extract the report '" + key + "': " + e;
 	    		if (writeToSystemOut) {
 	    			System.err.println(logMsg);
 	    		} else {
