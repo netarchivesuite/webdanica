@@ -1,10 +1,11 @@
-
 CREATE TABLE statecache (
- last_updated TIMESTAMP PRIMARY KEY,
+ uuid BIGINT PRIMARY KEY,
  totalSeedsCount BIGINT,
  harvestCount BIGINT,
  totalCritResults BIGINT,
- seedStatusCount VARCHAR[],
- seedDanicaStatusCounts VARCHAR[]
-);
+ seedStatusCounts VARCHAR[],
+ seedDanicaStatusCounts VARCHAR[],
+ last_updated TIMESTAMP
+ );
+
 
