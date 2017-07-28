@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
@@ -46,75 +47,78 @@ public static final String ACCEPT_ARGUMENT	= "--accepted";
 public static final String ONLYSAVESTATS_ARGUMENT = "--onlysavestats";
 	
 public static void main(String[] args) throws Exception {
-		boolean acceptSeedsAsDanica = false;
-        if (args.length < 1 || args.length > 3) {
-        	System.err.println("Wrong number of arguments. One or two is needed. Given was " + args.length + " arguments");
-            System.err.println("Correct usage: java LoadSeeds seedsfile [--accepted][--onlysavestats]");
-            System.err.println("Exiting program");
-            System.exit(1);
-        }
-        File seedsfile = new File(args[0]);
-        if (!seedsfile.isFile()){
-            System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
-            System.err.println("Exiting program");
-            System.exit(1);
-        }
-        boolean onlysavestats = false;
-        if (args.length > 1) { // parse optional arguments
-        	String arg2 = null;
-        	String arg3 = null;
-        	if (args.length == 2) {
-        		 arg2 = args[1];
-        	} else if (args.length == 3) {
-        		arg2 = args[1];
-        		arg3 = args[2];
-        	}
-        	if (arg2.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
-        		acceptSeedsAsDanica = true;
-        	} else if (arg2.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
-        		onlysavestats = true;
-        	} else {
-        		System.err.println("The second argument '" + arg2 + "' is unknown. Don't know what to do. Exiting program");
-        		System.exit(1);
-        	}
-        	if (arg3 != null) {
-        		if (arg3.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
-            		acceptSeedsAsDanica = true;
-            	} else if (arg3.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
-            		onlysavestats = true;
-            	} else {
-            		System.err.println("The third argument '" + arg3 + "' is unknown. Don't know what to do. Exiting program");
-            		System.exit(1);
-            	}
-        	}
-        } 
-        
-        System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
-        if (acceptSeedsAsDanica) {
-        	System.out.println("Ingesting all seeds as danica!");
-        }
-        if (onlysavestats) {
-        	System.out.println("Only saving statistics for the ingest. No update and reject information preserved!");
-        }
-        
-        System.out.println();
-        LoadSeeds loadseeds = new LoadSeeds(seedsfile, acceptSeedsAsDanica);
-        loadseeds.writeAcceptLog = true;
-        loadseeds.writeRejectLog = true;
-        loadseeds.writeUpdateLog = true;
-        loadseeds.onlysavestats = true;
-        
-        
-        IngestLog res = loadseeds.processSeeds();
-        System.out.println(res.getStatistics());
-        File acceptLog = loadseeds.getAcceptLog();
-        File rejectLog = loadseeds.getRejectLog();
-        File updateLog = loadseeds.getUpdateLog();
-        System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
-        System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath())); 
-        System.out.println("Updatelog in file: " + (updateLog==null?"No log written due to error": updateLog.getAbsolutePath()));
-        
+    boolean acceptSeedsAsDanica = false;
+    if (args.length < 1 || args.length > 3) {
+        System.err.println("Wrong number of arguments. One or two is needed. Given was " + args.length + " arguments");
+        System.err.println("Correct usage: java LoadSeeds seedsfile [--accepted][--onlysavestats]");
+        System.err.println("Exiting program");
+        System.exit(1);
     }
+    File seedsfile = new File(args[0]);
+    if (!seedsfile.isFile()){
+        System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
+        System.err.println("Exiting program");
+        System.exit(1);
+    }
+    boolean onlysavestats = false;
+    // add  writing to errors.log in append mode.
+    FileWriter fout = new FileWriter("errors.log", true);
+
+    if (args.length > 1) { // parse optional arguments
+        String arg2 = null;
+        String arg3 = null;
+        if (args.length == 2) {
+            arg2 = args[1];
+        } else if (args.length == 3) {
+            arg2 = args[1];
+            arg3 = args[2];
+        }
+        if (arg2.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
+            acceptSeedsAsDanica = true;
+        } else if (arg2.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
+            onlysavestats = true;
+        } else {
+            System.err.println("The second argument '" + arg2 + "' is unknown. Don't know what to do. Exiting program");
+            System.exit(1);
+        }
+        if (arg3 != null) {
+            if (arg3.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
+                acceptSeedsAsDanica = true;
+            } else if (arg3.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
+                onlysavestats = true;
+            } else {
+                System.err.println("The third argument '" + arg3 + "' is unknown. Don't know what to do. Exiting program");
+                System.exit(1);
+            }
+        }
+    } 
+
+    System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+    if (acceptSeedsAsDanica) {
+        System.out.println("Ingesting all seeds as danica!");
+    }
+    if (onlysavestats) {
+        System.out.println("Only saving statistics for the ingest. No update and reject information preserved!");
+    }
+    System.out.println();
+    LoadSeeds loadseeds = new LoadSeeds(seedsfile, acceptSeedsAsDanica);
+    loadseeds.writeAcceptLog = true;
+    loadseeds.writeRejectLog = true;
+    loadseeds.writeUpdateLog = true;
+    loadseeds.onlysavestats = onlysavestats;
+    loadseeds.fout=fout;
+
+
+    IngestLog res = loadseeds.processSeeds();
+    System.out.println(res.getStatistics());
+    File acceptLog = loadseeds.getAcceptLog();
+    File rejectLog = loadseeds.getRejectLog();
+    File updateLog = loadseeds.getUpdateLog();
+    System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
+    System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath())); 
+    System.out.println("Updatelog in file: " + (updateLog==null?"No log written due to error": updateLog.getAbsolutePath()));
+
+}
  	
 	private File seedsfile;
     private boolean writeAcceptLog = false;
@@ -123,6 +127,7 @@ public static void main(String[] args) throws Exception {
 	private File rejectLog = null;
 	private File acceptLog = null;
 	private File updateLog = null;
+    private FileWriter fout = null;
 	private List<String> acceptedList = new ArrayList<String>();
     private DAOFactory daoFactory;
 	private boolean ingestAsDanica;
@@ -195,7 +200,9 @@ public static void main(String[] args) throws Exception {
 	            	    }
 	            	} catch (Throwable e) {
 	            	    rejectreason = URL_REJECT_REASON.BAD_URL;
-	            	    errMsg = "Insertion of url failed: " + e.toString();
+	            	    errMsg = "Insertion of url failed: " + ExceptionUtils.getStackTrace(e); 
+	            	    fout.write(errMsg);
+	            	    fout.flush();	
 	            	}
 	            	
 	            	if (!inserted && !isError) { // assume duplicate url
