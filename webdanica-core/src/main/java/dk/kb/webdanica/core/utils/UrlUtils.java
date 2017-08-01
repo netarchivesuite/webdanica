@@ -6,12 +6,39 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.utils.UrlInfo;
 import dk.netarkivet.common.utils.DomainUtils;
 
 public class UrlUtils {
+    
+    private static Pattern VALID_IPV4_PATTERN = null;
+    private static Pattern VALID_IPV6_PATTERN = null;
+    private static final String ipv4Pattern = "(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])";
+    private static final String ipv6Pattern = "([0-9a-f]{1,4}:){7}([0-9a-f]){1,4}";
+
+    static {
+      try {
+        VALID_IPV4_PATTERN = Pattern.compile(ipv4Pattern, Pattern.CASE_INSENSITIVE);
+        VALID_IPV6_PATTERN = Pattern.compile(ipv6Pattern, Pattern.CASE_INSENSITIVE);
+      } catch (PatternSyntaxException e) {
+        //logger.severe("Unable to compile pattern", e);
+      }
+    }
+
+    
+    public static void main (String[] args) {
+        String domain="127.0.0.1";
+        String domain1="127.0.0.dk";
+        String domain2="999.0.0.0";
+        System.out.println("isIP: " + isIpAddress(domain));
+        System.out.println("isIP: " + isIpAddress(domain1));
+        System.out.println("isIP: " + isIpAddress(domain2));
+    }
 	
 	/** Check, if the seed is OK or should be rejected.
 	 * 
@@ -33,6 +60,9 @@ public class UrlUtils {
 			if (domainName == null) {
 				return URL_REJECT_REASON.MISSING_DOMAIN; 
 			}
+			if (isIpAddress(domainName)) {
+			    return URL_REJECT_REASON.IP_URL;
+			}
 		} catch (URISyntaxException e) {
 			//LOG.
 			//e.printStackTrace();
@@ -42,7 +72,28 @@ public class UrlUtils {
 	}	
 	
 	
+	
 	/**
+	 * Determine if the given string is a valid IPv4 or IPv6 address.  This method
+	 * uses pattern matching to see if the given string could be a valid IP address.
+	 * Source: https://stackoverflow.com/questions/15875013/extract-ip-addresses-from-strings-using-regex?rq=1
+	 * 
+	 * @param ipAddress A string that is to be examined to verify whether or not
+	 *  it could be a valid IP address.
+	 * @return <code>true</code> if the string is a value that is a valid IP address,
+	 *  <code>false</code> otherwise.
+	 */
+	public static boolean isIpAddress(String ipAddress) {
+
+	    Matcher m1 = UrlUtils.VALID_IPV4_PATTERN.matcher(ipAddress);
+	    if (m1.matches()) {
+	        return true;
+	    }
+	    Matcher m2 = UrlUtils.VALID_IPV6_PATTERN.matcher(ipAddress);
+	    return m2.matches();
+	}
+
+    /**
 	 * @param scheme
 	 * @return
 	 * TODO read from WebdanicaSettings
