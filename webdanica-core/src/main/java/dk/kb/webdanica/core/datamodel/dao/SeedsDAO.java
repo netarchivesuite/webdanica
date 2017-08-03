@@ -6,25 +6,25 @@ import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 
-public interface SeedsDAO {
+public interface SeedsDAO extends AutoCloseable{
 
-	boolean insertSeed(Seed singleSeed) throws Exception;	
+	boolean insertSeed(Seed singleSeed) throws DaoException;
 	
-	boolean updateSeed(Seed singleSeed) throws Exception;
+	boolean updateSeed(Seed singleSeed) throws DaoException;
 	
-	List<Seed> getSeeds(Status fromOrdinal, int limit) throws Exception;
+	List<Seed> getSeeds(Status fromOrdinal, int limit) throws DaoException;
 
-	Long getSeedsCount(Status fromOrdinal) throws Exception;
+	Long getSeedsCount(Status fromOrdinal) throws DaoException;
 	
 	void close();
 
-	Long getSeedsDanicaCount(DanicaStatus s) throws Exception;
+	Long getSeedsDanicaCount(DanicaStatus s) throws DaoException;
 
-	List<Seed> getSeedsReadyToExport(boolean includeAlreadyExportedSeeds) throws Exception;
+	List<Seed> getSeedsReadyToExport(boolean includeAlreadyExportedSeeds) throws DaoException;
 
-	boolean existsUrl(String url) throws Exception;
+	boolean existsUrl(String url) throws DaoException;
 	
-	Seed getSeed(String url)  throws Exception;
+	Seed getSeed(String url)  throws DaoException;
 }
 	
 	

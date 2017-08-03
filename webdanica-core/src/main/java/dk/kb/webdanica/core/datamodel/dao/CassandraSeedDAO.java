@@ -54,31 +54,39 @@ public class CassandraSeedDAO implements SeedsDAO {
 		db = new Cassandra(settings);
 	}
 	
-	public List<Seed> getSeeds(Status status, int limit) {
-		init();
-		BoundStatement bStatement = readAllWithStateAndLimitstatement.bind(status.ordinal(), limit);
-		ResultSet results = session.execute(bStatement);
-		List<Seed> seedList = new ArrayList<Seed>();
-		
-		for (Row row: results.all()) {
-			Seed s = getSeedFromRow(row);
-			seedList.add(s);
+	public List<Seed> getSeeds(Status status, int limit) throws DaoException {
+		try {
+			init();
+			BoundStatement bStatement = readAllWithStateAndLimitstatement.bind(status.ordinal(), limit);
+			ResultSet results = session.execute(bStatement);
+			List<Seed> seedList = new ArrayList<Seed>();
+
+			for (Row row : results.all()) {
+				Seed s = getSeedFromRow(row);
+				seedList.add(s);
+			}
+			return seedList;
+		} catch (Exception e) {
+			throw new DaoException(e);
 		}
-		return seedList; 
-	}	
+	}
 	
-	public List<Seed> getSeeds(Status status) {
-		init();
-		BoundStatement bStatement = readAllWithStatestatement.bind(status.ordinal());
-		ResultSet results = session.execute(bStatement);
-		List<Seed> seedList = new ArrayList<Seed>();
-		
-		for (Row row: results.all()) {
-			Seed s = getSeedFromRow(row);
-			seedList.add(s);
+	public List<Seed> getSeeds(Status status) throws DaoException {
+		try {
+			init();
+			BoundStatement bStatement = readAllWithStatestatement.bind(status.ordinal());
+			ResultSet results = session.execute(bStatement);
+			List<Seed> seedList = new ArrayList<Seed>();
+
+			for (Row row : results.all()) {
+				Seed s = getSeedFromRow(row);
+				seedList.add(s);
+			}
+			return seedList;
+		} catch (Exception e) {
+			throw new DaoException(e);
 		}
-		return seedList; 
-	}	
+	}
 
 	private Seed getSeedFromRow(Row row) {
 		// Not yet tested!
@@ -99,25 +107,29 @@ public class CassandraSeedDAO implements SeedsDAO {
 				);
     }
 
-	public boolean insertSeed(Seed singleSeed) {
-		init();	
-		Date insertedDate = new Date();
-		BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getStatus().ordinal(), insertedDate);
-		ResultSet rs = session.execute(bound);
-		Row row = rs.one();
-		boolean insertFailed = row.getColumnDefinitions().contains("url");
-		return !insertFailed; // Was the insert successful?
+	public boolean insertSeed(Seed singleSeed) throws DaoException {
+		try {
+			init();
+			Date insertedDate = new Date();
+			BoundStatement bound = preparedInsert.bind(singleSeed.getUrl(), singleSeed.getStatus().ordinal(), insertedDate);
+			ResultSet rs = session.execute(bound);
+			Row row = rs.one();
+			boolean insertFailed = row.getColumnDefinitions().contains("url");
+			return !insertFailed; // Was the insert successful?
+		} catch (Exception e){
+			throw new DaoException(e);
+		}
 	}
 
-	private void init() {
-		if (session == null || session.isClosed()) {			
-			session = db.getSession();
-			newSession = true;
-		}
-		if (preparedInsert == null || newSession) {
-			//FIXME This is no longer valid 
-			preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?,?) IF NOT EXISTS");
-		}
+	private void init() throws Exception {
+			if (session == null || session.isClosed()) {
+				session = db.getSession();
+				newSession = true;
+			}
+			if (preparedInsert == null || newSession) {
+				//FIXME This is no longer valid
+				preparedInsert = session.prepare("INSERT INTO seeds (url, status, inserted_time) VALUES (?,?,?) IF NOT EXISTS");
+			}
 		/*
 		row.getString("url"),
 		row.getString("redirected_url"), 
@@ -132,28 +144,30 @@ public class CassandraSeedDAO implements SeedsDAO {
 		row.getBool("exported"),
 		row.getLong("exported_time")
 		*/
-		
-		if (preparedUpdateStatement == null || newSession) {
-			preparedUpdateStatement = session.prepare("UPDATE seeds SET redirected_url=?, host=?, domain=?, tld=?, inserted_time=?, updated_time=?, danica=?, status=?, status_reason=?, exported=?, exported_time=? WHERE url=? IF EXISTS");
-		}
-		if (readAllWithStatestatement == null || newSession) {
-			readAllWithStatestatement = session.prepare("SELECT * FROM seeds WHERE status=?");
-		}
-		if (readAllWithStateAndLimitstatement == null || newSession) {
-			readAllWithStateAndLimitstatement = session.prepare("SELECT * FROM seeds WHERE status=? LIMIT ?");
-		}
-		
-		if (getSeedsCountStatement == null || newSession) {
-			getSeedsCountStatement = session.prepare("SELECT count(*) FROM seeds WHERE status=?");
-		}
-		
-		if (preparedUpdateRedirectedUrl == null || newSession) {
-			preparedUpdateRedirectedUrl = session.prepare("UPDATE seeds SET redirected_url=? WHERE url=? IF EXISTS");
-		}
-		newSession = false;
+
+			if (preparedUpdateStatement == null || newSession) {
+				preparedUpdateStatement = session.prepare("UPDATE seeds SET redirected_url=?, host=?, domain=?, tld=?, inserted_time=?, updated_time=?, danica=?, status=?, status_reason=?, exported=?, exported_time=? WHERE url=? IF EXISTS");
+			}
+			if (readAllWithStatestatement == null || newSession) {
+				readAllWithStatestatement = session.prepare("SELECT * FROM seeds WHERE status=?");
+			}
+			if (readAllWithStateAndLimitstatement == null || newSession) {
+				readAllWithStateAndLimitstatement = session.prepare("SELECT * FROM seeds WHERE status=? LIMIT ?");
+			}
+
+			if (getSeedsCountStatement == null || newSession) {
+				getSeedsCountStatement = session.prepare("SELECT count(*) FROM seeds WHERE status=?");
+			}
+
+			if (preparedUpdateRedirectedUrl == null || newSession) {
+				preparedUpdateRedirectedUrl = session.prepare("UPDATE seeds SET redirected_url=? WHERE url=? IF EXISTS");
+			}
+			newSession = false;
+
     }
 	
-	public boolean updateSeed(Seed singleSeed) {
+	public boolean updateSeed(Seed singleSeed) throws DaoException {
+		try {
 		init();
 		if (singleSeed.getExportedState() == true && singleSeed.getExportedTime() == null) {
 			singleSeed.setExportedTime(new Date().getTime());
@@ -178,14 +192,23 @@ public class CassandraSeedDAO implements SeedsDAO {
 		// Possibly change this code. this depends on appending IF EXISTS to the statement
 		boolean updateFailed = row.getColumnDefinitions().contains("url");
 		return !updateFailed;
+	} catch (Exception e){
+		throw new DaoException(e);
 	}
+
+}
 	
-	public Long getSeedsCount(Status status) {
+	public Long getSeedsCount(Status status) throws DaoException {
+		try {
 		init();
 		BoundStatement bStatement = getSeedsCountStatement.bind(status.ordinal());
 		ResultSet rs = session.execute(bStatement);
 		Row row = rs.one();
 		return new Long(row.getLong(0));
+		} catch (Exception e){
+			throw new DaoException(e);
+		}
+
 	}	
 	
 
@@ -204,25 +227,25 @@ public class CassandraSeedDAO implements SeedsDAO {
     }
 */
 	@Override
-    public Long getSeedsDanicaCount(DanicaStatus s) {
+    public Long getSeedsDanicaCount(DanicaStatus s) throws DaoException {
 	    // TODO Auto-generated method stub
 	    return null;
     }
 
 	@Override
-    public List<Seed> getSeedsReadyToExport(boolean includeExported) throws Exception {
+    public List<Seed> getSeedsReadyToExport(boolean includeExported) throws DaoException {
 	    // TODO Auto-generated method stub
 	    return null;
     }
 
 	@Override
-    public boolean existsUrl(String url) throws Exception {
+    public boolean existsUrl(String url) throws DaoException {
 	    // TODO Auto-generated method stub
 	    return false;
     }
 
 	@Override
-    public Seed getSeed(String url) throws Exception {
+    public Seed getSeed(String url) throws DaoException {
 	    // TODO Auto-generated method stub
 	    return null;
     }

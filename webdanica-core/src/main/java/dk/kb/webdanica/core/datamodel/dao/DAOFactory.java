@@ -1,7 +1,7 @@
 package dk.kb.webdanica.core.datamodel.dao;
 
 
-public interface DAOFactory {
+public interface DAOFactory extends AutoCloseable {
 
 	public SeedsDAO getSeedsDAO();
 	
