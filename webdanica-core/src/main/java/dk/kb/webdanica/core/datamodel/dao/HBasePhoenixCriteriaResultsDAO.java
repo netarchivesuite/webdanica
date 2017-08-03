@@ -3,17 +3,19 @@ package dk.kb.webdanica.core.datamodel.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang.StringUtils;
 
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
+
+import static java.sql.JDBCType.BIGINT;
 
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	
@@ -120,19 +122,19 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.setString(idx++, singleAnalysis.errorMsg);
 			
 			if (singleAnalysis.Cext1 == null) {
-				stm.setNull(idx, SqlType.BIGINT.id);
+				stm.setNull(idx, Types.BIGINT);
 			} else {
 				stm.setLong(idx, singleAnalysis.Cext1);
 			}
 			idx++;
 			if (singleAnalysis.Cext2 == null) {
-				stm.setNull(idx, SqlType.BIGINT.id);
+				stm.setNull(idx, Types.BIGINT);
 			} else {
 				stm.setLong(idx, singleAnalysis.Cext2);
 			}
 			idx++;
 			if (singleAnalysis.Cext3 == null) {
-				stm.setNull(idx, SqlType.BIGINT.id);
+				stm.setNull(idx, Types.BIGINT);
 			} else {
 				stm.setLong(idx, singleAnalysis.Cext3);
 			}
@@ -142,7 +144,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			}
 			stm.setFloat(idx++, singleAnalysis.intDanish);
 			if (singleAnalysis.source == null) {
-				stm.setNull(idx, SqlType.BIGINT.id);
+				stm.setNull(idx, Types.BIGINT);
 			} else {
 				stm.setInt(idx, singleAnalysis.source.ordinal());
 			}

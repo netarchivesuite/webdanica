@@ -68,13 +68,22 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.phoenix/phoenix-core -->
     <dependency>
-      <groupId>phoenix-hbase</groupId>
-      <artifactId>phoenix-HBase</artifactId>
-      <version>4.7.0-1.1</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/phoenix-4.7.0-HBase-1.1-client.jar</systemPath>
+      <groupId>org.apache.phoenix</groupId>
+      <artifactId>phoenix-core</artifactId>
+      <version>4.7.0-HBase-1.1</version>
+      <scope>provided</scope>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>2.7.2</version>
+      <scope>provided</scope>
+    </dependency>
+
 
     <dependency>
       <groupId>xerces</groupId>
