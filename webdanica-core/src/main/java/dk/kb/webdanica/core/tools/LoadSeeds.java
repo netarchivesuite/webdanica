@@ -6,7 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.dao.*;
+import dk.kb.webdanica.core.datamodel.dao.DaoException;
+import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
+import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
@@ -16,6 +20,8 @@ import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.UrlUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,88 +42,94 @@ import org.slf4j.LoggerFactory;
  */
 public class LoadSeeds {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-    public static final String ACCEPT_ARGUMENT = "--accepted";
-    public static final String ONLYSAVESTATS_ARGUMENT = "--onlysavestats";
 
-    public static void main(String[] args) throws Exception {
-        boolean acceptSeedsAsDanica = false;
-        if (args.length < 1 || args.length > 3) {
-            System.err.println("Wrong number of arguments. One or two is needed. Given was " + args.length + " arguments");
-            System.err.println("Correct usage: java LoadSeeds seedsfile [--accepted][--onlysavestats]");
-            System.err.println("Exiting program");
+
+public static final String ACCEPT_ARGUMENT	= "--accepted";
+public static final String ONLYSAVESTATS_ARGUMENT = "--onlysavestats";
+
+public static void main(String[] args) throws Exception {
+    boolean acceptSeedsAsDanica = false;
+    if (args.length < 1 || args.length > 3) {
+        System.err.println("Wrong number of arguments. One or two is needed. Given was " + args.length + " arguments");
+        System.err.println("Correct usage: java LoadSeeds seedsfile [--accepted][--onlysavestats]");
+        System.err.println("Exiting program");
+        System.exit(1);
+    }
+    File seedsfile = new File(args[0]);
+    if (!seedsfile.isFile()){
+        System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
+        System.err.println("Exiting program");
+        System.exit(1);
+    }
+    boolean onlysavestats = false;
+    // add  writing to errors.log in append mode.
+    FileWriter fout = new FileWriter("errors.log", true);
+
+    if (args.length > 1) { // parse optional arguments
+        String arg2 = null;
+        String arg3 = null;
+        if (args.length == 2) {
+            arg2 = args[1];
+        } else if (args.length == 3) {
+            arg2 = args[1];
+            arg3 = args[2];
+        }
+        if (arg2.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
+            acceptSeedsAsDanica = true;
+        } else if (arg2.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
+            onlysavestats = true;
+        } else {
+            System.err.println("The second argument '" + arg2 + "' is unknown. Don't know what to do. Exiting program");
             System.exit(1);
         }
-        File seedsfile = new File(args[0]);
-        if (!seedsfile.isFile()) {
-            System.err.println("The seedsfile located '" + seedsfile.getAbsolutePath() + "' does not exist or is not a proper file");
-            System.err.println("Exiting program");
-            System.exit(1);
-        }
-        boolean onlysavestats = false;
-        if (args.length > 1) { // parse optional arguments
-            String arg2 = null;
-            String arg3 = null;
-            if (args.length == 2) {
-                arg2 = args[1];
-            } else if (args.length == 3) {
-                arg2 = args[1];
-                arg3 = args[2];
-            }
-            if (arg2.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
+        if (arg3 != null) {
+            if (arg3.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
                 acceptSeedsAsDanica = true;
-            } else if (arg2.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
+            } else if (arg3.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
                 onlysavestats = true;
             } else {
-                System.err.println("The second argument '" + arg2 + "' is unknown. Don't know what to do. Exiting program");
+                System.err.println("The third argument '" + arg3 + "' is unknown. Don't know what to do. Exiting program");
                 System.exit(1);
             }
-            if (arg3 != null) {
-                if (arg3.equalsIgnoreCase(ACCEPT_ARGUMENT)) {
-                    acceptSeedsAsDanica = true;
-                } else if (arg3.equalsIgnoreCase(ONLYSAVESTATS_ARGUMENT)) {
-                    onlysavestats = true;
-                } else {
-                    System.err.println("The third argument '" + arg3 + "' is unknown. Don't know what to do. Exiting program");
-                    System.exit(1);
-                }
-            }
         }
-
-        System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
-        if (acceptSeedsAsDanica) {
-            System.out.println("Ingesting all seeds as danica!");
-        }
-        if (onlysavestats) {
-            System.out.println("Only saving statistics for the ingest. No update and reject information preserved!");
-        }
-
-        System.out.println();
-        LoadSeeds loadseeds = new LoadSeeds(seedsfile, acceptSeedsAsDanica);
-        loadseeds.writeAcceptLog = true;
-        loadseeds.writeRejectLog = true;
-        loadseeds.writeUpdateLog = true;
-        loadseeds.onlysavestats = true;
-
-
-        IngestLog res = loadseeds.processSeeds();
-        System.out.println(res.getStatistics());
-        File acceptLog = loadseeds.getAcceptLog();
-        File rejectLog = loadseeds.getRejectLog();
-        File updateLog = loadseeds.getUpdateLog();
-        System.out.println("Acceptlog in file: " + (acceptLog == null ? "No log written due to error" : acceptLog.getAbsolutePath()));
-        System.out.println("Rejectlog in file: " + (rejectLog == null ? "No log written due to error" : rejectLog.getAbsolutePath()));
-        System.out.println("Updatelog in file: " + (updateLog == null ? "No log written due to error" : updateLog.getAbsolutePath()));
-
     }
 
-    private File seedsfile;
+    System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+    if (acceptSeedsAsDanica) {
+        System.out.println("Ingesting all seeds as danica!");
+    }
+    if (onlysavestats) {
+        System.out.println("Only saving statistics for the ingest. No update and reject information preserved!");
+    }
+    System.out.println();
+    LoadSeeds loadseeds = new LoadSeeds(seedsfile, acceptSeedsAsDanica);
+    loadseeds.writeAcceptLog = true;
+    loadseeds.writeRejectLog = true;
+    loadseeds.writeUpdateLog = true;
+    loadseeds.onlysavestats = onlysavestats;
+    loadseeds.fout=fout;
+
+
+    IngestLog res = loadseeds.processSeeds();
+    System.out.println(res.getStatistics());
+    File acceptLog = loadseeds.getAcceptLog();
+    File rejectLog = loadseeds.getRejectLog();
+    File updateLog = loadseeds.getUpdateLog();
+    System.out.println("Acceptlog in file: " + (acceptLog==null?"No log written due to error": acceptLog.getAbsolutePath()));
+    System.out.println("Rejectlog in file: " + (rejectLog==null?"No log written due to error": rejectLog.getAbsolutePath()));
+    System.out.println("Updatelog in file: " + (updateLog==null?"No log written due to error": updateLog.getAbsolutePath()));
+
+}
+ 	
+	private File seedsfile;
     private boolean writeAcceptLog = false;
     private boolean writeRejectLog = false;
     private boolean writeUpdateLog = false;
-    private File rejectLog = null;
-    private File acceptLog = null;
-    private File updateLog = null;
-    private List<String> acceptedList = new ArrayList<String>();
+	private File rejectLog = null;
+	private File acceptLog = null;
+	private File updateLog = null;
+    private FileWriter fout = null;
+	private List<String> acceptedList = new ArrayList<String>();
     private DAOFactory daoFactory;
     private boolean ingestAsDanica;
     private boolean onlysavestats;
@@ -165,7 +177,6 @@ public class LoadSeeds {
                         singleSeed.setStatusReason("Set to Status done at ingest to prevent further processing of this url");
                     }
 
-
                     try (SeedsDAO dao = daoFactory.getSeedsDAO();
                          DomainsDAO ddao = daoFactory.getDomainsDAO();) {
 
@@ -196,7 +207,7 @@ public class LoadSeeds {
                                     // Should not happen
                                     rejectreason = URL_REJECT_REASON.UNKNOWN;
                                     logger.warn("The url '{}' should have been in database. But no record was found", url);
-                                    errMsg = "The url '"+url+"' should have been in database. But no record was found";
+                                    errMsg = "The url '" + url + "' should have been in database. But no record was found";
                                 } else {
                                     if (oldSeed.getDanicaStatus().equals(DanicaStatus.YES)) {
                                         updatelogentries.add("The seed '" + url + "' is already in the database with DanicaStatus.YES and status '" + oldSeed.getStatus() + "'");
@@ -216,9 +227,9 @@ public class LoadSeeds {
                             }
                         }
                     } catch (DaoException e) {
-                        logger.error("Failure in communication with HBase",e);
+                        logger.error("Failure in communication with HBase", e);
                         rejectreason = URL_REJECT_REASON.UNKNOWN;
-                        errMsg = "Failure in communication with HBase: "+e.toString();
+                        errMsg = "Failure in communication with HBase: " + e.toString();
                     }
 
                     if (rejectreason != URL_REJECT_REASON.NONE) {
@@ -227,6 +238,7 @@ public class LoadSeeds {
                         }
                         rejectedcount++;
                     }
+
                 }
 
                 // add the updatedLog to logentries
@@ -257,100 +269,7 @@ public class LoadSeeds {
             throw new RuntimeException("Failed to log ingest stats",e);
         }
 
-    }
 
-
-
-    private void writeUpdateLog(List<String> updatelogentries, List<String> domainLogentries) throws
-            IOException {
-        // write update-log
-        if (writeUpdateLog) {
-            updateLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".updated.txt");
-            int count = 0;
-            while (updateLog.exists()) {
-                updateLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".updated.txt" + "." + count);
-                count++;
-            }
-            try (PrintWriter updatedWriter = new PrintWriter(new BufferedWriter(new FileWriter(updateLog)))) {
-                String updatedHeader = "Update and domain Log for file '" + seedsfile.getAbsolutePath() + "' ingested at '"
-                        + new Date() + "'";
-                updatedWriter.println(updatedHeader);
-                updatedWriter.println();
-                if (!updatelogentries.isEmpty()) {
-                    updatedWriter.println("Update - entries:");
-                    for (String rej : updatelogentries) {
-                        updatedWriter.println(rej);
-                    }
-                }
-                if (!domainLogentries.isEmpty()) {
-                    updatedWriter.println("domain-log - entries:");
-                    for (String rej : domainLogentries) {
-                        updatedWriter.println(rej);
-                    }
-                }
-            }
-        }
-    }
-
-    private void writeRejectLog(long insertedcount, long rejectedcount, long duplicatecount, List<
-            String> logentries, long lines) throws IOException {
-        // write reject-log
-        if (writeRejectLog) {
-            rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejected.txt");
-            int count = 0;
-            while (rejectLog.exists()) {
-                rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejected.txt" + "." + count);
-                count++;
-            }
-            try (PrintWriter rejectWriter = new PrintWriter(new BufferedWriter(new FileWriter(rejectLog)))) {
-
-                String rejectHeader = "Rejectlog for file '" + seedsfile.getAbsolutePath() + "' ingested at '"
-                        + new Date() + "'";
-                String stats = "total lines: " + lines + ", accepted = " + insertedcount + ", rejected=" + rejectedcount
-                        + " (of which " + duplicatecount + " duplicates";
-                rejectWriter.println(rejectHeader);
-                rejectWriter.println(stats);
-                if (!onlysavestats) {
-                    rejectWriter.println("Rejected seeds:");
-                    for (String rej : logentries) {
-                        rejectWriter.println(rej);
-                    }
-                }
-            }
-
-        }
-    }
-
-    private void writeAcceptLog(long insertedcount, long rejectedcount, long duplicatecount, long lines) throws
-            IOException {
-        // write accept-log
-        if (writeAcceptLog) {
-            acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".accepted.txt");
-            int count = 0;
-            while (acceptLog.exists()) {
-                acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".accepted.txt" + "." + count);
-                count++;
-            }
-            try (PrintWriter acceptWriter = new PrintWriter(new BufferedWriter(new FileWriter(acceptLog)))) {
-                String acceptHeader = "Acceptlog for file '" + seedsfile.getAbsolutePath() + "' ingested at '"
-                        + new Date() + "'";
-                String stats = "total lines: " + lines + ", accepted = " + insertedcount + ", rejected=" + rejectedcount
-                        + " (of which " + duplicatecount + " duplicates";
-                acceptWriter.println(acceptHeader);
-                acceptWriter.println(stats);
-                if (!acceptedList.isEmpty()) {
-                    acceptWriter.println("The " + insertedcount + " accepted :");
-                    for (String acc : acceptedList) {
-                        acceptWriter.println(acc);
-                    }
-                } else {
-                    if (!onlysavestats) {
-                        acceptWriter.println("None were accepted!");
-                    }
-                }
-            }
-
-        }
     }
 
     private String removeAnnotationsIfNecessary(String trimmedLine) {
