@@ -12,6 +12,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import com.antiaction.common.filter.Caching;
 import com.antiaction.common.html.HtmlEntity;
 import com.antiaction.common.templateengine.Template;
@@ -21,6 +23,7 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.datamodel.dao.DaoException;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
@@ -70,20 +73,37 @@ public class DomainResource implements ResourceAbstract {
 	        if (resource_id == R_DOMAINS_LIST) {
 	            domains_list(dab_user, req, resp);
 	        } else if (resource_id == R_DOMAIN_SHOW) {
-	        	Domain domain = getDomainFromPathinfo(pathInfo, environment, DOMAIN_PATH);
-	            domain_show(dab_user, req, resp, domain);
+	            Domain domain = null;
+
+	            try {
+	                domain = getDomainFromPathinfo(pathInfo, DOMAIN_PATH);
+	            } catch (DaoException e)  {
+	                String error = "Impossible to retrieve domain from database in resource '" +  this.getClass().getName() + "': " +  ExceptionUtils.getFullStackTrace(e);
+                    CommonResource.show_error(error, resp, environment);
+                    return;
+	            }
+	        	if (domain != null) {
+	        	    domain_show(dab_user, req, resp, domain);
+	        	} else {
+	        	    String error = "Impossible to find valid domain from pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
+	                CommonResource.show_error(error, resp, environment);
+	                return;
+	        	}
+	            
 	        } else {
 	        	String error = "No match for pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
 	        	CommonResource.show_error(error, resp, environment);
 	        	return;
 	        }
 	    }
-	    private Domain getDomainFromPathinfo(String pathInfo, 
-                Environment environment2, String domainPath) {
-	    	DomainsDAO ddao = daofactory.getDomainsDAO();	
-	        String[] pathParts = pathInfo.split(domainPath);
+	    private Domain getDomainFromPathinfo(String pathInfo, String domainPath) throws DaoException {
 	        Domain domain = null;
-	    	return domain;
+	    	DomainsDAO ddao = daofactory.getDomainsDAO();
+	        String[] pathParts = pathInfo.split(domainPath);
+	        if (pathParts.length == 2) {
+	            domain = ddao.getDomain(pathParts[1].substring(0, pathParts[1].length()-1));
+	        } 
+	        return domain;
         }
 
 		private void domain_show(User dab_user, HttpServletRequest req,

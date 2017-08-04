@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.batch.WARCExtractUrlsJob;
 import dk.kb.webdanica.core.datamodel.AnalysisStatus;
@@ -272,41 +273,42 @@ public class SingleSeedHarvest {
 		if (lines != null && !lines.isEmpty()){
 			String logMsg = "The following files were harvested: " + StringUtils.join(lines, ",");
 			filesHarvested = true;
-			if (writeToSystemOut) {
-				System.out.println(logMsg);
-			} else {
-				logger.info(logMsg);
-			}
+			log(logMsg, Level.INFO, writeToSystemOut, null);
+			
 		} else {
 			String logMsg = "No files was harvested. ";
-			if (writeToSystemOut) {
-				System.err.println(logMsg);
-			} else {
-				logger.warning(logMsg);
-			}
+			log(logMsg, Level.WARNING, writeToSystemOut, null);
 		}
 		this.files = lines;
+		
+		// attempt to set harvestdefinition represented by this.hid to inactive
+		try {
+		    HarvestDefinitionDAO hdao = HarvestDefinitionDAO.getInstance();
+		        if (hdao.exists(this.hid)) {
+		            HarvestDefinition hd = hdao.read(this.hid);
+		            hd.setActive(false);
+		            hdao.update(hd);
+		        } else {  
+		            String logMsg = "Unable to disable harvestdefiniton with id=" + this.hid + ". Netarchivesuite does not recognize harvestdefinition with this ID";
+		            log(logMsg, Level.WARNING, writeToSystemOut, null);
+		        }
+		} catch (Throwable e) {
+		    String logMsg = "Unable to disable harvestdefiniton with id=" + this.hid;
+		    log(logMsg, Level.WARNING, writeToSystemOut, e);
+		}
 		
 		//get the reports associated with the harvest as well, extracted from the metadatawarc.file.
 		this.reports = null;
 		try {
 			this.reports = getReports(theJob.getJobID(), writeToSystemOut);
 		} catch (Throwable e) {
-			if (writeToSystemOut) {
-				e.printStackTrace();
-			} else {
-				String error = "Unable to retrieve the reports for job '" + theJob.getJobID() + "': " + e;
-				logger.warning(error);
-				this.errMsg.append(error);
-			}
+		    String error = "Unable to retrieve the reports for job '" + theJob.getJobID() + "': " + e;
+		    this.errMsg.append(error);
+		    log(error, Level.WARNING, writeToSystemOut, e);
 		}
 		if (this.reports != null) {
 			String logMsg = "Retrieved '" + this.reports.getReports().keySet().size() + "' reports for job '" + jobId + "'";
-			if (writeToSystemOut) {
-				System.out.println(logMsg);
-			} else {
-				logger.info(logMsg);
-			}
+			log(logMsg, Level.INFO, writeToSystemOut, null);
 		} 
 		
 		// get the urls harvested by the job
@@ -314,13 +316,9 @@ public class SingleSeedHarvest {
 		try {
 			this.fetchedUrls = getHarvestedUrls(getHeritrixWarcs(), writeToSystemOut);
 		} catch (Throwable e) {
-			if (writeToSystemOut) {
-				e.printStackTrace();
-			} else {
-				String error = "Unable to retrieve the fetchedUrls for job '" + theJob.getJobID() + "'";
-				logger.log(Level.WARNING, error, e);
-				this.errMsg.append(error);
-			}
+		    String error = "Unable to retrieve the fetchedUrls for job '" + theJob.getJobID() + "'";
+		    this.errMsg.append(error);
+		    log(error, Level.WARNING, writeToSystemOut, e);
 		}
 		this.successful = status.equals(JobStatus.DONE);
 		String failureReason = "";
@@ -368,8 +366,34 @@ public class SingleSeedHarvest {
 		}
 		return this.successful;
     }
+	/**
+	 * Convenience method to easily log to stdout/stderr or to a logfile 
+	 * @param logMsg
+	 * @param loglevel
+	 * @param writeToSystemOut
+	 * @param exception
+	 */
+	private static void log(String logMsg, Level loglevel, boolean writeToSystemOut, Throwable exception) {
+	    String stacktrace = "";
+	    if (writeToSystemOut) {
+	        if (exception != null) {
+	            stacktrace = ExceptionUtils.getFullStackTrace(exception);
+	        }
+	        if (loglevel == Level.SEVERE || loglevel == Level.WARNING) {
+	            System.err.println(logMsg + stacktrace);
+	        } else {
+	            System.out.println(logMsg + stacktrace);
+	        }
+        } else {
+            if (exception != null) {
+                logger.log(loglevel, logMsg, exception);
+            } else {
+                logger.log(loglevel, logMsg);
+            }
+        }
+    }
 
-	public static NasReports getReports(Long jobID, boolean writeToSystemOut) {
+    public static NasReports getReports(Long jobID, boolean writeToSystemOut) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
 	    for (CDXRecord record : records) {
@@ -381,11 +405,7 @@ public class SingleSeedHarvest {
 	    		reportMap.put(key, data);
 	    	} catch (Throwable e) {
 	    		String logMsg = "When trying to get all reports for job '" +  jobID + "' we failed to extract the report '" + key + "': " + e;
-	    		if (writeToSystemOut) {
-	    			System.err.println(logMsg);
-	    		} else {
-	    			logger.log(Level.WARNING, logMsg, e);
-	    		}
+	    		log(logMsg, Level.WARNING, writeToSystemOut, e);
 	    	}
 	    }
 	    return new NasReports(reportMap);
@@ -395,28 +415,16 @@ public class SingleSeedHarvest {
 		List<String> urls = new ArrayList<String>();
 		if (warcfiles.isEmpty()) {
 			String logMsg = "No heritrixWarcs seems to have been harvested. Something must have gone wrong. Returning an empty list";
-			if (writeToSystemOut) {
-				System.err.println(logMsg);
-			} else {
-				logger.warning(logMsg);
-			}
+			log(logMsg, Level.WARNING, writeToSystemOut, null);
 		} else {
-			String logMsg = "Fetching the harvested from urls from the " + warcfiles.size() + " HeritrixWarcs harvested: " + StringUtils.join(warcfiles, ","); 
-			if (writeToSystemOut) {
-				System.out.println(logMsg);
-			} else {
-				logger.info(logMsg);
-			}
+			String logMsg = "Fetching the harvested from urls from the " + warcfiles.size() + " HeritrixWarcs harvested: " + StringUtils.join(warcfiles, ",");
+			log(logMsg, Level.INFO, writeToSystemOut, null);
 		}
 		for (String warcfilename: warcfiles){
 			urls.addAll(getUrlsFromFile(warcfilename));
 		}
 		String logMsg = "Retrieve " + urls.size() + " urls";
-		if (writeToSystemOut) {
-			System.out.println(logMsg);
-		} else {
-			logger.info(logMsg);
-		}
+		log(logMsg, Level.INFO, writeToSystemOut, null);
 		return urls;
 	}
 	
@@ -521,7 +529,7 @@ public class SingleSeedHarvest {
 		return results;
 	}
 
-	public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean onlySuccessFul, List<SingleSeedHarvest> results, boolean writeToStdout) throws Exception {
+	public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean includeOnlySuccessFulHarvests, List<SingleSeedHarvest> results, boolean writeToStdout) throws Exception {
 		// Initialize harvestLogWriter
     	PrintWriter harvestLogWriter = new PrintWriter(new BufferedWriter(new FileWriter(harvestLog)));
     	int harvestsWritten = 0;
@@ -529,21 +537,13 @@ public class SingleSeedHarvest {
     	harvestLogWriter.println(StringUtils.repeat("#", 80));
     	for (SingleSeedHarvest s: results) {
     		if (!s.successful) {
-    			if (onlySuccessFul) {
+    			if (includeOnlySuccessFulHarvests) {
     				String logMsg = "Skipping failed harvest '" + s.harvestName + "' of seed '" + s.seed + "'";
-    				if (writeToStdout) {
-    					System.out.println(logMsg);
-    				} else {
-    					logger.warning(logMsg);
-    				}
+    				log(logMsg, Level.WARNING, writeToStdout, null);
     				continue;
     			} else {
     				String logMsg = "Including failed harvest '" + s.harvestName + "' of seed '" + s.seed + "' in harvestlog";
-    				if (writeToStdout) {
-    					System.out.println(logMsg);
-    				} else {
-    					logger.warning(logMsg);
-    				}
+    				log(logMsg, Level.WARNING, writeToStdout, null);
     			}
     		}
     		harvestLogWriter.println(HarvestLog.seedPattern + s.getSeed());
