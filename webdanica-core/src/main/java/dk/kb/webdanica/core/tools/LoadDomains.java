@@ -119,7 +119,7 @@ public class LoadDomains {
 				}
 			}
 			List<String> logentriesList = new ArrayList<String>(logentries);
-			idao.insertLog(new IngestLog(logentriesList,domainsfile.getName(), linecount, insertedCount, rejectedCount, duplicateCount));
+			idao.insertLog(new IngestLog(logentriesList,domainsfile.getName(), linecount, insertedCount, rejectedCount, duplicateCount, 0L));
 			File updateLog = null;
 			boolean writeUpdateLog = true;
 			if (writeUpdateLog) {

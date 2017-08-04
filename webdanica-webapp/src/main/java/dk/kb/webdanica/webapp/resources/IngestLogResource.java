@@ -262,6 +262,7 @@ public class IngestLogResource implements ResourceAbstract {
         TemplatePlaceHolder insertedcountPlace = TemplatePlaceBase.getTemplatePlaceHolder("insertedcount"); //b.getInsertedcount()
         TemplatePlaceHolder duplicatecountPlace = TemplatePlaceBase.getTemplatePlaceHolder("duplicatecount"); //b.getDuplicatecount()
         TemplatePlaceHolder rejectedcountPlace = TemplatePlaceBase.getTemplatePlaceHolder("rejectedcount"); //b.getRejectedcount()
+        TemplatePlaceHolder errorcountPlace = TemplatePlaceBase.getTemplatePlaceHolder("errorcount"); //b.getErrorcount()
              
         TemplatePlaceHolder logsizePlace = TemplatePlaceBase.getTemplatePlaceHolder("logsize");
         
@@ -282,6 +283,7 @@ public class IngestLogResource implements ResourceAbstract {
         placeHolders.add(insertedcountPlace);
         placeHolders.add(duplicatecountPlace);
         placeHolders.add(rejectedcountPlace);
+        placeHolders.add(errorcountPlace);
         placeHolders.add(logsizePlace);
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
@@ -338,6 +340,7 @@ public class IngestLogResource implements ResourceAbstract {
         ResourceUtils.insertText(insertedcountPlace, "insertedcount",  b.getInsertedcount() + "", templateName, logger);
         ResourceUtils.insertText(duplicatecountPlace, "duplicatecount",  b.getDuplicatecount() + "", templateName, logger);
         ResourceUtils.insertText(rejectedcountPlace, "rejectedcount",  b.getRejectedcount() + "", templateName, logger);
+        ResourceUtils.insertText(errorcountPlace, "errorcount",  b.getErrorcount() + "", templateName, logger);
         ResourceUtils.insertText(logsizePlace, "logsize",  logSize + "", templateName, logger);
         Set<String> sortedSet = new TreeSet<String>(logEntries); 
         StringBuilder sb = new StringBuilder();

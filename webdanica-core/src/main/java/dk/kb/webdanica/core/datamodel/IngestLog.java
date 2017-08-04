@@ -16,17 +16,19 @@ public class IngestLog {
 	private long insertedcount;
 	private long rejectedcount;
 	private long duplicatecount;
+	private long errorcount;
 	
-	public IngestLog(List<String> entries, String filename, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
+	public IngestLog(List<String> entries, String filename, long linecount, long insertedcount, long rejectedcount, long duplicatecount, long errorcount) {
 		this.logEntries = entries;
 		this.filename = filename;
 		this.linecount= linecount;
 		this.insertedcount = insertedcount;
 		this.rejectedcount = rejectedcount;
 		this.duplicatecount= duplicatecount;
+		this.errorcount = errorcount;
 	}
 	
-	public IngestLog(List<String> entries, String filename, Date insertedDate, long linecount, long insertedcount, long rejectedcount, long duplicatecount) {
+	public IngestLog(List<String> entries, String filename, Date insertedDate, long linecount, long insertedcount, long rejectedcount, long duplicatecount, long errorcount) {
 		this.filename = filename;
 		this.logEntries = entries;
 		this.insertedDate = insertedDate;
@@ -34,6 +36,7 @@ public class IngestLog {
 		this.insertedcount = insertedcount;
 		this.rejectedcount = rejectedcount;
 		this.duplicatecount= duplicatecount;
+		this.errorcount = errorcount;
 	}
 	
 	public String getFilename() {
@@ -64,11 +67,15 @@ public class IngestLog {
 	public long getDuplicatecount() {
 	    return duplicatecount;
     }
+	
+	public long getErrorcount() {
+        return errorcount;
+    }
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " Logentries\n");
-		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
+		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + ", errorcount=" + errorcount + "\n");
 		sb.append("loglines: \n");
 		int count=0;
 		for (String logline: logEntries) {
@@ -82,7 +89,7 @@ public class IngestLog {
 	public String getStatistics() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Ingest at " + (insertedDate==null?new Date():insertedDate)  + " from file " +  filename + " with " + logEntries.size() + " log-entries\n");
-		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + "\n");
+		sb.append("linecount=" + linecount +", insertedcount=" + insertedcount + ", rejectedcount=" + rejectedcount + ", duplicatecount=" + duplicatecount + ", errorcount=" + errorcount +"\n");
 		return sb.toString();
 	}
 	

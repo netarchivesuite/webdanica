@@ -16,8 +16,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 
 	static {
 		INSERT_SQL = ""
-				+ "UPSERT INTO ingestLog (logLines, filename, inserted_date, linecount, insertedcount, rejectedcount, duplicatecount) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?) ";
+				+ "UPSERT INTO ingestLog (logLines, filename, inserted_date, linecount, insertedcount, rejectedcount, duplicatecount, errorcount) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
 	}
 
 	@Override
@@ -44,6 +44,7 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 			stm.setLong(5, log.getInsertedcount());
 			stm.setLong(6, log.getRejectedcount());
 			stm.setLong(7, log.getDuplicatecount());
+			stm.setLong(8, log.getErrorcount());
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
@@ -121,7 +122,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 							rs.getLong("linecount"),
 							rs.getLong("insertedcount"),
 							rs.getLong("rejectedcount"),
-							rs.getLong("duplicatecount")
+							rs.getLong("duplicatecount"),
+							rs.getLong("errorcount")
 					);
 				}
 			}

@@ -364,7 +364,7 @@ public static void main(String[] args) throws Exception {
 		IngestLogDAO dao = null;
 		try {
 			dao = daoFactory.getIngestLogDAO();
-			IngestLog log = new IngestLog(logentries, "test-trial-" + System.currentTimeMillis(), linecount, insertedcount, rejectedcount, duplicatecount);
+			IngestLog log = new IngestLog(logentries, "test-trial-" + System.currentTimeMillis(), linecount, insertedcount, rejectedcount, duplicatecount, 0L);
 			dao.insertLog(log);
 			return log;
 		} finally {

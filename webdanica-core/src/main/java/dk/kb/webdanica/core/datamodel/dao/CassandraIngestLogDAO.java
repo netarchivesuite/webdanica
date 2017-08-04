@@ -35,8 +35,9 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 		long rejectedcount=2;
 		long insertedcount=0;
 		long duplicatecount=2;
+		long errorcount=0L;
 		try {
-			IngestLog log = new IngestLog(entries,"unknown",  linecount, insertedcount, rejectedcount, duplicatecount) ;
+			IngestLog log = new IngestLog(entries,"unknown",  linecount, insertedcount, rejectedcount, duplicatecount, errorcount) ;
 			dao.insertLog(log);
 			for (Long date: dao.getIngestDates()) {
 				System.out.println(new Date(date));
@@ -76,7 +77,8 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 			insertedDate = log.getDate().getTime();
 		}
 		
-		BoundStatement bound = preparedInsert.bind(log.getLogEntries(), log.getFilename(), insertedDate, log.getLinecount(), log.getInsertedcount(), log.getRejectedcount(), log.getDuplicatecount());
+		BoundStatement bound = preparedInsert.bind(log.getLogEntries(), log.getFilename(), insertedDate, log.getLinecount(), log.getInsertedcount(), 
+		        log.getRejectedcount(), log.getDuplicatecount(), log.getErrorcount());
 		ResultSet results = session.execute(bound); 
 		// TODO can we check, if the insert was successful?
 		// Possible solution: http://stackoverflow.com/questions/21147871/cassandara-java-driver-how-are-insert-update-and-delete-results-reported
@@ -110,7 +112,8 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 				singleRow.getLong("linecount"), 
 				singleRow.getLong("insertedcount"),
 				singleRow.getLong("rejectedcount"),
-				singleRow.getLong("duplicatecount"));
+				singleRow.getLong("duplicatecount"),
+				singleRow.getLong("errorcount"));
 		return retrievedLog;
 	}
 	
@@ -120,7 +123,7 @@ public class CassandraIngestLogDAO implements IngestLogDAO, Database {
 			session = db.getSession();
 		}
 		if (preparedInsert == null) {
-			preparedInsert = session.prepare("INSERT INTO ingestLog (logLines, filename, inserted_date, linecount, insertedcount, rejectedcount, duplicatecount) VALUES (?, ?, ?, ?, ?, ?, ?) IF NOT EXISTS");
+			preparedInsert = session.prepare("INSERT INTO ingestLog (logLines, filename, inserted_date, linecount, insertedcount, rejectedcount, duplicatecount, errorcount) VALUES (?, ?, ?, ?, ?, ?, ?, ?) IF NOT EXISTS");
 		}
 	}
 

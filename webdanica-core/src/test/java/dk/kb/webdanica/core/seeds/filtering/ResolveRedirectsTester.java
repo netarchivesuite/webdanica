@@ -47,9 +47,11 @@ public class ResolveRedirectsTester {
 	@Test
 	public void test() {
 		String testUrl = "http://t.co/LDWqmtDM"; 
-		String expectedRedirectResult = "https://wiki.ubuntu.com/UbuntuOpenWeek [following]";
+		
+		String expectedRedirectResult = "https://wiki.ubuntu.com/UbuntuOpenWeek";
 
-		// change this to unittest
+		
+		//Tested with wget package wget-1.18-3.fc25.x86_64
 		ResolveRedirects rr = new ResolveRedirects(wgetPath, delayInSecs, tries, tmpFolder);
 		String result = rr.resolveRedirectedUrl(testUrl);
 		if (!result.equals(expectedRedirectResult)) {

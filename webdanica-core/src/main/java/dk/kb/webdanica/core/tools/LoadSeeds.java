@@ -6,10 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.dao.*;
-import dk.kb.webdanica.core.datamodel.dao.DaoException;
-import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
-import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
-import org.apache.commons.io.IOUtils;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
@@ -20,8 +17,7 @@ import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.UrlUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +43,11 @@ public class LoadSeeds {
 public static final String ACCEPT_ARGUMENT	= "--accepted";
 public static final String ONLYSAVESTATS_ARGUMENT = "--onlysavestats";
 
+/**
+ * Main function handling the user arguments, and executing the LoadSeeds tool.
+ * @param args
+ * @throws Exception
+ */
 public static void main(String[] args) throws Exception {
     boolean acceptSeedsAsDanica = false;
     if (args.length < 1 || args.length > 3) {
@@ -62,9 +63,7 @@ public static void main(String[] args) throws Exception {
         System.exit(1);
     }
     boolean onlysavestats = false;
-    // add  writing to errors.log in append mode.
-    FileWriter fout = new FileWriter("errors.log", true);
-
+   
     if (args.length > 1) { // parse optional arguments
         String arg2 = null;
         String arg3 = null;
@@ -93,8 +92,8 @@ public static void main(String[] args) throws Exception {
             }
         }
     }
-
-    System.out.println("Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+    String datestamp = "[" + new Date() + "] ";
+    System.out.println(datestamp + "Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
     if (acceptSeedsAsDanica) {
         System.out.println("Ingesting all seeds as danica!");
     }
@@ -107,8 +106,6 @@ public static void main(String[] args) throws Exception {
     loadseeds.writeRejectLog = true;
     loadseeds.writeUpdateLog = true;
     loadseeds.onlysavestats = onlysavestats;
-    loadseeds.fout=fout;
-
 
     IngestLog res = loadseeds.processSeeds();
     System.out.println(res.getStatistics());
@@ -128,7 +125,8 @@ public static void main(String[] args) throws Exception {
 	private File rejectLog = null;
 	private File acceptLog = null;
 	private File updateLog = null;
-    private FileWriter fout = null;
+	private File errorsLog = null;
+	
 	private List<String> acceptedList = new ArrayList<String>();
     private DAOFactory daoFactory;
     private boolean ingestAsDanica;
@@ -142,15 +140,20 @@ public static void main(String[] args) throws Exception {
 
     /**
      * @return the ingestLog for the file just processed
+     * @throws IOException 
      */
-    public IngestLog processSeeds() {
+    public IngestLog processSeeds() throws IOException {
         long insertedcount = 0L;
         long rejectedcount = 0L;
         long duplicatecount = 0L;
+        long errorcount = 0L;
+        long domainsAddedCount = 0L;
+        long updatecount = 0L;
 
         List<String> logentries = new ArrayList<String>();
-        List<String> updatelogentries = new ArrayList<String>();
-        List<String> domainLogentries = new ArrayList<String>();
+
+        // initialize logs
+        initalizeLogs();
 
         long lines = 0;
 
@@ -160,7 +163,9 @@ public static void main(String[] args) throws Exception {
             while ((line = fr.readLine()) != null) {
                 ++lines;
                 if (lines % 10000 == 0) {
-                    logger.info("Processed {} seeds.", lines);
+                    String datestamp = "[" + new Date() + "]";
+                    logger.info(datestamp + " Processed {} seeds.", lines);
+                    System.out.println(datestamp + " Processed " + lines + " seeds");
                 }
 
                 String errMsg = "";
@@ -188,16 +193,27 @@ public static void main(String[] args) throws Exception {
                             if (!ddao.existsDomain(domainName)) {
                                 Domain newdomain = Domain.createNewUndecidedDomain(domainName);
                                 boolean insertedDomain = ddao.insertDomain(newdomain);
+                                String domainLogEntry = null;
                                 if (!insertedDomain) {
-                                    domainLogentries.add("Failed to add domain '" + domainName + "' to domains table, the domain of seed '" + url + "'");
+                                    domainLogEntry = "Failed to add domain '" + domainName + "' to domains table, the domain of seed '" + url + "'";
+                                    errorcount++;
                                 } else {
-                                    domainLogentries.add("Added domain '" + domainName + "' to domains table, the domain of seed '" + url + "'");
+                                    domainLogEntry = "Added domain '" + domainName + "' to domains table, the domain of seed '" + url + "'";
                                 }
+                                
+                                if (!onlysavestats) {
+                                    logentries.add("DOMAINS: " + domainLogEntry); 
+                                }
+                                    
+                                writeTo("DOMAINS: " + domainLogEntry, updateLog);
+                                
                             }
                             insertedcount++;
                             if (!onlysavestats) {
                                 acceptedList.add(url);
                             }
+                            
+                            writeTo(url, acceptLog);
 
                         } else {
                             if (ingestAsDanica) {
@@ -208,18 +224,26 @@ public static void main(String[] args) throws Exception {
                                     rejectreason = URL_REJECT_REASON.UNKNOWN;
                                     logger.warn("The url '{}' should have been in database. But no record was found", url);
                                     errMsg = "The url '" + url + "' should have been in database. But no record was found";
+                                    // Add errMsg to errors.log with datestamp
+                                    String datestamp="[" + new Date() + "] ";
+                                    writeTo(datestamp + errMsg, errorsLog);
+                                    errorcount++;
                                 } else {
+                                    String updateLogEntry = null;
                                     if (oldSeed.getDanicaStatus().equals(DanicaStatus.YES)) {
-                                        updatelogentries.add("The seed '" + url + "' is already in the database with DanicaStatus.YES and status '" + oldSeed.getStatus() + "'");
+                                        updateLogEntry = "The seed '" + url + "' is already in the database with DanicaStatus.YES and status '" + oldSeed.getStatus() + "'";
                                     } else {
-                                        updatelogentries.add("The seed '" + url + "' is already in the database with DanicaStatus=" + oldSeed.getDanicaStatus() + ", and status '" +
-                                                oldSeed.getStatus() + "'. Changing to DanicaStatus.YES and status.DONE");
+                                        updateLogEntry = "The seed '" + url + "' is already in the database with DanicaStatus=" + oldSeed.getDanicaStatus() + ", and status '" +
+                                                oldSeed.getStatus() + "'. Changing to DanicaStatus.YES and status.DONE";
+                                        
                                         oldSeed.setDanicaStatus(DanicaStatus.YES);
                                         oldSeed.setDanicaStatusReason("Known by curators to be danica");
                                         oldSeed.setStatus(Status.DONE);
                                         oldSeed.setStatusReason("Set to Status done at ingest to prevent further processing of this url");
                                         dao.updateSeed(oldSeed);
                                     }
+                                    writeTo("UPDATED: " + updateLogEntry, updateLog);
+                                    
                                 }
                             } else {
                                 rejectreason = URL_REJECT_REASON.DUPLICATE;
@@ -229,47 +253,125 @@ public static void main(String[] args) throws Exception {
                     } catch (DaoException e) {
                         logger.error("Failure in communication with HBase", e);
                         rejectreason = URL_REJECT_REASON.UNKNOWN;
-                        errMsg = "Failure in communication with HBase: " + e.toString();
+                        errMsg = "Failure in communication with HBase: " + ExceptionUtils.getFullStackTrace(e);
+                        errorcount++;
+                        
+                        String datestamp="[" + new Date() + "] ";
+                        writeTo(datestamp + errMsg, errorsLog);
+                        
                     }
 
-                    if (rejectreason != URL_REJECT_REASON.NONE) {
+                    if (rejectreason != URL_REJECT_REASON.NONE && rejectreason != URL_REJECT_REASON.UNKNOWN ) {
+                        String logEntry = rejectreason + ": " + url + " " + errMsg;
                         if (!onlysavestats) {
-                            logentries.add(rejectreason + ": " + url + " " + errMsg);
+                            logentries.add(logEntry);
                         }
                         rejectedcount++;
+                        writeTo(logEntry, rejectLog);
                     }
 
-                }
-
-                // add the updatedLog to logentries
-                for (String logUpdated : updatelogentries) {
-                    logentries.add("UPDATED: " + logUpdated);
-                }
-
-                // add the domains to logentries
-                for (String logUpdated : domainLogentries) {
-                    logentries.add("DOMAINS: " + logUpdated);
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to read file " + seedsfile, e);
         }
-
         try {
-            writeAcceptLog(insertedcount, rejectedcount, duplicatecount, lines);
-            writeRejectLog(insertedcount, rejectedcount, duplicatecount, logentries, lines);
-            writeUpdateLog(updatelogentries, domainLogentries);
-        } catch (IOException e) {
+            writeStatsToLogs(insertedcount, rejectedcount, duplicatecount, errorcount, lines, logentries, onlysavestats, domainsAddedCount, updatecount);        
+        } catch (Exception e) {
             throw new RuntimeException("Failed to write logs", e);
         }
 
         try {
-            return logIngestStats(logentries, lines, insertedcount, rejectedcount, duplicatecount);
+            return logIngestStats(logentries, lines, insertedcount, rejectedcount, duplicatecount, errorcount);
         } catch (Exception e) {
             throw new RuntimeException("Failed to log ingest stats",e);
         }
 
 
+    }
+
+     
+    private void writeStatsToLogs(long insertedcount, long rejectedcount,
+            long duplicatecount, long errorcount, long lines,
+            List<String> logentries, boolean onlysavestats, long domainsAddedCount, long updatecount) throws IOException {
+
+        String stats = "#total lines: " + lines + ", # seeds accepted = " + insertedcount + ", # seeds rejected=" + rejectedcount
+                + " (of which " + duplicatecount + " are duplicates), errors during ingest: " + errorcount + ", onlysavestats=" + onlysavestats 
+                + ", domainsAdded= " + domainsAddedCount + ", updates=" +  updatecount;
+        String datestamp= "[" + new Date() + "] ";
+        writeTo(datestamp + stats, acceptLog);
+        writeTo(datestamp + stats, errorsLog);
+        writeTo(datestamp + stats, rejectLog);
+        writeTo(datestamp + stats, updateLog);
+    }
+
+    private void writeTo(String logEntry, File logFile) throws IOException {
+        //System.out.println("Writing entry to file " + logFile.getAbsolutePath());
+        try (FileWriter logFileWriter = new FileWriter(logFile, true);) {
+            logFileWriter.write(logEntry);
+            logFileWriter.write(System.lineSeparator());
+            logFileWriter.flush();
+            logFileWriter.close();
+        }
+    }
+
+    private void initalizeLogs() throws IOException {
+        errorsLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".errorslog.txt");
+        int count = 0;
+        while (errorsLog.exists()) {
+            errorsLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".errorslog.txt" + "." + count);
+            count++;
+        }
+        count=0;
+        acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".acceptedlog.txt");
+        while (acceptLog.exists()) {
+            acceptLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".acceptedlog.txt" + "." + count);
+            count++;
+        }
+
+        try (PrintWriter acceptWriter = new PrintWriter(new BufferedWriter(new FileWriter(acceptLog)))) {
+            String acceptHeader = "Acceptlog for ingest of file '" + seedsfile.getAbsolutePath() + "' started at '"
+                    + new Date() + "'";
+            acceptWriter.println(acceptHeader);
+            acceptWriter.println();
+            acceptWriter.flush();
+            acceptWriter.close();
+        }
+        
+        count = 0;
+        rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejectedlog.txt");
+        while (rejectLog.exists()) {
+            rejectLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".rejected.txt" + "." + count);
+            count++;
+        }
+        try (PrintWriter rejectWriter = new PrintWriter(new BufferedWriter(new FileWriter(rejectLog)))) {
+            String rejectHeader = "Rejectlog for ingest of file '" + seedsfile.getAbsolutePath() + "' started at '"
+                + new Date() + "'";
+            rejectWriter.println(rejectHeader);
+            rejectWriter.println();
+            rejectWriter.flush();
+            rejectWriter.close();
+        }
+        
+        
+        count = 0;
+        updateLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".updatedLog.txt");
+        while (updateLog.exists()) {
+            updateLog = new File(seedsfile.getParentFile(), seedsfile.getName() + ".updatedLog.txt" + "." + count);
+            count++;
+        } 
+        try (PrintWriter updatedWriter = new PrintWriter(new BufferedWriter(new FileWriter(updateLog)))) {
+            String updatedHeader = "Update and domain Log for ingest of file '" + seedsfile.getAbsolutePath() + "' started at '"
+                    + new Date() + "'";
+            updatedWriter.println(updatedHeader);
+            updatedWriter.println();
+            updatedWriter.flush();
+            updatedWriter.close();
+        } 
+        System.out.println("AcceptLogs are written to " + acceptLog.getAbsolutePath());
+        System.out.println("RejectLogs are written to " + rejectLog.getAbsolutePath());
+        System.out.println("UpdateAndDomainLogs are written to " + updateLog.getAbsolutePath());
+        System.out.println("Errors are written to " + errorsLog.getAbsolutePath());
     }
 
     private String removeAnnotationsIfNecessary(String trimmedLine) {
@@ -282,11 +384,11 @@ public static void main(String[] args) throws Exception {
     }
 
     private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount,
-                                     long rejectedcount, long duplicatecount) throws Exception {
+                                     long rejectedcount, long duplicatecount, long errorcount) throws Exception {
         IngestLogDAO dao = null;
         try {
             dao = daoFactory.getIngestLogDAO();
-            IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount);
+            IngestLog log = new IngestLog(logentries, seedsfile.getName(), linecount, insertedcount, rejectedcount, duplicatecount, errorcount);
             dao.insertLog(log);
             return log;
         } finally {

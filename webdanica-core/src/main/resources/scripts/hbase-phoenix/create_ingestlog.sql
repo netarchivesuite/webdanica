@@ -7,5 +7,6 @@ CREATE TABLE ingestlog (
     insertedcount BIGINT,
     linecount BIGINT,
     loglines VARCHAR[],
-    rejectedcount BIGINT
+    rejectedcount BIGINT,
+    errorcount BIGINT
 );

@@ -32,7 +32,7 @@ public class TestHBasePhoenixIngestLogDAO {
 			aList.add("Two");
 			aList.add("Three");
 
-			IngestLog log = new IngestLog(aList, "filename", 1, 2, 3, 4);
+			IngestLog log = new IngestLog(aList, "filename", 1, 2, 3, 4, 0L);
 
 			HBasePhoenixIngestLogDAO dao = new HBasePhoenixIngestLogDAO();
 			dao.insertLog(log);
