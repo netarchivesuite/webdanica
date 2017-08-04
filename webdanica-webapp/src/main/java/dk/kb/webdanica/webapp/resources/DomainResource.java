@@ -38,7 +38,7 @@ public class DomainResource implements ResourceAbstract {
 	    
 	    protected int R_DOMAIN_SHOW = -1;
 
-		private String DOMAIN_SHOW_TEMPLATE = "show_domain.html";
+		private String DOMAIN_SHOW_TEMPLATE = "domain_show.html";
 		private String DOMAIN_LIST_TEMPLATE = "domain_list.html";
 
 		private DAOFactory daofactory;
