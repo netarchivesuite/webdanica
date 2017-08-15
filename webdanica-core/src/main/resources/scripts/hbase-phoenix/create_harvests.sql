@@ -11,11 +11,10 @@ CREATE TABLE harvests (
     finalState INTEGER,
     harvested_time BIGINT,
     files VARCHAR[],
-    fetched_urls VARCHAR[], 
-    seed_report VARCHAR,
-    crawllog VARCHAR,
+    fetched_urls VARCHAR[],
     analysis_state INTEGER,
-    analysis_state_reason VARCHAR
+    analysis_state_reason VARCHAR,
+    reports VARCHAR[]
 );
 
 CREATE INDEX harvest_finalstate_idx ON harvests (finalState);
