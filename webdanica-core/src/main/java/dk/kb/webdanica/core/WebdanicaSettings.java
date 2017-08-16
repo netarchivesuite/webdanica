@@ -28,6 +28,7 @@ public class WebdanicaSettings {
 	public static String HARVESTING_HARVEST_LOG_PREFIX = "settings.harvesting.harvestlogPrefix";
 	public static String HARVESTING_HARVEST_LOG_READY_SUFFIX = "settings.harvesting.harvestlogReadySuffix";
 	public static String HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX = "settings.harvesting.harvestlogNotreadySuffix";
+	public static String HARVESTING_MAX_TIMEINMILLIS = "settings.harvesting.harvestMaxTimeInMillis";
 	
 	/** crawlertraps settings. */
 	public static String CRAWLERTRAPS_MAX_TRAP_SIZE = "settings.crawlertraps.maxTrapSize";
@@ -45,6 +46,7 @@ public class WebdanicaSettings {
 	public static final String WEBAPP_CRONTAB_STATECACHING = "settings.webapp.crontab.statecaching";
 	
 	public static final String WEBAPP_MAX_FILTERING_RECORDS_PER_RUN = "settings.webapp.filtering.maxRecordsProcessedPerRun";
+    
 	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";

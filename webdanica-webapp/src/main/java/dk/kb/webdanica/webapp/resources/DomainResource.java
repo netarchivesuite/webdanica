@@ -261,11 +261,11 @@ public class DomainResource implements ResourceAbstract {
 	        StringBuffer sb = new StringBuffer();
 	        
 	        Set<String> tldList = null; 
-	        List<Domain> domainList = null;
+	        //List<Domain> domainList = null;
             try {
-                domainList = daofactory.getDomainsDAO().getDomains(null, null, Integer.MAX_VALUE);
+                //domainList = daofactory.getDomainsDAO().getDomains(null, null, Integer.MAX_VALUE);
                 tldList = daofactory.getDomainsDAO().getTlds();
-                logger.info("Found " + domainList.size() + " domains to list");
+                //logger.info("Found " + domainList.size() + " domains to list");
                 logger.info("Found " + tldList.size() + " tld to list");
             } catch (Exception e) {
             	String errMsg = "System-error: Exception thrown";
@@ -274,21 +274,21 @@ public class DomainResource implements ResourceAbstract {
             	return;
             }
             
-            for (Domain b: domainList) {
+            for (String s: tldList) {
                 sb.append("<tr>");
                 sb.append("<td>");    
                 sb.append("<a href=\"");
                 sb.append(Servlet.environment.getDomainPath());
-                sb.append(b.getDomain());
+                sb.append(s);
                 sb.append("/\">");
-                sb.append(b.getDomain());
+                sb.append(s);
                 sb.append("</a>");
                 sb.append("</td>");
                 sb.append("<td>");
-                sb.append(b.getTld());
+                sb.append("N/A");
                 sb.append("</td>");
                 sb.append("<td>");
-                sb.append(b.getDanicaStatus());
+                sb.append("N/A");
                 sb.append("</td>");
                 sb.append("</tr>\n");
             }
@@ -303,7 +303,7 @@ public class DomainResource implements ResourceAbstract {
 	        menuSb.append("><a href=\"");
 	        menuSb.append(Servlet.environment.getDomainsPath());
 	        menuSb.append("\">");
-	        menuSb.append("Liste over blacklister");
+	        menuSb.append("Liste over kendte domæner i systemet");
 	        menuSb.append("</a></li>\n");
 	        
 	        /*

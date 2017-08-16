@@ -59,6 +59,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
     private int harvestMaxObjects;
 
     private long harvestMaxBytes;
+    
+    private long harvestMaxTimeInMillis;
 
     /**
      * Constructor for the Harvester thread worker object.
@@ -121,6 +123,9 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         harvestMaxBytes = Settings
                 .getLong(WebdanicaSettings.HARVESTING_MAX_BYTES);
         harvestPrefix = Settings.get(WebdanicaSettings.HARVESTING_PREFIX);
+        
+        harvestMaxTimeInMillis = SettingsUtilities.getLongSetting(
+                WebdanicaSettings.HARVESTING_MAX_TIMEINMILLIS, Constants.DEFAULT_HARVEST_MAX_TIMEINMILLIS);
 
         // Verify that database driver exists in classpath. If not exit program
         String dbdriver = DBSpecifics.getInstance().getDriverClassName();
@@ -320,27 +325,27 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                 Thread currentThread = new Thread(hThread);
                 currentThread.start();
                 long startInMillis = System.currentTimeMillis();
-                long harvestMaxTimeInMillis = 60 * 60 * 1000L; // 1 hour
                 long deadline = startInMillis + harvestMaxTimeInMillis;
+                Date deadlineDate = new Date(deadline);
                 boolean aborted = false;
 
                 // wait until no longer alive or 1 hour has passed for a single
                 // harvest
-                logger.info("Waiting for harvest to complete or timeout (max 1 hour from now) of seed: "
-                        + s.getUrl());
+                logger.info("Waiting for harvest to complete or timeout (max wait until " 
+                        + deadlineDate + ") of seed: " + s.getUrl());
                 while (currentThread.isAlive()
                         && System.currentTimeMillis() < deadline) {
                     waitSecs(30);
                 }
-                if (currentThread.isAlive()) { // process still running after 1
-                                               // hour. Stopping process
+                if (currentThread.isAlive()) { // process still running after deadline
+                                               // Stopping process
                     currentThread.stop();
                     failure = true;
                     failureReason = "Harvest of seed '" + s.getUrl()
-                            + "' failed to finished within one hour";
+                            + "' failed to finished before deadline (" + deadlineDate + ")"; 
                     aborted = true;
                 }
-                // process has ended within the 60 minute time-frame
+                // process has ended before the deadline
                 if (!aborted) {
                     // save harvest in harvest-database if we have data to store
                     SingleSeedHarvest h = hThread.getHarvestResult();

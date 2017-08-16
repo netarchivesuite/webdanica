@@ -161,6 +161,33 @@ public class SettingsUtilities {
 	    }
 	    return true;
     }
+
+	public static long getLongSetting(String settingsName, long default_long_value) {
+        long returnValue = default_long_value;
+        if (Settings.hasKey(settingsName)) {
+            String settingsValueAsString = Settings.get(settingsName);  
+            if (settingsValueAsString == null || settingsValueAsString.isEmpty()) {
+                logger.warning("Using default value '" + default_long_value + "' for setting '" 
+                        + settingsName + "', as the value in the settings is null or empty");
+            } else { // Try to parse the settingsValueAsString as a valid Long
+                long longValue;
+                try {
+                    longValue = Long.parseLong(settingsValueAsString);
+                    returnValue = longValue;
+                    logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
+                } catch (NumberFormatException e) {
+                    logger.warning("Using default value '" + default_long_value + "' for setting '" + settingsName + "', as the value '" 
+                            + settingsValueAsString 
+                            + "'  in the settings is not a valid Long");
+                }
+            }
+        } else {
+            logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" 
+                    + default_long_value + "'");
+        }
+        return returnValue;
+    }
+	
 	
 }
 

@@ -22,5 +22,6 @@ public class Constants {
 	public static final long MAX_SEEDS_TO_FETCH = 10000;
 	public static final boolean DEFAULT_WEBAPP_DEFAULT_SECURED_SETTING = false;
 	public static final int DEFAULT_MAX_FILTERING_RECORDS_PER_RUN = 1000;
+    public static final long DEFAULT_HARVEST_MAX_TIMEINMILLIS = 60 * 60 * 1000L;
 	
 }

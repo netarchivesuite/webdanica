@@ -129,7 +129,10 @@ public class SingleSeedHarvest {
 		    eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
 		} catch (ArgumentNotValid e) {
 		    constructionOK=false;
-		    errMsg.append("Unable to add seed '" + seed + "' to eventharvest: " + ExceptionUtils.getFullStackTrace(e));
+		    String error = "Unable to add seed '" + seed + "' to eventharvest: " + ExceptionUtils.getFullStackTrace(e);
+		    logger.warning("Failed to construct harvest for seed '" + seed + "': " +  error);
+		    errMsg.append(error);
+		    
 		}
 		if (constructionOK) {
 		    eventHarvest.setActive(true);
