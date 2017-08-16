@@ -66,7 +66,7 @@ public class IgnoredSuffixes {
         String low = seed.toLowerCase();
         if (low.contains("?")) { // Ignore everything from the ? and beyond
             low = low.substring(0, low.indexOf('?'));
-            System.out.println(low);
+            //System.out.println(low);
         }
         for (String ign : ignoredExts) {
             if (low.endsWith(ign)) {

@@ -232,11 +232,15 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 
     @Override
     protected void process_run() {
-        logger.log(Level.FINE, "Running process of thread '" + threadName
-                + "' at '" + new Date() + "'");
         if (!harvestingEnabled) {
             return;
         }
+        // Check the harvest schedule 
+        if (!environment.bScheduleHarvesting) {
+            return;
+        }
+        logger.log(Level.INFO, "Running process of thread '" + threadName
+               + "' at '" + new Date() + "'");
         if (harvestingInProgress.get()) {
             logger.log(Level.INFO,
                     "Harvesting process already in progress at '" + new Date()

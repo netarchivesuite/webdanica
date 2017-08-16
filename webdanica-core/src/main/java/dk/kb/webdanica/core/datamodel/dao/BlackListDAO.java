@@ -13,7 +13,6 @@ public interface BlackListDAO {
 
 	List<BlackList> getLists(boolean b) throws Exception;
 
-	//List<HarvestReport> getAll();
 	void close();
 
 }

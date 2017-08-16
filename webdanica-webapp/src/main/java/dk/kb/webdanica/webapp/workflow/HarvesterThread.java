@@ -3,6 +3,8 @@ package dk.kb.webdanica.webapp.workflow;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 
 public class HarvesterThread implements Runnable {
@@ -32,9 +34,8 @@ public class HarvesterThread implements Runnable {
 		harvest = new SingleSeedHarvest(url, eventHarvestName, scheduleName, templateName, harvestMaxBytes, harvestMaxObjects);
 		try {
 			harvestSuccess = harvest.finishHarvest(false);
-		} catch (Exception e) {
-			logger.log(Level.WARNING, "Exception during harvesting", e);
-			e.printStackTrace();
+		} catch (Throwable e) {
+			logger.log(Level.WARNING, "Exception during harvesting:" + ExceptionUtils.getFullStackTrace(e), e);
 		}
 	}
 

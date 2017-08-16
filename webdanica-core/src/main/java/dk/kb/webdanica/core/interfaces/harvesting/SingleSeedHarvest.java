@@ -34,6 +34,7 @@ import dk.netarkivet.common.CommonSettings;
 import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
 import dk.netarkivet.common.distribute.arcrepository.BitarchiveRecord;
 import dk.netarkivet.common.distribute.arcrepository.Replica;
+import dk.netarkivet.common.exceptions.ArgumentNotValid;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.common.utils.Settings;
@@ -89,6 +90,7 @@ public class SingleSeedHarvest {
 	private List<String> fetchedUrls;
 	private AnalysisStatus analysisState;
 	private String analysisStateReason;
+	private boolean constructionOK=true; 
 	
 	/**
 	 * @param seed
@@ -112,19 +114,28 @@ public class SingleSeedHarvest {
 		if (!TemplateDAO.getInstance().exists(templateName)) {
 			throw new WebdanicaException("The chosen heritrix template with name '" + templateName + "' does not exist");
 		}
+		
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
 		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed= " + seed, "Webdanica Curators");
 		HarvestDefinitionDAO dao = HarvestDefinitionDAO.getInstance();
 		hid = dao.create(hd);
 		
 		Map<String,String> attributeValues = new HashMap<String,String>(); // Empty attributeset
-
+		
 		PartialHarvest eventHarvest = (PartialHarvest) HarvestDefinitionDAO.getInstance().getHarvestDefinition(eventHarvestName);
 		Set<String> seedSet = new HashSet<String>();
 		seedSet.add(seed);
-		
-		eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
-		eventHarvest.setActive(true);
+		try {
+		    eventHarvest.addSeeds(seedSet, templateName, maxBytes, maxObjects, attributeValues);
+		} catch (ArgumentNotValid e) {
+		    constructionOK=false;
+		    errMsg.append("Unable to add seed '" + seed + "' to eventharvest: " + ExceptionUtils.getFullStackTrace(e));
+		}
+		if (constructionOK) {
+		    eventHarvest.setActive(true);
+		} else {
+		    eventHarvest.setActive(false);
+		}
 		HarvestDefinitionDAO.getInstance().update(eventHarvest);		 
 	}
 	
@@ -142,6 +153,20 @@ public class SingleSeedHarvest {
 	    this.analysisStateReason = "No analysis done, as the harvest has failed";
     }
 	
+	/**
+	 * Used to construct a SingleSeedHarvest object with database information.
+	 * @param harvestname
+	 * @param seedurl
+	 * @param successful
+	 * @param files
+	 * @param error
+	 * @param finalState
+	 * @param harvestedTime
+	 * @param reports
+	 * @param fetchedUrls
+	 * @param analysisStatus
+	 * @param analysisReason
+	 */
 	public SingleSeedHarvest(String harvestname, String seedurl, boolean successful, List<String> files, String error, 
 			JobStatus finalState, long harvestedTime, NasReports reports, List<String> fetchedUrls, AnalysisStatus analysisStatus, String analysisReason) {
 		this.harvestName = harvestname;

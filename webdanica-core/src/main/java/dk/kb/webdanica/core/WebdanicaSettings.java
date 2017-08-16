@@ -29,6 +29,8 @@ public class WebdanicaSettings {
 	public static String HARVESTING_HARVEST_LOG_READY_SUFFIX = "settings.harvesting.harvestlogReadySuffix";
 	public static String HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX = "settings.harvesting.harvestlogNotreadySuffix";
 	
+	/** crawlertraps settings. */
+	public static String CRAWLERTRAPS_MAX_TRAP_SIZE = "settings.crawlertraps.maxTrapSize";
 	
 	/** webapp settings */
 	public static String WEBAPP_RESOURCE_PATH = "settings.webapp.resources.resource.path";

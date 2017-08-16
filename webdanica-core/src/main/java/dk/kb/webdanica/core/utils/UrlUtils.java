@@ -4,13 +4,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.core.seeds.filtering.IgnoredProtocols;
 import dk.kb.webdanica.core.utils.UrlInfo;
 import dk.netarkivet.common.utils.DomainUtils;
 
@@ -50,7 +49,7 @@ public class UrlUtils {
 			URI url = new URI(seed);
 			String scheme = url.getScheme();
 			if (!isValidScheme(scheme)) {
-				return URL_REJECT_REASON.BAD_SCHEME; // wrong scheme and scheme == null
+				return URL_REJECT_REASON.BAD_SCHEME; // bad scheme or scheme == null
 			}
 			String host = url.getHost();
 			if (host == null) {  
@@ -70,6 +69,11 @@ public class UrlUtils {
 		}
 		return URL_REJECT_REASON.NONE;
 	}	
+	
+	public static boolean ignoredSchema(String url) {
+	    boolean ignored=false;
+	    return ignored;
+	}
 	
 	
 	
@@ -96,15 +100,9 @@ public class UrlUtils {
     /**
 	 * @param scheme
 	 * @return
-	 * TODO read from WebdanicaSettings
 	 */
 	public static boolean isValidScheme(String scheme) {
-	    //String[] validSchemes = new String[]{"https", "http", "ftp"};
-	    Set<String> validSchemesSet = new HashSet<String>();
-	    validSchemesSet.add("https");
-	    validSchemesSet.add("http");
-	    validSchemesSet.add("ftp");
-	    return scheme != null && validSchemesSet.contains(scheme.toLowerCase());  
+	    return scheme != null && IgnoredProtocols.schemaMatchesIgnoredProtocol(scheme) == null;  
     }
 
 	public static UrlInfo getInfo(String url) {

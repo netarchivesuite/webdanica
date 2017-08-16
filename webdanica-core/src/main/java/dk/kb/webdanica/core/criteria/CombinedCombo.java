@@ -326,7 +326,7 @@ public class CombinedCombo extends EvalFunc<String> {
         if (Cext1 > 0) {  
 			//Calc Cext2        'Cext2 - Include Asian Symbols
 			int bytesLength = text.getBytes().length; 
-			Float percent = new Float(bytesLength*100) / new Float(text.length());
+			Float percent = new Float(bytesLength*100f / (float) text.length());
 			Cext2 = percent.intValue();
 			object.put("Cext2", "" + Cext2);
 			if (Cext2 < 200) { // Assume non-asian text if Cext2 is < below 200 %

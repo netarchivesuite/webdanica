@@ -36,7 +36,16 @@ public class FilterUtils {
                     + "' instead of original url '" + s.getUrl() + "'");
             urlInvestigated = redUrl;
         }
-
+        
+        // Test 0: test for ignored protocols (if not already rejected at Ingest)
+        String ignoredProtocol = IgnoredProtocols.matchesIgnoredProtocol(urlInvestigated);
+        if (ignoredProtocol != null) {
+            s.setStatus(Status.REJECTED);
+            s.setStatusReason("REJECTED because it matches ignored protocol '"
+                    + ignoredProtocol + "'");
+            return true;
+        }
+        
         // Test 1: test for ignored suffixes
         String ignoredSuffix = IgnoredSuffixes
                 .matchesIgnoredExtension(urlInvestigated);

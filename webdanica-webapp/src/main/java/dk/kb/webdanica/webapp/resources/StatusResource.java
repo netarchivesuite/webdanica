@@ -199,10 +199,11 @@ public class StatusResource implements ResourceAbstract {
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<pre>\r\n");
+        sb.append("<pre>");
+        sb.append(Constants.CRLF);
         sb.append("System properties:");
-        sb.append("\r\n");
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
+        sb.append(Constants.CRLF);
 
         Properties props = System.getProperties();
         Iterator<Entry<Object, Object>> iter = props.entrySet().iterator();
@@ -212,22 +213,22 @@ public class StatusResource implements ResourceAbstract {
         	sb.append(entry.getKey());
         	sb.append('=');
         	sb.append(entry.getValue());
-        	sb.append("\r\n");
+        	sb.append(Constants.CRLF);
         }
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
         sb.append("System environment:");
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
         for (String keyEntry: System.getenv().keySet()) {
         	sb.append(keyEntry);
         	sb.append('=');
         	sb.append(System.getenv(keyEntry));
-        	sb.append("\r\n");
+        	sb.append(Constants.CRLF);
         }
         
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
         sb.append("Servlet properties:");
-        sb.append("\r\n");
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
+        sb.append(Constants.CRLF);
         
         ServletConfig servletConfig = Servlet.environment.getServletConfig();
         @SuppressWarnings("rawtypes")
@@ -238,23 +239,23 @@ public class StatusResource implements ResourceAbstract {
         		sb.append(key);
         		sb.append('=');
         		sb.append(servletConfig.getInitParameter(key));
-            	sb.append("\r\n");
+            	sb.append(Constants.CRLF);
         	}
         }
  
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
         sb.append("Webdanica settings:");
-        sb.append("\r\n");
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
+        sb.append(Constants.CRLF);
         
         sb.append(HtmlEntity.encodeHtmlEntities(FileUtils.readFileToString(environment.getWebdanicaSettingsFile()))); 
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
         sb.append("Netarchivesuite settings:");
-        sb.append("\r\n");
-        sb.append("\r\n");
+        sb.append(Constants.CRLF);
+        sb.append(Constants.CRLF);
  
         sb.append(HtmlEntity.encodeHtmlEntities(FileUtils.readFileToString(environment.getNetarchivesuiteSettingsFile()))); 
-        sb.append("</pre>\r\n");
+        sb.append("</pre>" + Constants.CRLF);
 
         if (titlePlace != null) {
             titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME + Constants.SPACE).toString());
