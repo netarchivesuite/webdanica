@@ -67,4 +67,14 @@ public class UnitTestUtils {
 		} 
 	}
 
+    public static void describeArray(String[] split) {
+        System.out.println("Length: " + split.length);
+        int i = 0;
+        for (String s: split) {
+            System.out.println("#" + i + ": " + s);
+            i++;
+        }
+        
+    }
+
 }

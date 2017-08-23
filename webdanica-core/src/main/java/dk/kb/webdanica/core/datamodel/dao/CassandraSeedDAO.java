@@ -250,4 +250,23 @@ public class CassandraSeedDAO implements SeedsDAO {
 	    return null;
     }
 
+    @Override
+    public Long getDomainSeedsCount(String domain) throws DaoException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Seed> getSeeds(String domain, int limit) throws DaoException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Seed> getSeeds(Status status, String domain, int limit)
+            throws DaoException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

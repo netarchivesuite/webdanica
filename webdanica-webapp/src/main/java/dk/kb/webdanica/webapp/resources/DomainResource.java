@@ -2,6 +2,7 @@ package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -41,7 +42,10 @@ public class DomainResource implements ResourceAbstract {
 	    
 	    protected int R_DOMAIN_SHOW = -1;
 
+	    private String TLD_LIST_TEMPLATE = "tld_list.html";
+	    
 		private String DOMAIN_SHOW_TEMPLATE = "domain_show.html";
+		
 		private String DOMAIN_LIST_TEMPLATE = "domain_list.html";
 
 		private DAOFactory daofactory;
@@ -69,29 +73,50 @@ public class DomainResource implements ResourceAbstract {
 	    public void resource_service(ServletContext servletContext, User dab_user,
 	    		HttpServletRequest req, HttpServletResponse resp,
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
-
+	        
 	        if (resource_id == R_DOMAINS_LIST) {
-	            domains_list(dab_user, req, resp);
+	            DomainsRequest dr = DomainsRequest.getDomainsRequest(pathInfo);
+	            if (dr.getValid()) {
+	                domains_list(dab_user, req, resp, dr);
+	            } else {
+	                String error = "Invalid request: " + pathInfo;
+	                CommonResource.show_error(error, resp, environment);
+                    return;
+	            }
 	        } else if (resource_id == R_DOMAIN_SHOW) {
-	            Domain domain = null;
-
-	            try {
-	                domain = getDomainFromPathinfo(pathInfo, DOMAIN_PATH);
-	            } catch (DaoException e)  {
-	                String error = "Impossible to retrieve domain from database in resource '" +  this.getClass().getName() + "': " +  ExceptionUtils.getFullStackTrace(e);
+	            DomainRequest dr = DomainRequest.getDomainRequest(pathInfo);
+	            if (dr.getValid()) {
+	                Domain domain = null;
+	                try {
+	                    domain = getDomainFromPathinfo(pathInfo, DOMAIN_PATH);
+	                } catch (DaoException e)  {
+	                    String error = "Impossible to retrieve domain from database in resource '" +  this.getClass().getName() + "': " +  ExceptionUtils.getFullStackTrace(e);
+	                    CommonResource.show_error(error, resp, environment);
+	                    return;
+	                }
+	                if (domain != null) {
+	                    Long seedscount = 0L;
+                        try {
+                            seedscount = daofactory.getSeedsDAO().getDomainSeedsCount(domain.getDomain());
+                        } catch (DaoException e) {
+                            String error = "Impossible to extract seedscount for domain '" +  domain.getDomain() + "': " + ExceptionUtils.getFullStackTrace(e);
+                            CommonResource.show_error(error, resp, environment);
+                            return;
+                        }
+	                    domain_show(dab_user, req, resp, domain, seedscount);
+	                } else {
+	                    String error = "Impossible to find valid domain from pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
+	                    CommonResource.show_error(error, resp, environment);
+	                    return;
+	                } 
+	            } else {
+	                String error = "Invalid request: " + pathInfo;
                     CommonResource.show_error(error, resp, environment);
                     return;
 	            }
-	        	if (domain != null) {
-	        	    domain_show(dab_user, req, resp, domain);
-	        	} else {
-	        	    String error = "Impossible to find valid domain from pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
-	                CommonResource.show_error(error, resp, environment);
-	                return;
-	        	}
-	            
+
 	        } else {
-	        	String error = "No match for pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
+	        	String error = "No resource matching pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
 	        	CommonResource.show_error(error, resp, environment);
 	        	return;
 	        }
@@ -107,7 +132,7 @@ public class DomainResource implements ResourceAbstract {
         }
 
 		private void domain_show(User dab_user, HttpServletRequest req,
-                HttpServletResponse resp, Domain b) throws IOException {
+                HttpServletResponse resp, Domain b, Long seedsCount) throws IOException {
 	    	ServletOutputStream out = resp.getOutputStream();
 	        resp.setContentType("text/html; charset=utf-8");
 	        // TODO error text
@@ -153,7 +178,7 @@ public class DomainResource implements ResourceAbstract {
 	        placeHolders.add(activePlace);
 
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-        
+	        
 	        /*
 	         * Heading.
 	         */
@@ -202,7 +227,7 @@ public class DomainResource implements ResourceAbstract {
 	        ResourceUtils.insertText(activePlace, "activeStatus",  b.isActive() + "", BLACKLIST_SHOW_TEMPLATE, logger);
 	        */
 	
-	  /*      
+	        /*
 	        StringBuilder sb = new StringBuilder();
 	        
 	        sb.append("<pre>\r\n");
@@ -212,7 +237,7 @@ public class DomainResource implements ResourceAbstract {
 	    	}	
 	    	
 	    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), BLACKLIST_SHOW_TEMPLATE, logger);
-	    */   
+	        */
 	        
 	        CommonResource.insertInAlertPlace(alertPlace, errorStr, successStr, templateName, logger);
 	        try {
@@ -226,14 +251,18 @@ public class DomainResource implements ResourceAbstract {
 	        }
 	    }
 	        
-
 		public void domains_list(User dab_user, HttpServletRequest req,
-	            HttpServletResponse resp) throws IOException {
+	            HttpServletResponse resp, DomainsRequest dr) throws IOException {
 	        ServletOutputStream out = resp.getOutputStream();
 	        resp.setContentType("text/html; charset=utf-8");
 
 	        Caching.caching_disable_headers(resp);
-	        String templatename = DOMAIN_LIST_TEMPLATE;
+	        String templatename = TLD_LIST_TEMPLATE;
+	        boolean showDomainsForTld = dr.getTld() != null;
+	        String tld = dr.getTld();
+	        if (showDomainsForTld) {
+	            templatename = DOMAIN_LIST_TEMPLATE;
+	        }
 	        Template template = environment.getTemplateMaster().getTemplate(templatename);
 
 	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
@@ -260,38 +289,71 @@ public class DomainResource implements ResourceAbstract {
 	        // Primary textarea
 	        StringBuffer sb = new StringBuffer();
 	        
-	        Set<String> tldList = null; 
-	        //List<Domain> domainList = null;
-            try {
-                //domainList = daofactory.getDomainsDAO().getDomains(null, null, Integer.MAX_VALUE);
-                tldList = daofactory.getDomainsDAO().getTlds();
-                //logger.info("Found " + domainList.size() + " domains to list");
-                logger.info("Found " + tldList.size() + " tld to list");
-            } catch (Exception e) {
-            	String errMsg = "System-error: Exception thrown";
-            	logger.log(Level.WARNING, errMsg, e);
-            	CommonResource.show_error(errMsg, resp, environment);
-            	return;
-            }
+	        Set<String> tldList = new HashSet<String>();
+	        String header = "";
+	        if (!showDomainsForTld) {
+	            try {
+	                tldList = daofactory.getDomainsDAO().getTlds();
+	                header = "Listing all " + tldList.size() + " top level domains:";
+	            } catch (Exception e) {
+	                String errMsg = "System-error: Exception thrown";
+	                logger.log(Level.WARNING, errMsg, e);
+	                CommonResource.show_error(errMsg, resp, environment);
+	                return;
+	            } 
+	            for (String s: tldList) {
+                    sb.append("<tr>");
+                    sb.append("<td>");    
+                    sb.append("<a href=\"");
+                    sb.append(Servlet.environment.getDomainsPath());
+                    sb.append(s);
+                    sb.append("/\">");
+                    sb.append(s);
+                    sb.append("</a>");
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append("N/A");
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append("N/A");
+                    sb.append("</td>");
+                    sb.append("</tr>\n");
+                }
+	        } else { 
+	            Long domainsCount = 0L;
+	            List<Domain> domains = null;
+	            try {
+	                domainsCount = daofactory.getDomainsDAO().getDomainsCount(null, tld);
+                    domains = daofactory.getDomainsDAO().getDomains(null, tld, environment.getConfig().getMaxUrlsToFetch());
+                } catch (DaoException e) {
+                    String errMsg = "System-error: Exception thrown: " + ExceptionUtils.getFullStackTrace(e);
+                    logger.log(Level.WARNING, errMsg, e);
+                    CommonResource.show_error(errMsg, resp, environment);
+                    return;
+                   
+                }
+	            header = "Listing all " + domainsCount + " domains in top level domain '" +  tld + "':";
+	            for (Domain d: domains) {
+	                sb.append("<tr>");
+	                sb.append("<td>");    
+	                sb.append("<a href=\"");
+	                sb.append(Servlet.environment.getDomainPath());
+	                sb.append(d.getDomain());
+	                sb.append("/\">");
+	                sb.append(d.getDomain());
+	                sb.append("</a>");
+	                sb.append("</td>");
+	                sb.append("<td>");
+	                sb.append(d.getTld());
+	                sb.append("</td>");
+	                sb.append("<td>");
+	                sb.append(d.getDanicaStatus());
+	                sb.append("</td>");
+	                sb.append("</tr>\n");
+	            }
+	        }
+	        
             
-            for (String s: tldList) {
-                sb.append("<tr>");
-                sb.append("<td>");    
-                sb.append("<a href=\"");
-                sb.append(Servlet.environment.getDomainPath());
-                sb.append(s);
-                sb.append("/\">");
-                sb.append(s);
-                sb.append("</a>");
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append("N/A");
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append("N/A");
-                sb.append("</td>");
-                sb.append("</tr>\n");
-            }
 	        /*
 	         * Menu.
 	         */
@@ -303,14 +365,14 @@ public class DomainResource implements ResourceAbstract {
 	        menuSb.append("><a href=\"");
 	        menuSb.append(Servlet.environment.getDomainsPath());
 	        menuSb.append("\">");
-	        menuSb.append("Liste over kendte domæner i systemet");
+	        menuSb.append(header);
 	        menuSb.append("</a></li>\n");
 	        
 	        /*
 	         * Heading.
 	         */
 
-	        String heading = "Liste over kendte domæner i systemet";
+	        String heading = header;
 
 	        /*
 	         * Places.

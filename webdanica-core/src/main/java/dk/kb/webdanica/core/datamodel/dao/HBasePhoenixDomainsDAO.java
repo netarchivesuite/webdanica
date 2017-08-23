@@ -132,11 +132,11 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 			} else if (tld != null) { // ie. status==null
 				stm = conn.prepareStatement(DOMAINS_COUNT_BY_TLD_SQL);
 				stm.clearParameters();
-				stm.setString(2, tld);
+				stm.setString(1, tld);
 			} else if (status != null) {  // ie. tld==null
 				stm = conn.prepareStatement(DOMAINS_COUNT_BY_STATUS_SQL);
 				stm.clearParameters();
-				stm.setInt(2, status.ordinal());
+				stm.setInt(1, status.ordinal());
 			} else { // tld == null && status == null
 				stm = conn.prepareStatement(DOMAINS_COUNT_ALL_SQL);
 			}

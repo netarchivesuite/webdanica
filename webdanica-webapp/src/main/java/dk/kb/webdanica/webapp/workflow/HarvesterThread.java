@@ -46,6 +46,10 @@ public class HarvesterThread implements Runnable {
 	public SingleSeedHarvest getHarvestResult() {
 		return harvest;
 	}
+	
+	public boolean constructionOK() {
+	    return harvest.getConstructionOK();
+	}
 }
 
 	

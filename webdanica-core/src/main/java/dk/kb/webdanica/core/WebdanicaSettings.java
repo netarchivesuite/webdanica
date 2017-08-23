@@ -46,7 +46,9 @@ public class WebdanicaSettings {
 	public static final String WEBAPP_CRONTAB_STATECACHING = "settings.webapp.crontab.statecaching";
 	
 	public static final String WEBAPP_MAX_FILTERING_RECORDS_PER_RUN = "settings.webapp.filtering.maxRecordsProcessedPerRun";
-    
+	public static final String WEBAPP_MAX_URL_LENGTH_TO_SHOW = "settings.webapp.maxUrlLengthToShow";
+	public static final String WEBAPP_MAX_URLS_TO_FETCH = "settings.webapp.maxUrlsToFetch";
+	
 	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";

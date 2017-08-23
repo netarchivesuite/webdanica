@@ -328,24 +328,34 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                 long deadline = startInMillis + harvestMaxTimeInMillis;
                 Date deadlineDate = new Date(deadline);
                 boolean aborted = false;
-
-                // wait until no longer alive or 1 hour has passed for a single
-                // harvest
-                logger.info("Waiting for harvest to complete or timeout (max wait until " 
-                        + deadlineDate + ") of seed: " + s.getUrl());
-                while (currentThread.isAlive()
-                        && System.currentTimeMillis() < deadline) {
-                    waitSecs(30);
-                }
-                if (currentThread.isAlive()) { // process still running after deadline
-                                               // Stopping process
-                    currentThread.stop();
+                //boolean hThreadConstructionOK = hThread.constructionOK();
+                boolean hThreadConstructionOK = true; //FIXME this is a temporary fix
+                // check if harvest was never constructed
+                if (!hThreadConstructionOK) {
+                    aborted = true;
                     failure = true;
                     failureReason = "Harvest of seed '" + s.getUrl()
-                            + "' failed to finished before deadline (" + deadlineDate + ")"; 
-                    aborted = true;
+                            + "' failed to be constructed. Possible reason: unknown/illegal domain or an ftp-url"; 
+                } else {
+                    // wait until no longer alive or 1 hour has passed for a single
+                    // harvest
+                    logger.info("Waiting for harvest to complete or timeout (max wait until " 
+                            + deadlineDate + ") of seed: " + s.getUrl());
+                    while (currentThread.isAlive()
+                            && System.currentTimeMillis() < deadline) {
+                        waitSecs(30);
+                    }
+                    if (currentThread.isAlive()) { // process still running after deadline
+                        // Presuming process is already finished or will never finish
+                        //currentThread.stop();
+                        failure = true;
+                        failureReason = "Harvest of seed '" + s.getUrl()
+                                + "' failed to finished before deadline (" + deadlineDate + ")"; 
+                        aborted = true;
+                    } 
                 }
-                // process has ended before the deadline
+                
+                // process has ended successfully before the deadline if aborted=false
                 if (!aborted) {
                     // save harvest in harvest-database if we have data to store
                     SingleSeedHarvest h = hThread.getHarvestResult();

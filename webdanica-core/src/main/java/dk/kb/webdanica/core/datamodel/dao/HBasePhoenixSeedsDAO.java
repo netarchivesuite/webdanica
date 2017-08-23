@@ -126,6 +126,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     private static final String SEEDS_COUNT_BY_STATUS_SQL;
     private static final String SEEDS_COUNT_ALL_SQL;
+    private static final String SEEDS_COUNT_BY_DOMAIN_SQL;
 
     static {
         SEEDS_COUNT_BY_STATUS_SQL = ""
@@ -135,6 +136,10 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         SEEDS_COUNT_ALL_SQL = ""
                 + "SELECT count(*) "
                 + "FROM seeds ";
+        SEEDS_COUNT_BY_DOMAIN_SQL = ""
+                + "SELECT count(*) "
+                + "FROM seeds "
+                + "WHERE domain=? ";
     }
 
 	@Override
@@ -166,11 +171,19 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 	}	
 
     private static final String SEEDS_BY_STATUS_SQL;
+    private static final String SEEDS_BY_DOMAIN_SQL;
+    private static final String SEEDS_BY_DOMAIN_AND_STATE_SQL;
 
     static {
         SEEDS_BY_STATUS_SQL = "SELECT * "
                 + "FROM seeds "
                 + "WHERE status=? LIMIT ?";
+        SEEDS_BY_DOMAIN_SQL = "SELECT * "
+                + "FROM seeds "
+                + "WHERE domain=? LIMIT ?";
+        SEEDS_BY_DOMAIN_AND_STATE_SQL = "SELECT * "
+                + "FROM seeds "
+                + "WHERE domain=? AND status=? LIMIT ?";
     }
 
     @Override
@@ -195,6 +208,55 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         }
         return seedList;
     }
+    
+    @Override
+    public List<Seed> getSeeds(Status status, String domain, int limit) throws DaoException {
+        List<Seed> seedList = new LinkedList<Seed>();
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_SQL);) {
+                stm.clearParameters();
+                stm.setString(2, domain);
+                stm.setInt(2, status.ordinal());
+                stm.setInt(3, limit);
+                try (ResultSet rs = stm.executeQuery();) {
+                    if (rs != null) {
+                        while (rs.next()) {
+                            seedList.add(getSeedFromResultSet(rs));
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+        return seedList;
+    }
+    
+    @Override
+    public List<Seed> getSeeds(String domain, int limit) throws DaoException {
+        List<Seed> seedList = new LinkedList<Seed>();
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);) {
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2, limit);
+                try (ResultSet rs = stm.executeQuery();) {
+                    if (rs != null) {
+                        while (rs.next()) {
+                            seedList.add(getSeedFromResultSet(rs));
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+        return seedList;
+    }
+    
+    
 
     private Seed getSeedFromResultSet(ResultSet rs) throws SQLException {
         Timestamp t = rs.getTimestamp("exported_time");
@@ -334,5 +396,29 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
             throw new DaoException(e);
         }
         return result;
+    }
+
+    @Override
+    public Long getDomainSeedsCount(String domain) throws DaoException {
+        if (domain == null || domain.isEmpty()) {
+            return 0L;
+        }
+        long res = 0;
+        try {
+            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
+            try (PreparedStatement stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_SQL);) {
+                stm.clearParameters();
+                stm.setString(1, domain);
+                try (ResultSet rs = stm.executeQuery();) {
+                    if (rs != null && rs.next()) {
+                        res = rs.getLong(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+
+        return res;
     }
 }

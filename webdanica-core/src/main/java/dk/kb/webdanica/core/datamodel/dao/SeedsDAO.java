@@ -13,18 +13,25 @@ public interface SeedsDAO extends AutoCloseable{
 	boolean updateSeed(Seed singleSeed) throws DaoException;
 	
 	List<Seed> getSeeds(Status fromOrdinal, int limit) throws DaoException;
-
-	Long getSeedsCount(Status fromOrdinal) throws DaoException;
 	
-	void close();
+	Long getSeedsCount(Status fromOrdinal) throws DaoException;
 
 	Long getSeedsDanicaCount(DanicaStatus s) throws DaoException;
-
+	
+	Long getDomainSeedsCount(String domain) throws DaoException;
+	
 	List<Seed> getSeedsReadyToExport(boolean includeAlreadyExportedSeeds) throws DaoException;
 
 	boolean existsUrl(String url) throws DaoException;
 	
-	Seed getSeed(String url)  throws DaoException;
+	Seed getSeed(String url) throws DaoException;
+	
+	void close();
+
+    List<Seed> getSeeds(String domain, int limit) throws DaoException;
+
+    List<Seed> getSeeds(Status status, String domain, int limit) throws DaoException;
+    
 }
 	
 	

@@ -23,5 +23,6 @@ public class Constants {
 	public static final boolean DEFAULT_WEBAPP_DEFAULT_SECURED_SETTING = false;
 	public static final int DEFAULT_MAX_FILTERING_RECORDS_PER_RUN = 1000;
     public static final long DEFAULT_HARVEST_MAX_TIMEINMILLIS = 60 * 60 * 1000L;
-	
+    public static final int DEFAULT_MAX_URL_LENGTH_TO_SHOW = 40;
+    public static final int DEFAULT_MAX_URLS_TO_FETCH = 2000;
 }

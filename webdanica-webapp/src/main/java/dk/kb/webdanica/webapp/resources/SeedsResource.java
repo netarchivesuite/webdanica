@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jwat.common.Base64;
 
 import com.antiaction.common.filter.Caching;
@@ -113,7 +114,7 @@ public class SeedsResource implements ResourceAbstract {
         		 SeedsDAO dao = environment.getConfig().getDAOFactory().getSeedsDAO();	
         		 changeStateForAll(seedsRequest, dao, resp);
         	} else {
-        		urls_list(dab_user, req, resp, numerics);
+        		urls_list(dab_user, req, resp, numerics, seedsRequest);
         	}
         } else if (resource_id == R_STATUS_SEED_SHOW) {
         	SeedRequest seedRequest = SeedRequest.getUrlFromPathinfo(pathInfo, SEED_PATH);
@@ -555,7 +556,6 @@ public class SeedsResource implements ResourceAbstract {
 
 	private void urls_list_dump(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, List<Integer> numerics) throws IOException {
-        //UrlRecords urlRecordsInstance = UrlRecords.getInstance(environment.dataSource);
     	SeedsDAO dao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
     	
         int status = 0; //Ordinal for Status.NEW
@@ -610,16 +610,22 @@ public class SeedsResource implements ResourceAbstract {
     
 
     public void urls_list(User dab_user, HttpServletRequest req,
-            HttpServletResponse resp, List<Integer> numerics)
+            HttpServletResponse resp, List<Integer> numerics, SeedsRequest seedsRequest)
             throws IOException {
         String errorStr = null;
         String successStr = null;
         SeedsDAO sdao = Servlet.environment.getConfig().getDAOFactory().getSeedsDAO();
         CacheDAO cdao = Servlet.environment.getConfig().getDAOFactory().getCacheDAO();
         
+        boolean showSeedsFromDomain = seedsRequest.isShowSeedsFromDomainRequest();
+        boolean showSeedsFromDomainWithState = seedsRequest.isShowSeedsFromDomainWithStateRequest();
+        String domain = seedsRequest.getDomain();
         int status = 0; //Default state shown: Status.NEW
         if (numerics.size() == 1) {
             status = numerics.get(0);
+        }
+        if (showSeedsFromDomainWithState) {
+            status=seedsRequest.getCurrentState();
         }
 
         String pageStr = req.getParameter("page");
@@ -645,15 +651,6 @@ public class SeedsResource implements ResourceAbstract {
         	}
         }
 
-        String actionStr = req.getParameter("action");
-        String urlIdStr = req.getParameter("url_id");
-
-        
-        
-        boolean bDecidePerm = false;
-        boolean bDeletePerm = false;
-        
-        
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/html; charset=utf-8");
 
@@ -698,67 +695,33 @@ public class SeedsResource implements ResourceAbstract {
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
         boolean bShowReason = false;
-        boolean bShowPid = true;
-        boolean bShowAcceptReject = false;
-        boolean bShowArchiveUrl = false;
-        
         
         StringBuilder statemenuSb = new StringBuilder();
         Cache cache = null;
         try {
         	cache = cdao.getCache();
         } catch (Throwable e) {
-        	logger.warning("IOException thrown during call to cdao.getCache(): " + e);
+        	logger.warning("Exception thrown during call to cdao.getCache(): " + e);
         }
         if (cache == null) {
         	logger.warning("No cache available from cdao.getCache(). Using dummy values instead");
         	cache = Cache.getDummyCache();
         }
-        String heading = buildStatemenu(statemenuSb, status, sdao, cache);
+        String heading = null;
+        try {
+            heading = buildStatemenu(statemenuSb, status, sdao, cache, seedsRequest);
+        } catch (Throwable e) {
+            String errMsg = "Building statemenu failed: " +  ExceptionUtils.getFullStackTrace(e);
+            logger.log(Level.WARNING, errMsg, e);
+            CommonResource.show_error(errMsg, resp, environment);
+            return;
+        }
 
         /*
          * Menu.
          */
 
-        StringBuilder menuSb = new StringBuilder();
-/*
-        if (dab_user.hasAnyPermission(URL_ADD_PERMISSION)) {
-        	menuSb.append("<div class=\"well sidebar-nav\">\n");
-        	menuSb.append("<ul class=\"nav nav-list\">\n");
-        	menuSb.append("<li class=\"nav-header\">Valgmuligheder</li>\n");
-
-            menuSb.append("<li id=\"state_1\"");
-            menuSb.append("><a href=\"");
-            menuSb.append(Servlet.environment.seedsPath);
-            menuSb.append("add/\">Opret URL</a></li>\n");
-
-            menuSb.append("<li id=\"state_2\"");
-            menuSb.append("><a href=\"");
-            menuSb.append(Servlet.environment.seedsPath);
-            menuSb.append("upload/\">Upload fil med URL'er</a></li>\n");
-
-        	menuSb.append("</ul>\n");
-        	menuSb.append("</div><!--/.well -->\n");
-        }
-*/
-        
-        /*
-         * Action buttons.
-         */
-
-        StringBuilder actionButtonsSb = new StringBuilder();
-
-        if (bDeletePerm || (bShowAcceptReject && bDecidePerm)) {
-            actionButtonsSb.append("<a href=\"#\" class=\"btn\" onClick=\"select_all(document.myform.url_check_list); return false;\">Vælg alle</a>\n");
-            actionButtonsSb.append("<a href=\"#\" class=\"btn\" onClick=\"deselect_all(document.myform.url_check_list); return false;\">Fravælg alle</a>\n");
-            if (bShowAcceptReject && bDecidePerm) {
-                actionButtonsSb.append("<button type=\"submit\" name=\"submitaction\" value=\"accept\" class=\"btn btn-success\"><i class=\"icon-white icon-thumbs-up\"></i> Godkend</button>\n");
-                actionButtonsSb.append("<button type=\"submit\" name=\"submitaction\" value=\"reject\" class=\"btn btn-inverse\"><i class=\"icon-white icon-thumbs-down\"></i> Afvis</button>\n");
-            }
-            if (bDeletePerm) {
-                actionButtonsSb.append("<button type=\"submit\" name=\"submitaction\" value=\"delete\" class=\"btn btn-danger\"><i class=\"icon-white icon-trash\"></i> Slet</button>\n");
-            }
-        }
+        StringBuilder menuSb = new StringBuilder(); // Is this used?
 
         /*
          * Urls.
@@ -766,13 +729,37 @@ public class SeedsResource implements ResourceAbstract {
 
         StringBuilder urlListSb = new StringBuilder();
 
-        // FIXME better handling
         List<Seed> urlRecords = new ArrayList<Seed>();
         Status wantedStatus = Status.fromOrdinal(status);
-        try {
-            urlRecords = sdao.getSeeds(wantedStatus, 10000);
-        } catch (Exception e) {
-            logger.warning("Exception on retrieving max 10000 seeds with status " + wantedStatus + ": " + e); 
+        int maxUrlsToFetch = environment.getConfig().getMaxUrlsToFetch();
+        int maxUrlLengthToShow = environment.getConfig().getMaxUrlLengthToShow();
+        if (showSeedsFromDomain) {
+            try {
+                urlRecords = sdao.getSeeds(domain, maxUrlsToFetch);
+            } catch (Exception e) {
+                String errMsg = "Exception on retrieving max " + maxUrlsToFetch + " seeds from domain '" + domain + "' : " +  ExceptionUtils.getFullStackTrace(e);
+                logger.log(Level.WARNING, errMsg, e);
+                CommonResource.show_error(errMsg, resp, environment);
+                return;
+            }   
+        } else if (showSeedsFromDomainWithState) {
+            try {
+                urlRecords = sdao.getSeeds(wantedStatus, domain, maxUrlsToFetch);
+            } catch (Exception e) {
+                String errMsg = "Exception on retrieving max " + maxUrlsToFetch + " seeds from domain '" + domain + "' with state '" +  wantedStatus + "': " +  ExceptionUtils.getFullStackTrace(e);
+                logger.log(Level.WARNING, errMsg, e);
+                CommonResource.show_error(errMsg, resp, environment);
+                return;
+            }
+        } else {
+            try {
+                urlRecords = sdao.getSeeds(wantedStatus, maxUrlsToFetch);
+            } catch (Exception e) {
+                String errMsg = "Exception on retrieving max " + maxUrlsToFetch + " seeds with status " + wantedStatus + ": " +  ExceptionUtils.getFullStackTrace(e);
+                logger.log(Level.WARNING, errMsg, e);
+                CommonResource.show_error(errMsg, resp, environment);
+                return;
+            } 
         }
         List<Seed> urlRecordsFiltered = urlRecords;
         Seed urlRecord;
@@ -810,10 +797,6 @@ public class SeedsResource implements ResourceAbstract {
             urlListSb.append("      <th>grund</th>\n");
             bShowReason = true;
         }
-        if (bShowArchiveUrl) {
-            urlListSb.append("      <th>arkiv-url</th>\n");
-        }
-  
 
         urlListSb.append("    </tr>\n");
         urlListSb.append("  </thead>\n");
@@ -824,19 +807,17 @@ public class SeedsResource implements ResourceAbstract {
             urlListSb.append("<tr>");
             urlListSb.append("<td>");
             urlListSb.append("<a href=\"");
-            //urlListSb.append(Servlet.environment.getSeedsPath());
-            
-            urlListSb.append(urlRecord.getUrl());
+            urlListSb.append(urlRecord.getUrl()); // Point to original url
             urlListSb.append("\">");
-            urlListSb.append(makeEllipsis(urlRecord.getUrl(), 40)); // TODO make a setting
+            urlListSb.append(makeEllipsis(urlRecord.getUrl(), maxUrlLengthToShow));
             urlListSb.append("</a>");
-            // Add link to show details about seed
+            // Add encoded link to show details about seed  
             String base64Encoded = Base64.encodeString(urlRecord.getUrl());
         	if (base64Encoded == null) {
-        		logger.warning("base64 encoding of url '" +  urlRecord.getUrl() + "' gives null");
+        		logger.warning("base64 encoding of url '" +  urlRecord.getUrl() + "' gives null. Maybe it's already encoded?");
         		base64Encoded = urlRecord.getUrl();
         	}
-        	 String linkToShowPage = Servlet.environment.getSeedPath() + HTMLUtils.encode(base64Encoded) + "/\"";
+        	String linkToShowPage = Servlet.environment.getSeedPath() + HTMLUtils.encode(base64Encoded) + "/\"";
         	urlListSb.append("(<a href=\"" + linkToShowPage + ">Show details</a>)");
             urlListSb.append("</td>");
             urlListSb.append("<td>");
@@ -890,11 +871,11 @@ public class SeedsResource implements ResourceAbstract {
         if (headingPlace != null) {
             headingPlace.setText(heading);
         }
-
+/*
         if (actionButtonsPlace != null) {
             actionButtonsPlace.setText(actionButtonsSb.toString());
         }
-
+*/
         if (paginationPlace != null) {
             paginationPlace.setText(Pagination.getPagination(page, itemsPerPage, pages, bShowAll));
         }
@@ -972,19 +953,13 @@ public class SeedsResource implements ResourceAbstract {
         return resultString;
     }
 
-    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedsDAO dao, Cache cache) {
+    public static String buildStatemenu(StringBuilder statemenuSb, int status, SeedsDAO dao, Cache cache, SeedsRequest seedsRequest) throws Exception {
         /*
          * State menu.
          */
 
-        List<MenuItem> menuStatesArr =null;
-        try {
-            //menuStatesArr = makemenuArray(dao);
-        	menuStatesArr = makemenuArrayCache(cache);
-        } catch (Exception e) {
-        	logger.log(Level.WARNING, "Unexpected exception thrown", e);
-        }
-
+        List<MenuItem> menuStatesArr = makemenuArrayCache(cache);
+        
         String heading = "N/A";
 
         for (MenuItem item:  menuStatesArr) {
@@ -993,7 +968,7 @@ public class SeedsResource implements ResourceAbstract {
             statemenuSb.append(item.getOrdinalState()); 
             statemenuSb.append("\"");
             if (status == item.getOrdinalState()) {
-                heading =  item.getLongHeaderDescription();
+                heading = item.getLongHeaderDescription();
                 statemenuSb.append(" class=\"active\"");
             }
             statemenuSb.append("><a href=\"");
@@ -1005,15 +980,23 @@ public class SeedsResource implements ResourceAbstract {
             statemenuSb.append(item.getCount());
             statemenuSb.append(")</a></li>");
         }
+        
+        if (seedsRequest.isShowSeedsFromDomainRequest()) {
+            heading = "Seeds from domain '" + seedsRequest.getDomain() + "'";
+        } else if (seedsRequest.isShowSeedsFromDomainWithStateRequest()) {
+            heading = "Seeds from domain '" + seedsRequest.getDomain() + "' with state '" + DanicaStatus.fromOrdinal(seedsRequest.getCurrentState());
+        }
+        
 
         return heading;
     }
     
     // make the statemenu using counts read directly from hbase
+    /*
 	private static List<MenuItem> makemenuArray(SeedsDAO dao) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();
 		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
-		Locale locDa = new Locale("da");
+		Locale locDa = new Locale("da"); // TODO Shouldn't we read the locale from somewhere???
 		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
 			if (!Status.ignoredState(i)) {
 				Long count = dao.getSeedsCount(Status.fromOrdinal(i));
@@ -1023,6 +1006,8 @@ public class SeedsResource implements ResourceAbstract {
 		}
 	    return result;
     }
+    */
+	
 	// make the statemenu using cached values
 	private static List<MenuItem> makemenuArrayCache(Cache cache) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();

@@ -635,9 +635,14 @@ public class SingleSeedHarvest {
 	    return this.fetchedUrls;
     }
 
+	public boolean getConstructionOK() {
+	    return this.constructionOK;
+	}
+	
 	public static String getTimestamp() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-");
 		return sdf.format(new Date()) + System.currentTimeMillis();
     }
+	
 
 }

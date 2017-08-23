@@ -28,6 +28,9 @@ public class Configuration {
     private String harvestLogPrefix;
     private String harvestLogReadySuffix;
     private String harvestLogNotReadySuffix;
+    
+    private int maxUrlLengthToShow;
+    private int maxUrlsToFetch;
 
     public static synchronized Configuration getInstance() {
         if (config == null) {
@@ -63,6 +66,10 @@ public class Configuration {
         ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
         ignoredProtocols = Settings.getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
 
+        maxUrlLengthToShow = SettingsUtilities.getIntegerSetting(WebdanicaSettings.WEBAPP_MAX_URL_LENGTH_TO_SHOW, Constants.DEFAULT_MAX_URL_LENGTH_TO_SHOW);
+        maxUrlsToFetch = SettingsUtilities.getIntegerSetting(WebdanicaSettings.WEBAPP_MAX_URLS_TO_FETCH, Constants.DEFAULT_MAX_URLS_TO_FETCH);
+                
+        
         /*
          * Initialize emailer
          */
@@ -87,6 +94,7 @@ public class Configuration {
         harvestLogNotReadySuffix = SettingsUtilities.getStringSetting(
                 WebdanicaSettings.HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX,
                 Constants.DEFAULT_HARVESTLOG_NOTREADY_SUFFIX);
+        
 
     }
 
@@ -130,6 +138,14 @@ public class Configuration {
         return this.harvestLogNotReadySuffix;
     }
 
+    public int getMaxUrlLengthToShow() {
+        return this.maxUrlLengthToShow;
+    }
+    
+    public int getMaxUrlsToFetch() {
+        return this.maxUrlsToFetch;
+    }
+    
     public DAOFactory getDAOFactory() {
         return daoFactory;
     }
