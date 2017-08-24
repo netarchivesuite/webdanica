@@ -1,7 +1,5 @@
 package dk.kb.webdanica.webapp;
 
-import java.sql.Connection;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.antiaction.common.templateengine.login.LoginTemplateUser;
@@ -26,8 +24,8 @@ public class User implements LoginTemplateUser {
 	public static User getDefaultUser() {
 		User u = new User();
 		u.active=true;
-		u.id = "svc@kb.dk";
-		u.username="admin";
+		u.id = "nn@domain.org";
+		u.username="nn";
 		return u;
 	}		
 }

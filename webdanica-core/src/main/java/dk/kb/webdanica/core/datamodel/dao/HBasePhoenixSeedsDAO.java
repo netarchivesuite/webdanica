@@ -216,7 +216,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
             try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_SQL);) {
                 stm.clearParameters();
-                stm.setString(2, domain);
+                stm.setString(1, domain);
                 stm.setInt(2, status.ordinal());
                 stm.setInt(3, limit);
                 try (ResultSet rs = stm.executeQuery();) {
@@ -238,7 +238,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         List<Seed> seedList = new LinkedList<Seed>();
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);) {
+            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_DOMAIN_SQL);) {
                 stm.clearParameters();
                 stm.setString(1, domain);
                 stm.setInt(2, limit);

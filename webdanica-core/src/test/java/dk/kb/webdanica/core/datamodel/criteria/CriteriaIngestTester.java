@@ -92,8 +92,10 @@ public class CriteriaIngestTester {
 	
 	public void test(DAOFactory daoFactory) throws Exception {
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
-		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false, daoFactory );
+		boolean rejectDKURLS = false;
+		boolean addToDatabase = false;
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS);
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", false, daoFactory);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS);
 	}
 }

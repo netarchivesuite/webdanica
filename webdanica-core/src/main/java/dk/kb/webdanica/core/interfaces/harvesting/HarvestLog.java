@@ -15,10 +15,12 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
@@ -166,6 +168,8 @@ public class HarvestLog {
 		
 	public static List<HarvestError> processCriteriaResults(List<SingleSeedHarvest> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
+		boolean rejectDKURLs = SettingsUtilities.getBooleanSetting(
+                WebdanicaSettings.REJECT_DK_URLS, false);
 		for (SingleSeedHarvest h: harvests) {
 			Set<String> errs = new HashSet<String>();
 			if (h.getHeritrixWarcs().size() != 0){
@@ -181,7 +185,7 @@ public class HarvestLog {
 					} else {
 						for (String partfile: partfiles) {
 							File ingest = new File(ingestDir, partfile);
-							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase, daofactory );
+							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase, daofactory, rejectDKURLs );
 							if (pr.results.isEmpty()) {
 								errs.add("Partfile '" + ingest.getAbsolutePath() 
 										+ "' contained no results.original warc: " + filename);

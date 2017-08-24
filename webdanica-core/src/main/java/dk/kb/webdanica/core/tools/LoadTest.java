@@ -140,6 +140,7 @@ public static void main(String[] args) throws Exception {
     // Brug criteria_resultsdir som sample-data til at bruge som udgangspunkt 
     private void testStep4() throws Exception {
         System.out.println("Starting Step4 at " + new Date());
+        boolean rejectDKURLs = false;
         File[] resultdirs = criteriaResultsdir.listFiles(new FileFilter() {
             
             @Override
@@ -172,7 +173,7 @@ public static void main(String[] args) throws Exception {
              
             File ingest = new File(f, "part-m-00000.gz");
             System.out.println("Part " + filecount + "/" + resultdirs.length + ": Starting ingest of " + criteriaresultmultiples + " times records based on file '" + f.getAbsolutePath() + "' at " + new Date());
-            ProcessResult pr = CriteriaIngest.processFile(ingest, seedurlTemplate, harvestNameTemplate, false, daoFactory);
+            ProcessResult pr = CriteriaIngest.processFile(ingest, seedurlTemplate, harvestNameTemplate, false, daoFactory, rejectDKURLs);
             List<SingleCriteriaResult> critResults = pr.results;
             System.out.println(".. using the " + critResults.size() + " record(s) in " + ingest.getAbsolutePath() + " as template");
             for (int count=0; count < TOTAL; count++) {

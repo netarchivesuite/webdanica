@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
@@ -23,7 +22,6 @@ import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.seeds.filtering.FilterUtils;
-import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.kb.webdanica.core.utils.TextUtils;
@@ -99,11 +97,12 @@ public class CriteriaIngest {
      * @param seed
      * @param harvestName
      * @param addToDatabase
+     * @param rejectDKURLs 
      * @return ProcessResult object
      * @throws Exception
      */
     public static ProcessResult processFile(File ingestFile, String seed,
-            String harvestName, boolean addToDatabase, DAOFactory daofactory)
+            String harvestName, boolean addToDatabase, DAOFactory daofactory, boolean rejectDKURLs)
             throws Exception {
         long linecount = 0L;
         long skippedCount = 0L;
@@ -219,15 +218,16 @@ public class CriteriaIngest {
                             if (!ddao.existsDomain(s.getDomain())) {
                                 Domain d = Domain.createNewUndecidedDomain(s
                                         .getDomain());
-                                ddao.insertDomain(d);
+                                if (d.getDomain() != null) {
+                                    log("Inserting domain '" + d.getDomain() + "' in database for seed '" + res.url + "'");
+                                    ddao.insertDomain(d);
+                                } else {
+                                    log_error("No domain found for seed '" + res.url + "': no domain insertion done");
+                                }
                             }
-                            boolean rejectDKUrls = SettingsUtilities.getBooleanSetting(
-                                    WebdanicaSettings.REJECT_DK_URLS, false);
-                                    //Constants.DEFAULT_REJECT_DK_URLS_VALUE); 
-                            
                             rejected 
                                 = FilterUtils.doFilteringOnSeed(s, daofactory.getBlackListDAO().getLists(true), 
-                                        rejectDKUrls, daofactory.getDomainsDAO());
+                                        rejectDKURLs, daofactory.getDomainsDAO());
                         } else {
                             s = sdao.getSeed(res.url);
                         }

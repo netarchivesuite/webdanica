@@ -36,10 +36,12 @@ public class CriteriaIngestTester {
 	    if (count==1){
 	        return;
 	    }
+	    boolean rejectDKURLS = true;
+	    boolean addToDatabase = false;
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
 		DAOFactory daofactory = new CassandraDAOFactory();
-		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", false, daofactory );
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS );
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", false, daofactory);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS);
 	}
 }
