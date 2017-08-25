@@ -9,8 +9,10 @@ public class Codes {
 
     public static enum Category {
         ERROR, // error. should not be used
-        IGNORED, NOTLIKELY_DK, UNKNOWN, // values <= 0
-        MAYBE_DK, LIKELY_DK, BUG // Signifies bug in code allocation
+        IGNORED, NOTLIKELY_DK, 
+        UNKNOWN, // values <= 0
+        MAYBE_DK, LIKELY_DK, 
+        BUG // Signifies bug in code allocation
     };
 
     /**
@@ -41,6 +43,10 @@ public class Codes {
         codeSet.add(310);
         codeSet.add(315);
         codeSet.add(320);
+        // New curator codes
+        for (int code=400; code <= 414; code++) {
+            codeSet.add(code);
+        }
         return codeSet;
     }
 

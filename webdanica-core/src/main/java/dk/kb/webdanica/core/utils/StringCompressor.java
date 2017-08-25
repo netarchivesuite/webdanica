@@ -24,7 +24,6 @@ public class StringCompressor {
 
 	    public static String decompress(byte[] bytes) throws IOException {
 	        InputStream in = new InflaterInputStream(new ByteArrayInputStream(bytes));
-	    	//InputStream in = new GzipCompressorInputStream(new ByteArrayInputStream(bytes));
 	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	        try {
 	            byte[] buffer = new byte[8192];

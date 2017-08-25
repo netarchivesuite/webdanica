@@ -1,15 +1,9 @@
 package dk.kb.webdanica.core.datamodel.criteria;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import dk.kb.webdanica.core.datamodel.criteria.CodesFraction;
 import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Display;
 import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Level;
 
@@ -67,60 +61,9 @@ public class CalcDanishCode {
 
     }
 
-    public static int maxbit = 22;
-    public static String row_delim = "#";
+    public static final int maxbit = 22;
+    public static final String row_delim = "#";
 
-    public static Set<Integer> getCodeSet(Connection conn, String tablename,
-            CodesFraction frac) throws SQLException {
-        Set<Integer> codeSet = new HashSet<Integer>();
-        String selectSQL = "SELECT DISTINCT calcDanishCode FROM " + tablename;
-
-        switch (frac) {
-        case codes_positive:
-            selectSQL = selectSQL + " WHERE calcDanishCode>0 ";
-            break;
-        case codes_negative:
-            selectSQL = selectSQL + " WHERE calcDanishCode<0 ";
-            break;
-        case codes_nonpositive:
-            selectSQL = selectSQL + " WHERE calcDanishCode<=0 ";
-            break;
-        case codes_nonnegative:
-            selectSQL = selectSQL + " WHERE calcDanishCode>=0 ";
-            break;
-        case codes_all: // ignore
-        }
-
-        PreparedStatement t = conn.prepareStatement(selectSQL);
-        ResultSet trs = t.executeQuery();
-        while (trs.next()) {
-            codeSet.add(trs.getInt("calcDanishCode"));
-        }
-        trs.close();
-        t.close();
-        return codeSet;
-    }
-
-    public static Set<String> getUrlsForCalcCode(Connection conn,
-            String tablenm, int code) throws SQLException {
-        return getUrlsForCalcCode(conn, tablenm, code, "");
-    }
-
-    public static Set<String> getUrlsForCalcCode(Connection conn,
-            String tablenm, int code, String where) throws SQLException {
-        Set<String> urlSet = new HashSet<String>();
-        String sql = "SELECT url FROM " + tablenm + " WHERE (calcDanishCode="
-                + code + ")" + (where.isEmpty() ? "" : " AND (" + where + ")");
-        PreparedStatement s = conn.prepareStatement(sql);
-        ResultSet rs = s.executeQuery();
-        while (rs.next()) {
-            String url = rs.getString("Url");
-            urlSet.add(url);
-        }
-        rs.close();
-        s.close();
-        return urlSet;
-    }
 
     /**
      * Used by the getCalcDkCodeText() method to describe which criteria if any
@@ -501,6 +444,23 @@ public class CalcDanishCode {
                 } else if (code == 324) {
                     s = s + (viaFields ? " - C7g=0 - resten" : " - resten");
                 }
+            } else if ((code >= 400 && code <= 414)) {
+                if (code == 400) s = s + (viaFields ? " - C1a>0" : "DK mail addresses found");
+                if (code == 401) s = s + (viaFields ? " - C2A>0" : "DK telephone numbers found");
+                if (code == 402) s = s + (viaFields ? " - C6a>20" : "Frequent Danish words found");
+                if (code == 403) s = s + (viaFields ? " - C6b>1" : "Typical Danish words found");
+                if (code == 404) s = s + (viaFields ? " - C7b>0" : "Danish citynames found in the URL");
+                if (code == 405) s = s + (viaFields ? " - C7c>0" : "Danish placenames found in the text");
+                if (code == 406) s = s + (viaFields ? " - C7e>0" : "Translation of København and Danmark found ");
+                if (code == 407) s = s + (viaFields ? " - C7g>0" : "Large Danish citynames found in the text");
+                if (code == 408) s = s + (viaFields ? " - C7h>0" : "Translation of København and Danmark found ");
+                if (code == 409) s = s + (viaFields ? " - C9e>0" : "Names of Danish companies found");
+                if (code == 410) s = s + (viaFields ? " - C9d>0" : "CVR found");
+                if (code == 411) s = s + (viaFields ? " - C9a>0" : "a/s and aps found");
+                if (code == 412) s = s + (viaFields ? " - C10a>0" : "-sen names found in the text");
+                if (code == 413) s = s + (viaFields ? " - C10c>0" : "Frequent Danish personnames found");
+                if (code == 414) s = s + (viaFields ? " - C17a>0" : "Outlinks points to pages in .dk domain");
+                
             } else if (code == Codes.cat_ERROR_dk) {
                 s = "error";
             } else if (code == Codes.cat_ignored_dk) {
@@ -553,7 +513,7 @@ public class CalcDanishCode {
             String languagesFound) {
         List<Language> languages = Language.findLanguages(languagesFound);
         for (Language l : languages) {
-            if (l.getCode().equals("da") && l.getConfidence() > 0.90F) {
+            if (l.getCode().equals("da") && l.getConfidence() > 0.95F) {
                 res.intDanish = 1;
                 res.calcDanishCode = 4;
                 return true;

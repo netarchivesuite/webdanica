@@ -174,6 +174,16 @@ public class SystemUtils {
 		writeToStringBuilder(sb, e);
 		Emailer.getInstance().sendAdminEmail(header, sb.toString());
     }
+	
+	public static void log_error(String string) {
+        System.err.println(string);
+
+    }
+
+    public static void log(String string) {
+        System.out.println(string);
+
+    }
 }
 
 
