@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import dk.kb.webdanica.webapp.Environment;
 
 public abstract class WorkThreadAbstract implements Runnable {
@@ -98,6 +100,12 @@ public abstract class WorkThreadAbstract implements Runnable {
             try {
             	exitCausedBy = t;
                 logger.log(Level.SEVERE, t.toString(), t);
+                // try to send mail to admin about the problem
+                environment.getConfig().getEmailer().sendAdminEmail("Workflow '" 
+                        + this.threadName + "' crashed", 
+                        "Workflow '" + this.threadName + "' crashed w/exception: " 
+                                + ExceptionUtils.getFullStackTrace(t));  
+
             } catch (Throwable t2) {
             }
         }
