@@ -10,9 +10,10 @@ PIG_HOME=$5
 ## bash scripts/$callscript \'$prefix$J'/*gz'\' $basedir/$dirname /home/hadoop/scripts/criteriaRun-combo-v1.pig &> $basedir/error-$dirname.log
 
 FULL_PATH_TO_PIGBOOTUP=$WORKFLOW_HOME/conf/.pigbootup
-echo "Using PIGBOOTUP: $FULL_PATH_TO_PIGBOOTUP"
+
 #export PIG_OPTS="-Dpig.load.default.statements=$FULL_PATH_TO_PIGBOOTUP -verbose:class"
 export PIG_OPTS="-Dpig.load.default.statements=$FULL_PATH_TO_PIGBOOTUP"
+echo "Using PIG_OPTS: $PIG_OPTS"
  
 ### LOG4J CONFIGURATION
 export LOG4J_CONFIG=$WORKFLOW_HOME/conf/log4j_hadoop-pig.properties
@@ -59,7 +60,7 @@ fi
 
 touch ${OUTPUT}.started
 
-
+echo "Executing pig call: $PIG_HOME/bin/pig -x local -4 $LOG4J_CONFIG -f $SCRIPT -param input=$INPUT -param output=$OUTPUT"
 $PIG_HOME/bin/pig -x local -4 $LOG4J_CONFIG -f $SCRIPT -param input=$INPUT -param output=$OUTPUT
 
 rc=$?

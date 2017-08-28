@@ -1,4 +1,4 @@
-SETENV=/home/test/automatic-workflow/setenv.sh
+SETENV=/opt/workflows/automatic-workflow/setenv.sh
 ME=`basename $0`
 if [ -r "$SETENV" ]; then
   . "$SETENV"
@@ -6,8 +6,6 @@ else
   echo Error: Path to setenv.sh is not correctly set in script $ME
   exit 1
 fi
-
-#echo PIGHOME $PIG_HOME
 
 if [ -f $BUSYFILE ]; then
    STAT=`stat -c %y $BUSYFILE` 
@@ -21,16 +19,38 @@ if [ ! -f $FINDLOGS_SCRIPT ]; then
    echo "ERROR: The script '$FINDLOGS_SCRIPT' does not exist. Exiting program $ME"
    rm $BUSYFILE	
    exit 1
- fi
+fi
 
 if [ ! -f $AUTOMATIC_SCRIPT ]; then
    echo "ERROR: The script '$AUTOMATIC_SCRIPT' does not exist. Exiting program $ME"
    rm $BUSYFILE
    exit 1
- fi
+fi
 
+if [ ! -d $WORKFLOW_HOME ]; then
+   echo "ERROR: The WORKFLOW_HOME '$WORKFLOW_HOME' does not exist. Exiting program $ME"
+   rm $BUSYFILE
+   exit 1
+fi
 
-## TODO verify that workflow-home and other paths exists 
+if [ ! -d $WEBDANICA_LIBDIR ]; then
+   echo "ERROR: The WEBDANICA_LIBDIR '$WEBDANICA_LIBDIR' does not exist. Exiting program $ME"
+   rm $BUSYFILE
+   exit 1
+fi
+
+if [ -z $WEBDANICA_VERSION ]; then
+   echo "ERROR: The WEBDANICA_VERSION is not set. Exiting program $ME"
+   rm $BUSYFILE
+   exit 1
+fi
+
+WEBDANICA_CORE_JARFILE=$WEBDANICA_LIBDIR/webdanica-core-${WEBDANICA_VERSION}.jar
+if [ ! -f $WEBDANICA_CORE_JARFILE ]; then
+   echo "ERROR: The jarfile '$WEBDANICA_CORE_JARFILE' does not exist. Exiting program $ME"
+   rm $BUSYFILE
+   exit 1
+fi
 
 cd $WORKFLOW_HOME
 FILES=`bash $FINDLOGS_SCRIPT $WORKFLOW_HOME $WEBDANICA_VERSION`
@@ -46,10 +66,13 @@ then
   ###echo Found no harvest-logs. No processing needed
 fi 
 
+TOTALCOUNT=`wc -w <<< "$FILES"`
+COUNT=0
+echo "Found $TOTALCOUNT harvestlogs to process"
 for J in $FILES
 do
-echo Processing harvestlog: $J
-
+let "COUNT=COUNT+1"
+echo "Processing harvestlog #$COUNT: $J"
 
 ## move $J to WORKDIR
 NAME=$(basename $J)
@@ -67,15 +90,21 @@ fi
 bash $AUTOMATIC_SCRIPT $HARVESTLOG $WORKFLOW_HOME $WEBDATADIR $WEBDANICA_VERSION $HADOOP_BINBIN $PIG_HOME
 RESCODE=$?
 if [ -z $RESCODE ]; then
-   echo "ERROR: The $AUTOMATIC_SCRIPT returned $RESCODE. Exiting program $ME"
+   echo "ERROR: The $AUTOMATIC_SCRIPT returned $RESCODE. Moving $HARVESTLOG to $FAILEDJOBS"
+   mv $HARVESTLOG $FAILEDJOBS/
+else
+   echo "Job successful - Moving $HARVESTLOG to $OKJOBS"
+   mv $HARVESTLOG $OKJOBS/
 fi
 
-## move $HARVESTLOG to OLDJOBSDIR
-mv $HARVESTLOG $OLDJOBSDIR
 echo
-echo "Processing done of harvestlog: $J "
+echo "Processing done of harvestlog #$COUNT: $J "
+
 done
 
 ## Remove busy-file
 rm $BUSYFILE
+
+TIMESTAMP=`date`
+echo "Processing done of all $COUNT harvestlogs at $TIMESTAMP"
 
