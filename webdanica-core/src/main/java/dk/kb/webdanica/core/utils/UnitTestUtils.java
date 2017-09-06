@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
@@ -75,6 +76,14 @@ public class UnitTestUtils {
             i++;
         }
         
+    }
+    
+    public static void printStringSet(Set<String> set, String label) {
+        int t = 0;
+        for (String tok : set) {
+            t++;
+            System.out.println(label + " " + t + ": " + tok);
+        }
     }
 
 }

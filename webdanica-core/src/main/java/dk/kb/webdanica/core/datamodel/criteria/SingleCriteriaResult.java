@@ -211,20 +211,22 @@ public class SingleCriteriaResult {
      * @return
      */
     public String getValuesInString(String row_delim, String keyval_delim, String[] criteriaList) {
-    	String s = "";
-    	s = s + "url" + keyval_delim + this.url;
-    	s = s + row_delim + "date" + keyval_delim + this.Cext3; 
-    	s = s + row_delim + "extSize" + keyval_delim + this.Cext1; //3
-    	s = s + row_delim + "extDblChar" + keyval_delim + this.Cext2; //4
+        StringBuffer sb = new StringBuffer();
+    	
+    	sb.append("url" + keyval_delim + this.url);
+    	sb.append(row_delim + "date" + keyval_delim + this.Cext3); 
+    	sb.append(row_delim + "extSize" + keyval_delim + this.Cext1); //3
+    	sb.append(row_delim + "extDblChar" + keyval_delim + this.Cext2); //4
     	
     	for (String c: criteriaList) {
-    		s = s + row_delim + c + keyval_delim + (this.C.get(c) != null?this.C.get(c).replace(row_delim, ","):"");
+    	    sb.append(row_delim + c + keyval_delim 
+    	            + (this.C.get(c) != null?this.C.get(c).replace(row_delim, ","):""));
     	}
 
-    	s = s + row_delim + "intDanish" + keyval_delim + this.intDanish; //47
-    	s = s + row_delim + "Source" + keyval_delim + this.source; //48
-    	s = s + row_delim + "calcDanishCode" + keyval_delim + this.calcDanishCode; //49
-    	return s;
+    	sb.append(row_delim + "intDanish" + keyval_delim + this.intDanish); //47
+    	sb.append(row_delim + "Source" + keyval_delim + this.source); //48
+    	sb.append(row_delim + "calcDanishCode" + keyval_delim + this.calcDanishCode); //49
+    	return sb.toString();
     }
     
     public List<String> getValuesAsStringList(String row_delim, String keyval_delim, String[] criteriaList) {

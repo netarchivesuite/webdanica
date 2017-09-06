@@ -46,6 +46,9 @@ public class ResolveRedirectsTester {
 
 	@Test
 	public void test() {
+                if (tries == 1) {
+		  return;
+		}
 		String testUrl = "http://t.co/LDWqmtDM"; 
 		
 		String expectedRedirectResult = "https://wiki.ubuntu.com/UbuntuOpenWeek";

@@ -10,7 +10,6 @@ import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
-import dk.kb.webdanica.core.datamodel.dao.*;
 
 /** 
  * Class for a cache of the counts of the database

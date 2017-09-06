@@ -513,7 +513,7 @@ public class CalcDanishCode {
             String languagesFound) {
         List<Language> languages = Language.findLanguages(languagesFound);
         for (Language l : languages) {
-            if (l.getCode().equals("da") && l.getConfidence() > 0.95F) {
+            if (l.getCode().equals("da") && l.getConfidence() > 0.99F) {
                 res.intDanish = 1;
                 res.calcDanishCode = 4;
                 return true;

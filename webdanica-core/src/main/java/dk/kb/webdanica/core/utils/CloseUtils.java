@@ -1,4 +1,4 @@
-package dk.kb.webdanica.core.utils;
+ package dk.kb.webdanica.core.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

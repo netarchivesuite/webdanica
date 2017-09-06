@@ -15,8 +15,6 @@ import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
-import static java.sql.JDBCType.BIGINT;
-
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 	
 	private static final Logger logger = Logger.getLogger(HBasePhoenixCriteriaResultsDAO.class.getName());
