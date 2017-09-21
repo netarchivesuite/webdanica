@@ -17,9 +17,6 @@ public class StatusTester {
 		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
 		Locale locDA = new Locale("da");
 		Locale locEN = new Locale("en");
-		/* ResourceBundle bundle = ResourceBundle.getBundle("dk.kb.webdanica.Translations", 
-				new Locale("da")); 
-		*/
 		
 		String label = Status.getInternationalizationHeaderLabel(Status.NEW.ordinal());
 		

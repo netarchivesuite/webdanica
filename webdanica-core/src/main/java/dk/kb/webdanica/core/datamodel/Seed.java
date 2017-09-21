@@ -34,6 +34,9 @@ public class Seed {
 	private boolean exported;
 	private Long exportedTime;
 	private String danicaStatusReason;
+	public static final String NOT_YET_EXPORTED_STRING = "Not yet exported";
+	public static final String EXPORTED_BUT_EXPORTEDTIME_UNKNOWN_STRING 
+	    = "The seed was exported but we don't know the exportedTime";
 		
 	public Seed(String url) {
 		this.url = url;
@@ -157,9 +160,13 @@ public class Seed {
 
 	public String showExportedState() {
 	    if (exported == false) {
-	    	return "Not yet exported";
+	    	return NOT_YET_EXPORTED_STRING;
 	    } else {
-	    	return "The seed was exported at: " +  new Date(exportedTime);
+	        if (exportedTime != null) {
+	            return "The seed was exported at: " +  new Date(exportedTime);
+	        } else {
+	            return "The seed was exported but we don't know the exportedTime";
+	        }
 	    }
 	    
     }

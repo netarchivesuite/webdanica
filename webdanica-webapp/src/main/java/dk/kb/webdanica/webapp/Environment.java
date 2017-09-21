@@ -59,7 +59,7 @@ public class Environment {
     private String version = null;
 
     private WorkThreadAbstract[] workthreads;
-    
+
     /*
      * Paths.
      */
@@ -88,7 +88,7 @@ public class Environment {
 
     private LoginTemplateHandler<User> loginHandler = null;
 
-    
+
     /*
      * WorkThreads.
      */
@@ -96,11 +96,11 @@ public class Environment {
     private WorkflowWorkThread workflow;
 
     private FilterWorkThread filterThread;
-    
+
     private HarvestWorkThread harvesterThread;
-    
+
     private StateCacheUpdateWorkThread statecacheThread;
-   
+
 
     /*
      * Schedules.
@@ -109,12 +109,12 @@ public class Environment {
     public ScheduleAbstract filterSchedule;
 
     public ScheduleAbstract harvestSchedule;
-    
+
     public ScheduleAbstract cacheUpdatingSchedule;
 
     public boolean bScheduleHarvesting = false;
-	public boolean bScheduleFiltering = false;
-	public boolean bScheduleCacheUpdating = false;
+    public boolean bScheduleFiltering = false;
+    public boolean bScheduleCacheUpdating = false;
 
     /*
      * Log.
@@ -123,274 +123,274 @@ public class Environment {
     public List<LogRecord> newLogRecords = new LinkedList<LogRecord>();
 
     public List<LogRecord> logRecords = new LinkedList<LogRecord>();
-    
-	private int defaultItemsPerPage = 25; // create settings
 
-	private ServletContext servletContext;
+    private int defaultItemsPerPage = 25; // create settings
 
-	private File netarchiveSuiteSettingsFile;
-	
-	private File webdanicaSettingsFile;
+    private ServletContext servletContext;
 
-	private ResourcesMap resourcesMap;
-	
-	private Configuration theconfig;
+    private File netarchiveSuiteSettingsFile;
+
+    private File webdanicaSettingsFile;
+
+    private ResourcesMap resourcesMap;
+
+    private Configuration theconfig;
 
     /**
      * @param servletContext
      * @param theServletConfig
      * @throws ServletException
      */
-	public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
-		this.setServletConfig(theServletConfig);
- 		this.servletContext = theServletContext;
- 		
-		/*
-		 * Version.
-		 */
+    public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
+        this.setServletConfig(theServletConfig);
+        this.servletContext = theServletContext;
 
-		Package pkg = Package.getPackage("dk.kb.webdanica.webapp");
-		if (pkg != null) {
-			version = pkg.getSpecificationVersion();
-		}
-		if (version == null) {
-			version = "N/A";
-		}
+        /*
+         * Version.
+         */
 
-		/*
-		 * Logging.
-		 */
+        Package pkg = Package.getPackage("dk.kb.webdanica.webapp");
+        if (pkg != null) {
+            version = pkg.getSpecificationVersion();
+        }
+        if (version == null) {
+            version = "N/A";
+        }
 
-		String loggingPropertiesFilename = servletContext.getRealPath("/WEB-INF/logging.properties");
-		File loggingPropertiesFile = new File(loggingPropertiesFilename);
-		if (loggingPropertiesFile != null && loggingPropertiesFile.exists() && loggingPropertiesFile.isFile()) {
-			try {
-				LogManager.getLogManager().readConfiguration(new FileInputStream(loggingPropertiesFile));
-				logger.log(Level.INFO, "java.util.logging reconfigured using: " + loggingPropertiesFilename);
-			} catch (SecurityException e) {
-				e.printStackTrace();
-				logger.log(Level.SEVERE, e.toString(), e);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				logger.log(Level.SEVERE, e.toString(), e);
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.log(Level.SEVERE, e.toString(), e);
-			}
-		}
+        /*
+         * Logging.
+         */
 
-		Logger rootLogger = Logger.getLogger("");
-		rootLogger.addHandler(new Handler() {
-			@Override
-			public void publish(LogRecord record) {
-				synchronized (newLogRecords) {
-					newLogRecords.add(record);
-				}
-			}
-			@Override
-			public void flush() {
-			}
-			@Override
-			public void close() throws SecurityException {
-			}
-		});
+        String loggingPropertiesFilename = servletContext.getRealPath("/WEB-INF/logging.properties");
+        File loggingPropertiesFile = new File(loggingPropertiesFilename);
+        if (loggingPropertiesFile != null && loggingPropertiesFile.exists() && loggingPropertiesFile.isFile()) {
+            try {
+                LogManager.getLogManager().readConfiguration(new FileInputStream(loggingPropertiesFile));
+                logger.log(Level.INFO, "java.util.logging reconfigured using: " + loggingPropertiesFilename);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+                logger.log(Level.SEVERE, e.toString(), e);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                logger.log(Level.SEVERE, e.toString(), e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.log(Level.SEVERE, e.toString(), e);
+            }
+        }
 
-		String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME"); 
-		if (webdanicaHomeEnv == null) {
-			throw new ServletException("'WEBDANICA_HOME' must be defined in the environment!");
-		}
-		File webdanicaHomeDir = new File(webdanicaHomeEnv);
-		if (!webdanicaHomeDir.isDirectory()) {
-			throw new ServletException("The path set by 'WEBDANICA_HOME' does not represent a directory: " 
-					+ webdanicaHomeDir.getAbsolutePath());
-		}
-		// relative paths in web.xml will be prefixed by this path + /
+        Logger rootLogger = Logger.getLogger("");
+        rootLogger.addHandler(new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                synchronized (newLogRecords) {
+                    newLogRecords.add(record);
+                }
+            }
+            @Override
+            public void flush() {
+            }
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
 
-		String netarchiveSuiteSettings = getServletConfig().getInitParameter("netarchivesuite-settings");
-		if (!netarchiveSuiteSettings.startsWith("/")) {
-			netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
-		}
-		netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
-		if (netarchiveSuiteSettingsFile.isFile()) {	  	
-			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
-				throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
-						+ netarchiveSuiteSettingsFile.getAbsolutePath());
-			}
-			System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
-			dk.netarkivet.common.utils.Settings.reload(); // Strictly not necessary
-		} else {
-			throw new ServletException("The parameter 'netarchivesuite-settings' refers to a non-existing file: " 
-					+ netarchiveSuiteSettingsFile.getAbsolutePath());
-		}
+        String webdanicaHomeEnv = System.getenv("WEBDANICA_HOME"); 
+        if (webdanicaHomeEnv == null) {
+            throw new ServletException("'WEBDANICA_HOME' must be defined in the environment!");
+        }
+        File webdanicaHomeDir = new File(webdanicaHomeEnv);
+        if (!webdanicaHomeDir.isDirectory()) {
+            throw new ServletException("The path set by 'WEBDANICA_HOME' does not represent a directory: " 
+                    + webdanicaHomeDir.getAbsolutePath());
+        }
+        // relative paths in web.xml will be prefixed by this path + /
 
-		String webdanicaSettings = getServletConfig().getInitParameter("webdanica-settings");
-		if (!webdanicaSettings.startsWith("/")) {
-			webdanicaSettings = webdanicaHomeDir.getAbsolutePath() + "/" + webdanicaSettings;
-		}
-		webdanicaSettingsFile = new File(webdanicaSettings);
-		if (webdanicaSettingsFile.isFile()) {
+        String netarchiveSuiteSettings = getServletConfig().getInitParameter("netarchivesuite-settings");
+        if (!netarchiveSuiteSettings.startsWith("/")) {
+            netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
+        }
+        netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
+        if (netarchiveSuiteSettingsFile.isFile()) {	  	
+            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
+                throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
+                        + netarchiveSuiteSettingsFile.getAbsolutePath());
+            }
+            System.setProperty("dk.netarkivet.settings.file", netarchiveSuiteSettingsFile.getAbsolutePath());
+            dk.netarkivet.common.utils.Settings.reload(); // Strictly not necessary
+        } else {
+            throw new ServletException("The parameter 'netarchivesuite-settings' refers to a non-existing file: " 
+                    + netarchiveSuiteSettingsFile.getAbsolutePath());
+        }
 
-			if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
-				throw new ServletException("The parameter 'webdanica-settings' refers to a settingsfile containing invalid contents: " 
-						+ webdanicaSettingsFile.getAbsolutePath());
-			}
-			System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
-			Settings.reload();
-		} else {
-			throw new ServletException("The parameter 'webdanica-settings' refers to non-existing file: " 
-					+ webdanicaSettingsFile.getAbsolutePath());
-		}
-		
-		logger.info("Connected to NetarchiveSuite system with environmentname: " + 
-				dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
-		
-		theconfig = Configuration.getInstance();
-		
-		logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
-				theconfig.getIgnoredSuffixes()));
-		logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
-				theconfig.getIgnoredProtocols()));
+        String webdanicaSettings = getServletConfig().getInitParameter("webdanica-settings");
+        if (!webdanicaSettings.startsWith("/")) {
+            webdanicaSettings = webdanicaHomeDir.getAbsolutePath() + "/" + webdanicaSettings;
+        }
+        webdanicaSettingsFile = new File(webdanicaSettings);
+        if (webdanicaSettingsFile.isFile()) {
 
-		/*
-		 * Templates.
-		 */
+            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
+                throw new ServletException("The parameter 'webdanica-settings' refers to a settingsfile containing invalid contents: " 
+                        + webdanicaSettingsFile.getAbsolutePath());
+            }
+            System.setProperty("webdanica.settings.file", webdanicaSettingsFile.getAbsolutePath());
+            Settings.reload();
+        } else {
+            throw new ServletException("The parameter 'webdanica-settings' refers to non-existing file: " 
+                    + webdanicaSettingsFile.getAbsolutePath());
+        }
 
-		login_template_name = getServletConfig().getInitParameter("login-template");
+        logger.info("Connected to NetarchiveSuite system with environmentname: " + 
+                dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
 
-		if (login_template_name != null && login_template_name.length() > 0) {
-			logger.info("Using '" +  login_template_name + "' as login template.");
-		} else {
-			throw new ServletException("'The property 'login-template' must be configured in the web.xml");
-		}
-		
-		/*
-		 * Crontabs.
-		 */
-		String filteringCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_FILTERING, dk.kb.webdanica.webapp.Constants.DEFAULT_FILTERING_CRONTAB); 
-		String harvestingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
-		String statecachingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_STATECACHING, dk.kb.webdanica.webapp.Constants.DEFAULT_STATECACHING_CRONTAB);
-		
-		filterSchedule = CrontabSchedule.crontabFactory(filteringCrontab);
-		harvestSchedule = CrontabSchedule.crontabFactory(harvestingCrontab);
-	    cacheUpdatingSchedule = CrontabSchedule.crontabFactory(statecachingCrontab);
-		
-		
-		// Read resources and their secured status from settings.
-		// TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
-		// if the resource is not found, it sets the secure-status as false, later it will be true (login required)
-		resourcesMap = new ResourcesMap();
-		
-		// initialize the necessary paths of the webapp
-		
-		this.contextPath = servletContext.getContextPath();
-		this.blacklistPath = getContextPath() + BlackListResource.BLACKLIST_PATH;
-		this.blacklistsPath = getContextPath() + BlackListResource.BLACKLISTS_PATH;		
-		this.seedPath = getContextPath() + SeedsResource.SEED_PATH;
-		this.seedsPath = getContextPath() + SeedsResource.SEEDS_PATH;
-		this.harvestPath = getContextPath() + HarvestResource.HARVEST_PATH;
-		this.harvestsPath = getContextPath() + HarvestsResource.HARVESTS_PATH;
-		this.criteriaResultPath = getContextPath() + CriteriaResultResource.CRITERIA_RESULT_PATH;
-		this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
-		this.domainPath = getContextPath() + DomainResource.DOMAIN_PATH;
-		this.domainsPath = getContextPath() + DomainResource.DOMAIN_LIST_PATH;
-		this.ingestlogPath = getContextPath() + IngestLogResource.INGESTLOG_PATH;
-		this.ingestlogsPath = getContextPath() + IngestLogResource.INGESTLOGS_PATH;
-		/*
-		 * Initialize template master.
-		 */
+        theconfig = Configuration.getInstance();
 
-		templateMaster = TemplateMaster.getInstance("default");
-		templateMaster.addTemplateStorage(
-				TemplateFileStorageManager.getInstance(servletContext.getRealPath("/"), "UTF-8"));
+        logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
+                theconfig.getIgnoredSuffixes()));
+        logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
+                theconfig.getIgnoredProtocols()));
 
-		loginHandler = new LoginTemplateHandler<User>();
-		loginHandler.templateMaster = getTemplateMaster();
-		loginHandler.templateName = login_template_name;
-		loginHandler.title = "Webdanica - Login";
-		loginHandler.adminPath = "/";
+        /*
+         * Templates.
+         */
 
-		/*
-		 * Start thread workers.
-		 */
-		workflow = new WorkflowWorkThread(this, "Workflow");
-		workflow.start();
-		filterThread = new FilterWorkThread(this, "Seeds filtering");
-		filterThread.start();
-		harvesterThread = new HarvestWorkThread(this, "Harvest worker");
-		harvesterThread.start();
-		statecacheThread = new StateCacheUpdateWorkThread(this, "StateCache Update worker"); 
-		statecacheThread.start();
-		    
-		workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread, statecacheThread};
-		
-		/** Send a mail to the mailAdmin that the system has started */
-		String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
-		theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
-	}
-	
-	private String getStartMailContents(String subject) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(subject);
-	    sb.append(System.lineSeparator());
-	    sb.append("Webdanica Webapp (version " + getVersion() + ") started on server " + getServer() + " at '" + new Date() + "'");
-	    
-	    return sb.toString();
+        login_template_name = getServletConfig().getInitParameter("login-template");
+
+        if (login_template_name != null && login_template_name.length() > 0) {
+            logger.info("Using '" +  login_template_name + "' as login template.");
+        } else {
+            throw new ServletException("'The property 'login-template' must be configured in the web.xml");
+        }
+
+        /*
+         * Crontabs.
+         */
+        String filteringCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_FILTERING, dk.kb.webdanica.webapp.Constants.DEFAULT_FILTERING_CRONTAB); 
+        String harvestingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
+        String statecachingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_STATECACHING, dk.kb.webdanica.webapp.Constants.DEFAULT_STATECACHING_CRONTAB);
+
+        filterSchedule = CrontabSchedule.crontabFactory(filteringCrontab);
+        harvestSchedule = CrontabSchedule.crontabFactory(harvestingCrontab);
+        cacheUpdatingSchedule = CrontabSchedule.crontabFactory(statecachingCrontab);
+
+
+        // Read resources and their secured status from settings.
+        // TODO Currently the resourcesMap.getResourceByPath(path) always returns a ResourceDescription
+        // if the resource is not found, it sets the secure-status as false, later it will be true (login required)
+        resourcesMap = new ResourcesMap();
+
+        // initialize the necessary paths of the webapp
+
+        this.contextPath = servletContext.getContextPath();
+        this.blacklistPath = getContextPath() + BlackListResource.BLACKLIST_PATH;
+        this.blacklistsPath = getContextPath() + BlackListResource.BLACKLISTS_PATH;		
+        this.seedPath = getContextPath() + SeedsResource.SEED_PATH;
+        this.seedsPath = getContextPath() + SeedsResource.SEEDS_PATH;
+        this.harvestPath = getContextPath() + HarvestResource.HARVEST_PATH;
+        this.harvestsPath = getContextPath() + HarvestsResource.HARVESTS_PATH;
+        this.criteriaResultPath = getContextPath() + CriteriaResultResource.CRITERIA_RESULT_PATH;
+        this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
+        this.domainPath = getContextPath() + DomainResource.DOMAIN_PATH;
+        this.domainsPath = getContextPath() + DomainResource.DOMAIN_LIST_PATH;
+        this.ingestlogPath = getContextPath() + IngestLogResource.INGESTLOG_PATH;
+        this.ingestlogsPath = getContextPath() + IngestLogResource.INGESTLOGS_PATH;
+        /*
+         * Initialize template master.
+         */
+
+        templateMaster = TemplateMaster.getInstance("default");
+        templateMaster.addTemplateStorage(
+                TemplateFileStorageManager.getInstance(servletContext.getRealPath("/"), "UTF-8"));
+
+        loginHandler = new LoginTemplateHandler<User>();
+        loginHandler.templateMaster = getTemplateMaster();
+        loginHandler.templateName = login_template_name;
+        loginHandler.title = "Webdanica - Login";
+        loginHandler.adminPath = "/";
+
+        /*
+         * Start thread workers.
+         */
+        workflow = new WorkflowWorkThread(this, "Workflow");
+        workflow.start();
+        filterThread = new FilterWorkThread(this, "Seeds filtering");
+        filterThread.start();
+        harvesterThread = new HarvestWorkThread(this, "Harvest worker");
+        harvesterThread.start();
+        statecacheThread = new StateCacheUpdateWorkThread(this, "StateCache Update worker"); 
+        statecacheThread.start();
+
+        workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread, statecacheThread};
+
+        /** Send a mail to the mailAdmin that the system has started */
+        String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
+        theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
     }
-    
+
+    private String getStartMailContents(String subject) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(subject);
+        sb.append(System.lineSeparator());
+        sb.append("Webdanica Webapp (version " + getVersion() + ") started on server " + getServer() + " at '" + new Date() + "'");
+
+        return sb.toString();
+    }
+
     private String getServer() {
-	    return SystemUtils.getLocalHostName();
+        return SystemUtils.getLocalHostName();
     }
 
-	private String getStopMailContents(String subject) {
-    	StringBuilder sb = new StringBuilder();
-   	    sb.append(subject);
-   	    sb.append(System.lineSeparator());
-   	    sb.append("Webdanica Webapp (version " + getVersion() + ") stopped on server " + getServer() + " at '" + new Date() + "'");
-   	    return sb.toString();
+    private String getStopMailContents(String subject) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(subject);
+        sb.append(System.lineSeparator());
+        sb.append("Webdanica Webapp (version " + getVersion() + ") stopped on server " + getServer() + " at '" + new Date() + "'");
+        return sb.toString();
     }
 
-	/**
+    /**
      * Do some cleanup. This waits for the different workflow threads to stop running.
      */
     public void cleanup() {
-		String subject = "[Webdanica-"  + theconfig.getEnv() + "] stopping";
-		theconfig.getEmailer().sendAdminEmail(subject, getStopMailContents(subject));
-		if (filterThread != null) {
-			filterThread.stop();
-		}		
-		if (harvesterThread != null) {
-			harvesterThread.stop();
-		}
-		if (statecacheThread != null) {
-			statecacheThread.stop();
-		}
-		
-		
-		if (workflow != null) {
+        String subject = "[Webdanica-"  + theconfig.getEnv() + "] stopping";
+        theconfig.getEmailer().sendAdminEmail(subject, getStopMailContents(subject));
+        if (filterThread != null) {
+            filterThread.stop();
+        }		
+        if (harvesterThread != null) {
+            harvesterThread.stop();
+        }
+        if (statecacheThread != null) {
+            statecacheThread.stop();
+        }
+
+
+        if (workflow != null) {
             workflow.stop();
         }
-		
-		// Closing down working threads
-		
-		while (workflow.bRunning || filterThread.bRunning || harvesterThread.bRunning) {
-			String threads = (
-					//monitoring.bRunning? " Monitoring": "") + 
-					(workflow.bRunning? " Workflow": "")
-					+ (filterThread.bRunning? " FilterThread": "")
-					+ (harvesterThread.bRunning? " HarvesterThread": "")
-					+ (statecacheThread.bRunning? " StateCacheThread": ""))
-					;
-			logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
-			try {
-				Thread.sleep(5000); // Wait 5 seconds before trying again.
-			} catch (InterruptedException e) {
-				//
-			}
-		}
-		statecacheThread = null;
-		harvesterThread = null;
-		filterThread = null;
-		workflow = null;
+
+        // Closing down working threads
+
+        while (workflow.bRunning || filterThread.bRunning || harvesterThread.bRunning) {
+            String threads = (
+                    //monitoring.bRunning? " Monitoring": "") + 
+                    (workflow.bRunning? " Workflow": "")
+                    + (filterThread.bRunning? " FilterThread": "")
+                    + (harvesterThread.bRunning? " HarvesterThread": "")
+                    + (statecacheThread.bRunning? " StateCacheThread": ""))
+                    ;
+            logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
+            try {
+                Thread.sleep(5000); // Wait 5 seconds before trying again.
+            } catch (InterruptedException e) {
+                //
+            }
+        }
+        statecacheThread = null;
+        harvesterThread = null;
+        filterThread = null;
+        workflow = null;
         loginHandler = null;
         templateMaster = null;
         setServletConfig(null);
@@ -399,103 +399,103 @@ public class Environment {
     }
 
     public int getDefaultItemsPerPage() {
-	    return defaultItemsPerPage;
-    }
-    
-	public String getVersion() {
-	    return version;
+        return defaultItemsPerPage;
     }
 
-	public ServletConfig getServletConfig() {
-	    return servletConfig;
+    public String getVersion() {
+        return version;
     }
 
-	public void setServletConfig(ServletConfig servletConfig) {
-	    this.servletConfig = servletConfig;
+    public ServletConfig getServletConfig() {
+        return servletConfig;
     }
 
-	
-	public WorkThreadAbstract[] getWorkThreads() {
-		return this.workthreads;
+    public void setServletConfig(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
     }
 
 
-	public LoginTemplateHandler<User> getLoginHandler() {
-	    return this.loginHandler;
+    public WorkThreadAbstract[] getWorkThreads() {
+        return this.workthreads;
     }
 
-	public TemplateMaster getTemplateMaster() {
-	    return this.templateMaster;
+
+    public LoginTemplateHandler<User> getLoginHandler() {
+        return this.loginHandler;
     }
 
-	////////////////////////////////////
-	// Path  methods
-	////////////////////////////////////
-	
-	public String getContextPath() {
-	    return contextPath;
+    public TemplateMaster getTemplateMaster() {
+        return this.templateMaster;
     }
 
-	public String getSeedsPath() {
-	    return seedsPath;
+    ////////////////////////////////////
+    // Path  methods
+    ////////////////////////////////////
+
+    public String getContextPath() {
+        return contextPath;
     }
 
-	public String getSeedPath() {
-	    return seedPath;
-    }
-	
-	public String getBlacklistsPath() {
-	    return this.blacklistsPath;
+    public String getSeedsPath() {
+        return seedsPath;
     }
 
-	public String getBlacklistPath() {
-	    return this.blacklistPath;
-    }
-	
-	public String getIngestLogsPath() {
-	    return this.ingestlogsPath;
+    public String getSeedPath() {
+        return seedPath;
     }
 
-	public String getIngestLogPath() {
-	    return this.ingestlogPath;
+    public String getBlacklistsPath() {
+        return this.blacklistsPath;
     }
 
-	public String getCriteriaResultPath() {
-	    return this.criteriaResultPath;
+    public String getBlacklistPath() {
+        return this.blacklistPath;
     }
 
-	public String getCriteriaResultsPath() {
-		return this.criteriaResultsPath;
+    public String getIngestLogsPath() {
+        return this.ingestlogsPath;
     }
 
-	public String getHarvestsPath() {
-		return this.harvestsPath;
+    public String getIngestLogPath() {
+        return this.ingestlogPath;
     }
 
-	public String getHarvestPath() {
-		return this.harvestPath;
+    public String getCriteriaResultPath() {
+        return this.criteriaResultPath;
     }
 
-	public String getDomainsPath() {
-	    return this.domainsPath;
-    }
-	
-	public String getDomainPath() {
-	    return this.domainPath;
-    }
-	
-	public Configuration getConfig() {
-	    return this.theconfig;
+    public String getCriteriaResultsPath() {
+        return this.criteriaResultsPath;
     }
 
-	public File getNetarchivesuiteSettingsFile() {
-		return this.netarchiveSuiteSettingsFile;
-	}
-	public File getWebdanicaSettingsFile() {
-		return this.webdanicaSettingsFile;	    
-	}
+    public String getHarvestsPath() {
+        return this.harvestsPath;
+    }
 
-	public ResourcesMap getResourcesMap() {
-		return this.resourcesMap;	    
-	}
+    public String getHarvestPath() {
+        return this.harvestPath;
+    }
+
+    public String getDomainsPath() {
+        return this.domainsPath;
+    }
+
+    public String getDomainPath() {
+        return this.domainPath;
+    }
+
+    public Configuration getConfig() {
+        return this.theconfig;
+    }
+
+    public File getNetarchivesuiteSettingsFile() {
+        return this.netarchiveSuiteSettingsFile;
+    }
+    public File getWebdanicaSettingsFile() {
+        return this.webdanicaSettingsFile;	    
+    }
+
+    public ResourcesMap getResourcesMap() {
+        return this.resourcesMap;	    
+    }
 }

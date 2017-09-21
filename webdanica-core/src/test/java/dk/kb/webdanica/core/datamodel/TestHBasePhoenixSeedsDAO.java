@@ -56,7 +56,6 @@ public class TestHBasePhoenixSeedsDAO {
 			conn.close();
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

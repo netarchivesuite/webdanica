@@ -1,7 +1,6 @@
 package dk.kb.webdanica.core.datamodel;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -59,7 +58,6 @@ public class TestHBasePhoenixBlackListDAO {
 			conn.close();
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
