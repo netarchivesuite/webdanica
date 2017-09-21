@@ -7,6 +7,19 @@ else
   exit 1
 fi
 
+## Verify existence of conf/.pigbootup verify script
+if [ ! -f $PIGBOOTUP_VERIFIER_SCRIPT ]; then
+   echo "ERROR: The script '$PIGBOOTUP_VERIFIER_SCRIPT' does not exist. Exiting program $ME"
+   exit 1
+fi
+## Verify validity of conf/.pigbootup 
+RES=`bash $PIGBOOTUP_VERIFIER_SCRIPT $WORKFLOW_HOME`
+if [ "$RES" != "" ]; then
+     echo "Pig bootup file '$PIGBOOTUP_FILE' is invalid: '$RES'"    
+     exit 1
+fi
+
+
 if [ -f $BUSYFILE ]; then
    STAT=`stat -c %y $BUSYFILE` 
    echo WARNING: Analysis-workflow already in progress. The current workflow started at: $STAT  

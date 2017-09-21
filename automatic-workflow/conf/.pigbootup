@@ -7,11 +7,11 @@ REGISTER lib-pig/json.jar
 --REGISTER lib-extra/guava-19.0.jar
 --REGISTER lib-extra/tika-app-1.13.jar
 -- REGISTER lib/webdanica-core-0.2.0-SNAPSHOT.jar
-REGISTER lib/webdanica-core-1.0.0.jar
+REGISTER lib/webdanica-core-1.1-RC9.jar
 REGISTER lib/tika-core-1.13.jar
 REGISTER lib/tika-langdetect-1.13.jar 
 --REGISTER lib/language-detector-0.5.jar
-REGISTER lib-pig/language-detector-0.6-SNAPSHOT.jar
+REGISTER lib-pig/language-detector-0.6a-SNAPSHOT.jar
 --REGISTER lib-extra/guava-19.0.jar
 --REGISTER lib/slf4j-api-1.7.7.jar
 -- new libraries I think
@@ -23,11 +23,12 @@ REGISTER lib/dom4j-1.6.1.jar
 DEFINE FROMJSON         org.archive.bacon.FromJSON();
 DEFINE HOST             org.archive.bacon.url.Host();
 DEFINE DOMAIN           org.archive.bacon.url.Domain();
+DEFINE LOADER 		org.archive.bacon.io.SequenceFileLoader()
 DEFINE FILENOTFOUND     dk.kb.webdanica.core.criteria.NotFound();
 DEFINE SHOWSIZE         dk.kb.webdanica.core.criteria.ShowSize();
 --DEFINE ONLYTEXT       dk.kb.webdanica.core.criteria.OnlyTextType();
 DEFINE CONCATTEXT       dk.kb.webdanica.core.criteria.ConcatText();
 DEFINE ISNT_ROBOTSTXT   dk.kb.webdanica.core.criteria.IsNotRobotsTxt();
-DEFINE Combo            dk.kb.webdanica.core.criteria.Combo();
-DEFINE ComboNovV5	dk.kb.webdanica.core.criteria.ComboNovV5();
+--DEFINE Combo            dk.kb.webdanica.core.criteria.Combo();
+--DEFINE ComboNovV5	dk.kb.webdanica.core.criteria.ComboNovV5();
 DEFINE CombinedCombo    dk.kb.webdanica.core.criteria.CombinedCombo();

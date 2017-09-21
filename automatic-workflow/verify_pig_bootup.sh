@@ -27,3 +27,36 @@ if [ ! -f $L ]; then
 fi
 
 done 
+
+METHODS=`grep DEFINE $PIGBOOTUP_FILE  | grep -v "\-\-" | awk '$1=$1' | cut -d ' ' -f3 | tr -d '();'`
+
+let FAILURE=0
+for M in $METHODS
+do
+# check if  M is part of the libraries in the LIBS list
+let FOUND=0
+for L in $LIBS 
+do  
+  RES=`grep $M $L`
+  if [ "$RES" != "" ];
+  then 
+     let FOUND=1
+     #echo "Found method $M in library $L"
+  fi
+done
+if [ $FOUND -eq 0 ];
+then
+  echo "FAILURE to find method '$M' in the registered libraries."
+  let FAILURE=1
+fi
+done
+if [ "$FAILURE" -eq 1 ];
+then 
+ echo "Missing method definitions in the registered libraries '$LIBS'"
+ echo "Please REGISTER the missing library/libraries"
+ exit 1
+else 
+ exit 0
+fi
+  
+ 	
