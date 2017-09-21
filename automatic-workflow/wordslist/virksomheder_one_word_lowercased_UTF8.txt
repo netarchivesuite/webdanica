@@ -54,7 +54,7 @@ egetaepper
 egmont
 elværket
 enalyzer
-energiforum danmark
+energiforum
 erria
 euroinvestor.com
 exiqon
@@ -152,9 +152,7 @@ skuespillerforeningen
 skyttebladet
 sløjdforeningen
 socialforvaltningen
-solar
 ssbv-rovsing
-stars
 stiftsmuseet
 strejkerne
 superfoss
@@ -198,4 +196,4 @@ winlogic
 wirtek
 wonderfestiwall
 zentropa
-østasiatisk kompagni
+østasiatisk

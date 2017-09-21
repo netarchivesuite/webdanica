@@ -73,12 +73,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <license.skip>false</license.skip>
     <jwat.version>1.0.4</jwat.version>
-    <jwat-tools.version>0.6.1-SNAPSHOT</jwat-tools.version>
+    <!-- is this required?    
+	    <jwat-tools.version>0.6.1-SNAPSHOT</jwat-tools.version>
+    -->
     <tika.version>1.13</tika.version>
     <slf4j.version>1.7.7</slf4j.version>
     <sysout-over-slf4j.version>1.0.2</sysout-over-slf4j.version>
     <logback.version>1.0.13</logback.version>
     <derby.version>10.12.1.1</derby.version>
+    <netarchivesuite.version>5.2.2</netarchivesuite.version>
   </properties>
 
   <repositories>
@@ -171,9 +174,10 @@
       </dependency>
       <dependency>
         <groupId>org.jwat</groupId>
-        <artifactId>jwat-tools</artifactId>
-        <version>${jwat-tools.version}</version>
+        <artifactId>jwat-tools</artifactId> 
+	<version>${jwat-tools.version}</version>
       </dependency>
+
 
 <dependency>
         <groupId>com.google.guava</groupId>

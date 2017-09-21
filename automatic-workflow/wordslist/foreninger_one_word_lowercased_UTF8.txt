@@ -58,7 +58,6 @@ fagforbund
 fagforening
 familieforvaltningen
 fck
-ferie
 fiduso
 fiskeringen
 flygtninge
@@ -178,13 +177,13 @@ skruebrækker
 skyttesagen
 slesvig-ligaen
 smid
-smil
 smokenhagen
 socialdemokraten
 socialdemokratiet
 socialisten
 socialpolitik
 spastikerforeningen
+spor
 sprogforeningen
 sslug
 stemmeret
@@ -215,7 +214,6 @@ venstresocialisterne
 vestsaharakomiteen
 vietnambevægelsen
 vuggestue
-zebra
 ældrecenter
 øjlug
 ølakademiet

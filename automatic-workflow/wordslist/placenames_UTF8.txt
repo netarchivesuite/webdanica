@@ -95,7 +95,6 @@ graasten
 gråstenskovene
 graastenskovene
 gødstrup
-haderslev dam
 hammersoeen
 hammersøen
 hareskoven
@@ -108,7 +107,6 @@ hjarnoe
 hjarnø
 hjortoe
 hjortø
-horn
 hovedsoe
 hovedsø
 hunesoe
@@ -123,7 +121,6 @@ karlsgårde
 karlsgaarde
 kattinge
 kilen
-klaus nars holm
 klejsskov
 klosterheden
 knudsoe
@@ -166,7 +163,7 @@ møn
 nekseloe
 nekselø
 noerreen
-noerrejyske oe
+noerrejyske
 noerresoe
 noerresoeoldenor
 nordsjaelland
@@ -174,7 +171,7 @@ nordsjælland
 nyord
 nystrup
 nørreen
-nørrejyske ø
+nørrejyske
 nørresø
 nørresøoldenor
 oekssoe
@@ -227,9 +224,9 @@ slåensø
 soebygaard
 soeerne
 soendersoeteglgaard
-stadil fjord
-store okseoe
-store okseø
+stadilfjord
+okseoe
+okseø
 strynoe
 strynø
 stubbe

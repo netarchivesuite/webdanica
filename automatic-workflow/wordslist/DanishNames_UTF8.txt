@@ -308,13 +308,10 @@ espensen
 espersen
 ester
 esther
-eva
-faber
 fabricius
 falk
 falkenberg
 fallesen
-farah
 feddersen
 fenger
 fink
@@ -377,7 +374,6 @@ groenkjaer
 groenlund
 groenning
 groth
-grøn
 grønbech
 grønborg
 grønbæk
@@ -401,7 +397,6 @@ halberg
 hald
 halkjaer
 halkjær
-hall
 halvorsen
 hamann
 hammer
@@ -543,6 +538,8 @@ jacobsen
 jaeger
 jakob
 jakobsen
+jan
+jane
 janne
 janni
 jannie
@@ -625,6 +622,7 @@ karstensen
 kasper
 kaspersen
 kastrup
+kate
 kathrine
 katja
 katrine
@@ -763,12 +761,16 @@ lindstroem
 lindstrøm
 line
 linnet
+lis
+lisa
 lisbet
 lisbeth
 lise
 liselotte
 lissi
+lissy
 liv
+lizzie
 loft
 lohmann
 lohse
@@ -827,7 +829,6 @@ marianne
 marie
 marinus
 marius
-mark
 marker
 markussen
 marlene
@@ -955,6 +956,7 @@ olesen
 olga
 oline
 oliver
+olivia
 olsen
 osman
 ottesen
@@ -1020,7 +1022,6 @@ rigmor
 riis
 rikke
 rindom
-ring
 ringgaard
 risager
 rita
@@ -1137,10 +1138,8 @@ stine
 stoevring
 stokholm
 storgaard
-storm
 stougaard
 strand
-strange
 stroem
 strøm
 straarup
@@ -1275,6 +1274,7 @@ wedersen
 weiss
 wensen
 werner
+west
 westergaard
 westh
 whomsen
@@ -1293,7 +1293,6 @@ witt
 wlsen
 wndersen
 wohansen
-wolf
 wolff
 wollesen
 worm

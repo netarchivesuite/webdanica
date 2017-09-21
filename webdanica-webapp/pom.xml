@@ -76,18 +76,11 @@
       <artifactId>jwat-archive</artifactId>
     </dependency>
    
-<dependency>
+    <dependency>
       <groupId>com.antiaction</groupId>
       <artifactId>common-servlet</artifactId>
       <version>0.1.0-NAS</version>
     </dependency>
-<!--
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-html</artifactId>
-      <version>0.1.0-NAS</version>
-    </dependency>
--->
     <dependency>
       <groupId>com.antiaction</groupId>
       <artifactId>common-template-engine</artifactId>
@@ -100,60 +93,7 @@
       <scope>system</scope>
       <systemPath>${basedir}/lib/common-cron-0.1.0-SNAPSHOT.jar</systemPath>
     </dependency>
-<!--
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/antiaction-commons.jar</systemPath>
-    </dependency>
 
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-servlet</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/common-servlet-0.1.0-SNAPSHOT.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-multithreading</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/common-multithreading-0.1.0-SNAPSHOT.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-cron</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/common-cron-0.1.0-SNAPSHOT.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-html</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/common-html-0.1.0-SNAPSHOT.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-template-engine</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/common-template-engine-0.2.0-SNAPSHOT.jar</systemPath>
-    </dependency>
--
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-json</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>javax.mail-api</artifactId>
