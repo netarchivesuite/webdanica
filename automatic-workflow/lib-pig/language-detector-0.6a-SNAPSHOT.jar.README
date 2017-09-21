@@ -1,0 +1,2 @@
+Modified version of language-detector-0.6-SNAPSHOT.jar that fixes the bug: https://sbforge.org/jira/browse/WEBDAN-210
+The code of language-detector-0.6a-SNAPSHOT.jar is on a fork of the original code on github.com: https://github.com/netarchivesuite/language-detector
