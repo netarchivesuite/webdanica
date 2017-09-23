@@ -8,19 +8,6 @@ import dk.kb.webdanica.core.utils.UnitTestUtils;
 
 public class IgnoredSuffixes {
 
-    /*
-     * TODO this throws an java.lang.ExceptionInInitializerError at
-     * dk.kb.webdanica
-     * .seeds.filtering.IgnoredSuffixesTester.testGetIgnoredSuffixes
-     * (IgnoredSuffixesTester.java:33) caused by:
-     * dk.netarkivet.common.exceptions.UnknownID: No match for key
-     * 'settings.seeds.ignoredSuffixes.suffix' in settings at
-     * dk.kb.webdanica.utils.Settings.getAll(Settings.java:273) at
-     * dk.kb.webdanica
-     * .seeds.filtering.IgnoredSuffixes.<clinit>(IgnoredSuffixes.java:9) ... 24
-     * more
-     */
-
     private static String[] ignoredExts = Settings
             .getAll(WebdanicaSettings.IGNORED_SUFFIXES);
 
@@ -56,9 +43,7 @@ public class IgnoredSuffixes {
     /**
      * Test whether a seed has a suffix that matches the list of ignored
      * suffixes.
-     * 
-     * @param seed
-     *            a given seed
+     * @param seed a given seed
      * @return the matches suffix, if it matches an ignored suffix, null
      *         otherwise
      */
@@ -66,7 +51,6 @@ public class IgnoredSuffixes {
         String low = seed.toLowerCase();
         if (low.contains("?")) { // Ignore everything from the ? and beyond
             low = low.substring(0, low.indexOf('?'));
-            //System.out.println(low);
         }
         for (String ign : ignoredExts) {
             if (low.endsWith(ign)) {
@@ -77,7 +61,7 @@ public class IgnoredSuffixes {
     }
 
     /**
-     * @return the list read from settingsfile of the ignored Suffixes
+     * @return the list read from settings-file of the ignored Suffixes
      */
     public static String[] getIgnoredSuffixes() {
         return ignoredExts;

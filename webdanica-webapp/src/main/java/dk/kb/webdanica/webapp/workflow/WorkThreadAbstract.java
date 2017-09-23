@@ -1,10 +1,3 @@
-/*
- * Created on 20/09/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 package dk.kb.webdanica.webapp.workflow;
 
 import java.util.LinkedList;

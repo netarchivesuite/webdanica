@@ -13,6 +13,15 @@ import dk.kb.webdanica.core.utils.TextUtils;
 
 public class Classification {
     
+    /**
+     * Decide Danicastatus for seed based on SingleCriteriaResult.
+     * This method sets the danicastatus to YES for the seed if the IsLikelyDanica criteria holds, and Status to DONE.
+     * This method sets the danicastatus to NO for the seed if the IsLikelyNotDanica criteria holds, and Status to DONE.
+     * Otherwise this method sets the danicastatus to UNDECIDED for the seed, and Status to AWAITS_CURATOR_DECISION. 
+     *  
+     * @param res SingleCriteriaResult for the given Seed 
+     * @param s The Seed object for which the given SingleCriteriaResult is calculated   
+     */
     public static void decideDanicaStatusFromResult(SingleCriteriaResult res, Seed s) {
         String statusReasonPrefix = "Harvested by harvest '"
                 + res.harvestName
@@ -45,6 +54,12 @@ public class Classification {
         }
     }
     
+    /**
+     * Some extra processing on the SingleCriteriaResult.
+     * 
+     * @param res a given SingleCriteriaResult
+     * @deprecated "Not needed anymore, I think"
+     */
     private static void someUpdateCode(SingleCriteriaResult res) {
         // update 3g
         update3g(res);
@@ -92,15 +107,10 @@ public class Classification {
         for (CodesResult.NotDkExceptions ex : CodesResult.NotDkExceptions
                 .values()) {
             if (res.calcDanishCode <= 0 || codeSet.contains(res.calcDanishCode)) {
+                // get calcDanishCode and IntDanish
+                // and check in depth
                 CodesResult cr = CodesResult
-                        .setcodes_notDkLanguageVeryLikelyNewFields(res, ex); // get
-                                                                             // calcode
-                                                                             // and
-                                                                             // IntDanish
-                                                                             // and
-                                                                             // check
-                                                                             // in
-                                                                             // depth
+                        .setcodes_notDkLanguageVeryLikelyNewFields(res, ex); 
                 if (cr.calcDanishCode > 0) {
                     res.calcDanishCode = cr.calcDanishCode;
                     res.intDanish = cr.intDanish;
@@ -114,7 +124,11 @@ public class Classification {
         }
 
     }
-
+    
+    /**
+     * Update the value of criteria C9e using existing values of criteria C9b and C9e.   
+     * @param res the given SingleCriteriaResult to update
+     */
     private static void update9e(SingleCriteriaResult res) {
         String C9b = res.C.get("C9b");
         String C9e = res.C.get("C9e");
@@ -124,6 +138,10 @@ public class Classification {
 
     }
 
+    /**
+     * Update the value of criteria C8c using existing values of criteria C8a and C8c.   
+     * @param res the given SingleCriteriaResult to update
+     */
     private static void update8c(SingleCriteriaResult res) {
         String C8a = res.C.get("C8a");
         String C8c = res.C.get("C8c");
@@ -137,6 +155,10 @@ public class Classification {
 
     }
 
+    /**
+     * Update the value of criteria C3g using existing values of criteria C3g.   
+     * @param res the given SingleCriteriaResult to update
+     */
     private static void update3g(SingleCriteriaResult res) {
         String C3g = res.C.get("C3g");
         if (C3g != null && (!C3g.isEmpty() && !C3g.startsWith("0"))) {
@@ -156,25 +178,20 @@ public class Classification {
     
     /**
      * This sets some extra criteria not included in the CombinedCombo.
-     * 
-     * @param res
-     * @param source
+     * See CalcDanishCode.getCalcDkCodeText for explanations.
+     * @param res a SingleCriteriaResult
+     * @param source The source of the result (currently not used)
      */
     protected static void analyzeRessource(SingleCriteriaResult res, DataSource source) {
-        /*** set source ***/
+        /*** set DataSource ***/
         res.source = source;
-        // Remove because of noise FIXME
-        // log("Set source to: " + source);
-        /*** pre-calculate calcDanishCode and other fields ***/
-        // See CalcDanishCode.getCalcDkCodeText for explanations
-
+        
+        /*** pre-calculate calcDanishCode and other fields. ***/
         res.calcDanishCode = 0;
-
         // res.calcDanishCode = 1 size=0
         if (res.Cext1 == 0) {
             res.calcDanishCode = 1; // no text
-            return; // we stop now: as we believe the rest of the fields are
-                    // empty
+            return; // we stop the analysis now, as we believe the rest of the fields are empty
         }
 
         /*******************************************/
@@ -306,14 +323,8 @@ public class Classification {
         }
 
         // See CalcDanishCode.getCalcDkCodeText for explanations
-        CodesResult cr = CodesResult.setcodes_notDkLanguageVeryLikely(res); // get
-                                                                            // callcode
-                                                                            // and
-                                                                            // IntDanish
-                                                                            // and
-                                                                            // check
-                                                                            // in
-                                                                            // depth
+        // get callcode and IntDanish and check in depth
+        CodesResult cr = CodesResult.setcodes_notDkLanguageVeryLikely(res); 
         if (cr.calcDanishCode > 0) {
             res.calcDanishCode = cr.calcDanishCode;
             res.intDanish = cr.intDanish;
@@ -343,48 +354,33 @@ public class Classification {
         return;
     }
 
-    /*
-    1-8
-    10-12
-    20-27
-    30-35
-    38
-    40-47
-    50-55
-    58
-    70-79
-    100-107
-    110-112
-    120-128
-    130
-    200-203
-    206-209
-    220
-    230
-    301-302
-    310-318
-    320-327
-    
-    400 C1A> 0 DK mail-adresses found   
-    401 C2A> 0 DK tlf numbers found
-    402 C6a: >20    hyppige danske ord
-    403 C6b: >1 typiske danske ord 
-    (disabled) 404 C7b: >0 danske bynavne i URLen
-    (disabled)405 C7c: >0 danske stednavne i teksten  Finder stadig delord
-    406 C7e: >0 fremmedsprog af ordene København og Danmark
-    407 C7g: >0 større danske byer i teksten
-    408 C7h: >0 fremmedsprog af ordene København og Danmark
-    409 C9e: >0 danske virksomheder
-    410 C9d: >0 cvr      
-    411 C9a: >0 a/s, aps
-    (disabled) 412 C10a: >2    finder -sen-navne i teksten.    Finder andre -sen-ord men den holder
-    (disabled) 413 C10c: >2    hyppige for- og efternavne  Finder stadig delord 
-    414 C17a: >0    outlinks peger på websider i .dk
-     
-    
-
+    /**
+     * Check the given Criteriaresult, if they match any of the curator given rules for Danica.
+     * If any of the 15 rules match then
+     * res.intDanish = 1;
+     * res.calcDanishCode = SOMECODE; 
+     * And the rest of the rules will not be checked
+     * 
+     * Note: rules for criteria C7b, C7c, C10a, and C10c are currently disabled 
+     * 
+     * @param res a given CriteriaResult
+     * 
+     * 400 C1A> 0 DK mail-adresses found   
+     * 401 C2A> 0 DK tlf numbers found
+     * 402 C6a: >20    hyppige danske ord
+     * 403 C6b: >1 typiske danske ord 
+     * (disabled) 404 C7b: >0 danske bynavne i URLen
+     * (disabled) 405 C7c: >0 danske stednavne i teksten  Finder stadig delord
+     * 406 C7e: >0 fremmedsprog af ordene København og Danmark
+     * 407 C7g: >0 større danske byer i teksten
+     * 408 C7h: >0 fremmedsprog af ordene København og Danmark
+     * 409 C9e: >0 danske virksomheder
+     * 410 C9d: >0 cvr      
+     * 411 C9a: >0 a/s, aps
+     * (disabled) 412 C10a: >2 finder -sen-navne i teksten.    Finder andre -sen-ord men den holder
+     * (disabled) 413 C10c: >2 hyppige for- og efternavne  Finder stadig delord 
+     * 414 C17a: >0 outlinks peger på websider i .dk
     */
-    
     private static void checkCuratorSuppliedRules(SingleCriteriaResult res) {
         //C1a: >0 danske mail-adresser
         if (valueGreaterThan(res.C.get("C1a"), 0)) {
@@ -489,7 +485,13 @@ public class Classification {
             return;
         }
     }
-
+    /**
+     * Helper method to test the resultValue of a given criteria.
+     * 
+     * @param criteriaValue The String value of some criteria
+     * @param i a given integer
+     * @return true, if the intvalue of the criteriaValue String is greater than argument i. Returns false, if criteriaValue is null, emptyvalue or its intvalue is not greater than argument i
+     */
     private static boolean valueGreaterThan(String criteriaValue, int i) {
         if (criteriaValue == null || criteriaValue.isEmpty()) {
             return false;
@@ -502,10 +504,4 @@ public class Classification {
         }
         return intValue > i;
     }
-
-
-    
-    
-    
-
 }

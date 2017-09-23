@@ -6,9 +6,7 @@ import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.netarkivet.harvester.datamodel.DBSpecifics;
 import dk.netarkivet.common.utils.FileUtils;
 
-
 public class HarvestShowReports {
-
 	/**
 	 * Fetch the reports of a single NAS job 
 	 * using the NAS settings xml defined by 

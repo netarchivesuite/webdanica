@@ -9,7 +9,10 @@ import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.webapp.Environment;
 
-
+/**
+ * A worker-thread for updating the state cache.
+ *
+ */
 public class StateCacheUpdateWorkThread extends WorkThreadAbstract {
 	
 	static {
@@ -18,7 +21,12 @@ public class StateCacheUpdateWorkThread extends WorkThreadAbstract {
 
 	private DAOFactory daofactory;
 	private AtomicBoolean updateInProgress = new AtomicBoolean(false);
-
+	
+	/**
+	 * Constructor for the StateCacheUpdateWorkThread
+	 * @param environment The Webdanica webapp environment object
+	 * @param threadName The name of this thread
+	 */
 	public StateCacheUpdateWorkThread(Environment environment, String threadName) {
 		this.environment = environment;
 		this.threadName = threadName;
@@ -33,7 +41,6 @@ public class StateCacheUpdateWorkThread extends WorkThreadAbstract {
 	protected void process_run() {
 		// check if not needs to run now
 		if (!environment.bScheduleCacheUpdating) {
-			//logger.log(Level.INFO, "Skipping cache update process - environment.bScheduleCacheUpdating is false");
 			return;
 		}
 		if (updateInProgress.get()) {
@@ -56,7 +63,6 @@ public class StateCacheUpdateWorkThread extends WorkThreadAbstract {
 
 	@Override
 	protected void process_cleanup() {
-		
 	}
 
 	@Override

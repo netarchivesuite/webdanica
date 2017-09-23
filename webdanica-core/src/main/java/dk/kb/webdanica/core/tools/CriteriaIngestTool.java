@@ -8,8 +8,24 @@ import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
+/**
+ * This tool is the final step in the automatic analysis workflow.
+ * The automatic-workflow/ingestTool.sh is a wrapper around this tool 
+ * called from the automatic-workflow/automatic.sh script.
+ * 
+ * Usage is: java dk.kb.webdanica.core.tools.CriteriaIngestTool <harvestlogfile> <criteria-results-dir> 
+ * [--no-add-harvests-to-database] [--no-add-criteriaResults-to-database]
+ */
 public class CriteriaIngestTool {
-
+    
+    /**
+     * Main function for the CriteriaIngestTool.
+     * Takes between 2 and 4 arguments.
+     * Returns exit-code 1 if missing arguments, or failure when ingesting into the database
+     * @param args The arguments (from 2 to 4 arguments)
+     * @throws IOException
+     * @throws SQLException
+     */
 	public static void main(String[] args) throws IOException, SQLException {
 		if (args.length < 2 || args.length > 4) {
 			System.err.println(CriteriaIngestTool.class.getName() + " has missing arguments or too many args (#args given = " + args.length + "). Required #args is between 2 and 4");

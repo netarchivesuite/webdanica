@@ -368,9 +368,7 @@ public class CombinedCombo extends EvalFunc<String> {
 				List<String> languageTestResults = C4.computeNewC4(text);
 				String C4a = languageTestResults.get(0);
 				String C4b = languageTestResults.get(1);
-				//result.append(", C4a: " + C4a);
 				object.put("C4a", C4a);
-				//result.append(", C4b: " + C4b); // New result
 				object.put("C4b", C4b);
 				Set<String> C5amatches = new HashSet<String>();
 				Set<String> C5bmatches = new HashSet<String>();
@@ -458,7 +456,6 @@ public class CombinedCombo extends EvalFunc<String> {
 				} else {
 					C7gmatches = C7.computeC7gAlt(text, TextUtils.copyTokens(tokens), cityFileTokenSet);	
 				}
-				//Set<String> C7gmatches = C7.computeC7gV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C7g", C7gmatches);
 				//Calc C7h			'(København/Danmark) translated to foreign languages in htm (input: text, tokemized) 
 				Set<String> C7hmatches = C7.computeC7hV5(TextUtils.copyTokens(tokens));
@@ -552,7 +549,6 @@ public class CombinedCombo extends EvalFunc<String> {
 				addResultForCriterie(object, "C9e", C9ematches);
 				//Calc C9f          'search for lowercased cvr-number, input: al text lowercased, output: y/n
 				boolean C9f = C9.computeC9f(text);
-				//result.append(", C9f: " + (C9f? "y": "n"));
 				object.put("C9f", (C9f? "y": "n"));
 				
 				//Calc C10a         'surname patterns (input: lowercased text, tokenized, output: )
@@ -574,11 +570,11 @@ public class CombinedCombo extends EvalFunc<String> {
 				} else {
 					C10cmatches = C10.computeC10cV5Alt(text, TextUtils.copyTokens(tokens), danishNamesTokenSet);
 				}
-				//Set<String> C10cmatches = C10.computeC10cV5(TextUtils.copyTokens(tokens));
 				addResultForCriterie(object, "C10c", C10cmatches);     
 
 				/////////////////////////////////////////////////////////////
-				// Calc C15a      'The URL belongs to a TLD often used by Danes (The list currently comprises .dk, .no, .se, .de, .eu, .org, .com, .net, .nu, .tv, .info)
+				// Calc C15a      'The URL belongs to a TLD often used by Danes 
+				// The list currently comprises .dk, .no, .se, .de, .eu, .org, .com, .net, .nu, .tv, .info)
 				String C15a = C15.computeC15a(hostname);
 				object.put("C15a", (C15a==null? "n": "y: " + C15a));
 				//Calc C17a      'The outlinks of the page refers to .dk web pages
@@ -625,18 +621,5 @@ public class CombinedCombo extends EvalFunc<String> {
 		}
 		jo.put(criteria, result);
 	}
-
-/*	
-	
-	private String getCityfilePath(StringBuilder error) {
-		try {
-			String citynamesFilePath = dk.kb.webdanica.core.utils.Settings.get(WebdanicaSettings.PIG_CITYNAMES_FILEPATH);
-			return citynamesFilePath;
-		} catch (Throwable e) {
-			error.append("Unable to retrieve Cityfilepath: " + e);
-		}
-		return null;
-	}
-*/	
 }
 

@@ -8,6 +8,10 @@ import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
+/**
+ * Tool to check, if the C4b criteria makes 
+ * @deprecated "Not useful as-is"
+ */
 public class UpdateDanishCodes {
 
     private static DAOFactory daoFactory;

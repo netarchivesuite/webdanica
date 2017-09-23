@@ -54,8 +54,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
     /**
      * Constructor for the Filter thread worker object.
      * 
-     * @param environment
-     *            The Webdanica webapp environment object
+     * @param environment The Webdanica webapp environment object
+     * @param threadName The name of the thread
      */
     public FilterWorkThread(Environment environment, String threadName) {
         this.environment = environment;
@@ -148,8 +148,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
     }
 
     /**
-     * 
-     * @param workList
+     * Do filtering on the given list of Seed objects.
+     * @param workList a List of Seed objects.
      * @throws Exception
      */
     private void filter(List<Seed> workList) throws Exception {

@@ -30,14 +30,22 @@ import dk.kb.webdanica.core.utils.TextUtils;
  */
 public class CriteriaIngest {
 
+    /**
+     * Reads 
+     * @param harvestLog
+     * @param baseCriteriaDir
+     * @param addHarvestToDatabase
+     * @param addCriteriaResultsToDatabase
+     * @param daofactory
+     * @throws Exception
+     */
     public static void ingest(File harvestLog, File baseCriteriaDir,
             boolean addHarvestToDatabase, boolean addCriteriaResultsToDatabase,
             DAOFactory daofactory) throws Exception {
         File basedir = harvestLog.getParentFile();
         String harvestLogReportName = harvestLog.getName() + ".report.txt";
         File harvestLogReport = findReportFile(basedir, harvestLogReportName);
-        List<SingleSeedHarvest> harvests = HarvestLog
-                .readHarvestLog(harvestLog);
+        List<SingleSeedHarvest> harvests = HarvestLog.readHarvestLog(harvestLog);
         if (addHarvestToDatabase) {
             HarvestDAO hdao = daofactory.getHarvestDAO();
             for (SingleSeedHarvest hp : harvests) {
@@ -76,7 +84,13 @@ public class CriteriaIngest {
         }
         HarvestLog.printToReportFile(harvests, harvestLogReport);
     }
-
+    
+    /**
+     * Construct a harvestLogReport File that doesn't exist already in the given basedir.
+     * @param basedir the base-directory where to write harvestLogReport file  
+     * @param harvestLogReportName The name of the harvestLogReport file 
+     * @return a harvestLogReport File that doesn't exist already in the given basedir
+     */
     private static File findReportFile(File basedir, String harvestLogReportName) {
         File harvestLogReport = new File(basedir, harvestLogReportName);
         int count = 0;
@@ -90,13 +104,14 @@ public class CriteriaIngest {
 
     /**
      * Process the result of the analysis.
-     * @param ingestFile
-     * @param seed
-     * @param harvestName
-     * @param addToDatabase
-     * @param rejectDKURLs 
+     * @param ingestFile A file containing criteria results in JSON format
+     * @param seed The seed of the harvest from which we made the extracted text followed by criteria analysis
+     * @param harvestName The name of the harvest in the NetarchiveSuite harvestDB
+     * @param addToDatabase Should we add the result of the analysis to hbase?
+     * @param daofactory Factoryclass to access hbase
+     * @param rejectDKURLs Are we rejecting DK urls?
      * @return ProcessResult object
-     * @throws Exception
+     * @throws Exception If anything bad happens
      */
     public static ProcessResult processFile(File ingestFile, String seed,
             String harvestName, boolean addToDatabase, DAOFactory daofactory, boolean rejectDKURLs)

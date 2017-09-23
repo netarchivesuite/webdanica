@@ -17,6 +17,10 @@ import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 
+/**
+ * Tool to examine the files in a folder using the tika AutoDetectParser. 
+ * TODO Not really relevant for this project. Should be moved into another project 
+ */
 public class ShowContentType {
 
 	public static void main(String[] args) throws IOException {
@@ -53,6 +57,10 @@ public class ShowContentType {
 		*/
 	}
 	
+	/**
+	 * @param toExamine The file to examine
+	 * @return the MediaType detected by Tika
+	 */
 	public static String getMediaTypeUsingTika(File toExamine) {
 		String theFileName = toExamine.getName();
 		BufferedInputStream bis = null;
@@ -72,6 +80,10 @@ public class ShowContentType {
 		return null;
 	}
 	
+	/**
+     * @param f The file to examine
+     * @return the MediaType detected by Files.probeContentType
+     */
 	public static String getMediaTypeUsingJavaFiles(File f) {
 		Path p = Paths.get(f.getAbsolutePath());
 		String contenttype = null;
@@ -84,6 +96,12 @@ public class ShowContentType {
 		return contenttype;
 	}
 	
+	/**
+	 * 
+	 * @param f
+	 * @param useTika
+	 * @return
+	 */
 	public static List<String> getContentType(File f, boolean useTika) {
 		List<String>resultList = new ArrayList<String>(); 
 		if (f.isFile()) { // should only happen if the original file argument is a normal file

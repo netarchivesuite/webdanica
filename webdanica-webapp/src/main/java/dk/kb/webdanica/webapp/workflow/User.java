@@ -4,6 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.antiaction.common.templateengine.login.LoginTemplateUser;
 
+/**
+ * User class. 
+ * @deprecated Should not be needed
+ *
+ */
 public class User implements LoginTemplateUser{
 
 	@Override

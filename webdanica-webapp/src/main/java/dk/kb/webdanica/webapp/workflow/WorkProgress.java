@@ -1,12 +1,9 @@
-/*
- * Created on 26/09/2013
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
 package dk.kb.webdanica.webapp.workflow;
 
+/**
+ * Class used by the WorkThreadAbstract class 
+ * to contain progress of the WorkflowWorkThreads.
+ */
 public class WorkProgress {
 
 	public String threadName;

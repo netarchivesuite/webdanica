@@ -20,7 +20,7 @@ import dk.kb.webdanica.webapp.Environment;
 /**
  * This class (AnalysisWorkThread) is currently under development.
  * Note: The analysis is currently done outside the webapp by cronjobs working on the harvestlogs produced by the harvestingworkflow.
- *
+ * @deprecated Not currently used
  */
 public class AnalysisWorkThread extends WorkThreadAbstract {
 

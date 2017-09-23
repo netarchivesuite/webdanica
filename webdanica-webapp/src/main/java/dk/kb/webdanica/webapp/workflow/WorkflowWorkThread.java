@@ -30,6 +30,7 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
     /**
      * Constructor for the workflow thread worker object.
      * @param environment The environment information for the workflow
+     * @param threadName The name of the thread
      */
     public WorkflowWorkThread(Environment environment, String threadName) {
         this.environment = environment;
@@ -53,19 +54,19 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
     }
 
     @SuppressWarnings("unchecked")
-	protected void schedule_day(long ctm) {
-    	harvestingSchedules = (List<Long>)environment.harvestSchedule.getScheduleList(nextReschedule);
+    protected void schedule_day(long ctm) {
+        harvestingSchedules = (List<Long>)environment.harvestSchedule.getScheduleList(nextReschedule);
         filteringSchedules = (List<Long>)environment.filterSchedule.getScheduleList(nextReschedule);
         cacheUpdatingSchedules = (List<Long>)environment.cacheUpdatingSchedule.getScheduleList(nextReschedule);
-        
-		dayDate.setTime(ctm);
-		dayCal.setTime(dayDate);
-		dayCal.add(Calendar.DATE, 1);
-		dayCal.set(Calendar.HOUR_OF_DAY, 0);
-		dayCal.set(Calendar.MINUTE, 0);
-		dayCal.set(Calendar.SECOND, 0);
-		dayCal.set(Calendar.MILLISECOND, 0);
-		nextReschedule = dayCal.getTimeInMillis();
+
+        dayDate.setTime(ctm);
+        dayCal.setTime(dayDate);
+        dayCal.add(Calendar.DATE, 1);
+        dayCal.set(Calendar.HOUR_OF_DAY, 0);
+        dayCal.set(Calendar.MINUTE, 0);
+        dayCal.set(Calendar.SECOND, 0);
+        dayCal.set(Calendar.MILLISECOND, 0);
+        nextReschedule = dayCal.getTimeInMillis();
     }
 
     protected void schedule_trim_overdue(long ctm) {
@@ -85,35 +86,35 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
 
 	@Override
 	protected void process_run() {
-		long ctm = System.currentTimeMillis();
-        if (ctm >= nextReschedule) {
-        	logger.log(Level.INFO, "Generating new daily schedules.");
-        	schedule_day(ctm);
-        }
-        environment.bScheduleHarvesting = false;
-        if (harvestingSchedules != null && harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
-        	while (harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
-            	harvestingSchedules.remove(0);
-        	}
-        	environment.bScheduleHarvesting = true;
-        }
-        
-        environment.bScheduleFiltering = false;
-        if (filteringSchedules != null && filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
-        	while (filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
-        		filteringSchedules.remove(0);
-        	}
-        	environment.bScheduleFiltering = true;
-        }
-        
-        environment.bScheduleCacheUpdating = false;
-        if (cacheUpdatingSchedules != null && cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
-        	while (cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
-        		cacheUpdatingSchedules.remove(0);
-        	}
-        	environment.bScheduleCacheUpdating = true;
-        }        
-    }
+	    long ctm = System.currentTimeMillis();
+	    if (ctm >= nextReschedule) {
+	        logger.log(Level.INFO, "Generating new daily schedules.");
+	        schedule_day(ctm);
+	    }
+	    environment.bScheduleHarvesting = false;
+	    if (harvestingSchedules != null && harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
+	        while (harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
+	            harvestingSchedules.remove(0);
+	        }
+	        environment.bScheduleHarvesting = true;
+	    }
+
+	    environment.bScheduleFiltering = false;
+	    if (filteringSchedules != null && filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
+	        while (filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
+	            filteringSchedules.remove(0);
+	        }
+	        environment.bScheduleFiltering = true;
+	    }
+
+	    environment.bScheduleCacheUpdating = false;
+	    if (cacheUpdatingSchedules != null && cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
+	        while (cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
+	            cacheUpdatingSchedules.remove(0);
+	        }
+	        environment.bScheduleCacheUpdating = true;
+	    }        
+	}
     
     @Override
     protected void process_cleanup() {

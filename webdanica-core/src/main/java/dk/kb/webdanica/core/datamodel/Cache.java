@@ -60,17 +60,18 @@ public class Cache {
 		this.uuid = uuid;
     }
 
+	/** Constructor used when not reading the cache from the database. */
 	public Cache(long totalSeedsCount, Map<Integer, Long> seedStatusCountMap,
 			Map<Integer, Long> seedDanicaStatusCountMap, long harvestCount,
 			long totalCritResults, long updatedTime) {
-		this.totalSeedsCount = totalSeedsCount;
-		this.seedStatusCountsMap = seedStatusCountMap;
-		this.seedDanicaStatusCountsMap = seedDanicaStatusCountMap;
-		this.harvestcount = harvestCount;
-		this.criteriaResults = totalCritResults;
-		this.updatedTime = updatedTime;
+	    this(totalSeedsCount, seedStatusCountMap, seedDanicaStatusCountMap, harvestCount, totalCritResults, updatedTime, null);
 	}
-
+	
+	/**
+	 * Update the cache in the database. 
+	 * @param daoFactory the daofactory to get the correct DAO classes
+	 * @throws Exception
+	 */
 	public static void updateCache(DAOFactory daoFactory) throws Exception {
 		SeedsDAO dao = daoFactory.getSeedsDAO();
 		long totalSeedsCount = dao.getSeedsCount(null);
@@ -91,6 +92,12 @@ public class Cache {
 	    daoFactory.getCacheDAO().updateCache(cache);
 	}
 	
+	/**
+	 * Retrieve the current Cache value from the database.
+	 * @param daofactory the daofactory to get the correct DAO classes
+	 * @return the current Cache value from the database.
+	 * @throws Exception
+	 */
 	public static Cache getCache(DAOFactory daofactory) throws Exception {
 		CacheDAO dao = daofactory.getCacheDAO();
 		return dao.getCache();

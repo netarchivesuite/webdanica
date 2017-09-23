@@ -15,6 +15,10 @@ import dk.kb.webdanica.core.utils.TextUtils;
 
 import org.jwat.common.Base64;
 
+/** 
+ * Utilities used handling criteria in webdanica.
+ * TODO remove unnecessary methods
+ */
 public class CriteriaUtils {
 
     public static String findC9eval(String c9b, String c9e) {
@@ -250,7 +254,12 @@ public class CriteriaUtils {
         }
         return null;
     }
-
+    
+    /**
+     * Parse the archive date from the Cext3 field. 
+     * @param cext3Orig the Cext3 field in the JSON criteria data.
+     * @return the found archive date in milliseconds since Epoch 
+     */
     public static Long findDateFromString(String cext3Orig) {
         Date readDate = null;
         try {

@@ -19,7 +19,16 @@ public class HarvesterThread implements Runnable {
 	private int harvestMaxObjects;
 	private SingleSeedHarvest harvest;
 	private boolean harvestSuccess = false;
-
+	
+	/**
+	 * 
+	 * @param url
+	 * @param eventHarvestName
+	 * @param scheduleName
+	 * @param templateName
+	 * @param harvestMaxBytes
+	 * @param harvestMaxObjects
+	 */
 	public HarvesterThread(String url, String eventHarvestName, String scheduleName, String templateName, long harvestMaxBytes, int harvestMaxObjects) {
 		this.url = url;
 		this.eventHarvestName=eventHarvestName;
@@ -38,15 +47,27 @@ public class HarvesterThread implements Runnable {
 			logger.log(Level.WARNING, "Exception during harvesting:" + ExceptionUtils.getFullStackTrace(e), e);
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getHarvestSuccess() {
 		return harvestSuccess;
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public SingleSeedHarvest getHarvestResult() {
 		return harvest;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean constructionOK() {
 	    return harvest.getConstructionOK();
 	}

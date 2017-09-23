@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+/**
+    @deprecated Use the dk.netarkivet.common.utils.archive.ArchiveDateConverter from NetarchiveSuite 5.2.2 instead
+*/
 public class DateConverter {
 
 /** ARC date format string as specified in the ARC documentation (14 digits). */

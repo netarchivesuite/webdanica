@@ -2,6 +2,10 @@ package dk.kb.webdanica.core.datamodel;
 
 import com.datastax.driver.core.Session;
 
+/**
+ * @deprecated Only used by Cassandra
+ *
+ */
 public interface Database {
     boolean isClosed();
     void close();

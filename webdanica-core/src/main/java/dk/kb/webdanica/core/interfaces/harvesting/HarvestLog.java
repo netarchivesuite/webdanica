@@ -24,15 +24,24 @@ import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
-/*		
-Seed: https://changecoachdk.com/resources/
-	HarvestName: webdanica-trial-1470219964356
-	Successful: true
-	EndState: DONE
-	Files harvested: 60-47-20160803102623295-00000-dia-prod-udv-01.kb.dk.warc.gz,60-metadata-1.warc
-
+/**	
+ * 	Each harvestlog begins with a header like this: 
+ *   Harvestlog for harvests initiated by the Webdanica webapp at DATE
+ *   ################################################################################
+ *   
+ * Then we have a number of entries like this     
+ *   Seed: http://host.domain.org/
+ *   HarvestName: webdanica-trial-1505172711507
+ *   Successful: true
+ *   EndState: DONE
+ *   HarvestedTime: 1505172819137
+ *   Files harvested: 7759-8348-20170911233235902-00000-narcana-webdanica01.statsbiblioteket.dk.warc.gz,7759-metadata-1.warc
+ *   Errors:  
+ *   ################################################################################
  */
 public class HarvestLog {
+    
+    public final static String harvestLogHeaderPrefix = "Harvestlog for";
 	public final static String seedPattern = "Seed: ";
 	public final static String harvestnamePattern = "HarvestName: ";
 	public final static String successfulPattern = "Successful: ";
@@ -41,6 +50,12 @@ public class HarvestLog {
 	public final static String filesPattern = "Files harvested: ";
 	public final static String errorPattern = "Errors: ";
 	
+	/**
+	 * Read a given harvestlog file and return a list of SingleSeedHarvest objects.
+	 * @param harvestlog a given HarvestLog file
+	 * @return a list of SingleSeedHarvest objects
+	 * @throws IOException if the harvestlog file is not found or some error while reading the file occurs
+	 */
 	public static List<SingleSeedHarvest> readHarvestLog(File harvestlog) throws IOException {
 		List<SingleSeedHarvest> results = new ArrayList<SingleSeedHarvest>();
 
@@ -54,7 +69,7 @@ public class HarvestLog {
 			boolean errorLineWasLast = false;
 			while ((line = fr.readLine()) != null) {
 				trimmedLine = line.trim();
-				if (trimmedLine.isEmpty() || trimmedLine.startsWith("######")) {
+				if (trimmedLine.isEmpty() || trimmedLine.startsWith("######") || trimmedLine.startsWith(harvestLogHeaderPrefix)) {
 					// Skip line
 				} else {
 
@@ -123,6 +138,12 @@ public class HarvestLog {
 		return results;
 	}
 	
+	/**
+	 * Print a report of a list of harvests w/ criteria-results attached if any.
+	 * @param harvests a list of harvests
+	 * @param outputFile the file object to write out (File is overwritten, if it exists)
+	 * @throws IOException If unable to write to the output file.
+	 */
 	public static void printToReportFile(List<SingleSeedHarvest> harvests, File outputFile) throws IOException {
 		outputFile.createNewFile();
 		FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
@@ -134,7 +155,13 @@ public class HarvestLog {
 		fw.flush();
 		fw.close();
 	}
-
+	
+	/**
+	 * Print out the data of a SingleSeedHarvest to the given BufferedWriter.
+	 * @param h A SingleSeedHarvest
+	 * @param resfile a BufferedWriter
+	 * @throws IOException if unable to write to the BufferédWriter
+	 */
 	private static void printOut(final SingleSeedHarvest h, final BufferedWriter resfile) throws IOException {
 		resfile.append("################################################");
 		resfile.newLine();
@@ -165,7 +192,17 @@ public class HarvestLog {
 		resfile.newLine();
 		resfile.flush();
 	}
-		
+	
+	/**
+	 * Process the criteria-results for a list of harvests.
+	 * During processing of each harvest, the found criteriaresults is added to the  
+	 * @param harvests a list of harvests 
+	 * @param baseCriteriaDir The base criteria-directory where to look for the analysises of the harvested materiale.
+	 * @param addToDatabase Add the results to the database Yes or No.
+	 * @param daofactory factoryClass to connect to hbase
+	 * @return a list of HarvestError objects for any errors encountered during processing
+	 * @throws Exception
+	 */
 	public static List<HarvestError> processCriteriaResults(List<SingleSeedHarvest> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
 		List<HarvestError> errorReports = new ArrayList<HarvestError>();
 		boolean rejectDKURLs = SettingsUtilities.getBooleanSetting(
@@ -210,12 +247,16 @@ public class HarvestLog {
 		return errorReports;
 	}
 
-
-	public static List<String> findPartFiles(File ingestDir) {
-		if (ingestDir == null) {
+	/**
+	 * Look for files starting with "part-m-" e.g. part-m-00000.gz in the result-folder.
+	 * @param resultDir the directory where the result of the criteria analysis is written
+	 * @return a list of files starting with "part-m-" e.g. part-m-00000.gz in the result-folder
+	 */
+	public static List<String> findPartFiles(File resultDir) {
+		if (resultDir == null) {
 			return null;
 		}
-		String[] parts = ingestDir.list(new FilenameFilter() {
+		String[] parts = resultDir.list(new FilenameFilter() {
 			
 			@Override
 			public boolean accept(File dir, String name) {
@@ -229,6 +270,11 @@ public class HarvestLog {
 		}
     }
 	
+	/**
+	 * Make a dummy SingleSeedHarvest object.
+	 * @param error An errormessage to write
+	 * @return a dummy SingleSeedHarvest object
+	 */
 	public static SingleSeedHarvest makeErrorObject(String error) {
 		SingleSeedHarvest h = new SingleSeedHarvest();
 	    h.harvestName = error;

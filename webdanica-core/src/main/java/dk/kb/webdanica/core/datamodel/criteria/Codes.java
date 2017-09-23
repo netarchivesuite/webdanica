@@ -25,7 +25,9 @@ public class Codes {
     public static final int cat_maybes_dk = 9500; // getCodesForMaybees
     public static final int cat_likely_dk = 9999; // getCodesForDanishResults
 
-    // cat_likely_dk
+    /** 
+     * @return codes for cat_likely_dk  
+     */
     public static Set<Integer> getCodesForLikelyDanishResults() {
         Set<Integer> codeSet = new HashSet<Integer>();
         codeSet.add(4); // language is 'da' with 90 % certainty
@@ -50,7 +52,9 @@ public class Codes {
         return codeSet;
     }
 
-    // cat_ignored_dk
+    /** 
+     * @return codes for cat_ignored_dk  
+     */
     public static Set<Integer> getCodesForFrasorterede() {
         Set<Integer> codeSet = new HashSet<Integer>();
         codeSet.add(1);
@@ -58,7 +62,9 @@ public class Codes {
         return codeSet;
     }
 
-    // ERROR_dk
+    /** 
+     * @return codes for ERROR  
+     */
     public static Set<Integer> getCodesForUdgaaede() {
         Set<Integer> codeSet = new HashSet<Integer>();
         codeSet.add(5);
@@ -77,7 +83,9 @@ public class Codes {
         return codeSet;
     }
 
-    // cat_maybes_dk
+    /** 
+     * @return codes for cat_maybes_dk  
+     */
     public static Set<Integer> getCodesForMaybees() {
         Set<Integer> codeSet = new HashSet<Integer>();
         codeSet.add(111);
@@ -98,7 +106,9 @@ public class Codes {
         return codeSet;
     }
 
-    // cat_not_likely_dk
+    /** 
+     * @return codes for cat_not_likely_dk  
+     */
     public static Set<Integer> getCodesForNOTDanishResults() {
         Set<Integer> codeSet = new HashSet<Integer>();
         codeSet.add(2); // ignore 1 and 3
@@ -128,7 +138,12 @@ public class Codes {
         codeSet.add(327);
         return codeSet;
     }
-
+    
+    /** 
+     * Get the list of codes in a certain category.
+     * @param category a certain category
+     * @return codes for the given category
+     */
     public static Set<Integer> findCategoryCodes(int category) {
         Set<Integer> codeSet = new HashSet<Integer>();
         switch (category) {
@@ -155,6 +170,11 @@ public class Codes {
         return codeSet;
     }
 
+    /** 
+     * Get the Category to which the given code belongs.
+     * @param code a given code 
+     * @return the Category to which the given code belongs  
+     */
     public static Codes.Category getCategory(int code) {
         if (code <= 0) {
             return Codes.Category.UNKNOWN;
@@ -174,12 +194,22 @@ public class Codes {
         }
 
     }
-
+    
+    /**
+     * Check if the given code belongs to the IsLikeLyDanica category.
+     * @param code a given integer
+     * @return true, if the given code belongs to the IsLikeLyDanica category, otherwise false.
+     */
     public static boolean IsLikelyDanica(Integer code) {
         Set<Integer> danicacodes = getCodesForLikelyDanishResults();
         return danicacodes.contains(code);
     }
 
+    /**
+     * Check if the given code belongs to the IsLikeLyNotDanica category.
+     * @param code a given integer
+     * @return true, if the given code belongs to the IsLikeLyNotDanica category, otherwise false.
+     */
     public static boolean IsLikelyNotDanica(Integer code) {
         Set<Integer> notdanicacodes = getCodesForNOTDanishResults();
         return notdanicacodes.contains(code);

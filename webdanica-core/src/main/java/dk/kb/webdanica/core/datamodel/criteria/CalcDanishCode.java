@@ -7,8 +7,16 @@ import java.util.TreeSet;
 import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Display;
 import dk.kb.webdanica.core.datamodel.criteria.CodesResult.Level;
 
+/**
+ * Contains the description of the danish codes in Webdanica.
+ * Used by the webapp to present the description of the danish code together with the code itself (eg. 404) 
+ *
+ */
 public class CalcDanishCode {
-
+    /** 
+     * Prints out all the DanishCodes, and their description. 
+     * @param args
+     */
     public static void main(String[] args) {
         Set<Integer> set1 = Codes.getCodesForLikelyDanishResults();
         Set<Integer> set2 = Codes.getCodesForFrasorterede();
@@ -58,7 +66,6 @@ public class CalcDanishCode {
             System.out.println(getCalcDkCodeText(code, codesOut, level,
                     viaFields));
         }
-
     }
 
     public static final int maxbit = 22;
@@ -445,6 +452,7 @@ public class CalcDanishCode {
                     s = s + (viaFields ? " - C7g=0 - resten" : " - resten");
                 }
             } else if ((code >= 400 && code <= 414)) {
+                // Description for the curator defined IsLikelyDanica codes
                 if (code == 400) s = s + (viaFields ? " - C1a>0" : "DK mail addresses found");
                 if (code == 401) s = s + (viaFields ? " - C2A>0" : "DK telephone numbers found");
                 if (code == 402) s = s + (viaFields ? " - C6a>20" : "Frequent Danish words found");

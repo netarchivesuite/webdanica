@@ -5,14 +5,6 @@ import java.util.List;
 
 public class Language {
 
-    public static void main(String[] args) {
-        String testLanguages = "so: MEDIUM (0.714284)#br: MEDIUM (0.142858)#sl: MEDIUM (0.142857)";
-        List<Language> languages = findLanguages(testLanguages);
-        for (Language l : languages) {
-            System.out.println(l);
-        }
-    }
-
     private String code;
     private float confidence;
 
@@ -20,7 +12,7 @@ public class Language {
         this.code = code;
         this.confidence = confidence;
     }
-
+    
     public static List<Language> findLanguages(String languagesFound) {
         List<Language> languages = new ArrayList<Language>();
         // "so: MEDIUM (0.714284)#br: MEDIUM (0.142858)#sl: MEDIUM (0.142857)"
@@ -36,9 +28,14 @@ public class Language {
         }
         return languages;
     }
-
-    public static Language parseLanguage(String part) {
-        String[] lanparts = part.split(":");
+    
+    /**
+     * Parse a String like this: so: MEDIUM (0.714284).
+     * @param languageAsString a language in the form above.
+     * @return a Language object created from the given languageAsString
+     */
+    public static Language parseLanguage(String languageAsString) {
+        String[] lanparts = languageAsString.split(":");
         String code = lanparts[0];
         String confidencePart = lanparts[1];
         int leftparanthesis = confidencePart.indexOf("(");

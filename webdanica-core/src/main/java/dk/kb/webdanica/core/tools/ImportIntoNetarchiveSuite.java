@@ -31,6 +31,13 @@ import dk.netarkivet.harvester.datamodel.DomainConfiguration;
 import dk.netarkivet.harvester.datamodel.DomainDAO;
 import dk.netarkivet.harvester.datamodel.SeedList;
 
+/**
+ * Tool to import danica seed(s) into Netarchivesuite, so they can be harvested in the future 
+ * by NetarchiveSuite.
+ * Note that this is not meant to be used to import seeds into the NetarchiveSuite instance used 
+ * by the Webdanica workflow, but the to import danica seeds into the PROD netarchivesuite of netarkivet.dk.
+ *
+ */
 public class ImportIntoNetarchiveSuite {
 	
 	public static final String SEEDLIST_NAME_TO_ADD_TO = Constants.WEBDANICA_SEEDS_NAME;
@@ -102,9 +109,9 @@ public class ImportIntoNetarchiveSuite {
 	}
 	
 	/**
-	 * 
-	 * @param seeds
-	 * @return
+	 * Split up the seeds into sets for each domain in the list of seeds.
+	 * @param seeds a list of seeds
+	 * @return a map where a domain is the key, and its seeds as a set is the value.
 	 */
 	public static Map<String,Set<String>> splitUpSeed(List<String> seeds, Set<String> ignoredSeeds) {
 		
@@ -128,6 +135,11 @@ public class ImportIntoNetarchiveSuite {
 		return domainMap;
 	}
 	
+	/**
+	 * Get the seeds from the file, and put them into a set.
+	 * @param argumentAsFile the file given as argument
+	 * @return the seeds from the file as a set.
+	 */
 	public static Set<String> getSeedsFromFile(File argumentAsFile) {
 		BufferedReader fr = null;
 		try {
@@ -158,6 +170,16 @@ public class ImportIntoNetarchiveSuite {
 		return seeds;
 	}
 	
+	/**
+	 * Insert seeds belonging to a single domain into NetarchiveSuite.
+	 * If the domain already exists in Netarchivesuite, we create or add to a seedslist named 
+	 * 'webdanicaseeds' and add a comment to the seedlist created or updated.
+	 * If the domain does not exist, we create the domain, but disable the seeds in the default seedlist 
+	 * 
+	 * @param dao DAO Interface to the Domains table in Netarchivesuite 
+	 * @param domain The domain to add seedlist to or create.
+	 * @param newseeds the seeds to add to seedlist webdanicaseeds
+	 */
 	private static void insertSeeds(DomainDAO dao, String domain,
 			List<String> newseeds) {
 		if (dao.exists(domain)) {
@@ -228,7 +250,7 @@ public class ImportIntoNetarchiveSuite {
 			d.addSeedList(sl);
 			dao.create(d);
 
-			//dao.update(d); // refresh object from DB - So new seedlist is in the database
+			// refresh object from DB - So new seedlist is in the database
 			d = dao.readKnown(domain);
 			String config = dao.getDefaultDomainConfigurationName(domain);
 			DomainConfiguration dc = d.getConfiguration(config);

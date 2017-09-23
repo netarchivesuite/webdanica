@@ -18,6 +18,8 @@ import dk.netarkivet.harvester.datamodel.GlobalCrawlerTrapListDAO;
 /**
  * Synchronizes the contents of the blacklists in webdanica with the global crawlertraps in the NAS system defined by NetarchiveSuite Settings
  * @author svc
+ * TODO created issue WEBDAN-244 Check for characters that requires escaping and escape them so a xml parser reads them correctly.
+ *
  */
 public class SynchronizeCrawlertraps {
 

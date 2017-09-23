@@ -30,13 +30,18 @@ import dk.kb.webdanica.core.utils.SettingsUtilities;
  *
  *  
  *  Usage LoadBlackLists <file>
- *  TODO add a description to the arguments  
+ *  TODO add a description to the arguments  (currently the description is "")
+ *  See WEBDAN-243
  */  
 public class LoadBlacklists {
 
 	private File blacklistfile;
     private DAOFactory daoFactory;
-	
+
+    /**
+	 * Constructor for the LoadBlackLists tool.
+	 * @param blacklistfile the file to insert in the database
+	 */
 	public LoadBlacklists(File blacklistfile) {
 	   this.blacklistfile = blacklistfile;
        String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, Constants.DEFAULT_DATABASE_SYSTEM);
@@ -47,8 +52,7 @@ public class LoadBlacklists {
        }
     }
 
-	public static void main(String[] args) throws Exception {
-		
+	public static void main(String[] args) throws Exception {		
 		if (args.length != 1) {
 			System.err.println("Need blacklist file as argument");
 			System.exit(1);
@@ -80,7 +84,7 @@ public class LoadBlacklists {
 	   
 	
 	/**
-	 * Insert a blacklist
+	 * Insert a blacklist.
 	 */
 	public void insertList() {
 		BlackListDAO bdao = daoFactory.getBlackListDAO();
@@ -102,7 +106,9 @@ public class LoadBlacklists {
 	            	blackListRegexp.add(trimmedLine);
 	            }
 	        }
-	      BlackList b = new BlackList(name, "", blackListRegexp, true);  
+	      //TODO as suggested in WEBDAN-243, the description and isActive arguments to the BlackList constructor should 
+	      // be taken from the arguments to the tool at least optionally.
+	      BlackList b = new BlackList(name, "", blackListRegexp, true);
 	      bdao.insertList(b);
 	      System.out.println("Created blacklist with name='" + name + "' and #entries=" + entries + ", ignored empty lines: " + empty);
         } catch (Throwable e) {
