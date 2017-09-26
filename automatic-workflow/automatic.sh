@@ -4,14 +4,14 @@ WEBDATADIR=$3
 WEBDANICA_VERSION=$4
 HADOOP_BINBIN=$5
 export PIG_HOME=$6
-
+NAS_VERSION=$7
 PROG=`basename "$0"`
 
 SEQ_BASEDIR=$WORKFLOW_HOME/SEQ_AUTOMATIC
 CRITERIA_RESULTS_BASEDIR=$WORKFLOW_HOME/criteria-results-automatic
 CRITERIA_WORKFLOW_SCRIPT=criteria-workflow-alt.sh
 ################### check args ##########################################
-
+I
 # check HARVESTLOG_FILE
 if [ -z $HARVESTLOG_FILE ]; then
    echo "ERROR: The HARVESTLOG_FILE argument (arg #1) is not set. Exiting program $PROG"
@@ -84,7 +84,7 @@ SEQ_DIR=$SEQ_BASEDIR/$TIMESTAMP
 mkdir -p $SEQ_DIR
 echo
 echo "Starting parsed-workflow on file $HARVESTLOG_FILE .."
-bash parsed-workflow.sh $HARVESTLOG_FILE $WEBDATADIR $SEQ_DIR $WORKFLOW_HOME $HADOOP_BINBIN $WEBDANICA_VERSION
+bash parsed-workflow.sh $HARVESTLOG_FILE $WEBDATADIR $SEQ_DIR $WORKFLOW_HOME $HADOOP_BINBIN $WEBDANICA_VERSION $NAS_VERSION
 rc=$?
 if [[ $rc != 0 ]]; then 
 	echo "ERROR: parsed-workflow failed"
@@ -108,11 +108,11 @@ if [[ $rc != 0 ]]; then echo "ERROR: criteria-workflow failed"; exit $rc; fi
 #4) Efterprocessering af kriteria-analysen og ingest i databasen
 echo
 echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION"
-bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION
+bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION $NAS_VERSION
 rc=$?
 if [[ $rc != 0 ]]; then echo "ERROR: criteria ingest failed"; exit $rc; fi
 echo
 echo "Ingest of $HARVESTLOG_FILE was successful"
 echo
 
-
+	

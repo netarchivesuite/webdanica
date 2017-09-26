@@ -1,6 +1,6 @@
 #Building the war-file
 
-Note: Java 7+ is required to build this software
+Note: Java 7+ is required to build this software.
 
 ## Fetch the source from github using git
 
@@ -19,7 +19,7 @@ First look at description of the phoenix dependency in webdanica-core/pom.xml
     </dependency>
 ```
 Currently this calls for download of the phoenix-4.7.0-HBase-1.1-bin.tar.gz downloaded from https://archive.apache.org/dist/phoenix/phoenix-4.7.0-HBase-1.1/bin/ 
-and extracting the phoenix-4.7.0-HBase-1.1-client.jar from this distribution (is in the main folder)
+and extracting the phoenix-4.7.0-HBase-1.1-client.jar from this distribution (is in the main folder).
 
 and copy the phoenix-4.7.0-HBase-1.1-client.jar to webdanica-core/lib/
 
@@ -27,11 +27,7 @@ and copy the phoenix-4.7.0-HBase-1.1-client.jar to webdanica-core/lib/
 
 mvn clean install
 
-The result of this process will generate a webdanica-webapp-war-VERSION.war in the webdanica-webapp-war/target folder
+The result of this process will generate a webdanica-webapp-war-VERSION.war in the webdanica-webapp-war/target folder.
 
-This is the war-file which is deployed as ROOT.war to tomcat
-
-
-Furthermore the WEB-INF/lib folder is used as standard lib folder for the webdanica-tools and the scripts of the automatic and manual workflow 
-
+This is the war-file which is deployed as ROOT.war to tomcat.
 

@@ -1,9 +1,10 @@
 # Installation and configuration of the NetarchiveSuite used by webdanica
 
-The webdanica system uses a quickstart based Netarchivesuite 5.1 instance running on the same machine as the webapp.
-Probably, Netarchivesuite 5.2+ will also work, but this hasn't been tested.
+The webdanica system uses a quickstart based Netarchivesuite 5.2.2 instance running on the same machine as the webapp.
 
-The recipe used is as written on the page https://sbforge.org/display/NASDOC51/Installation+of+the+Quickstart+system
+The recipe used is as written on the page https://sbforge.org/display/NASDOC52/Installation+of+the+Quickstart+system
+
+By default, this uses derby as the backend database system. See [this page](webdanica_with_postgresql.md) for how to use Postgresql instead.
 
 Only exception is the use of install/deploy_webdanica_netarchivesuite.xml instead of the deploy_standalone_example.xml 
 
@@ -36,7 +37,4 @@ You create this in the NetarchiveSuite GUI by
  * Choose the second Until option (under the Continue subheading)
  * Write 1 (thus it reads until 1 harvests have been done)
  * Save 
-
-
-
 

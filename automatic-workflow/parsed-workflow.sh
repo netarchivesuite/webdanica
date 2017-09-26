@@ -4,6 +4,7 @@ SEQDIR=$3
 WORKFLOW_HOME=$4
 HADOOP_HOME=$5
 WEBDANICA_VERSION=$6
+NAS_VERSION=$7
 
 PROG=`basename "$0"`
 
@@ -52,7 +53,7 @@ if [ ! -d "$SEQDIR" ]; then
    exit 1
  fi
 
-WARCS=`bash findwarcs.sh $HARVESTLOG $DATADIR $WORKFLOW_HOME $WEBDANICA_VERSION`
+WARCS=`bash findwarcs.sh $HARVESTLOG $DATADIR $WORKFLOW_HOME $WEBDANICA_VERSIONI $NAS_VERSION`
 RESCODE=$?
 if [ $RESCODE -ne 0 ]; then
    echo "ERROR: The script 'findwarcs.sh' failed with statuscode $RESCODE. Exiting program $PROG"

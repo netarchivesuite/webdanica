@@ -31,18 +31,60 @@ Make sure that the WEBDATADIR points to the same location as defined by Netarchi
 
 Furthermore hadoop-1.2.1(http://archive.apache.org/dist/hadoop/core/hadoop-1.2.1/hadoop-1.2.1.tar.gz) and pig-0.16.0(http://ftp.download-by.net/apache/pig/pig-0.16.0/pig-0.16.0.tar.gz) must be downloaded and unpacked into the WORKFLOW_USER_HOME.
 
+Note that we want to use the hadoop embedded with pig, not any external hadoop installation. So, if hadoop is in the path (`which hadoop` gives a positive result), you need to 
+adapt the `pig-0.16.0/bin/pig` script like this:
+```
+ #    done
+ #fi
+ 
+-if which hadoop >/dev/null; then
+-    HADOOP_BIN=`which hadoop`
+-fi
++## SVC: uncomment if which hadoop
++#if which hadoop >/dev/null; then
++#    HADOOP_BIN=`which hadoop`
++#fi
+ 
+ if [[ -z "$HADOOP_BIN" && -n "$HADOOP_PREFIX" ]]; then
+     if [ -f $HADOOP_PREFIX/bin/hadoop ]; then
+@@ -278,12 +279,13 @@
+     fi
+ fi
+ 
+-if [ -z "$HADOOP_BIN" ]; then
+-    # if installed with rpm/deb package
+-    if [ -f /usr/bin/hadoop ]; then
+-        HADOOP_BIN=/usr/bin/hadoop
+-    fi
+-fi
++## SVC: Disabled if 
++#if [ -z "$HADOOP_BIN" ]; then
++#    # if installed with rpm/deb package
++#    if [ -f /usr/bin/hadoop ]; then
++#       HADOOP_BIN=/usr/bin/hadoop
++#    fi
++#fi
+ 
+ # find out the HADOOP_HOME in order to find hadoop jar
+ # we use the name of hadoop jar to decide if user is using
+```
+Thus tricking it into not finding the hadoop installed on the machine or in the path.
+
 ## The installation of the automatic-workflow 
 
-Fetch the automatic-workflow folder from github using the command extractFromGithub.sh in the tools folder
-```
-bash extractFromGithub.sh 1.X 
-```
-This will download a zipfile of the 1.X branch from github and unpack it in the folder 1.X-DD-MM-YYYY/webdanica-1.X
-Where DD-MM-YY represents the current date.
+First the sourcecode for the release from https://github.com/netarchivesuite/webdanica/releases
+unzip the source code. This will produce a `webdanica-$RELEASE` folder (e.g. webdanica-1.2.0), and we're want the webdanica-$RELEASE/automatic-workflow folder.  
 
-Copy the 1.X-DD-MM-YYYY/webdanica-1.X/automatic-workflow folder to its correct location (i.e the WORKFLOW_USER_HOME), and change the owner of the files to the user running the automatic workflow
+If you want instead to download the current source from github, use the `extractFromGithub.sh` command in the tools folder.
+```
+bash extractFromGithub.sh 1.X
+```
+This will download a zipfile of the 1.X branch from github and unpack it in the folder 1.X-DD-MM-YYYY/webdanica-1.X Where DD-MM-YY represents the current date.
 
-Correct the automatic-workflow/setenv.sh to match the wanted setup
+
+Now copy the automatic-workflow folder to the the WORKFLOW_USER_HOME (e.g. /home/test), and change the owner of the files to the user running the automatic workflow.
+
+Correct the automatic-workflow/setenv.sh to match the wanted setup.
 
 Add the execution of the workflow to the crontab. In the file automatic-workflow/crontab.test there is a sample crontab looking like this:
 
@@ -66,8 +108,8 @@ this declared with this cron-statement:
 Disabling the automatic workflow is most easily done by running crontab -e
 and then writing '#' as the first character and then save the crontab.
 
-Note: the mails of the user running the crontab (e.g. test) should be forwarded to the adminstrators of the webdanica system
+Note: the mails of the user running the crontab (e.g. test) should be forwarded to the adminstrators of the webdanica system.
 
-This is most easily done by making an alias for the user in /etc/aliases ( remember to renew the aliases.db by running the /usr/bin/newaliases as root )
+This is most easily done by making an alias for the user in /etc/aliases ( remember to renew the aliases.db by running the /usr/bin/newaliases as root ).
 
 

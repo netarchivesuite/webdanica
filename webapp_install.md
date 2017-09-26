@@ -7,11 +7,11 @@ The webapp requires the following Environment variable to be declared in $TOMCAT
 WEBDANICA_HOME=/usr/local/webdanica-home
 export WEBDANICA_HOME
 ```
-Furthemore the webapp requires two files to be present in the WEBDANICA_HOME directory:
+Furthermore the webapp requires two files to be present in the WEBDANICA_HOME directory:
  * webdanica_settings.xml
  * settings_NAS_Webdanica.xml
 
-The names of these two files are hardwired into the web.xml of the webdanica webapp.
+Note: The names of these two files are hardwired into the web.xml of the webdanica webapp!
 
 The webdanica_settings.xml is the primary configuration file for webdanica, whereas the settings_NAS_Webdanica.xml allows webdanica webapp to interface with the 
 local webdanica netarchivesuite system.
@@ -26,7 +26,7 @@ However it is advisable to change the applicationInstanceId setting like this
       ...
 ```
 
-The webapp will fail to initiate properly, if these two files are absent
+The webapp will also fail to initiate properly, if these two files are absent.
 
 #Configuration of the webapp 
 
@@ -55,8 +55,27 @@ no mails are sent
 <port>25</port>
 </mail>
 ```
-The above configuration tells the system to send system-messages to mail account 'account@domain' using port 25 on the localhost
-Except for mails sent when the systemt starts and is shutdown, it's only severe errors that cause a mail to be sent.
+The above configuration instructs the system to send system-messages to mail account 'account@domain' using port 25 on the localhost
+Except for mails sent when the systemt starts and is shutdown, it is only a severe error that causes a mail to be sent.
+
+## Workflow crontab configuration
+The crontab part of the configuration declares when, and how often each embedded workflow is started.
+Using the below configuration, 
+ * the filtering workflow is run every 10 minutes
+ * the harvesting workflow is run every 10 minutes
+ * the statecaching workflow is run every 15 minutes.
+If the current run is not yet finished, the next run will just be skipped.
+
+```
+<webapp>
+    <crontab>
+    <filtering>*/10 * * * *</filtering>
+    <harvesting>*/10 * * * *</harvesting>
+    <statecaching>0,15,30,45 * * * *</statecaching>
+    </crontab>
+..
+</webapp>
+```
 
 ## filtering-configuration
 Filtering is done both by the loadSeeds utility and the filtering workflow running in the webapp.
@@ -89,7 +108,7 @@ then we try to see if the url has a redirect using the wget program.
 If it has, the checks below will be done on the redirect url and not on the original url.
 
 The filtering-workflow rejects any url which either
- * ends witha an ignored suffix
+ * ends with a an ignored suffix
  * matches any of the entries in the active blacklists
  * is a url from the .dk domain and the setting seeds.rejectDkUrls is true
 
@@ -141,18 +160,16 @@ A sample setup could look like this in the settingsfile
         <protocol>vimeo</protocol>
         <protocol>data</protocol>
         </ignoredProtocols>
-</seeds>             
+</seeds>
 ```
-
 ## harvesting-workflow-configuration
 The below configuration defines how to construct the single seed harvests prepared and run by the harvesting worklow.
 All these settings are necessary to enable the harvesting-workflow. Furthermore, the schedule defined by harvesting.schedule, and the template defined by harvesting.template must exist in the local
 netarchivesuite system, otherwise the harvestworkflow will be disabled
 
-When the harvestWorkflow is enabled, it will harvest maxSingleSeedHarvests (5 in the sample configuration below) in a row, one after the other, and then write a harvestlog with the successfull harvests to the 
-harvestLogDir (/home/harvestlogs/ in the sample configuration below).
+When the harvestWorkflow is enabled, it will harvest maxSingleSeedHarvests (5 in the sample configuration below) in a row, one after the other, and then write a harvestlog of the successful harvests to the harvestLogDir (/home/harvestlogs/ in the sample configuration below).
 
-The harvestLogs are made writeable by all, so the automatic-workflow can remove the harvestlogs during its processing
+The harvestLogs are made writeable by all, so the automatic-workflow can remove the harvestlogs during its processing.
 
 ```
 <maxSingleSeedHarvests>5</maxSingleSeedHarvests>
@@ -164,11 +181,12 @@ The harvestLogs are made writeable by all, so the automatic-workflow can remove 
 <harvestlogDir>/home/harvestlogs/</harvestlogDir>
 <harvestlogPrefix>harvestLog-</harvestlogPrefix>
 <harvestlogReadySuffix>.txt</harvestlogReadySuffix>
+<harvestMaxTimeInMillis>900000</harvestMaxTimeInMillis>
 </harvesting>
 ```
 ##Notes
  * Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow. Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
- * The harvestworkflow will currently wait forever for the completion of the harvestjob, so some monitoring of the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
+ * The harvestworkflow will wait up til 15 minutes for the completion of the harvestjob. Monitoring can be done on the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
 the updated time of the seed currently being harvested (Seen when clicking on the Show details page). If the harvesting is deadlocked, terminate the netarchivesuite job either through the Heritrix3 gui if possible, or by restarting the netarchivesuite system. This will make the job fail, and the harvesting workflow will continue with the next harvest
 
 
