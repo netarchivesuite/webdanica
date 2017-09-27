@@ -2,7 +2,7 @@
 TOOLS_HOME=/REPLACE/WITH/CORRECT/FULL/PATH
 ME=`basename $0`
 
-if [ ! -f "$TOOLS_HOME" ]; then
+if [ ! -d "$TOOLS_HOME" ]; then
   echo ERROR: The TOOLS_HOME \"$TOOLS_HOME\" does not exist. Please correct the path in $ME
   exit 1
 fi
@@ -21,7 +21,13 @@ NAS_VERSION=5.2.2
 VERSION=2.0
 PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
 #PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
+
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
+
+if [ ! -f "$WEBDANICA_JAR" ]; then
+ echo ERROR: The Webdanica-core.jar file \"$WEBDANICA_JAR\" does not exist. The version might be incorrect, or the lib folder is missing. Exiting program $ME
+ exit
+fi
 
 echo Executing $ME using  webdanica settingsfile \"$WEBDANICASETTINGS\"
 

@@ -2,7 +2,7 @@
 TOOLS_HOME=/REPLACE/WITH/CORRECT/FULL/PATH
 ME=`basename $0`
 
-if [ ! -f "$TOOLS_HOME" ]; then
+if [ ! -d "$TOOLS_HOME" ]; then
   echo ERROR: The TOOLS_HOME \"$TOOLS_HOME\" does not exist. Please correct the path in $ME
   exit 1
 fi

@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- HERITRIX 3 CRAWL JOB CONFIGURATION FILE - For use with NetarchiveSuite 5.1.0 
+Author: Stephen Hunt
+Attribute placeholders added by Søren V. Carlsen (MAX_HOPS, HONOR_ROBOTS_DOT_TXT, EXTRACT_JAVASCRIPT )
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:context="http://www.springframework.org/schema/context" 
+       xmlns:aop="http://www.springframework.org/schema/aop" 
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    
+    <context:annotation-config/>
+    
+    <!-- OVERRIDES (START)
+    Values elsewhere in the configuration may be replaced ('overridden') 
+    by a Properties map declared in a PropertiesOverrideConfigurer, 
+    using a dotted-bean-path to address individual bean properties. 
+    This allows us to collect a few of the most-often changed values
+    in an easy-to-edit format here at the beginning of the model configuration. 
+    -->
+    
+    <!-- SIMPLE OVERRIDES (START)
+    Overrides from a text property list 
+    -->
+    <bean id="simpleOverrides" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+        <property name="properties">
+            <!-- Overrides the default values used by Heritrix -->
+            <value>
+                ## This Properties map is specified in the Java 'property list' text format 
+                ## http://java.sun.com/javase/6/docs/api/java/util/Properties.html#load%28java.io.Reader%29 
+                
+                ### 
+                ### some of these overrides is actually just the default value, so they can be skipped 
+                ###
+            </value>
+        </property>
+    </bean>
+    <!-- SIMPLE OVERRIDES (END) -->
+    
+    <!-- LONGER OVERRIDES (START)
+    Overrides from declared <prop> elements, more easily allowing
+    multiline values or even declared beans
+    -->
+    <bean id="longerOverrides" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+        <property name="properties">
+            <props>
+            </props>
+        </property>
+    </bean>
+    <!-- LONGER OVERRIDES (END) -->
+    <!-- OVERRIDES (END) -->
+    
+    <!-- CRAWL METADATA (START)
+    Including identification of crawler/operator 
+    using NetarchiveSuites own extended version of the org.archive.modules.CrawlMetadata
+    -->
+    <bean id="metadata" class="dk.netarkivet.harvester.harvesting.NasCrawlMetadata" autowire="byName">
+        <!-- Job name use string value -->
+        <property name="jobName" value="default_orderxml" />
+        <!-- Description use string value -->
+        <property name="description" value="Default Profile" />
+        <!-- User agent template use string value -->
+        <property name="userAgentTemplate" value="Mozilla/5.0 (compatible; heritrix/3.3.0 +@OPERATOR_CONTACT_URL@)" />
+        <!-- Operator name use string value -->
+        <property name="operator" value="Admin" />
+        <!-- Operator from use string value -->
+        <property name="operatorFrom" value="info@netarkivet.dk" />
+        <!-- Operator contact URL use string value -->
+        <property name="operatorContactUrl" value="http://netarkivet.dk/webcrawler/" />
+        <!-- Organization name use string value -->
+        <property name="organization" value="Netarkivet" />
+        <!-- Robot.txt policy use string value (one of: ignore, obey, custom)
+	  inserted placeholder for robots.txt policy  (if attribute unavailable in NAS, this will fail!) 
+        -->
+        <property name="robotsPolicyName" value="%{HONOR_ROBOTS_DOT_TXT}" />
+        <!-- Audience of the sheet use string value -->
+        <property name="audience" value="" />
+        <!-- This field is not available in the CrawlMetadata class bundled with heritrix, so we extended the class to add this field -->
+        <property name="date" value="20151030125710" />
+    </bean>
+    <!-- CRAWL METADATA (END) -->
+    
+    <!-- SEEDS (START)
+    Crawl starting points
+    -->
+    <bean id="seeds" class="org.archive.modules.seeds.TextSeedModule">
+        <property name="textSource">
+            <bean class="org.archive.spring.ConfigFile">
+                <!-- ConfigFile approach: specifying external seeds.txt file -->
+                <property name="path" value="seeds.txt" />
+            </bean>
+        </property>
+        <!-- No source-report.txt if this is false -->
+        <property name="sourceTagSeeds" value="true" />
+    </bean>
+    <!-- SEEDS (END) -->
+    
+    <!-- SCOPE (START)
+    Rules for which discovered URIs to crawl; order is very 
+    important because last decision returned other than 'NONE' wins.
+    -->
+    <bean id="scope" class="org.archive.modules.deciderules.DecideRuleSequence">
+        <!-- Only set to true for test purposes -->
+        <property name="logToFile" value="false" />
+        <!-- Only set to true for test purposes -->
+        <property name="logExtraInfo" value="false" />
+        <property name="rules">
+            <list>
+                <!-- Begin by REJECTing all... -->
+                <bean class="org.archive.modules.deciderules.RejectDecideRule">
+                </bean>
+                <!-- ...then ACCEPT those within configured/seed-implied SURT prefixes... -->
+                <bean class="org.archive.modules.deciderules.surt.SurtPrefixedDecideRule">
+                    <property name="seedsAsSurtPrefixes" value="true" />
+                    <property name="alsoCheckVia" value="false" />
+                </bean>
+                <!-- ...but REJECT those more than a configured link-hop-count from start... -->
+                <bean class="org.archive.modules.deciderules.TooManyHopsDecideRule">
+                    <!-- Max number of (L) and (R) in discovery path (placeholder inserted. will fail if attribute not available in netarchivesuite)-->
+                    <property name="maxHops" value="%{MAX_HOPS}" /> 
+                </bean>
+                <!-- ...but ACCEPT those more than a configured link-hop-count from start... -->
+                <bean class="org.archive.modules.deciderules.TransclusionDecideRule">
+                    <property name="maxTransHops" value="3" />
+                    <property name="maxSpeculativeHops" value="0" />
+                </bean>
+                <!-- ...but REJECT those from a configurable (initially empty) set of REJECT SURTs... -->
+                <bean class="org.archive.modules.deciderules.surt.SurtPrefixedDecideRule">
+                    <!-- Decision value (ACCEPT, REJECT, NONE) -->
+                    <property name="decision" value="REJECT" />
+                    <property name="seedsAsSurtPrefixes" value="false" />
+                    <property name="surtsDumpFile" value="negative-surts.dump" />
+                </bean>
+                <!-- ...and REJECT those from a configurable (initially empty) set of URI regexes... -->
+                <bean class="org.archive.modules.deciderules.MatchesListRegexDecideRule">
+                    <property name="decision" value="REJECT" />
+                    <property name="listLogicalOr" value="true" />
+                    <property name="regexList">
+                        <list>
+                            <!-- IA STANDARD CRAWL TRAP FILTERS (START) -->
+                            <value>.*core\.UserAdmin.*core\.UserLogin.*</value>
+                            <value>.*core\.UserAdmin.*register\.UserSelfRegistration.*</value>
+                            <value>.*\/w\/index\.php\?title=Speci[ae]l:Recentchanges.*</value>
+                            <value>.*act=calendar&amp;cal_id=.*</value>
+                            <value>.*advCalendar_pi.*</value>
+                            <value>.*cal\.asp\?date=.*</value>
+                            <value>.*cal\.asp\?view=monthly&amp;date=.*</value>
+                            <value>.*cal\.asp\?view=weekly&amp;date=.*</value>
+                            <value>.*cal\.asp\?view=yearly&amp;date=.*</value>
+                            <value>.*cal\.asp\?view=yearly&amp;year=.*</value>
+                            <value>.*cal\/cal_day\.php\?op=day&amp;date=.*</value>
+                            <value>.*cal\/cal_week\.php\?op=week&amp;date=.*</value>
+                            <value>.*cal\/calendar\.php\?op=cal&amp;month=.*</value>
+                            <value>.*cal\/yearcal\.php\?op=yearcal&amp;ycyear=.*</value>
+                            <value>.*calendar\.asp\?calmonth=.*</value>
+                            <value>.*calendar\.asp\?qMonth=.*</value>
+                            <value>.*calendar\.php\?sid=.*</value>
+                            <value>.*calendar\.php\?start=.*</value>
+                            <value>.*calendar\.php\?Y=.*</value>
+                            <value>.*calendar\/\?CLmDemo_horizontal=.*</value>
+                            <value>.*calendar_menu\/calendar\.php\?.*</value>
+                            <value>.*calendar_scheduler\.php\?d=.*</value>
+                            <value>.*calendar_year\.asp\?qYear=.*</value>
+                            <value>.*calendarix\/calendar\.php\?op=.*</value>
+                            <value>.*calendarix\/yearcal\.php\?op=.*</value>
+                            <value>.*calender\/default\.asp\?month=.*</value>
+                            <value>.*Default\.asp\?month=.*</value>
+                            <value>.*events\.asp\?cat=0&amp;mDate=.*</value>
+                            <value>.*events\.asp\?cat=1&amp;mDate=.*</value>
+                            <value>.*events\.asp\?MONTH=.*</value>
+                            <value>.*events\.asp\?month=.*</value>
+                            <value>.*index\.php\?iDate=.*</value>
+                            <value>.*index\.php\?module=PostCalendar&amp;func=view.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view_day&amp;year=.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view_detail&amp;year=.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view_month&amp;year=.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view_week&amp;year=.*</value>
+                            <value>.*index\.php\?option=com_events&amp;task=view_year&amp;year=.*</value>
+                            <value>.*index\.php\?option=com_extcalendar&amp;Itemid.*</value>
+                            <value>.*modules\.php\?name=Calendar&amp;op=modload&amp;file=index.*</value>
+                            <value>.*modules\.php\?name=vwar&amp;file=calendar&amp;action=list&amp;month=.*</value>
+                            <value>.*modules\.php\?name=vwar&amp;file=calendar.*</value>
+                            <value>.*modules\.php\?name=vWar&amp;mod=calendar.*</value>
+                            <value>.*modules\/piCal\/index\.php\?caldate=.*</value>
+                            <value>.*modules\/piCal\/index\.php\?cid=.*</value>
+                            <value>.*option,com_events\/task,view_day\/year.*</value>
+                            <value>.*option,com_events\/task,view_month\/year.*</value>
+                            <value>.*option,com_extcalendar\/Itemid.*</value>
+                            <value>.*task,view_month\/year.*</value>
+                            <value>.*shopping_cart\.php.*</value>
+                            <value>.*action.add_product.*</value>
+                            <value>.*action.remove_product.*</value>
+                            <value>.*action.buy_now.*</value>
+                            <value>.*checkout_payment\.php.*</value>
+                            <value>.*login.*login.*login.*login.*</value>
+                            <value>.*homepage_calendar\.asp.*</value>
+                            <value>.*MediaWiki.*Movearticle.*</value>
+                            <value>.*index\.php.*action=edit.*</value>
+                            <value>.*comcast\.net.*othastar.*</value>
+                            <value>.*Login.*Login.*Login.*</value>
+                            <value>.*redir.*redir.*redir.*</value>
+                            <value>.*bookingsystemtime\.asp\?dato=.*</value>
+                            <value>.*bookingsystem\.asp\?date=.*</value>
+                            <value>.*cart\.asp\?mode=add.*</value>
+                            <value>.*\/photo.*\/photo.*\/photo.*</value>
+                            <value>.*\/skins.*\/skins.*\/skins.*</value>
+                            <value>.*\/scripts.*\/scripts.*\/scripts.*</value>
+                            <value>.*\/styles.*\/styles.*\/styles.*</value>
+                            <value>.*\/coppermine\/login\.php\?referer=.*</value>
+                            <value>.*\/images.*\/images.*\/images.*</value>
+                            <value>.*\/stories.*\/stories.*\/stories.*</value>
+                            <!-- IA STANDARD CRAWL TRAP FILTERS (END) -->
+                            <!-- NetarchiveSuite: Here we inject our global crawlertraps, domain specific crawlertraps -->
+                            %{CRAWLERTRAPS_PLACEHOLDER}
+                        </list>
+                    </property>
+                </bean>
+                <!-- ...and REJECT those with suspicious repeating path-segments... -->
+                <bean class="org.archive.modules.deciderules.PathologicalPathDecideRule">
+                    <!-- Max number of identical path repetitions -->
+                    <property name="maxRepetitions" value="2" />
+                </bean>
+                <!-- ...and REJECT those with more than threshold number of path-segments... -->
+                <bean class="org.archive.modules.deciderules.TooManyPathSegmentsDecideRule">
+                    <!-- Max number of (/) in URL not including the first (//) -->
+                    <property name="maxPathDepth" value="20" />
+                </bean>
+                <!-- ...but always ACCEPT those marked as prerequisites for another URI... -->
+                <bean class="org.archive.modules.deciderules.PrerequisiteAcceptDecideRule">
+                </bean>
+                <!-- ...but always REJECT those with unsupported URI schemes. -->
+                <bean class="org.archive.modules.deciderules.SchemeNotInSetDecideRule">
+                </bean>
+            </list>
+        </property>
+    </bean>
+    <!-- SCOPE (END)-->
+    
+    <!-- PROCESSING CHAINS (START) 
+    Much of the crawler's work is specified by the sequential 
+    application of swappable Processor modules. These Processors
+    are collected into three 'chains. The CandidateChain is applied 
+    to URIs being considered for inclusion, before a URI is enqueued
+    for collection. The FetchChain is applied to URIs when their 
+    turn for collection comes up. The DispositionChain is applied 
+    after a URI is fetched and analyzed/link-extracted.
+    -->
+    
+    <!-- CANDIDATE CHAIN (START)
+    Processors declared as named beans
+    -->
+    <bean id="candidateScoper" class="org.archive.crawler.prefetch.CandidateScoper">
+    </bean>
+    <bean id="preparer" class="org.archive.crawler.prefetch.FrontierPreparer">
+        <property name="preferenceDepthHops" value="-1" />
+        <property name="preferenceEmbedHops" value="1" />
+        <property name="canonicalizationPolicy">
+            <ref bean="NetarkivetCanonicalizationPolicy" />
+        </property>
+        <property name="queueAssignmentPolicy">
+            <!-- Bundled with NAS is two queueAssignPolicies (code is in heritrix3-extensions): 
+            dk.netarkivet.harvester.harvesting.DomainnameQueueAssignmentPolicy
+            dk.netarkivet.harvester.harvesting.SeedUriDomainnameQueueAssignmentPolicy
+            -->
+            <ref bean="NASQueueAssignmentPolicy" />
+        </property>
+    </bean>
+    <!-- Assembled into ordered CandidateChain bean -->
+    <bean id="candidateProcessors" class="org.archive.modules.CandidateChain">
+        <property name="processors">
+            <list>
+                <!-- Apply scoping rules to each individual candidate URI... -->
+                <ref bean="candidateScoper" />
+                <!-- ...then prepare those ACCEPTed for enqueuing to frontier. -->
+                <ref bean="preparer" />
+            </list>
+        </property>
+    </bean>
+    <!-- CANDIDATE CHAIN (END) -->
+    
+    <!-- FETCH CHAIN (START)
+    Processors declared as named beans
+    -->
+    <bean id="preselector" class="org.archive.crawler.prefetch.Preselector">
+        <property name="enabled" value="true" />
+        <property name="logToFile" value="false" />
+        <property name="recheckScope" value="true" />
+        <property name="blockAll" value="false" />
+    </bean>
+    <bean id="preconditions" class="org.archive.crawler.prefetch.PreconditionEnforcer">
+        <property name="enabled" value="true" />
+        <property name="ipValidityDurationSeconds" value="21600" />
+        <property name="robotsValidityDurationSeconds" value="86400" />
+        <property name="calculateRobotsOnly" value="false" />
+    </bean>
+    <bean id="fetchDns" class="org.archive.modules.fetcher.FetchDNS">
+        <property name="enabled" value="true" />
+        <property name="acceptNonDnsResolves" value="false" />
+        <property name="digestContent" value="true" />
+        <property name="digestAlgorithm" value="sha1" />
+    </bean>
+    <bean id="fetchHttp" class="org.archive.modules.fetcher.FetchHTTP">
+        <property name="enabled" value="true" />
+        <property name="timeoutSeconds" value="1200" />
+        <property name="soTimeoutMs" value="20000" />
+        <property name="maxFetchKBSec" value="0" />
+        <property name="maxLengthBytes" value="0" />
+        <property name="ignoreCookies" value="false" />
+        <property name="sslTrustLevel" value="OPEN" />
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="digestContent" value="true" />
+        <property name="digestAlgorithm" value="sha1" />
+        <property name="sendIfModifiedSince" value="true" />
+        <property name="sendIfNoneMatch" value="true" />
+        <property name="sendConnectionClose" value="true" />
+        <property name="sendReferer" value="true" />
+        <property name="sendRange" value="false" />
+        <!-- Accept headers for HTTP fetching -->
+        <property name="acceptHeaders">
+            <list>
+                <value>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</value>
+                <!-- NetarchiveSuite: Used for accessing ekstrabladet.dk -->
+                <!-- <value>referer: http://netarkivet.dk/</value>
+                <value>premiumcrawling: allow</value> -->
+            </list>
+        </property>
+    </bean>
+    <bean id="fetchFtp" class="org.archive.modules.fetcher.FetchFTP">
+        <!-- DUMMY username and password set for the FTP fetcher.
+        Should probably be configured using overlays to allow different
+        username/passwords for different sites.
+        -->
+        <property name="username" value="USERNAME" />
+        <property name="password" value="PASSWORD" />
+        <property name="extractFromDirs" value="true" />
+        <property name="extractParent" value="true" />
+        <property name="maxLengthBytes" value="0" />
+        <property name="maxFetchKBSec" value="0" />
+        <property name="timeoutSeconds" value="1200" />
+    </bean>
+    <bean id="extractorHttp" class="org.archive.modules.extractor.ExtractorHTTP">
+        <property name="enabled" value="true" />
+    </bean>
+    <bean id="extractorHtml" class="org.archive.modules.extractor.ExtractorHTML">
+        <property name="enabled" value="true" />
+	<!-- Note: placeholder inserted for extract_javascript attribute in NAS. Will fail, if attribute not available in NAS -->
+        <property name="extractJavascript" value="%{EXTRACT_JAVASCRIPT}"/> 
+        <property name="treatFramesAsEmbedLinks" value="true" />
+        <property name="ignoreFormActionUrls" value="true" />
+        <property name="extractValueAttributes" value="false" />
+        <property name="ignoreUnexpectedHtml" value="true" />
+    </bean>
+    <bean id="extractorCss" class="org.archive.modules.extractor.ExtractorCSS">
+        <property name="enabled" value="true" />
+    </bean>
+    <bean id="icelandicExtractorJs" class="dk.netarkivet.harvester.harvesting.extractor.IcelandicExtractorJS">
+        <property name="enabled" value="true" />
+        <property name="rejectRelativeMatchingRegexList">
+            <list>
+                <value>^text/javascript$</value>
+                <value>^text/css$</value>
+                <value>^a\.[^/]+$</value>
+                <value>^div\.[^/]+$</value>
+                <value>^[a-zA-Z-]+\.dk$</value>
+                <!-- E.g. 3.5.0. Very common in some JS libraries for strings of this nature but very unlikely to be a relative URL -->
+                <value>^[0-9]\.([0-9]\.)[0-9]$</value>
+                <value>^Microsoft\.XMLHTTP$</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="extractorSwf" class="org.archive.modules.extractor.ExtractorSWF">
+        <property name="enabled" value="true" />
+    </bean>
+    <!-- Assembled into ordered FetchChain bean -->
+    <bean id="fetchProcessors" class="org.archive.modules.FetchChain">
+        <property name="processors">
+            <list>
+                <!-- Recheck scope, if so enabled... -->
+                <ref bean="preselector" />
+                <!-- ...then verify or trigger prerequisite URIs fetched, allow crawling... -->
+                <ref bean="preconditions" />
+                <!-- ...then check, if quotas is already superseded... -->
+                <ref bean="quotaenforcer" />
+                <!-- ...then fetch if DNS URI... -->
+                <ref bean="fetchDns" />
+                <!-- ...then fetch if HTTP URI... -->
+                <ref bean="fetchHttp" />
+                <!-- ...then fetch if FTP URI... -->
+                <ref bean="fetchFtp" />
+                <!-- ...then extract oulinks from HTTP headers... -->
+                <ref bean="extractorHttp" />
+                <!-- ...then extract oulinks from HTML content... -->
+                <ref bean="extractorHtml" />
+                <!-- ...then extract oulinks from CSS content... -->
+                <ref bean="extractorCss" />
+                <!-- ...then extract oulinks from Javascript content... -->
+                <ref bean="icelandicExtractorJs" />
+                <!-- ...then extract oulinks from Flash content. -->
+                <ref bean="extractorSwf" />
+            </list>
+        </property>
+    </bean>
+    <!-- FETCH CHAIN (END)-->
+    
+    <!-- (W)ARC WRITER (START) 
+    NetarchiveSuite: Here the (W)arc writer is inserted
+    -->
+    %{ARCHIVER_PROCESSOR_BEAN_PLACEHOLDER}
+    <!-- (W)ARC WRITER (END) -->
+    
+    <!-- DISPOSITION CHAIN (START) -->
+    <!-- Processors declared as named beans -->
+    <bean id="DeDuplicator" class="is.hi.bok.deduplicator.DeDuplicator">
+        <!-- DEDUPLICATION_INDEX_LOCATION_PLACEHOLDER is replaced by path on harvest-server -->
+        <property name="indexLocation" value="%{DEDUPLICATION_INDEX_LOCATION_PLACEHOLDER}" />
+        <property name="matchingMethod" value="URL" />
+        <property name="tryEquivalent" value="TRUE" />
+        <property name="changeContentSize" value="false" />
+        <property name="mimeFilter" value="^text/.*" />
+        <property name="filterMode" value="BLACKLIST" />
+        <property name="origin" value="" />
+        <property name="originHandling" value="INDEX" />
+        <property name="statsPerHost" value="true" />
+    </bean>
+    <bean id="candidates" class="org.archive.crawler.postprocessor.CandidatesProcessor">
+        <!-- Allow redirected seeds to be accepted as seeds
+        In H1, this property belonged to the LinkScoper object, in H3, it is part of the CandidatesProcessor object
+        -->
+        <property name="seedsRedirectNewSeeds" value="false" />
+    </bean>
+    <bean id="disposition" class="org.archive.crawler.postprocessor.DispositionProcessor">
+        <!-- Politeness -->
+        <property name="delayFactor" value="1.0" />
+        <property name="maxDelayMs" value="1000" />
+        <property name="minDelayMs" value="300" />
+        <property name="maxPerHostBandwidthUsageKbSec" value="500" />
+    </bean>
+    <!-- Assembled into ordered DispositionChain bean -->
+    <bean id="dispositionProcessors" class="org.archive.modules.DispositionChain">
+        <property name="processors">
+            <list>
+                <!-- Write to aggregate archival files... -->
+                
+                <!-- NetarchiveSuite: Remove the reference below, and the DeDuplicator bean itself to disable Deduplication -->
+                <ref bean="DeDuplicator"/>
+                
+                <!-- NetarchiveSuite: Here the reference to the (w)arcWriter bean is inserted during job-generation -->	
+                %{ARCHIVER_BEAN_REFERENCE_PLACEHOLDER}
+                
+                <!-- NetarchiveSuite: This bean is required to report back the number of bytes harvested for each domain  -->
+                <bean id="ContentSizeAnnotationPostProcessor"  class="dk.netarkivet.harvester.harvesting.ContentSizeAnnotationPostProcessor"/>
+                
+                <!-- ...send each outlink candidate URI to CandidatesChain, 
+                and enqueue those ACCEPTed to the frontier... -->
+                <ref bean="candidates"/>
+                <!-- ...then update stats, shared-structures, frontier decisions. -->
+                <ref bean="disposition"/>
+            </list>
+        </property>
+    </bean>
+    <!-- DISPOSITION CHAIN (END) -->
+    
+    <!-- CRAWLCONTROLLER (START)
+    Control interface, unifying context
+    -->
+    <bean id="crawlController" class="org.archive.crawler.framework.CrawlController">
+        <property name="maxToeThreads" value="50" />
+        <property name="recorderOutBufferBytes" value="4096" />
+        <property name="recorderInBufferBytes" value="65536" />
+        <property name="pauseAtStart" value="false" />
+        <property name="runWhileEmpty" value="false" />
+        <property name="scratchDir" value="scratch" />
+    </bean>
+    <!-- CRAWLCONTROLLER (START) -->
+    
+    <!-- FRONTIER (START)
+    Record of all URIs discovered and queued-for-collection
+    -->
+    <bean id="frontier" class="org.archive.crawler.frontier.BdbFrontier">
+        <property name="maxRetries" value="3" />
+        <property name="retryDelaySeconds" value="300" />
+        <property name="recoveryLogEnabled" value="false" />
+        <property name="balanceReplenishAmount" value="3000" />
+        <property name="errorPenaltyAmount" value="100" />
+        <!-- NetarchiveSuite: Placeholder %{FRONTIER_QUEUE_TOTAL_BUDGET_PLACEHOLDER} -->
+        <property name="queueTotalBudget" value="%{FRONTIER_QUEUE_TOTAL_BUDGET_PLACEHOLDER}" />
+        <property name="snoozeLongMs" value="300000" />
+        <property name="extract404s" value="false" />
+        <property name="extractIndependently" value="false" />
+    </bean>
+    <!-- FRONTIER (END) -->
+    
+    <!-- URI UNIQ FILTER (START)
+    Used by frontier to remember already-included URIs
+    -->
+    <bean id="uriUniqFilter" class="org.archive.crawler.util.BdbUriUniqFilter">
+    </bean>
+    <!-- URI UNIQ FILTER (END) -->
+    
+    <!-- OPTIONAL BUT RECOMMENDED BEANS (START) -->
+    
+    <!-- ACTIONDIRECTORY (START)
+    Disk directory for mid-crawl operations
+    Running job will watch directory for new files with URIs, 
+    scripts, and other data to be processed during a crawl.
+    -->
+    <bean id="actionDirectory" class="org.archive.crawler.framework.ActionDirectory">
+    </bean>
+    <!-- ACTIONDIRECTORY (END) -->
+    
+    <!--  CRAWLLIMITENFORCER (START)
+    Stops crawl when it reaches configured limits
+    -->
+    <bean id="crawlLimiter" class="org.archive.crawler.framework.CrawlLimitEnforcer">
+        <property name="maxBytesDownload" value="0" />
+        <property name="maxDocumentsDownload" value="0" />
+        <!-- NetarchiveSuite: Placeholder %{MAX_TIME_SECONDS_PLACEHOLDER} -->
+        <property name="maxTimeSeconds" value="%{MAX_TIME_SECONDS_PLACEHOLDER}" />
+    </bean>
+    <!--  CRAWLLIMITENFORCER (END) -->
+    
+    <!-- CHECKPOINTSERVICE (START)
+    Checkpointing assistance
+    -->
+    <bean id="checkpointService" class="org.archive.crawler.framework.CheckpointService">
+    </bean>
+    <!-- CHECKPOINTSERVICE (END) -->
+    <!-- OPTIONAL BUT RECOMMENDED BEANS (END) -->
+    
+    <!-- OPTIONAL BEANS (START)
+    Uncomment and expand as needed, or if non-default alternate implementations are preferred.
+    -->
+    
+    <!-- RULES CANONICALIZATION POLICY (START) -->
+    <bean id="NetarkivetCanonicalizationPolicy" class="org.archive.modules.canonicalize.RulesCanonicalizationPolicy">
+        <property name="rules">
+            <list>
+                <bean class="org.archive.modules.canonicalize.LowercaseRule" />
+                <bean class="org.archive.modules.canonicalize.StripUserinfoRule" />
+                <!-- disabled by default in PROD templates
+                <bean class="org.archive.modules.canonicalize.StripWWWNRule" />
+                -->
+                <bean class="org.archive.modules.canonicalize.StripSessionIDs" />
+                <bean class="org.archive.modules.canonicalize.StripSessionCFIDs" />
+                <!-- new in H3 should it be disabled or enabled? -->
+                <bean class="org.archive.modules.canonicalize.FixupQueryString" />
+            </list>
+        </property>
+    </bean>
+    <!-- RULES CANONICALIZATION POLICY (END) -->
+
+    <!-- QUEUE ASSIGNMENT POLICY (START) -->
+    <bean id="NASQueueAssignmentPolicy" class="dk.netarkivet.harvester.harvesting.DomainnameQueueAssignmentPolicy">
+        <!-- default forceQueueAssignment is "" -->
+        <property name="forceQueueAssignment" value="" />
+        <!-- default deferToPrevious is true -->
+        <property name="deferToPrevious" value="true" />
+        <!-- dafault parallelQueues is 1 -->
+        <property name="parallelQueues" value="1" />
+    </bean>
+    <!-- QUEUE ASSIGNMENT POLICY (END) -->
+
+    <!-- COST ASSIGNMENT POLICY (START) -->
+    <bean id="costAssignmentPolicy" class="org.archive.crawler.frontier.UnitCostAssignmentPolicy">
+    </bean>
+    <!-- COST ASSIGNMENT POLICY (END) -->
+
+    <!-- QUOTA ENFORCER (START) -->
+    <bean id="quotaenforcer" class="org.archive.crawler.prefetch.QuotaEnforcer">
+        <property name="forceRetire" value="false" />
+        <!-- Server properties -->
+        <property name="serverMaxFetchSuccesses" value="-1" />
+        <property name="serverMaxSuccessKb" value="-1" />
+        <property name="serverMaxFetchResponses" value="-1" />
+        <property name="serverMaxAllKb" value="-1" />
+        <!-- Host properties -->
+        <property name="hostMaxFetchSuccesses" value="-1" />
+        <property name="hostMaxSuccessKb" value="-1" />
+        <property name="hostMaxFetchResponses" value="-1" />
+        <property name="hostMaxAllKb" value="-1" />
+        <!-- Group properties -->
+        <!-- NetarchiveSuite: Placeholder %{QUOTA_ENFORCER_GROUP_MAX_FETCH_SUCCES_PLACEHOLDER} -->
+        <property name="groupMaxFetchSuccesses" value="%{QUOTA_ENFORCER_GROUP_MAX_FETCH_SUCCES_PLACEHOLDER}" />
+        <property name="groupMaxSuccessKb" value="-1" />
+        <property name="groupMaxFetchResponses" value="-1" />
+        <!-- NetarchiveSuite: Placeholder %{QUOTA_ENFORCER_MAX_BYTES_PLACEHOLDER} -->
+        <property name="groupMaxAllKb" value="%{QUOTA_ENFORCER_MAX_BYTES_PLACEHOLDER}" />
+    </bean>
+    <!-- QUOTA ENFORCER (END) -->
+    <!-- OPTIONAL BEANS (END) -->
+    
+    <!-- REQUIRED STANDARD BEANS (START)
+    It will be very rare to replace or reconfigure the following beans.
+    -->
+    
+    <!-- STATISTICSTRACKER (START)
+    Standard stats/reporting collector
+    -->
+    <bean id="statisticsTracker" class="org.archive.crawler.reporting.StatisticsTracker" autowire="byName">
+        <property name="intervalSeconds" value="20" />
+    </bean>
+    <!-- STATISTICSTRACKER (END) -->
+    
+    <!-- CRAWLERLOGGERMODULE: shared logging facility -->
+    <bean id="loggerModule" class="org.archive.crawler.reporting.CrawlerLoggerModule">
+        <property name="path" value="logs" />
+    </bean>
+    
+    <!-- SHEETOVERLAYMANAGER (START)
+    Manager of sheets of contextual overlays
+    Autowired to include any SheetForSurtPrefix or SheetForDecideRuled beans
+    -->
+    <bean id="sheetOverlaysManager" autowire="byType" class="org.archive.crawler.spring.SheetOverlaysManager">
+    </bean>
+    <!-- SHEETOVERLAYMANAGER (END) -->
+    
+    <!-- BDBMODULE (START)
+    Shared BDB-JE disk persistence manager
+    -->
+    <bean id="bdb" class="org.archive.bdb.BdbModule">
+        <property name="dir" value="state" />
+        <property name="cachePercent" value="40" />
+    </bean>
+    <!-- BDBMODULE (END) -->
+    
+    <!-- BDBCOOKIESTORAGE (START)
+    Disk-based cookie storage for FetchHTTP
+    -->
+    <bean id="cookieStorage" class="org.archive.modules.fetcher.BdbCookieStore">
+    </bean>
+    <!-- BDBCOOKIESTORAGE (END) -->
+    
+    <!-- SERVERCACHE (START)
+    Shared cache of server/host info
+    -->
+    <bean id="serverCache" class="org.archive.modules.net.BdbServerCache">
+    </bean>
+    <!-- SERVERCACHE (END) -->
+    
+    <!-- CONFIG PATH CONFIGURER (START)
+    Required helper making crawl paths relative
+    to crawler-beans.cxml file, and tracking crawl files for web UI
+    -->
+    <bean id="configPathConfigurer" class="org.archive.spring.ConfigPathConfigurer">
+    </bean>
+    <!-- CONFIG PATH CONFIGURER (END) -->
+    <!-- REQUIRED STANDARD BEANS (END) -->
+    
+    <!-- A processor to enforce runtime limits on crawls if wanted 
+    The operations available is Pause, Terminate, Block_Uris
+    -->
+    
+    <!-- TODO CHECK, if this bean can coexist with the crawlLimitenforcer
+    <bean id="runtimeLimitEnforcer" class="org.archive.crawler.prefetch.RuntimeLimitEnforcer">
+    <property name="runtimeSeconds" value="82800"/>
+    <property name="operation" value="Terminate"/>
+    </bean> -->
+    
+</beans>

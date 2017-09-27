@@ -2,7 +2,7 @@
 TOOLS_HOME=/REPLACE/WITH/CORRECT/FULL/PATH
 ME=`basename $0`
 
-if [ ! -f "$TOOLS_HOME" ]; then
+if [ ! -d "$TOOLS_HOME" ]; then
   echo ERROR: The TOOLS_HOME \"$TOOLS_HOME\" does not exist. Please correct the path in $ME
   exit 1
 fi
@@ -23,12 +23,12 @@ PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
 
 if [ ! -f "$WEBDANICA_JAR" ]; then
-   echo "The WEBDANICA_JAR \'$WEBDANICA_JAR\' does not exist. Exiting program $ME"
+   echo "The WEBDANICA_JAR \'$WEBDANICA_JAR\' does not exist. Maybe the lib folder is missing, or the webdanica VERSION is wrong. Exiting program $ME"
    exit 1
 fi
 
 if [ ! -f "$PHOENIX_JAR" ]; then
-   echo "The PHOENIX_JAR \'$PHOENIX_JAR\' does not exist. Exiting program $ME"
+   echo "The PHOENIX_JAR \'$PHOENIX_JAR\' does not exist. Maybe the lib folder is missing, or the webdanica VERSION is wrong. Exiting program $ME"
    exit 1
 fi
 

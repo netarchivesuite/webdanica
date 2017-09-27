@@ -100,7 +100,42 @@
         <deployClassPath>lib/netarchivesuite-harvest-scheduler.jar</deployClassPath>
         <deployClassPath>lib/netarchivesuite-archive-core.jar</deployClassPath>
         <settings>
-          <common>
+	   <common>
+             <webinterface>
+            <language>
+                <locale>da</locale>
+                <name>Dansk</name>
+            </language>
+            <language>
+                <locale>en</locale>
+                <name>English</name>
+            </language>
+            <siteSection>
+                <class>dk.netarkivet.harvester.webinterface.DefinitionsSiteSection</class>
+                <webapplication>webpages/HarvestDefinition.war</webapplication>
+            </siteSection>
+            <siteSection>
+                <class>dk.netarkivet.harvester.webinterface.HistorySiteSection</class>
+                <webapplication>webpages/History.war</webapplication>
+            </siteSection>
+            <siteSection>
+                <class>dk.netarkivet.harvester.webinterface.HarvestChannelSiteSection</class>
+                <webapplication>webpages/HarvestChannel.war</webapplication>
+            </siteSection>
+            <siteSection>
+                <class>dk.netarkivet.viewerproxy.webinterface.QASiteSection</class>
+                <webapplication>webpages/QA.war</webapplication>
+            </siteSection>
+            <siteSection>
+                <class>dk.netarkivet.monitor.webinterface.StatusSiteSection</class>
+                <webapplication>webpages/Status.war</webapplication>
+            </siteSection>
+            <harvestStatus>
+                <defaultPageSize>100</defaultPageSize>
+             </harvestStatus>
+             <hideInactiveTemplates>false</hideInactiveTemplates>
+       	   </webinterface>
+
             <http>
               <port>8074</port>
             </http>
