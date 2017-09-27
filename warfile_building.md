@@ -1,6 +1,6 @@
 # Building the war-file
 
-Note: Java 7+ is required to build this software.
+Note: Java 8+ is required to build and run this software.
 
 ## Fetch the source from github using git
 
