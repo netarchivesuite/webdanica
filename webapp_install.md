@@ -36,7 +36,7 @@ cp -p webdanica-webapp-war-$RELEASE.war /full/path/to/tomcat/webapps/ROOT.war
 If tomcat is already started, this will prompt to deploy and start the application.
 If tomcat is not started, tomcat will deploy and start the application when it is started.
 
-#Configuration of the webapp 
+# Configuration of the webapp 
 
 ## configuration of the environment
 There is an env setting in webdanica_setting.xml.
@@ -192,7 +192,7 @@ The harvestLogs are made writeable by all, so the automatic-workflow can remove 
 <harvestMaxTimeInMillis>900000</harvestMaxTimeInMillis>
 </harvesting>
 ```
-##Notes
+## Notes
  * Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow. Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
  * The harvestworkflow will wait up til 15 minutes for the completion of the harvestjob. Monitoring can be done on the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
 the updated time of the seed currently being harvested (Seen when clicking on the Show details page). If the harvesting is deadlocked, terminate the netarchivesuite job either through the Heritrix3 gui if possible, or by restarting the netarchivesuite system. This will make the job fail, and the harvesting workflow will continue with the next harvest

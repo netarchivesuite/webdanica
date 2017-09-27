@@ -6,7 +6,8 @@ The recipe used is as written on the page https://sbforge.org/display/NASDOC52/I
 
 By default, this uses derby as the backend database system. See [this page](webdanica_with_postgresql.md) for how to use Postgresql instead.
 
-Only exception is the use of install/deploy_webdanica_netarchivesuite.xml instead of the deploy_standalone_example.xml 
+Only exception is the use of [install/deploy_webdanica_netarchivesuite.xml](install/deploy_webdanica_netarchivesuite.xml) instead of the 'deploy_standalone_example.xml'.
+If using Postgresql, use instead [install/deploy_webdanica_netarchivesuite_pgsql.xml](install/deploy_webdanica_netarchivesuite_pgsql.xml). 
 
 Before deploying netarchivesuite with the RunNetarchivesuite.sh, you need to change the following
 
@@ -23,11 +24,11 @@ The differences from the quickstart are as follows:
 
 Note: Currently, we have no ViewerProxyApplication and IndexServerApplication as well, but they could be turned on, if viewerproxying the metadata files is required by the curators
 
-A sample Heritrix3 template with the deduplication beans can be found here: install/default_webdanica.xml
+A sample Heritrix3 template without the deduplication beans can be found here: [install/templates/default_orderxml.xml](install/templates/default_orderxml.xml).
 
-What you call this template is up to your, but the name must be same as the setting settings.harvesting.template in your webdanica_settings.xml file.
+What you call this template is up to you, but the name must be same as the value of setting 'settings.harvesting.template' in your webdanica_settings.xml file.
 
-The same goes for the schedule used by the automatic harvesting workflow defined by the setting settings.harvesting.schedule in your webdanica_settings.xml file.
+The same goes for the schedule used by the automatic harvesting workflow which is defined by the setting 'settings.harvesting.schedule' in your webdanica_settings.xml file.
 
 You need to use a schedule that only runs once.
 You create this in the NetarchiveSuite GUI by 

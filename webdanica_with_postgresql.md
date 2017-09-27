@@ -64,7 +64,7 @@ delete from schemaversions where tablename='harvestchannel';
 update schemaversions set version='3' where tablename='harvestdefinitions';
 \q
 ```
-Now we are ready for deploying netarchivesuite 
+Now we are ready to deploy netarchivesuite.
 
 ## Installation of netarchivesuite and updating the database
 Now we can deploy netarchivesuite (Note that java in the path must be a JDK8, otherwise the deployment will fail)

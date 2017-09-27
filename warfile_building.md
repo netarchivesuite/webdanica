@@ -1,4 +1,4 @@
-#Building the war-file
+# Building the war-file
 
 Note: Java 7+ is required to build this software.
 
