@@ -85,7 +85,7 @@ If the current run is not yet finished, the next run will just be skipped.
 </webapp>
 ```
 
-## filtering-configuration
+## Filtering-configuration
 Filtering is done both by the loadSeeds utility and the filtering workflow running in the webapp.
 
 ### Filtering by loadSeeds.
@@ -170,7 +170,7 @@ A sample setup could look like this in the settingsfile
         </ignoredProtocols>
 </seeds>
 ```
-## harvesting-workflow-configuration
+## Harvesting-workflow configuration
 The below configuration defines how to construct the single seed harvests prepared and run by the harvesting worklow.
 All these settings are necessary to enable the harvesting-workflow. Furthermore, the schedule defined by harvesting.schedule, and the template defined by harvesting.template must exist in the local
 netarchivesuite system, otherwise the harvestworkflow will be disabled
