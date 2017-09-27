@@ -141,7 +141,7 @@ The source code looks like this: [webdanica-core/src/main/java/dk/kb/webdanica/c
 
 ## miscellaneous tools available in webdanica-core package:
 
- * dk.kb.webdanica.core.tools.Harvest [webdanica-core/src/main/java/dk/kb/webdanica/core/tools/Harvest.java](webdanica-core/src/main/java/dk/kb/webdanica/core/tools/Harvest.java). Used in manuel workflow to do a one or several singleseedharvest. Usage: ```java Harvest <seedsfile>|<seed> [--store]´´´.
+ * dk.kb.webdanica.core.tools.Harvest [webdanica-core/src/main/java/dk/kb/webdanica/core/tools/Harvest.java](webdanica-core/src/main/java/dk/kb/webdanica/core/tools/Harvest.java). Used in manuel workflow to do a one or several singleseedharvest. Usage: java Harvest <seedsfile>|<seed> [--store].
  * dk.kb.webdanica.core.tools.FindHarvestWarcs [webdanica-core/src/main/java/dk/kb/webdanica/core/tools/FindHarvestWarcs.java](webdanica-core/src/main/java/dk/kb/webdanica/core/tools/FindHarvestWarcs.java). Used in manual and automatic workflows to find warcs related to a harvestlog. Usage: java FindHarvestWarcs harvestLog filedir.
  * dk.kb.webdanica.core.tools.CheckSettings [webdanica-core/src/main/java/dk/kb/webdanica/core/tools/CheckSettings.java](webdanica-core/src/main/java/dk/kb/webdanica/core/tools/CheckSettings.java). can be used if our our settingsfiles are valid.
  * dk.kb.webdanica.core.tools.ShowContentType.java [webdanica-core/src/main/java/dk/kb/webdanica/core/tools/ShowContentType.java](webdanica-core/src/main/java/dk/kb/webdanica/core/tools/ShowContentType.java). Tool for checking the format of the files in a folder.
