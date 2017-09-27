@@ -6,16 +6,18 @@ The system consists of a ROOT tomcat application (the webapp) running on port 80
  * a harvesting workflow, that makes small single seed harvests using a local NetarchiveSuite system.
  * a cacheupdate-workflow, that caches regularly counts for each seeds, criteriaresults, and harvests.
 
+Note that the webapp file webdanica-webapp-war-$RELEASE.war on the releases page is the tomcat application file, and the file containing libraries (in WEB-INF/lib) used by the tools and automatic-workflow.
+
 The result of the harvesting workflow is harvestlogs, read by an automatic analysis workflow, that from these harvestlogs 
  * makes parsedText out of the warc.gz files from heritrix3, and then 
  * does criteria-analysis on this text, and finally 
  * ingest the results into the database.
 
-The database backend is HBase (currently 1.1.5) through Apache Phoenix. Using apache phoenix requires that phoenix-4.7.0-HBase-1.1-client.jar is part of the distribution phoenix-4.7.0-HBase-1.1-bin.tar.gz downloaded from https://archive.apache.org/dist/phoenix/phoenix-4.7.0-HBase-1.1/bin/ .
+The database backend is HBase (currently 1.1.5) through Apache Phoenix. The required library phoenix-4.7.0-HBase-1.1-client.jar is part of the distribution phoenix-4.7.0-HBase-1.1-bin.tar.gz downloaded from https://archive.apache.org/dist/phoenix/phoenix-4.7.0-HBase-1.1/bin/ .
 
-Installation of hbase is not yet documented properly
+Describing the installation of hbase is considered out of scope for this manual.
 
-Installation of the webdanica-tables are done using the psql.py script and the create-scripts found here: [webdanica-core/src/main/resources/scripts/hbase-phoenix](webdanica-core/src/main/resources/scripts/hbase-phoenix)
+Creating the webdanica-tables in hbase are done using the psql.py script and the create-scripts found here: [webdanica-core/src/main/resources/scripts/hbase-phoenix](webdanica-core/src/main/resources/scripts/hbase-phoenix)<br/>
 Please use the scripts from the sourcecode attached to a release on https://github.com/netarchivesuite/webdanica/releases, as the scripts on github could be newer.
 
 There are the following create scripts for each of the required hbase tables 

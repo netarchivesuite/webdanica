@@ -28,6 +28,14 @@ However it is advisable to change the applicationInstanceId setting like this
 
 The webapp will also fail to initiate properly, if these two files are absent.
 
+The installation as such is done by copying the webdanica-webapp-war-$RELEASE.war  (e.g. webdanica-webapp-war-2.0-RC1.war) to the tomcat/webapps/ folder while renaming it ROOT.war:
+This is done as root or the owner of tomcat application (e.g. tomcat)).
+```
+cp -p webdanica-webapp-war-$RELEASE.war /full/path/to/tomcat/webapps/ROOT.war
+```
+If tomcat is already started, this will prompt to deploy and start the application.
+If tomcat is not started, tomcat will deploy and start the application when it is started.
+
 #Configuration of the webapp 
 
 ## configuration of the environment
