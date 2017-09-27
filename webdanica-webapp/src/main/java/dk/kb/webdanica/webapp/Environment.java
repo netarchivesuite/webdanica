@@ -206,13 +206,20 @@ public class Environment {
         }
         // relative paths in web.xml will be prefixed by this path + /
 
+        // Test, if we run java 8 
+        final int MIN_JAVA_VERSION = 8;
+        final String java_version_used = System.getProperty("java.version"); 
+        if (!isValidJavaVersion(MIN_JAVA_VERSION)) {
+            throw new ServletException("The java version used by tomcat is too old. We now require a java " + MIN_JAVA_VERSION 
+                    + ". The version used by tomcat is " + java_version_used);
+        }
         String netarchiveSuiteSettings = getServletConfig().getInitParameter("netarchivesuite-settings");
         if (!netarchiveSuiteSettings.startsWith("/")) {
             netarchiveSuiteSettings = webdanicaHomeDir.getAbsolutePath() + "/" + netarchiveSuiteSettings;
         }
         netarchiveSuiteSettingsFile = new File(netarchiveSuiteSettings);
         if (netarchiveSuiteSettingsFile.isFile()) {	  	
-            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile)) {
+            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(netarchiveSuiteSettingsFile, true)) {
                 throw new ServletException("The parameter 'netarchivesuite-settings' refers to a settingsfile containing invalid contents: " 
                         + netarchiveSuiteSettingsFile.getAbsolutePath());
             }
@@ -230,7 +237,7 @@ public class Environment {
         webdanicaSettingsFile = new File(webdanicaSettings);
         if (webdanicaSettingsFile.isFile()) {
 
-            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile)) {
+            if (!SettingsUtilities.isValidSimpleXmlSettingsFile(webdanicaSettingsFile, true)) {
                 throw new ServletException("The parameter 'webdanica-settings' refers to a settingsfile containing invalid contents: " 
                         + webdanicaSettingsFile.getAbsolutePath());
             }
@@ -497,5 +504,16 @@ public class Environment {
 
     public ResourcesMap getResourcesMap() {
         return this.resourcesMap;	    
+    }
+    
+    public static boolean isValidJavaVersion(int minVersion) {
+        String[] version = System.getProperty("java.version").split("\\.");
+        if (version.length != 3) {
+            // Don't verify the version any more. But return true
+            return true;
+        } else {  // sample version: 1.8.0_141
+            int thisVersion = Integer.valueOf(version[1]);
+            return thisVersion >= minVersion;
+        }
     }
 }
