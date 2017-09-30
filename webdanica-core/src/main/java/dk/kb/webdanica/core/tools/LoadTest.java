@@ -355,11 +355,14 @@ public static void main(String[] args) throws Exception {
 	}
 
 	private void logIfpercentageProcessed(long linecount, long totalLines2, long fivepercent) {
-        if ((linecount % fivepercent) == 0) {
-            int percent = (int) (linecount / fivepercent) * 5;
-            System.out.println("Processed " + linecount + " of " + totalLines2 + " seeds (" + percent + " %) at " + new Date());
-        }
-    }
+	    try {
+	        if ((linecount % fivepercent) == 0) {
+	            int percent = (int) (linecount / fivepercent) * 5;
+	            System.out.println("Processed " + linecount + " of " + totalLines2 + " seeds (" + percent + " %) at " + new Date());
+	        }} catch (java.lang.ArithmeticException e) {
+	            // Just to handle very low numbers
+	        }
+	}
 
 	private IngestLog logIngestStats(List<String> logentries, long linecount, long insertedcount, long rejectedcount, long duplicatecount) throws Exception {
 		IngestLogDAO dao = null;

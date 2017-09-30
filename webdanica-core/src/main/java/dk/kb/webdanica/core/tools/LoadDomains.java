@@ -59,7 +59,7 @@ public class LoadDomains {
 		DAOFactory daofactory = DatabaseUtils.getDao();
 		DomainsDAO dao = daofactory.getDomainsDAO();
 		IngestLogDAO idao = daofactory.getIngestLogDAO();
-		System.out.println("Processing domains from file '" + domainsfile.getAbsolutePath() + "'. AcceptAsDanica= " +  acceptAsDanica);
+		System.out.println("Processing domains from file '" + domainsfile.getAbsolutePath() + "'. AcceptAsDanica=" +  acceptAsDanica);
 		System.out.println();
 		BufferedReader fr = null;
 		Set<String> logentries = new TreeSet<String>();
@@ -73,6 +73,10 @@ public class LoadDomains {
 			fr = new BufferedReader(new FileReader(domainsfile));
 			while ((line = fr.readLine()) != null) {
 				domain = line.trim();
+				if (domain.isEmpty()) {
+				    // Ignore empty lines
+				    continue;
+				}
 				linecount++;
 				boolean isValidDomain = DomainUtils.isValidDomainName(domain);
 				if (!isValidDomain) {
@@ -146,11 +150,11 @@ public class LoadDomains {
 	        }
 			System.out.println("Finished processing domains file '" + domainsfile.getAbsolutePath() + "'.");
 			if (updateLog != null) {
-				System.out.println("Result of loaddomains operation is written to  '" + domainsfile.getAbsolutePath() + "'.");
+				System.out.println("Result of LoadDomains operation is written to '" + updateLog.getAbsolutePath() + "'.");
 			}	
 		} catch (Throwable e) {
 			e.printStackTrace();
-			System.err.println("Loaddomains program crashed");
+			System.err.println("LoadDomains program crashed");
 			System.exit(1);
 		}
 	}

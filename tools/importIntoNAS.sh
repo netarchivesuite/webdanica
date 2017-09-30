@@ -2,7 +2,7 @@ ME=`basename $0`
 # arg 1: seed or file
 # needs webdanica-core, common-core-5.2.2, harvester-core-5.2.2, JDBC driver for NAS harvestdatabase
 
-SETTINGSFILE=conf/settings_WebdanicaClient.xml
+SETTINGSFILE=conf/settings_NAS_Webdanica.xml
 if [ ! -f "$SETTINGSFILE" ]; then
  echo ERROR: The Netarchivesuite settingsfile \"$SETTINGSFILE\" does not exist. Please correct the path in $ME
  exit
@@ -39,4 +39,4 @@ if [ ! -f "$NAS_HARVESTER_JAR" ]; then
 fi
 
 
-java $OPTS1 $OPTS2 -cp $WEBDANICAJAR:$DATABASEJAR:$NAS_COMMON_JAR:$NAS_HARVESTER_JAR dk.kb.webdanica.core.tools.ImportIntoNetarchiveSuite $1
+java $OPTS1 $OPTS2 -cp $WEBDANICA_JAR:$DATABASEJAR:$NAS_COMMON_JAR:$NAS_HARVESTER_JAR dk.kb.webdanica.core.tools.ImportIntoNetarchiveSuite $1

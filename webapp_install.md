@@ -1,13 +1,16 @@
 # Installation and configuration of the webdanica webapp
 
 Installation of the webapp requires installation of tomcat, and we have been running with Apache Tomcat 8.0.33, so any 8.0.33+ will probably do as well.
+The webapp also requires java 8, so we 
 
-The webapp requires the following Environment variable to be declared in $TOMCAT_HOME/bin/setenv.sh file:
+The webapp requires 'WEBDANICA_HOME' to be declared as a environment variable in $TOMCAT_HOME/bin/setenv.sh file.
+The webapp also requires java 8, so you should also set JAVA_HOME to a java 8 installed on your machine as seen in the setenv.sh shown below:
 ```
-WEBDANICA_HOME=/usr/local/webdanica-home
-export WEBDANICA_HOME
+JAVA_HOME=/usr/java/jdk1.8.0_92_x64
+WEBDANICA_HOME=/usr/java/webdanica-config
+export WEBDANICA_HOME JAVA_HOME
 ```
-Furthermore the webapp requires two files to be present in the WEBDANICA_HOME directory:
+Furthermore the webapp requires the WEBDANICA_HOME to point to an existing directory and the following two files to be present in the WEBDANICA_HOME directory:
  * webdanica_settings.xml
  * settings_NAS_Webdanica.xml
 

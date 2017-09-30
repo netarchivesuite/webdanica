@@ -6,7 +6,7 @@ if [ ! -d "$TOOLS_HOME" ]; then
   echo ERROR: The TOOLS_HOME \"$TOOLS_HOME\" does not exist. Please correct the path in $ME
   exit 1
 fi
-WEBDANICA_SETTINGSFILE=$TOOLS_HOME_HOME/conf/webdanica_settings.xml
+WEBDANICA_SETTINGSFILE=$TOOLS_HOME/conf/webdanica_settings.xml
 
 if [ ! -f "$WEBDANICA_SETTINGSFILE" ]; then
  echo ERROR: Webdanica settingsfile \"$WEBDANICA_SETTINGSFILE\" does not exist. Please correct the path in $ME
@@ -32,4 +32,4 @@ if [ ! -f "$PHOENIX_JAR" ]; then
  exit
 fi
 
-java $OPTS1 $OPTS2 $OPTS3 -cp $WEBDANICAJAR:$PHOENIXJAR:lib/commons-io-2.0.1.jar:lib/common-core-$NAS_VERSION.jar dk.kb.webdanica.core.tools.LoadBlacklists $1
+java $OPTS1 $OPTS2 $OPTS3 -cp $WEBDANICA_JAR:$PHOENIX_JAR:lib/commons-io-2.0.1.jar:lib/common-core-$NAS_VERSION.jar dk.kb.webdanica.core.tools.LoadBlacklists $1

@@ -36,6 +36,7 @@ public class Cache {
     	DAOFactory dao = new HBasePhoenixDAOFactory();
     	System.out.println("Starting to update statecache at " +  new Date());
     	Cache.updateCache(dao);
+    	System.out.println("Finished update of statecache at " +  new Date());
     }
     
     /**

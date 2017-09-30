@@ -3,6 +3,7 @@ package dk.kb.webdanica.core.datamodel.dao;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
@@ -14,6 +15,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     private static final String UPSERT_SQL;
 
     private static final String EXISTS_SQL;
+    
+    private static final Logger logger = Logger.getLogger(HBasePhoenixSeedsDAO.class.getName());
 
     /*
             url VARCHAR PRIMARY KEY,
@@ -68,6 +71,11 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
             insertedTime = now;
         } else {
             insertedTime = singleSeed.getInsertedTime();
+            if (insertedTime==null) {
+                logger.warning("InsertedTime shouldn't be null for updates, but was for seed w/url '"  + singleSeed.getUrl() 
+                        + "'. Setting insertedTime for current time");
+                insertedTime=now;
+            }
         }
 
         try {
