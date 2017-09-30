@@ -175,17 +175,17 @@ public IngestLog processSeeds() throws IOException {
                 System.out.println(datestamp + " Processed " + lines + " seeds");
             }
 
-            if (insertedcount % 10000 == 0) {
+            if (insertedcount % 10000 == 0 && insertedcount>0) {
                 String datestamp = "[" + new Date() + "]";
                 logger.info(datestamp + " Accepted {} seeds.", insertedcount);
                 System.out.println(datestamp + " Accepted " + insertedcount + " seeds");
             }
-            if (rejectedcount % 10000 == 0) {
+            if (rejectedcount % 10000 == 0 && rejectedcount>0) {
                 String datestamp = "[" + new Date() + "]";
                 logger.info(datestamp + " Rejected {} seeds.", rejectedcount);
                 System.out.println(datestamp + " Rejected " + rejectedcount + " seeds");
             }
-            if (updatecount % 10000 == 0) {
+            if (updatecount % 10000 == 0 && updatecount > 0) {
                 String datestamp = "[" + new Date() + "]";
                 logger.info(datestamp + " UpdatedLog reached {} lines.", updatecount);
                 System.out.println(datestamp + " UpdatedLog reached " + updatecount + " lines");
