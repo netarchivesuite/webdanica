@@ -353,6 +353,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                     failure = true;
                     failureReason = "Harvest of seed '" + s.getUrl()
                             + "' failed to be constructed. Possible reason: unknown/illegal domain or an ftp-url"; 
+                    logger.warning(failureReason);
                 } else {
                     // wait until no longer alive or 1 hour has passed for a single
                     // harvest
@@ -368,7 +369,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                         failure = true;
                         failureReason = "Harvest of seed '" + s.getUrl()
                                 + "' failed to finished before deadline (" + deadlineDate + ")"; 
-                        aborted = true;
+                        aborted = true; 
+                        logger.warning(failureReason);
                     } 
                 }
                 
@@ -435,7 +437,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
         }
 
         try {
-            writeHarvestLog(harvests, configuration);
+            if (!harvests.isEmpty()) {
+                writeHarvestLog(harvests, configuration);
+            } else {
+                logger.warning("No seeds harvested successfully out of " + workList.size() + " seeds"); 
+            }
         } catch (Throwable e) {
             String errMsg = "Unable to write a harvestlog to directory '"
                     + configuration.getHarvestLogDir() + "': " + e.toString();

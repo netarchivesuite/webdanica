@@ -100,6 +100,9 @@ public abstract class WorkThreadAbstract implements Runnable {
                                 + ExceptionUtils.getFullStackTrace(t));  
 
             } catch (Throwable t2) {
+                // test if this catches some errors
+                logger.log(Level.SEVERE, t2.toString(), t2);
+                t2.printStackTrace();
             }
         }
         bRunning = false;

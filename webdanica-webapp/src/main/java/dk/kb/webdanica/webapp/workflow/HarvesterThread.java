@@ -7,6 +7,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 
+/**
+ * The HarvesterThread initiates a SingleSeedHarvest in Netarchivesuite and wait for it to finish.
+ */
 public class HarvesterThread implements Runnable {
 
 	/** The log. */
@@ -21,13 +24,13 @@ public class HarvesterThread implements Runnable {
 	private boolean harvestSuccess = false;
 	
 	/**
-	 * 
-	 * @param url
-	 * @param eventHarvestName
-	 * @param scheduleName
-	 * @param templateName
-	 * @param harvestMaxBytes
-	 * @param harvestMaxObjects
+	 * Constructor for the harvesterThread
+	 * @param url The url we want to get harvested by NetarchiveSuite.
+	 * @param eventHarvestName The name of the harvest in NetarchiveSuite.
+	 * @param scheduleName The name of the schedule used by the harvest.
+	 * @param templateName The name of the template used by the harvest.
+	 * @param harvestMaxBytes The maximum number of bytes that we can harvest
+	 * @param harvestMaxObjects The maximum number of objects that we can harvest
 	 */
 	public HarvesterThread(String url, String eventHarvestName, String scheduleName, String templateName, long harvestMaxBytes, int harvestMaxObjects) {
 		this.url = url;
@@ -50,7 +53,7 @@ public class HarvesterThread implements Runnable {
 	
 	/**
 	 * 
-	 * @return
+	 * @return true, if the harvest is successful, otherwise false
 	 */
 	public boolean getHarvestSuccess() {
 		return harvestSuccess;
@@ -58,7 +61,7 @@ public class HarvesterThread implements Runnable {
 	
 	/**
 	 * 
-	 * @return
+	 * @return the SingleSeedHarvest created by the thread. This gives access to harvestdata
 	 */
 	public SingleSeedHarvest getHarvestResult() {
 		return harvest;
@@ -66,7 +69,8 @@ public class HarvesterThread implements Runnable {
 	
 	/**
 	 * 
-	 * @return
+	 * @deprecated "currently returns NPE when called"
+	 * @return true, if the harvest was created successfully in netarchivesuite, false otherwise
 	 */
 	public boolean constructionOK() {
 	    return harvest.getConstructionOK();
