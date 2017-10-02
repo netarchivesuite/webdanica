@@ -54,8 +54,6 @@ import dk.netarkivet.harvester.datamodel.PartialHarvest;
 import dk.netarkivet.harvester.datamodel.Schedule;
 import dk.netarkivet.harvester.datamodel.ScheduleDAO;
 import dk.netarkivet.harvester.datamodel.TemplateDAO;
-import dk.netarkivet.harvester.webinterface.HarvestStatus;
-import dk.netarkivet.harvester.webinterface.HarvestStatusQuery;
 import dk.netarkivet.viewerproxy.webinterface.Reporting;
 
 /**
@@ -136,6 +134,7 @@ public class SingleSeedHarvest {
 		}
 		if (constructionOK) {
 		    eventHarvest.setActive(true);
+		    logger.info("Harvest for seed '" + seed + "' constructed successfully");
 		} else {
 		    eventHarvest.setActive(false);
 		}
@@ -197,22 +196,7 @@ public class SingleSeedHarvest {
 	   
     }
 
-	/**
-	 * 
-	 * @return JobStatus of the job in progress (expects only one job to be created)
-	 */
-	private JobStatusInfo getHarvestStatus() {
-		HarvestStatusQuery hsq = new HarvestStatusQuery(hid, 0); 
-		HarvestStatus hs = JobDAO.getInstance().getStatusInfo(hsq);
-		List<JobStatusInfo> jobs = hs.getJobStatusInfo();
-		if (jobs.size() == 0) { // No jobs yet created (What can go wrong here??)
-			return null;
-		} else if (jobs.size() == 1) {
-			return jobs.get(0);
-		} else {
-			throw new WebdanicaException("Should be either 0 or 1 jobs generated, but there are  " + jobs.size() + " jobs for harvestId " + hid + " and harvestRun 0");   
-		}
-	} 
+	
 	
 	public String getSeed() {
 		return this.seed;
@@ -251,39 +235,45 @@ public class SingleSeedHarvest {
 	public boolean finishHarvest(boolean writeToSystemOut) throws Exception {
 		Set<JobStatus> finishedStates = new HashSet<JobStatus>();
 		finishedStates.add(JobStatus.DONE);
-		finishedStates.add(JobStatus.FAILED); 
-
-		while (getHarvestStatus() == null){
-			if (writeToSystemOut) 
-				System.out.println("Waiting for job for eventharvest '" + harvestName + "' to be scheduled .."); 
+		finishedStates.add(JobStatus.FAILED);
+		String logMsg = "Now waiting for job for eventharvest '" + harvestName + "' to be scheduled ..";
+		log(logMsg,Level.INFO, writeToSystemOut, null);
+		JobStatusInfo jsi = NetarchiveSuiteTools.getHarvestStatus(hid);
+		while (jsi == null){
 			try {
 				Thread.sleep(5000L);
+				jsi = NetarchiveSuiteTools.getHarvestStatus(hid);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		logMsg = "Job for eventharvest '" + harvestName + "' has now been scheduled ..";
+        log(logMsg,Level.INFO, writeToSystemOut, null);
+        
 		// Harvest is now in progress ph.getHarvestStatus() != null
-		JobStatusInfo jsi = getHarvestStatus();
+		jsi = NetarchiveSuiteTools.getHarvestStatus(hid);
 		Long jobId = jsi.getJobID();
 		JobStatus status = jsi.getStatus();
-		if (writeToSystemOut) {
-			System.out.println("State of Job " + jobId + ": " + status);
-		}
+		logMsg = "State of Job '" + jobId + "' is now " + status + ". Waiting for job to finish";
+		log(logMsg, Level.INFO, writeToSystemOut, null);
+	
 		long starttime = System.currentTimeMillis();
 		while (!finishedStates.contains(status)) {
-			if (writeToSystemOut) 
-				System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status);
+		    if (writeToSystemOut) 
+                System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status);
 			try {
 				Thread.sleep(30000L); // 30 secs sleep
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			jsi = getHarvestStatus();
+			jsi = NetarchiveSuiteTools.getHarvestStatus(hid);
 			status = jsi.getStatus(); // Refresh status
 		}
 		long endtime = System.currentTimeMillis();
 		long usedtimeSecs = (endtime-starttime)/1000;
-		if (writeToSystemOut) System.out.println("After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status );
+		logMsg = "After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status;
+		log(logMsg, Level.INFO, writeToSystemOut, null);
+		
 		this.finishedState = status;
 		this.statusInfo = jsi;
 		Job theJob = JobDAO.getInstance().read(jobId);
@@ -299,12 +289,11 @@ public class SingleSeedHarvest {
 		List<String> lines = Reporting.getFilesForJob(jobId.intValue(), harvestPrefix);
 		boolean filesHarvested = false;
 		if (lines != null && !lines.isEmpty()){
-			String logMsg = "The following files were harvested: " + StringUtils.join(lines, ",");
+			logMsg = "The following files were harvested: " + StringUtils.join(lines, ",");
 			filesHarvested = true;
 			log(logMsg, Level.INFO, writeToSystemOut, null);
-			
 		} else {
-			String logMsg = "No files was harvested. ";
+			logMsg = "No files was harvested. ";
 			log(logMsg, Level.WARNING, writeToSystemOut, null);
 		}
 		this.files = lines;
@@ -317,11 +306,11 @@ public class SingleSeedHarvest {
 		            hd.setActive(false);
 		            hdao.update(hd);
 		        } else {  
-		            String logMsg = "Unable to disable harvestdefiniton with id=" + this.hid + ". Netarchivesuite does not recognize harvestdefinition with this ID";
+		            logMsg = "Unable to disable harvestdefiniton with id=" + this.hid + ". Netarchivesuite does not recognize harvestdefinition with this ID";
 		            log(logMsg, Level.WARNING, writeToSystemOut, null);
 		        }
 		} catch (Throwable e) {
-		    String logMsg = "Unable to disable harvestdefiniton with id=" + this.hid;
+		    logMsg = "Unable to disable harvestdefiniton with id=" + this.hid;
 		    log(logMsg, Level.WARNING, writeToSystemOut, e);
 		}
 		
@@ -335,7 +324,7 @@ public class SingleSeedHarvest {
 		    log(error, Level.WARNING, writeToSystemOut, e);
 		}
 		if (this.reports != null) {
-			String logMsg = "Retrieved '" + this.reports.getReports().keySet().size() + "' reports for job '" + jobId + "'";
+			logMsg = "Retrieved '" + this.reports.getReports().keySet().size() + "' reports for job '" + jobId + "'";
 			log(logMsg, Level.INFO, writeToSystemOut, null);
 		} 
 		
