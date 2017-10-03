@@ -21,7 +21,6 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
-import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
@@ -67,7 +66,7 @@ public class HarvestResource implements ResourceAbstract {
         if (harvestName == null) {
         	harvestName = "ERROR: unable to extract harvestname from path '" + pathInfo + "'";
         	isError = true;
-        	b = HarvestLog.makeErrorObject(harvestName);
+        	b = SingleSeedHarvest.makeGuiErrorObject(harvestName);
         }
         //resp.sendRedirect(arg0);
         
@@ -79,7 +78,7 @@ public class HarvestResource implements ResourceAbstract {
         	if (b == null) {
         		harvestName = "ERROR: unable to show harvest with name '" + harvestName + "'. It doesn't exist";
             	isError = true;
-            	b = HarvestLog.makeErrorObject(harvestName);	
+            	b = SingleSeedHarvest.makeGuiErrorObject(harvestName);	
         	}
         }
 

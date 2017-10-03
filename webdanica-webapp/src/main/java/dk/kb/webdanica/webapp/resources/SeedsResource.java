@@ -34,6 +34,7 @@ import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.CacheDAO;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
@@ -131,6 +132,8 @@ public class SeedsResource implements ResourceAbstract {
     private void changeStateForAll(SeedsRequest seedsRequest, SeedsDAO dao, HttpServletResponse resp) throws IOException {
     	Status old = Status.fromOrdinal(seedsRequest.getCurrentState());
     	HarvestDAO hdao = environment.getConfig().getDAOFactory().getHarvestDAO();
+    	DAOFactory dfactory = environment.getConfig().getDAOFactory();
+    	
     	StringBuilder log = new StringBuilder();
     	Long items = Constants.MAX_SEEDS_TO_FETCH; 
     	int succeeded = 0;
@@ -156,6 +159,7 @@ public class SeedsResource implements ResourceAbstract {
     	    		StatusResource.throwable_stacktrace_dump(e, log);
     			}
     		}
+    		Cache.updateCache(dfactory);
     	} catch (Throwable e) {
     		log.append("Unable to change state for the " + items + " seeds in state '" + old + "'. The exception follows:\n");
     		StatusResource.throwable_stacktrace_dump(e, log);

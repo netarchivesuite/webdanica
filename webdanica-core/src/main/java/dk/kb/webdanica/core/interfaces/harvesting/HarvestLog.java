@@ -6,11 +6,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +24,7 @@ import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
+import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
 /**	
@@ -271,15 +274,46 @@ public class HarvestLog {
     }
 	
 	/**
-	 * Make a dummy SingleSeedHarvest object.
-	 * @param error An errormessage to write
-	 * @return a dummy SingleSeedHarvest object
-	 */
-	public static SingleSeedHarvest makeErrorObject(String error) {
-		SingleSeedHarvest h = new SingleSeedHarvest();
-	    h.harvestName = error;
-	    h.errMsg = new StringBuilder(error);
-	    h.files = new ArrayList<String>();
-	    return h;
+     * Write a list of SingleSeedHarvest results to a harvestlog.
+     * @param harvestLog The harvestlog file object to write to.
+     * @param harvestLogHeader The header of the harvestlog file.
+     * @param includeOnlySuccessFulHarvests If true, we only include successful harvests, otherwise we include them all.
+     * @param results the list of SingleSeedHarvest results.
+     * @param writeToStdout write to System.out/System.err (true or false)
+     * @return the number of harvests written to the file.
+     * @throws Exception
+     */
+    public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean includeOnlySuccessFulHarvests, List<SingleSeedHarvest> results, boolean writeToStdout) throws Exception {
+        // Initialize harvestLogWriter
+        PrintWriter harvestLogWriter = new PrintWriter(new BufferedWriter(new FileWriter(harvestLog)));
+        int harvestsWritten = 0;
+        harvestLogWriter.println(harvestLogHeader);
+        harvestLogWriter.println(StringUtils.repeat("#", 80));
+        for (SingleSeedHarvest s: results) {
+            if (!s.successful) {
+                if (includeOnlySuccessFulHarvests) {
+                    String logMsg = "Skipping failed harvest '" + s.harvestName + "' of seed '" + s.seed + "'";
+                    SystemUtils.log(logMsg, Level.WARNING, writeToStdout);
+                    continue;
+                } else {
+                    String logMsg = "Including failed harvest '" + s.harvestName + "' of seed '" + s.seed + "' in harvestlog";
+                    SystemUtils.log(logMsg, Level.WARNING, writeToStdout);
+                }
+            }
+            harvestLogWriter.println(HarvestLog.seedPattern + s.getSeed());
+            harvestLogWriter.println(HarvestLog.harvestnamePattern + s.getHarvestName());
+            harvestLogWriter.println(HarvestLog.successfulPattern + s.isSuccessful());
+            harvestLogWriter.println(HarvestLog.endstatePattern + s.getFinalState());
+            harvestLogWriter.println(HarvestLog.harvestedTimePattern + s.getHarvestedTime());
+            harvestLogWriter.println(HarvestLog.filesPattern + StringUtils.join(s.getFiles(), ","));
+            String errString = (s.getErrMsg() != null?s.getErrMsg():"");
+            String excpString = (s.getException() != null)? "" + s.getException():""; 
+            harvestLogWriter.println(HarvestLog.errorPattern + errString + " " + excpString);
+            harvestLogWriter.println(StringUtils.repeat("#", 80));
+            harvestsWritten++;
+        }   
+        harvestLogWriter.close();
+        return harvestsWritten;
     }
+	
 }

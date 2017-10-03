@@ -507,7 +507,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
 
         // write harvestreport to disk where cronjob have privileges to read,
         // and move the file to a different location
-        int written = SingleSeedHarvest.writeHarvestLog(harvestLog,
+        int written = HarvestLog.writeHarvestLog(harvestLog,
                 harvestLogHeader, true, harvests, false);
         if (written == 0) {
             logger.log(Level.WARNING, "No harvests out of " + harvests.size()

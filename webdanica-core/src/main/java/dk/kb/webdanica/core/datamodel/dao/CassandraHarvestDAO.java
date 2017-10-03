@@ -16,7 +16,9 @@ import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.netarkivet.harvester.datamodel.JobStatus;
 
-/*
+/**
+ * @deprecated the Cassandra implementation is no longer fully implemented
+ * 
 use webdanica;
 CREATE TABLE harvests ( 
     harvestname text,
@@ -35,6 +37,7 @@ CREATE TABLE harvests (
     CREATE INDEX harvest_seedurl_idx ON webdanica.harvests (seedurl);
     CREATE INDEX harvest_successful_idx ON webdanica.harvests (successful);
 */
+
 public class CassandraHarvestDAO implements HarvestDAO {
 	
 	private static CassandraHarvestDAO instance;

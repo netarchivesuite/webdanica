@@ -3,6 +3,7 @@ package dk.kb.webdanica.core.datamodel.criteria;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
@@ -149,7 +150,7 @@ public class Classification {
             String oldC8c = C8c;
             C8c = CriteriaUtils.findC8cval(C8a, C8c);
             SystemUtils.log("Updating criteria C8c. Changed from '" + oldC8c + "' to '"
-                    + C8c + "' using the C8a value '" + C8a + "'");
+                    + C8c + "' using the C8a value '" + C8a + "'", Level.INFO, false);
             res.C.put("C8c", C8c);
         }
 
@@ -170,7 +171,7 @@ public class Classification {
             tokens.retainAll(words);
             C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
             SystemUtils.log("Updating criteria C3g. Changed from '" + oldC3g + "' to '"
-                    + C3g + "'");
+                    + C3g + "'", Level.INFO, false);
             res.C.put("C3g", C3g);
         }
 

@@ -12,6 +12,7 @@ import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
+import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.Settings;
@@ -107,7 +108,7 @@ public class Harvest {
     	String harvestLogHeader = harvestLogHeaderPrefix 
     			+ (argumentIsSeedFile?" seedfile " + argumentAsFile.getAbsolutePath():" seed " + argument);
     	
-    	int written = SingleSeedHarvest.writeHarvestLog(harvestLog, harvestLogHeader, onlySuccessFul, results, writeToStdout);
+    	int written = HarvestLog.writeHarvestLog(harvestLog, harvestLogHeader, onlySuccessFul, results, writeToStdout);
     	System.out.println(written + " harvests were written to log '" + harvestLog.getAbsolutePath() + "'");
     	System.out.println();System.out.println();
     	if (saveHarvestInWebdanicaDB) {
