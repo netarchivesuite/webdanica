@@ -45,31 +45,11 @@
       <version>1.0.0</version>
   </dependency>
  
-<!--         
-    <dependency>
-      <groupId>com.antiaction</groupId>
-      <artifactId>common-json</artifactId>
-      <version>0.7.0-SNAPSHOT</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.apache.pig</groupId>
       <artifactId>pig</artifactId>
       <version>0.15.0</version>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-core</artifactId>
-      <version>0.20.2</version>
-    </dependency>
--->
-<!--
-    <dependency>
-      <groupId>org.apache.phoenix</groupId>
-      <artifactId>phoenix-core</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -100,12 +80,6 @@
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.jwat</groupId>
-      <artifactId>jwat-common</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-app</artifactId>
@@ -129,12 +103,12 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>
-      <version>10.12.1.1</version>
+      <version>${derby.version}</version>
      </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.2-1003-jdbc4</version>
+      <version>${postgresql.version}</version>
     </dependency>
 
     <dependency>
@@ -154,13 +128,6 @@
       <artifactId>grep4j</artifactId>
       <version>1.8.7</version>
     </dependency>
-<!--
-    <dependency>
-      <artifactId>je</artifactId>
-      <groupId>com.sleepycat</groupId>
-      <version>3.3.82</version>
-    </dependency>
--->
     <dependency>
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>
@@ -221,16 +188,16 @@
 	<!-- Got the warning: Did not find Netty's native epoll transport in the classpath, defaulting to NIO -->
 	<!-- 
 	<dependency>
-	<groupId>io.netty</groupId>
-	<artifactId>netty</artifactId>
-	<version>3.10.5.Final</version>
-    </dependency>
+	 <groupId>io.netty</groupId>
+	 <artifactId>netty</artifactId>
+	 <version>3.10.5.Final</version>
+        </dependency>
     
-	   <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-transport-native-epoll</artifactId>
-      <version>4.10.26.Final</version>
-    </dependency>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-native-epoll</artifactId>
+          <version>4.10.26.Final</version>
+        </dependency>
 	-->
   </dependencies>
 

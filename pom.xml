@@ -73,14 +73,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <license.skip>false</license.skip>
     <jwat.version>1.0.4</jwat.version>
-    <!-- is this required?    
-	    <jwat-tools.version>0.6.1-SNAPSHOT</jwat-tools.version>
-    -->
     <tika.version>1.13</tika.version>
     <slf4j.version>1.7.7</slf4j.version>
     <sysout-over-slf4j.version>1.0.2</sysout-over-slf4j.version>
     <logback.version>1.0.13</logback.version>
     <derby.version>10.12.1.1</derby.version>
+    <postgresql.version>9.2-1003-jdbc4</postgresql.version>
     <netarchivesuite.version>5.2.2</netarchivesuite.version>
   </properties>
 
