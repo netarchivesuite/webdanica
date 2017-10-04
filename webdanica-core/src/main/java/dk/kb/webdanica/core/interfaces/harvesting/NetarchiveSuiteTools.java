@@ -136,7 +136,7 @@ public class NetarchiveSuiteTools {
     public static Long getHarvestDefinitionID(String hdName) {
         HarvestDefinitionDAO hdao = HarvestDefinitionDAO.getInstance();
         if (!hdao.exists(hdName)) {
-            System.err.println("No definition with name='" + hdName + "'");
+            System.err.println("No harvestdefinition exists with name='" + hdName + "'");
             return null;
         } else {
             return hdao.getHarvestDefinition(hdName).getOid();

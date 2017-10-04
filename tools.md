@@ -3,7 +3,7 @@
 The tools folder in the root of the released source-code (https://github.com/netarchivesuite/webdanica/releases) holds sample scripts for the tools below: loadSeeds.sh, loadBlacklists.sh, loadDomains.sh, exportDanica.sh, importIntoNAS.sh, importDanica.sh, loadTest.sh, showReports.sh, synchronizeTraps.sh, extractFromGithub.sh, cacheTest.sh, databaseStats.sh.
 
 
-All you need is to correct the path to TOOLS_HOME in the top of the scripts, and add a lib-folder (extract that from the war-file included in every release), and a conf directory (the automatic-workflow/conf in the source-code) to the tools directory. You can also add symbolic links to the conf and lib folders in the automatic-workflow:
+All you need is to correct the path to TOOLS_HOME in the top of the scripts, and add a lib-folder (extract that from the war-file included in every release), and a conf directory (the workflow-template/conf in the source-code) to the tools directory. You can also add symbolic links to the conf and lib folders in the automatic-workflow:
 ```
 cd tools
 AUTOMATIC_WORKFLOW_HOME=/home/test/automatic-workflow

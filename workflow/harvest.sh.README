@@ -1,5 +1,0 @@
-USAGE: bash harvestSeeds.sh <file> | url
-
-It writes a harvestLog at end the of harvesting, naming the files produced by Heritrix.
-
-

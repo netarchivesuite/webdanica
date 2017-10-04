@@ -1,8 +1,0 @@
-## Run the webdanica-analysis-program every 2 hours
-0 */2 * * *   bash /home/webdanica/automatic-workflow/webdanica-analysis-cron.sh 2>&1 | tee -a /home/webdanica/cronlog/webdanica-analysis-cron.sh.log
-## Cleanup oldjobs every 6 hours
-0 */6 * * * bash /home/webdanica/cleanup_oldjobs.sh 2>&1 | tee -a /home/webdanica/cronlog/cleanup_oldjobs.sh.log
-## restart netarchivesuite once a week (every monday at 02.00 AM)
-#0 2 * * 1 cd /home/webdanica/WEBDANICA/conf ; ./restart.sh 2>&1 | tee -a  /home/webdanica/WEBDANICA/restart.log
-0 * * * * bash /home/webdanica/check_apps_alive.sh 2>&1 | tee -a /home/webdanica/cronlog/check_apps_alive.log
-

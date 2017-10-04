@@ -1,0 +1,3 @@
+## Run the webdanica-analysis-program every 10 minutes
+*/30 * * * *  bash /home/test/automatic-workflow/webdanica-analysis-cron.sh
+0 * * * * bash /home/test/cleanup_oldjobs.sh

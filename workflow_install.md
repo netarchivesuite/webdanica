@@ -74,7 +74,7 @@ Thus tricking it into not finding the hadoop installed on the machine or in the 
 ## The installation of the automatic-workflow 
 
 First the sourcecode for the release from https://github.com/netarchivesuite/webdanica/releases
-unzip the source code. This will produce a `webdanica-$RELEASE` folder (e.g. webdanica-1.2.0), and we're want the webdanica-$RELEASE/automatic-workflow folder.  
+unzip the source code. This will produce a `webdanica-$RELEASE` folder (e.g. webdanica-1.2.0), and we want the webdanica-$RELEASE/workflow-template folder.  
 
 If you want instead to download the current source from github, use the `extractFromGithub.sh` command in the tools folder.
 ```
@@ -83,7 +83,7 @@ bash extractFromGithub.sh 1.X
 This will download a zipfile of the 1.X branch from github and unpack it in the folder 1.X-DD-MM-YYYY/webdanica-1.X Where DD-MM-YY represents the current date.
 
 
-Now copy the automatic-workflow folder to the the WORKFLOW_USER_HOME (e.g. /home/test), and change the owner of the files to the user running the automatic workflow.
+Now copy the workflow-template folder to $WORKFLOW_USER_HOME/automatic-workflow (e.g. /home/test), and change the owner of the files to the user running the automatic workflow. We have this template, because you can also use the same template-folder to install a manual workflo w.
 
 Correct the automatic-workflow/setenv.sh to match the wanted setup.
 
