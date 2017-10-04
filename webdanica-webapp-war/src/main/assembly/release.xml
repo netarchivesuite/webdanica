@@ -14,32 +14,34 @@
         <exclude>/**/web.xml</exclude>
       </excludes>
 -->
-      <outputDirectory>/</outputDirectory>
+
+      <!-- <outputDirectory>/</outputDirectory> -->
+      <outputDirectory>${file.separator}</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../webdanica-webapp/lib/</directory>
       <includes>
         <include>*.jar</include>
       </includes>
-      <outputDirectory>/WEB-INF/lib/</outputDirectory>
+      <outputDirectory>${file.separator}WEB-INF/lib/</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../webdanica-core/lib/</directory>
       <includes>
         <include>*.jar</include>
       </includes>
-      <outputDirectory>/WEB-INF/lib/</outputDirectory>
+      <outputDirectory>${file.separator}WEB-INF/lib/</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../webdanica-webapp/lib/netarkivet-dependencies/</directory>
       <includes>
         <include>*.jar</include>
       </includes>
-      <outputDirectory>/WEB-INF/lib/</outputDirectory>
+      <outputDirectory>${file.separator}WEB-INF/lib/</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${webdanica.webapp.config}/</directory>
-      <outputDirectory>/WEB-INF/</outputDirectory>
+      <outputDirectory>${file.separator}WEB-INF/</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -54,7 +56,7 @@
         -->
         <exclude>org.slf4j:log4j-over-slf4j:jar</exclude>
       </excludes>
-      <outputDirectory>/WEB-INF/lib/</outputDirectory>
+      <outputDirectory>${file.separator}WEB-INF/lib/</outputDirectory>
     </dependencySet>
   </dependencySets>
 </assembly>
