@@ -87,7 +87,7 @@ Now copy the workflow-template folder to $WORKFLOW_USER_HOME/automatic-workflow 
 
 Correct the automatic-workflow/setenv.sh to match the wanted setup.
 
-Add the execution of the workflow to the crontab. In the file automatic-workflow/crontab.test there is a sample crontab looking like this:
+Add the execution of the workflow to the crontab. In the file workflow-template/crontab.test there is a sample crontab looking like this:
 
 ```
 ## Run the webdanica-analysis-program every 30 minutes
@@ -95,15 +95,15 @@ Add the execution of the workflow to the crontab. In the file automatic-workflow
 0 * * * * bash /home/test/cleanup_oldjobs.sh
 ```
 
-In staging the webdanica-analysis-cron.sh is currently every hours:
+In staging the webdanica-analysis-cron.sh is currently run every 2 hours:
 this is done with this cron-statement:
 ```
-0 */2  * * *  bash /home/test/automatic-workflow/webdanica-analysis-cron.sh
+0 */2  * * *  bash /home/test/automatic-workflow/webdanica-analysis-cron.sh 2>&1 | tee -a $CRONDIR/webdanica-analysis-cron.sh.log
 ```
-The cleanup_oldjobs.sh is found in the root of zipball. This is currently only run every 6 hours.
+The cleanup_oldjobs.sh is found in the webdanica-core/src/main/resources/scripts/cronjobs. This is currently only run every 6 hours.
 this declared with this cron-statement:
 ```
-0 */6 * * * bash /home/test/cleanup_oldjobs.sh
+0 */6 * * * bash /home/test/cleanup_oldjobs.sh 2>&1 | tee -a $CRONDIR/cleanup_oldjobs.sh.sh.log
 ```
 
 Disabling the automatic workflow is most easily done by running crontab -e
