@@ -1,0 +1,11 @@
+CRONDIR=/home/webdanica/cronlogs
+## Run the webdanica-analysis-program every 2 hours
+0 */2 * * *   bash /home/webdanica/automatic-workflow/webdanica-analysis-cron.sh 2>&1 | tee -a $CRONDIR/webdanica-analysis-cron.sh.log
+
+## Cleanup oldjobs every 6 hours
+0 */6 * * * bash /home/webdanica/cronjobs/cleanup_oldjobs.sh 2>&1 | tee -a $CRONDIR/cleanup_oldjobs.sh.log
+## restart netarchivesuite once a week (every monday at 02.00 AM) - disabled by default: only enable it in case of memory-leaks in Netarchivesuite
+#0 2 * * 1 cd /home/webdanica/WEBDANICA/conf ; ./restart.sh 2>&1 | tee -a  /home/webdanica/WEBDANICA/restart.log
+
+0 * * * * bash /home/webdanica/cronjobs/check_apps_alive.sh 2>&1 | tee -a $CRONDIR/check_apps_alive.log
+

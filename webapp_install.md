@@ -31,7 +31,18 @@ However it is advisable to change the applicationInstanceId setting like this
 
 The webapp will also fail to initiate properly, if these two files are absent.
 
-The installation as such is done by copying the webdanica-webapp-war-$RELEASE.war  (e.g. webdanica-webapp-war-2.0-RC1.war) to the tomcat/webapps/ folder while renaming it ROOT.war:
+Before do the actual deployment of the Webappp, we need to add a symbolic link in the tomcat/shared folder to the phoenix-client-jar, eg.
+```
+cd $TOMCAT_HOME/shared
+ln -s /usr/hdp/current/phoenix-client/phoenix-client.jar .
+```
+And then adding/editing the variable shared.loader in tomcat/conf/catalina.properties so we get 
+```
+shared.loader="${catalina.base}/shared","${catalina.base}/shared/*.jar","${catalina.home}/shared","${catalina.home}/shared/*.jar"
+```
+Remember to restart tomcat after doing that.
+
+The installation as such is done by copying the webdanica-webapp-war-$RELEASE.war (e.g. webdanica-webapp-war-2.0-RC1.war) to the tomcat/webapps/ folder while renaming it ROOT.war:
 This is done as root or the owner of tomcat application (e.g. tomcat)).
 ```
 cp -p webdanica-webapp-war-$RELEASE.war /full/path/to/tomcat/webapps/ROOT.war
@@ -100,6 +111,7 @@ The loadSeeds filters away any url which either
  * fails to be inserted in the database
 
 The rejects of this filtering ends up in the ingestlog table for the specific seeds-ingest, plus some statistics, and both an accept.log and a reject.log is written to disk.
+If the seedsfile given to loadSeeds is very big(>30Gb), you shouldn't try to save the logs in the ingestlog, because that will probably fail. Use the --saveonlystats argument to loadSeeds in this case. 
 
 ### Filtering by the filtering-workflow
 
@@ -197,8 +209,7 @@ The harvestLogs are made writeable by all, so the automatic-workflow can remove 
 ```
 ## Notes
  * Setting maxSingleSeedHarvests to zero or a negative number, will also disable the harvestworkflow. Enabling this will currently require the setting to change to a number>0 and the restart of the webapp.
- * The harvestworkflow will wait up til 15 minutes for the completion of the harvestjob. Monitoring can be done on the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
+ * The harvestworkflow will wait up til 15 minutes (value defined by setting 'harvestMaxTimeInMillis') for the completion of the harvestjob. Monitoring can be done on the running jobs page(http://$NASGUI_HOME/History/Harveststatus-running.jsp) and 
 the updated time of the seed currently being harvested (Seen when clicking on the Show details page). If the harvesting is deadlocked, terminate the netarchivesuite job either through the Heritrix3 gui if possible, or by restarting the netarchivesuite system. This will make the job fail, and the harvesting workflow will continue with the next harvest
-
 
 

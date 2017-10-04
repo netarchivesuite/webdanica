@@ -13,12 +13,23 @@ The result of the harvesting workflow is harvestlogs, read by an automatic analy
  * does criteria-analysis on this text, and finally 
  * ingest the results into the database.
 
-The database backend is HBase (currently 1.1.5) through Apache Phoenix. The required library phoenix-4.7.0-HBase-1.1-client.jar is part of the distribution phoenix-4.7.0-HBase-1.1-bin.tar.gz downloaded from https://archive.apache.org/dist/phoenix/phoenix-4.7.0-HBase-1.1/bin/ .
+The database backend is HBase (currently 1.1) through Apache Phoenix. Building the code has the following requirement in webdanica-core/pom.xml
+``` 
+<dependency>
+      <groupId>org.apache.phoenix</groupId>
+      <artifactId>phoenix-core</artifactId>
+      <version>4.7.0-HBase-1.1</version>
+      <scope>provided</scope>
+    </dependency>
+```
+Being 'provided' means, that is not downloaded and among the libs included in the produced war-file.
+You should locate the phoenix-client-jar used with your cluster, and use this instead of the previously used phoenix-4.7.0-HBase-1.1-client.jar.
+We are currently used Horton Works, and their phoenix-client-jar is located here: /usr/hdp/current/phoenix-client/phoenix-client.jar
 
 Describing the installation of hbase is considered out of scope for this manual.
 
-Creating the webdanica-tables in hbase are done using the psql.py script and the create-scripts found here: [webdanica-core/src/main/resources/scripts/hbase-phoenix](webdanica-core/src/main/resources/scripts/hbase-phoenix)<br/>
-Please use the scripts from the sourcecode attached to a release on https://github.com/netarchivesuite/webdanica/releases, as the scripts on github could be newer.
+Creating the webdanica-tables in hbase are done using the psql.py script and the create-scripts found here: [scripts/hbase-phoenix](scripts/hbase-phoenix)<br/>
+Please use the scripts from the sourcecode attached to the release on https://github.com/netarchivesuite/webdanica/releases, as the scripts on github could be newer.
 
 There are the following create scripts for each of the required hbase tables 
  * create_blacklists.sql

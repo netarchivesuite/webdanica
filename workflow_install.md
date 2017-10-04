@@ -1,13 +1,13 @@
 # Installation and configuration of the automatic workflow
 
-An automatic workflow takes care of the analysis of the harvested files on the basis of harvestlog written by the webapp to a common
+The automatic workflow takes care of the analysis of the harvested files on the basis of harvestlog written by the webapp to a common
 directory (e.g. /home/harvestLogs).
 
 There is two scripts, one that automatically takes the available harvestlogs from the common directory, and processes the harvestlogs one by one, and one takes a harvestlog as argument and then processes the harvestlog:
  * webdanica-analysis-cron.sh
  * webdanica-analysis-manual.sh
 
-These scripts both include a common file setenv.sh which must be configured correctly before enabling the harvesting workflow, and enabling the cronjobs 
+These scripts both include a common file setenv.sh which must be configured correctly before enabling the harvesting workflow, and enabling the cronjobs: 
 ``` 
 WORKFLOW_USER_HOME=/home/test
 WEBDANICA_VERSION=1.0.0
@@ -82,35 +82,51 @@ bash extractFromGithub.sh 1.X
 ```
 This will download a zipfile of the 1.X branch from github and unpack it in the folder 1.X-DD-MM-YYYY/webdanica-1.X Where DD-MM-YY represents the current date.
 
+Now copy the workflow-template folder to $WORKFLOW_USER_HOME/automatic-workflow (e.g. /home/test), and change the owner of the files to the user running the automatic workflow. We have this template, because you can also use the same template-folder to install a manual workflow, manual-workflow. We recommend two separate workflows, even though it is not required.
 
-Now copy the workflow-template folder to $WORKFLOW_USER_HOME/automatic-workflow (e.g. /home/test), and change the owner of the files to the user running the automatic workflow. We have this template, because you can also use the same template-folder to install a manual workflo w.
+Correct the automatic-workflow/setenv.sh to match the wanted setup. If the information in setenv.sh is wrong, you will get an error if the information is wrong.
+Furthermore, you must check, that the webdanica-core jarfile REGISTER'ed in workflow-template/.pigbootup matches the WEBDANICA_VERSION in the setenv.sh
+(e.g. if the WEBDANICA_VERSION is 2.0, lib/webdanica-core-2.0.jar should be REGISTER'ed in automatic-workflow/.pigbootup and/or manual-workflow/.pigbootup).
 
-Correct the automatic-workflow/setenv.sh to match the wanted setup.
+## The configuration of the crontab 
 
-Add the execution of the workflow to the crontab. In the file workflow-template/crontab.test there is a sample crontab looking like this:
+Copy the scripts/cronjobs folder to the $WORKFLOW_USER_HOME
+Before inserting/updating the crontab for the user running the automatic workflow, do the following checks:
+ * Check that the NAS_INSTALL value in cleanup_oldjobs.sh is correct
+ * Check that the CRONDIR in the crontab refers to an existing directory
+ * Check that the host argument to check_apps_alive.sh is the correct host.
+ * Check that the mails of the user running the crontab (e.g. test) should be forwarded to the adminstrators of the webdanica system. This is most easily done by making an alias for the user in /etc/aliases ( remember to renew the aliases.db by running the /usr/bin/newaliases as root ).
 
-```
-## Run the webdanica-analysis-program every 30 minutes
-*/30 * * * *  bash /home/test/automatic-workflow/webdanica-analysis-cron.sh
-0 * * * * bash /home/test/cleanup_oldjobs.sh
-```
-
-In staging the webdanica-analysis-cron.sh is currently run every 2 hours:
+In our staging webdanica-analysis-cron.sh is currently run every 2 hours:
 this is done with this cron-statement:
 ```
 0 */2  * * *  bash /home/test/automatic-workflow/webdanica-analysis-cron.sh 2>&1 | tee -a $CRONDIR/webdanica-analysis-cron.sh.log
 ```
-The cleanup_oldjobs.sh is found in the webdanica-core/src/main/resources/scripts/cronjobs. This is currently only run every 6 hours.
-this declared with this cron-statement:
+
+The cleanup_oldjobs.sh (found in the cronjobs folder) removes the Heritrix3 libraries from oldjobs, and is currently run every 6 hours.
+This is declared with this cron-statement:
 ```
-0 */6 * * * bash /home/test/cleanup_oldjobs.sh 2>&1 | tee -a $CRONDIR/cleanup_oldjobs.sh.sh.log
+0 */6 * * * bash /home/test/cronjobs/cleanup_oldjobs.sh 2>&1 | tee -a $CRONDIR/cleanup_oldjobs.sh.sh.log
 ```
 
-Disabling the automatic workflow is most easily done by running crontab -e
-and then writing '#' as the first character and then save the crontab.
+Finally, the check_apps_alive.sh is run once every hour, and checks if the tomcat application and netarchivesuite is alive and well.
 
-Note: the mails of the user running the crontab (e.g. test) should be forwarded to the adminstrators of the webdanica system.
+This gives us a crontab looking like [this](scripts/cronjobs/crontab.test):
 
-This is most easily done by making an alias for the user in /etc/aliases ( remember to renew the aliases.db by running the /usr/bin/newaliases as root ).
+```
+CRONDIR=/home/test/cronlogs
+## Run the webdanica-analysis-program every 2 hours
+0 */2 * * *  bash /home/webdanica/automatic-workflow/webdanica-analysis-cron.sh 2>&1 | tee -a $CRONDIR/webdanica-analysis-cron.sh.log
 
+## Cleanup oldjobs every 6 hours
+0 */6 * * * bash /home/webdanica/cronjobs/cleanup_oldjobs.sh 2>&1 | tee -a $CRONDIR/cleanup_oldjobs.sh.log
+## restart netarchivesuite once a week (every monday at 02.00 AM) - disabled by default: only enable it in case of memory-leaks in Netarchivesuite
+#0 2 * * 1 cd /home/webdanica/WEBDANICA/conf ; ./restart.sh 2>&1 | tee -a  /home/webdanica/WEBDANICA/restart.log
+
+## Check if apps alive tr (e.g. replace http://kb-test-webdanica-001.kb.dk with the correct host)
+0 * * * * bash /home/webdanica/cronjobs/check_apps_alive.sh http://kb-test-webdanica-001.kb.dk 2>&1 | tee -a $CRONDIR/check_apps_alive.log
+```
+
+Disabling some or all scripts in the crontab is most easily done by running crontab -e
+and then writing '#' as the first character of the line and then saving the crontab.
 
