@@ -247,7 +247,7 @@ public class SingleSeedHarvest {
 				if (jsi == null) {
 				    logMsg = "Still waiting for job for eventharvest '" + harvestName 
                         + "' to be scheduled at date: " + new Date();
-				    SystemUtils.log(logMsg,Level.INFO, writeToSystemOut);
+				    SystemUtils.log(logMsg,Level.FINE, writeToSystemOut);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -260,13 +260,14 @@ public class SingleSeedHarvest {
 		jsi = NetarchiveSuiteTools.getNewHarvestStatus(hid);
 		Long jobId = jsi.getJobId();
 		JobStatus status = jsi.getStatus();
-		logMsg = "State of Job '" + jobId + "' is now " + status + ". Waiting for job to finish at date: " + new Date();
+		logMsg = "State of Job '" + jobId + "' is now " + status + ". Waiting for job (harvest '" 
+		+ harvestName + "') to finish at date: " + new Date();
 		SystemUtils.log(logMsg, Level.INFO, writeToSystemOut);
 	
 		long starttime = System.currentTimeMillis();
 		while (!finishedStates.contains(status)) {
 		    if (writeToSystemOut) 
-                System.out.println("Waiting for job '" + jobId + "' to finish. Current state is " + status + " at date: " + new Date());
+                System.out.println("Waiting for job w/id=" + jobId + "(harvest '" + harvestName + "') to finish. Current state is " + status + " at date: " + new Date());
 			try {
 				Thread.sleep(30000L); // 30 secs sleep
 			} catch (InterruptedException e) {
@@ -277,7 +278,7 @@ public class SingleSeedHarvest {
 		}
 		long endtime = System.currentTimeMillis();
 		long usedtimeSecs = (endtime-starttime)/1000;
-		logMsg = "After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + " now has finished state " + status + " at date: " + new Date();
+		logMsg = "After " + TimeUtils.readableTimeInterval(usedtimeSecs*1000L) +" the job " + jobId + "(harvest '" + harvestName + "') now has finished state " + status + " at date: " + new Date();
 		SystemUtils.log(logMsg, Level.INFO, writeToSystemOut);
 		
 		this.finishedState = status;

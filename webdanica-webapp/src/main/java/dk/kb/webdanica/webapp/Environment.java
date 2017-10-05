@@ -41,6 +41,9 @@ import dk.kb.webdanica.webapp.workflow.StateCacheUpdateWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
 import dk.netarkivet.common.CommonSettings;
+import dk.netarkivet.common.exceptions.PermissionDenied;
+import dk.netarkivet.common.utils.ApplicationUtils;
+import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.common.utils.StringUtils;
 import dk.netarkivet.common.utils.SystemUtils;
 
@@ -251,8 +254,34 @@ public class Environment {
         logger.info("Connected to NetarchiveSuite system with environmentname: " + 
                 dk.netarkivet.common.utils.Settings.get(CommonSettings.ENVIRONMENT_NAME));
 
+        // validate the netarchivesuite tmpdir folder
+        File tmpdir = FileUtils.getTempDir();
+        if (tmpdir.exists()){
+            if (tmpdir.isFile()) {
+                throw new ServletException("The netarchivesuite setting 'settings.common.tempDir'(" + tmpdir.getAbsolutePath() + ") is invalid: The setting refers to a file, not a directory");
+            }
+            File testFile = new File(tmpdir, System.currentTimeMillis()
+                    + ".txt");
+            boolean fileWasCreated = false;
+            try {
+                fileWasCreated = testFile.createNewFile();
+            } catch (IOException e) {
+                logger.warning("Unable to create file in tmpdir: " + tmpdir.getAbsolutePath());
+            }
+            if (!fileWasCreated) {
+                throw new ServletException("The netarchivesuite setting 'settings.common.tempDir'(" + tmpdir.getAbsolutePath() + ") is invalid: we don't have write privileges to this directory");
+            }
+        } else {
+            try {
+                ApplicationUtils.dirMustExist(tmpdir);
+            } catch (PermissionDenied e) {
+                throw new ServletException("The netarchivesuite setting 'settings.common.tempDir'(" + tmpdir.getAbsolutePath() + ") is invalid: we don't have privileges to create this directory");
+            }
+        }
+        
+        logger.info("Using NetarchiveSuite 'settings.common.tempDir':" + tmpdir.getAbsolutePath());
+        
         theconfig = Configuration.getInstance();
-
         logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
                 theconfig.getIgnoredSuffixes()));
         logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 

@@ -94,7 +94,7 @@ cd /home/test/WEBDANICA
 export CLASSPATH=/home/test/WEBDANICA/lib/netarchivesuite-monitor-core.jar:/home/test/WEBDANICA/lib/netarchivesuite-harvest-scheduler.jar:/home/test/WEBDANICA/lib/netarchivesuite-monitor-core.jar:/home/test/WEBDANICA/lib/netarchivesuite-harvester-core.jar:
 java -Ddk.netarkivet.settings.file=/home/test/WEBDANICA/conf/settings_update_external_harvest_database.xml dk.netarkivet.harvester.tools.HarvestTemplateApplication $1 $2 $3
 ```
-The following will thus add a default_order (default_order.xml) and webdanica_order (webdanica_order.xml). Assume the templates are in /home/test/templates:
+The following will thus add a default_order (default_order.xml) and webdanica_order (webdanica_order.xml). The following assumes, that we have copied the install/templates ffolder in the zipball to /home/test:
 ```
 cd conf
 ./HarvestTemplateApplication.sh create webdanica_order /home/test/templates/webdanica_order.xml

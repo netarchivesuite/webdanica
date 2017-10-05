@@ -87,13 +87,18 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			if (!(harvestedTime > 0)) {
 				harvestedTime = System.currentTimeMillis();
 				System.err.println("harvestedTime undefined. setting it to  " + harvestedTime);
-			}
-			List<String> strListFiles = report.getFiles();
-			String[] strArrFiles = new String[strListFiles.size()];
-			strArrFiles = strListFiles.toArray(strArrFiles);
+			} 
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			sqlArr = conn.createArrayOf("VARCHAR", strArrFiles);
-			
+			// Handle the case of getFiles == null
+			if (report.getFiles()== null) {
+			    String[] emptyStrArr = new String[0];
+                sqlArr = conn.createArrayOf("VARCHAR", emptyStrArr);
+			} else {
+			    List<String> strListFiles = report.getFiles();
+			    String[] strArrFiles = new String[strListFiles.size()];
+			    strArrFiles = strListFiles.toArray(strArrFiles);
+			    sqlArr = conn.createArrayOf("VARCHAR", strArrFiles);
+			}
 			stm = conn.prepareStatement(INSERT_SQL);
 			stm.clearParameters();
 			stm.setString(1, report.getHarvestName());
