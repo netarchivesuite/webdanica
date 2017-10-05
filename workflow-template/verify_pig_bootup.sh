@@ -21,7 +21,7 @@ fi
 LIBS=`grep REGISTER $PIGBOOTUP_FILE | grep -v "\-\-" | cut -d ' ' -f2`
 for L in $LIBS
 do
-if [ ! -f $L ]; then
+if [ ! -f $WORKFLOW_HOME/$L ]; then
    echo  "MISSING library '$L' in $PIGBOOTUP_FILE"
    exit 1	
 fi
@@ -37,7 +37,7 @@ do
 let FOUND=0
 for L in $LIBS 
 do  
-  RES=`grep $M $L`
+  RES=`grep $M $WORKFLOW_HOME/$L`
   if [ "$RES" != "" ];
   then 
      let FOUND=1
