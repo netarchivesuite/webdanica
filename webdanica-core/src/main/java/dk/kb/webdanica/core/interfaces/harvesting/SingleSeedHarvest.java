@@ -394,7 +394,9 @@ public class SingleSeedHarvest {
 	
 	/**
 	 * Fetch all the harvest reports for the given job.
-	 * FIXME currently, we have difficulty fetching the Heritrix3 template. 
+	 * FIXME currently, we have difficulty fetching the Heritrix3 template.
+	 * Includes a patch to remedy bug https://sbforge.org/jira/browse/NAS-2676
+	 *  
 	 * @param jobID the id of a given job
 	 * @param writeToSystemOut write System.out/System.err (true/false)
 	 * @return a NasReports object with all the reports we were able to fetch.
@@ -402,8 +404,20 @@ public class SingleSeedHarvest {
     public static NasReports getReports(Long jobID, boolean writeToSystemOut) {
 		Map<String, String> reportMap = new HashMap<String,String>();
 		List<CDXRecord> records = Reporting.getMetadataCDXRecordsForJob(jobID);
+		
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
+	    	
+	    	// check that the key is for this jobID
+	    	String[] keyParts = key.split("jobid=");
+	    	if (keyParts.length == 2) { // jobId is included
+	    	    Long jobIdInKey = Long.valueOf(keyParts[1]);
+	    	    if (jobIdInKey != jobID) {
+	    	        String logMsg = "When trying to get all reports for job w/id=" + jobID + " we ignore this record for jobID " + jobIdInKey + ": " + key;
+	                SystemUtils.log(logMsg, Level.INFO, writeToSystemOut);
+	                continue;
+	    	    }
+	    	}
 	    	try {
 	    		BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
 	    				record.getOffset());
