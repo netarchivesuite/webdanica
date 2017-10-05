@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
@@ -24,6 +26,7 @@ import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.webapp.Configuration;
 import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
+import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
 import dk.netarkivet.common.utils.StringUtils;
 import dk.netarkivet.harvester.datamodel.DBSpecifics;
 
@@ -155,6 +158,17 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             configuration.getEmailer().sendAdminEmail(
                     "[Webdanica-" + configuration.getEnv()
                             + "] HarvestWorkFlow not enabled", errMsg);
+            return;
+        }
+        try {
+            ArcRepositoryClientFactory.getViewerInstance();
+        } catch (Throwable e) {
+            String errMsg = "HarvestWorkFlow will not be enabled as the necessary acrepositoryClient '"
+                    + arcrepositoryClient + "' has a invalid configuration. We get the following exception: ";
+            logger.log(Level.WARNING, errMsg, e);
+            configuration.getEmailer().sendAdminEmail(
+                    "[Webdanica-" + configuration.getEnv()
+                            + "] HarvestWorkFlow not enabled", errMsg + ExceptionUtils.getFullStackTrace(e));
             return;
         }
 
