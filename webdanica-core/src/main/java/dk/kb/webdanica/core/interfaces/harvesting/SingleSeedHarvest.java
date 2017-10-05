@@ -407,16 +407,10 @@ public class SingleSeedHarvest {
 		
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
-	    	
-	    	// check that the key is for this jobID
-	    	String[] keyParts = key.split("jobid=");
-	    	if (keyParts.length == 2) { // jobId is included
-	    	    Long jobIdInKey = Long.valueOf(keyParts[1]);
-	    	    if (jobIdInKey != jobID) {
-	    	        String logMsg = "When trying to get all reports for job w/id=" + jobID + " we ignore this record for jobID " + jobIdInKey + ": " + key;
-	                SystemUtils.log(logMsg, Level.INFO, writeToSystemOut);
-	                continue;
-	    	    }
+	    	if (!isRecordForJob(key, jobID, writeToSystemOut)) {
+	    	    String logMsg = "When trying to get all reports for job w/id=" + jobID + " we ignore this record: " + key;
+                SystemUtils.log(logMsg, Level.FINE, writeToSystemOut);
+                continue;
 	    	}
 	    	try {
 	    		BitarchiveRecord baRecord = ArcRepositoryClientFactory.getViewerInstance().get(record.getArcfile(), 
@@ -430,7 +424,28 @@ public class SingleSeedHarvest {
 	    }
 	    return new NasReports(reportMap);
     }
-	
+    // a patch to remedy bug https://sbforge.org/jira/browse/NAS-2676
+    private static boolean isRecordForJob(String key, Long jobID, boolean writeToSystemOut) {
+        // check that the key is for this jobID
+        String[] keyParts = key.split("&");
+        for (String keypart: keyParts) {
+            String jobidPattern = "jobid=";
+            if (keypart.startsWith(jobidPattern)) {
+                try {
+                    Long jobIdInKey = Long.valueOf(keypart.substring(jobidPattern.length(), keypart.length()));                    
+                    if (jobIdInKey.equals(jobID)) {
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    String logMsg = "We caught a NumberFormatException. As we don't know what caused it, we return true";
+                    SystemUtils.log(logMsg, Level.WARNING, writeToSystemOut);
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * Extract the harvested urls from the warcfiles produced by Heritrix3. 
      * @param warcfiles the warcFiles produced by a given harvest
