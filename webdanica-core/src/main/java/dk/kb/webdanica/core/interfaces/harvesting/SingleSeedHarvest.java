@@ -409,8 +409,7 @@ public class SingleSeedHarvest {
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
 	    	if (!isRecordForJob(record, jobID, writeToSystemOut)) {
-	    	    String logMsg = "When trying to get all reports for job w/id=" + jobID + " we ignore this record: " + key;
-                SystemUtils.log(logMsg, Level.FINE, writeToSystemOut);
+	    	    //ignoring record not relevant for this jobID
                 continue;
 	    	}
 	    	try {
