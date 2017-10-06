@@ -394,8 +394,9 @@ public class SingleSeedHarvest {
 	
 	/**
 	 * Fetch all the harvest reports for the given job.
-	 * FIXME currently, we have difficulty fetching the Heritrix3 template.
-	 * Includes a patch to remedy bug https://sbforge.org/jira/browse/NAS-2676
+	 * FIXME currently, we have difficulty fetching the Heritrix3 template (WEBDAN-165) 
+	 * 
+	 * This includes a patch to remedy bug WEBDAN-262 (also https://sbforge.org/jira/browse/NAS-2676) 
 	 *  
 	 * @param jobID the id of a given job
 	 * @param writeToSystemOut write System.out/System.err (true/false)
@@ -407,7 +408,7 @@ public class SingleSeedHarvest {
 		
 	    for (CDXRecord record : records) {
 	    	String key = record.getURL();
-	    	if (!isRecordForJob(key, jobID, writeToSystemOut)) {
+	    	if (!isRecordForJob(record, jobID, writeToSystemOut)) {
 	    	    String logMsg = "When trying to get all reports for job w/id=" + jobID + " we ignore this record: " + key;
                 SystemUtils.log(logMsg, Level.FINE, writeToSystemOut);
                 continue;
@@ -424,9 +425,16 @@ public class SingleSeedHarvest {
 	    }
 	    return new NasReports(reportMap);
     }
-    // a patch to remedy bug https://sbforge.org/jira/browse/NAS-2676
-    private static boolean isRecordForJob(String key, Long jobID, boolean writeToSystemOut) {
-        // check that the key is for this jobID
+    /**
+     * This method is a remedy for bug https://sbforge.org/jira/browse/NAS-2676.
+     * Checks that a given CDXRecord belongs to the given NetarchiveSuite jobID.
+     * @param record a given CDXRecord
+     * @param jobID a given NetarchiveSuite jobID
+     * @param writeToSystemOut write message to System.out or to a log.
+     * @return true, if a given CDXRecord belongs to the given NetarchiveSuite jobID, otherwise false.
+     */
+    public static boolean isRecordForJob(CDXRecord record, Long jobID, boolean writeToSystemOut) {
+        String key = record.getURL();
         String[] keyParts = key.split("&");
         for (String keypart: keyParts) {
             String jobidPattern = "jobid=";
@@ -434,7 +442,7 @@ public class SingleSeedHarvest {
                 try {
                     Long jobIdInKey = Long.valueOf(keypart.substring(jobidPattern.length(), keypart.length()));                    
                     if (jobIdInKey.equals(jobID)) {
-                        return false;
+                        return true;
                     }
                 } catch (NumberFormatException e) {
                     String logMsg = "We caught a NumberFormatException. As we don't know what caused it, we return true";
@@ -443,7 +451,7 @@ public class SingleSeedHarvest {
                 }
             }
         }
-        return true;
+        return false;
     }
 
     /**
