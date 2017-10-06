@@ -84,6 +84,21 @@ This will download a zipfile of the 1.X branch from github and unpack it in the 
 
 Now copy the workflow-template folder to $WORKFLOW_USER_HOME/automatic-workflow (e.g. /home/test), and change the owner of the files to the user running the automatic workflow. We have this template, because you can also use the same template-folder to install a manual workflow, manual-workflow. We recommend two separate workflows, even though it is not required.
 
+Download the webdanica-webapp-war-$RELEASE.war from the release page, and unzip it e.g.
+```
+unzip webdanica-webapp-war-$RELEASE.war -d $RELEASE.war
+cp -av $RELEASE.war/WEB-INF/lib WORKFLOW_USER_HOME/automatic-workflow/
+```
+Remove the logback-classic-1.0.13.jar from WORKFLOW_USER_HOME/automatic-workflow/lib
+otherwise you will get a cron-mail from the webdanica-analysis-cron.sh below, even if there is no harvestlogs to process with this content:
+```
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/disk2/test/automatic-workflow/lib/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/disk2/test/automatic-workflow/lib/logback-classic-1.0.13.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+```
+
 Correct the automatic-workflow/setenv.sh to match the wanted setup. If the information in setenv.sh is wrong, you will get an error if the information is wrong.
 Furthermore, you must check, that the webdanica-core jarfile REGISTER'ed in workflow-template/.pigbootup matches the WEBDANICA_VERSION in the setenv.sh
 (e.g. if the WEBDANICA_VERSION is 2.0, lib/webdanica-core-2.0.jar should be REGISTER'ed in automatic-workflow/.pigbootup and/or manual-workflow/.pigbootup).

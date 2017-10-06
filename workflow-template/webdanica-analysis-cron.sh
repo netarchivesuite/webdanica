@@ -30,6 +30,7 @@ fi
 if [ -f $BUSYFILE ]; then
    STAT=`stat -c %y $BUSYFILE` 
    echo WARNING: Analysis-workflow already in progress. The current workflow started at: $STAT  
+   echo "If this is not true, delete the file '$BUSYFILE'"
    exit 1
 fi
 ## mark the workflow as being in progress
@@ -83,7 +84,10 @@ fi
 if [[ ! -z $FILES ]]
 then
   echo Found harvest-logs: $FILES
-  ###echo Found no harvest-logs. No processing needed
+else
+  #echo Found no harvest-logs. No processing needed
+  rm $BUSYFILE
+  exit
 fi 
 
 TOTALCOUNT=`wc -w <<< "$FILES"`
