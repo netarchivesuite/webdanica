@@ -1,16 +1,16 @@
 #!/bin/sh
 
-# This script takes three arguments
+# This script takes 4-5 arguments:
 # $1 = The NetarchiveSuite package file
 # $2 = The configuration file for deployment
 # $3 = The directory to deploy from
 # $4 = The Heritrix3 bundle zip to use
-# $5 = dryrun argument (optional)
+# $5 = mode argument (optional) - If 'prepare' scripts are only generated, if 'install' we install netarchivesuite, otherwise we install, and start netarchivesuite.
 
 # (0) check that java version is 1.8 or higher
 JAVA_VER=$(java -version 2>&1 | sed -n ';s/.* version "\(.*\)\.\(.*\)\..*"/\1\2/p;')
 if [ "$JAVA_VER" -lt 18 ]; then
-  echo "JAVA version is too low. JDK 1.8+ required" 	
+  echo "JAVA version is too low. JDK 1.8+ required also known as java 8." 	
   exit 1;
 fi
 
@@ -29,7 +29,7 @@ if [ "$#" -lt 4 ] || [ "$#" -gt 5 ]; then
 
     echo "\tH3BUNDLER - The Heritrix3 bundle zip to use"
 
-    echo "\tdryrun -use optional argument dryrun if only want to test deployscript"
+    echo "\tmode -use optional argument mode (prepare - only generate scripts, install - install netarchivesuite (default is starting netarchivesuite)"
     exit 1;
 fi;
 echo RETRIEVING AND TESTING VARIABLES
@@ -38,7 +38,7 @@ NETARCHIVESUITE=$1
 CONFIG=$2
 BASEDIR=$3
 H3BUNDLE=$4
-DRYRUN=$5 
+MODE=$5 
 
 # (2) create directory
 echo CREATING/CLEANING DIRECTORY $BASEDIR
@@ -65,8 +65,8 @@ echo MAKING FILES EXECUTABLE
 chmod +x *.sh
 
 
-if [ "$#" -eq 5 ]; then
-   echo "Dryrun mode selected. Stopping now"
+if [ "$#" -eq 5 ] && [ "$MODE" == "prepare" ]; then
+   echo "prepare mode selected. Stopping now"
    exit 0;
 fi
 
@@ -76,6 +76,12 @@ FILES=`ls install_*.sh`
 for I in $FILES; do
   bash $I;
 done
+
+if [ "$#" -eq 5 ] && [ "$MODE" == "install" ]; then
+   echo "install mode selected. Stopping now"
+   exit 0;
+fi
+
 
 # (8) Starting applications
 echo STARTING APPLICATIONS
