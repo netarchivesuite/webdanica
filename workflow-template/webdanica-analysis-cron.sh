@@ -1,4 +1,4 @@
-SETENV=/home/test/automatic-workflow/setenv.sh
+SETENV=/opt/workflows/automatic-workflow/setenv.sh
 ME=`basename $0`
 if [ -r "$SETENV" ]; then
   . "$SETENV"
@@ -73,6 +73,13 @@ if [ ! -f $WEBDANICA_CORE_JARFILE ]; then
    exit 1
 fi
 
+if [ ! -f $PHOENIX_CLIENT_JAR ]; then
+echo "ERROR: The jarfile '$PHOENIX_CLIENT_JAR' does not exist. Exiting program $ME"
+   rm $BUSYFILE
+   exit 1
+fi
+
+
 cd $WORKFLOW_HOME
 FILES=`bash $FINDLOGS_SCRIPT $WORKFLOW_HOME $WEBDANICA_VERSION $NAS_VERSION`
 RESCODE=$?
@@ -111,7 +118,7 @@ if [ -z $RESCODE ]; then
 fi
 
 ## start_progress
-bash $AUTOMATIC_SCRIPT $HARVESTLOG $WORKFLOW_HOME $WEBDATADIR $WEBDANICA_VERSION $HADOOP_BINBIN $PIG_HOME $NAS_VERSION
+bash $AUTOMATIC_SCRIPT $HARVESTLOG $WORKFLOW_HOME $WEBDATADIR $WEBDANICA_VERSION $HADOOP_BINBIN $PIG_HOME $NAS_VERSION $PHOENIX_CLIENT_JAR
 RESCODE=$?
 if [ -z $RESCODE ]; then
    echo "ERROR: The $AUTOMATIC_SCRIPT returned $RESCODE. Moving $HARVESTLOG to $FAILEDJOBS"

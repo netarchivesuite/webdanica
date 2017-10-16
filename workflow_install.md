@@ -1,13 +1,13 @@
 # Installation and configuration of the automatic workflow
 
-The automatic workflow takes care of the analysis of the harvested files on the basis of harvestlog written by the webapp to a common
-directory (e.g. /home/harvestLogs).
+## What is the automatic-workflow 
 
-There is two scripts, one that automatically takes the available harvestlogs from the common directory, and processes the harvestlogs one by one, and one takes a harvestlog as argument and then processes the harvestlog:
- * webdanica-analysis-cron.sh
- * webdanica-analysis-manual.sh
+The automatic workflow takes care of the analysis of the harvested files on the basis of harvestlogs written by the webapp to a common
+directory. This directory is defined by the webdanica setting settings.harvesting.harvestlogDir (e.g. /home/harvestLogs).
+One script executes the entire automatic-workflow, i.e. the 'webdanica-analysis-cron.sh'. There is also a 'webdanica-analysis-manual.sh script, that
+takes one harvestlog, and does the analysis on that harvestlog alone.
 
-These scripts both include a common file setenv.sh which must be configured correctly before enabling the harvesting workflow, and enabling the cronjobs: 
+Both these scripts both include a common file 'setenv.sh' which must be configured correctly before enabling the harvesting workflow and the cronjobs: 
 ``` 
 WORKFLOW_USER_HOME=/home/test
 WEBDANICA_VERSION=1.0.0
@@ -26,14 +26,26 @@ FINDLOGS_SCRIPT=${WORKFLOW_HOME}/findharvestlogs.sh
 AUTOMATIC_SCRIPT=${WORKFLOW_HOME}/automatic.sh
 export WORKFLOW_HOME WEBDATADIR WEBDANICA_VERSION HADOOP_HOME PIG_HOME BUSYFILE WORKDIR OLDJOBSDIR JAVA_HOME PATH FINDLOGS_SCRIPT AUTOMATIC_SCRIPT NAS_VERSION
 ```
+The important settings to verify are the following
+ * WEBDATADIR - represents the location of the folder with the harvested data, where the Netarchivesuite stores its harvestdata is stored (e.g. /home/test/ARKIV)
+ * WEBDANICA_VERSION - the version of the webdanica release being used.
+ * NAS_VERSION - the version of Netarchivesuite being used, currently 5.2.2
+ * JAVA_HOME - the version of java being used by the workflow.
 
-The important settings to look at is the WEBDATADIR, WEBDANICA_VERSION, NAS_VERSION, and the JAVA_HOME
-Make sure that the WEBDATADIR points to the same location as defined by Netarchivesuite (default = home/test/ARKIV)
+## Downloading and installing hadoop-1.2.1 and pig-0.16.0
 
-Furthermore hadoop-1.2.1(http://archive.apache.org/dist/hadoop/core/hadoop-1.2.1/hadoop-1.2.1.tar.gz) and pig-0.16.0(http://ftp.download-by.net/apache/pig/pig-0.16.0/pig-0.16.0.tar.gz) must be downloaded and unpacked into the WORKFLOW_USER_HOME.
+Apache hadoop (version 1.2.1) and Apache pig (version 0.16.0) are required by the automatic-workflow.</br>.
+They must be downloaded and unpacked into the WORKFLOW_USER_HOME like this:
+```
+cd $WORKFLOW_USER_HOME
+wget http://archive.apache.org/dist/hadoop/core/hadoop-1.2.1/hadoop-1.2.1.tar.gz
+wget http://ftp.download-by.net/apache/pig/pig-0.16.0/
+tar xfz hadoop-1.2.1.tar.gz
+tar xfz pig-0.16.0.tar.gz
+```
 
 Note that we want to use the hadoop embedded with pig, not any external hadoop installation. So, if hadoop is in the path (`which hadoop` gives a positive result), you need to 
-adapt the `pig-0.16.0/bin/pig` script like this:
+adapt the `pig-0.16.0/bin/pig` script like shown in this diff:
 ```
  #    done
  #fi
@@ -99,13 +111,13 @@ SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
 SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
 ```
 
-Correct the automatic-workflow/setenv.sh to match the wanted setup. If the information in setenv.sh is wrong, you will get an error if the information is wrong.
-Furthermore, you must check, that the webdanica-core jarfile REGISTER'ed in workflow-template/.pigbootup matches the WEBDANICA_VERSION in the setenv.sh
-(e.g. if the WEBDANICA_VERSION is 2.0, lib/webdanica-core-2.0.jar should be REGISTER'ed in automatic-workflow/.pigbootup and/or manual-workflow/.pigbootup).
+Correct the automatic-workflow/setenv.sh to match your setup. If the information in setenv.sh is wrong, the scripts will fail with an explanation about what is wrong.
+Furthermore, you should verify, that the webdanica-core jarfile REGISTER'ed in workflow-template/conf/.pigbootup matches the WEBDANICA_VERSION in the setenv.sh
+(e.g. if the WEBDANICA_VERSION is 2.0, lib/webdanica-core-2.0.jar should be REGISTER'ed in automatic-workflow/conf/.pigbootup and/or manual-workflow/conf/.pigbootup).
 
 ## The configuration of the crontab 
 
-Copy the scripts/cronjobs folder to the $WORKFLOW_USER_HOME
+Copy the scripts/cronjobs folder to the $WORKFLOW_USER_HOME<br/>
 Before inserting/updating the crontab for the user running the automatic workflow, do the following checks:
  * Check that the NAS_INSTALL value in cleanup_oldjobs.sh is correct
  * Check that the CRONDIR in the crontab refers to an existing directory

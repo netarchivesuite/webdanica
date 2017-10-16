@@ -5,6 +5,8 @@ WEBDANICA_VERSION=$4
 HADOOP_BINBIN=$5
 export PIG_HOME=$6
 NAS_VERSION=$7
+PHOENIX_CLIENT_JAR=$8
+
 PROG=`basename "$0"`
 
 SEQ_BASEDIR=$WORKFLOW_HOME/SEQ_AUTOMATIC
@@ -114,8 +116,8 @@ if [[ $rc != 0 ]]; then echo "ERROR: criteria-workflow failed"; exit $rc; fi
 
 #4) Efterprocessering af kriteria-analysen og ingest i databasen
 echo
-echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION"
-bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION $NAS_VERSION
+echo "Executing  bash ingestTool.sh $HARVESTLOG_FILE $CRITERIA_RESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION $PHOENIX_CLIENT_JAR"
+bash ingestTool.sh $HARVESTLOG_FILE $CRITERIARESULTS_DIR $WORKFLOW_HOME $WEBDANICA_VERSION $NAS_VERSION $PHOENIX_CLIENT_JAR
 rc=$?
 if [[ $rc != 0 ]]; then echo "ERROR: criteria ingest failed"; exit $rc; fi
 echo

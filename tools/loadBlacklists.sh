@@ -9,18 +9,23 @@ fi
 WEBDANICA_SETTINGSFILE=$TOOLS_HOME/conf/webdanica_settings.xml
 
 if [ ! -f "$WEBDANICA_SETTINGSFILE" ]; then
- echo ERROR: Webdanica settingsfile \"$WEBDANICA_SETTINGSFILE\" does not exist. Please correct the path in $ME
+ echo ERROR: The webdanica settingsfile \"$WEBDANICA_SETTINGSFILE\" does not exist. Please correct the path in $ME
  exit
 fi
 
-OPTS1=-Ddk.netarkivet.settings.file=$TOOLS_HOME/conf/settings_NAS_Webdanica.xml 
+NAS_SETTINGSFILE=$TOOLS_HOME/conf/settings_NAS_Webdanica.xml 
+if [ ! -f "$NAS_SETTINGSFILE" ]; then
+ echo WARNING: The netarchivesuite settingsfile \"$NAS_SETTINGSFILE\" does not exist. You may want to correct the path in $ME
+fi
+
+
+OPTS1=-Ddk.netarkivet.settings.file=$NAS_SETTINGSFILE
 OPTS2=-Dwebdanica.settings.file=$WEBDANICA_SETTINGSFILE
 OPTS3=-Dlogback.configurationFile=$TOOLS_HOME/conf/silent_logback.xml 
 
 NAS_VERSION=5.2.2
 VERSION=2.0
-PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
-#PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
+PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
 
 if [ ! -f "$WEBDANICA_JAR" ]; then

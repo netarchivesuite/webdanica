@@ -1,6 +1,5 @@
 # replace path in WORKFLOW_HOME with the correct full path
-#WORKFLOW_HOME=/REPLACE/WITH/CORRECT/FULL/PATH
-WORKFLOW_HOME=/home/test/workflow
+WORKFLOW_HOME=/REPLACE/WITH/CORRECT/FULL/PATH
 ME=`basename $0`
 
 
@@ -17,14 +16,17 @@ if [ ! -f "$WEBDANICA_SETTINGSFILE" ]; then
  exit
 fi
 
+if [ ! -f "$NAS_SETTINGSFILE" ]; then
+ echo ERROR: The netarchivesuite settingsfile \"$NAS_SETTINGSFILE\" does not exist. Please correct the path in $ME
+ exit
+fi
+
 OPTS1=-Ddk.netarkivet.settings.file=$NAS_SETTINGSFILE
 OPTS2=-Dwebdanica.settings.file=$WEBDANICA_SETTINGSFILE
 OPTS3=-Dlogback.configurationFile=$WORKFLOW_HOME/conf/silent_logback.xml 
 
 NAS_VERSION=5.2.2
 VERSION=2.0-RC3
-PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
-#PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
 
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
 
@@ -33,7 +35,7 @@ if [ ! -f "$WEBDANICA_JAR" ]; then
  exit
 fi
 
-echo Executing $ME using webdanica settingsfile \"$WEBDANICA_SETTINGSFILE\"
+echo Executing $ME using webdanica settingsfile \"$WEBDANICA_SETTINGSFILE\" and netarchivesuite settingfile \"$NAS_SETTINGSFILE\"
 
 CLASS=dk.kb.webdanica.core.interfaces.harvesting.HarvestStatus
 java $OPTS1 $OPTS2 $OPTS3 -cp $WEBDANICA_JAR:lib/slf4j-api-1.7.7.jar:lib/commons-io-2.0.1.jar:lib/common-core-$NAS_VERSION.jar:lib/harvester-core-$NAS_VERSION.jar:lib/derbyclient-10.12.1.1.jar:lib/jwat-common-1.0.4.jar:lib/guava-11.0.2.jar:lib/archive-core-$NAS_VERSION.jar:lib/postgresql-9.2-1003-jdbc4.jar $CLASS $1

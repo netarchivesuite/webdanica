@@ -1,8 +1,7 @@
 # Installation and configuration of the NetarchiveSuite with Postgresql 8.4+
 
-In the following postgresql (8.4.20) is assumed already installed on the machine where webdanica is going to run
+In the following postgresql (8.4.20) is assumed already installed on the machine where the webdanica system is installed.
 
-Den anvender en local postgresql database (8.4.20) som DBMS med følgende opsætning:
 The settings below show a sample netarchivesuite setup using Postgresql:
  * 5432 is the postgresql port
  * test_harvestdb is the name of the database used by Netarchivesuite
@@ -10,7 +9,7 @@ The settings below show a sample netarchivesuite setup using Postgresql:
 
 Furthermore, the following assumes also that Netarchivesuite is run as the user 'test'.
 
-Note that if any of the settings are different in your installation, the instructions should also be changed accordingly.
+Note that if any of the settings are different in your installation, the instructions should be changed accordingly.
 
 ```
 <settings>
@@ -35,7 +34,7 @@ host    all   all         127.0.0.1/32          trust
 local   all   all                               trust
 ```
 
-2) Create the database 'test_harvestdb',a user 'netarchivesuite', and a tablespace 'tsindex' 
+2) Create the database 'test_harvestdb', a user 'netarchivesuite', and a tablespace 'tsindex' 
 ```
 sudo su - postgres
 mkdir /var/lib/pgsql/tsindex
@@ -52,9 +51,11 @@ The last command tells Postgresql to reload its configuration.
 This should enable us full access over database test_harvestdb as any system-user.
 
 3) Creation of Netarchivesuite tables in the test_harvestdb database as user 'test'
+This uses the scripts/sql/createHarvestDB.pgsql bundled with netarchivesuite 5.2.2. If the postgresql user is different from 'netarchivesuite',
+you need to replace all instances of 'netarchivesuite' in that script 
+
 ```
 unzip distribution-5.2.2.zip -d 5.2.2
-
 psql test_harvestdb -U netarchivesuite < 5.2.2/scripts/sql/createHarvestDB.pgsql
 
 psql test_harvestdb -U netarchivesuite
@@ -78,7 +79,7 @@ This will script should install netarchivesuite correctly, but applications will
 This is done with
 ```
 ssh test@localhost
-cd WEBDANICA (installationsfolderen)
+cd WEBDANICA (= NAS_HOME)
 cd conf 
 ./update_external_harvest_database.sh
 ```

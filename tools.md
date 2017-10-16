@@ -1,14 +1,28 @@
 # Tools manual
 
 The tools folder in the root of the released source-code (https://github.com/netarchivesuite/webdanica/releases) holds sample scripts for the tools below: loadSeeds.sh, loadBlacklists.sh, loadDomains.sh, exportDanica.sh, importIntoNAS.sh, importDanica.sh, loadTest.sh, showReports.sh, synchronizeTraps.sh, extractFromGithub.sh, cacheTest.sh, databaseStats.sh.
-
-All you need is to correct the path to TOOLS_HOME in the top of the scripts, and add a lib-folder (extract that from the war-file included in every release), and a conf directory (the workflow-template/conf in the source-code) to the tools directory. You can also add symbolic links to the conf and lib folders in the automatic-workflow:
+Installing the tools is easy:
 ```
-cd tools
+## change RELEASE to the correct release
+RELEASE=2.0
+## change TOOLS_HOME to the correct TOOLS_HOME for your environment
+TOOLS_HOME=/opt/workflows/tools
+wget https://github.com/netarchivesuite/webdanica/archive/
+unzip $RELEASE.zip
+cp -av webdanica-$RELEASE/tools $TOOLS_HOME 
+cd $TOOLS_HOME
 AUTOMATIC_WORKFLOW_HOME=/home/test/automatic-workflow
 ln -s $AUTOMATIC_WORKFLOW_HOME/conf .
 ln -s $AUTOMATIC_WORKFLOW_HOME/lib .
 ```
+The last commands add symbolic links to the lib-folder and conf-folder used by the automatic-workflow. 
+
+The following variables in the scripts should be modified:
+ * The path to TOOLS_HOME in the top of the scripts should point to the correct TOOLS_HOME. 
+ * The NAS_VERSION should be 5.2.2
+ * The VERSION should be same as RELEASE above.
+ * The PHOENIX_JAR should point to the phoenix-client.jar used on your system.
+
 
 Note that the output from exportdanica.sh is the input to the importIntoNAS.sh.
 

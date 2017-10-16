@@ -13,6 +13,11 @@ if [ ! -d "$JAVA_HOME" ]; then
    exit 1
 fi
 
+if [ ! -f $PHOENIX_CLIENT_JAR ]; then
+   echo "ERROR: The jarfile '$PHOENIX_CLIENT_JAR' does not exist. Exiting program $ME"
+   exit 1
+fi
+
 ## Verify existence of conf/.pigbootup verify script
 if [ ! -f $PIGBOOTUP_VERIFIER_SCRIPT ]; then
    echo "ERROR: The script '$PIGBOOTUP_VERIFIER_SCRIPT' does not exist. Exiting program $ME"
@@ -55,7 +60,7 @@ if [ -z $RESCODE ]; then
 fi
 
 ## start_progress
-bash $AUTOMATIC_SCRIPT $HARVESTLOG $WORKFLOW_HOME $WEBDATADIR $WEBDANICA_VERSION $HADOOP_BINBIN $PIG_HOME $NAS_VERSION
+bash $AUTOMATIC_SCRIPT $HARVESTLOG $WORKFLOW_HOME $WEBDATADIR $WEBDANICA_VERSION $HADOOP_BINBIN $PIG_HOME $NAS_VERSION $PHOENIX_CLIENT_JAR
 RESCODE=$?
 if [ -z $RESCODE ]; then
    echo "ERROR: The $AUTOMATIC_SCRIPT returned $RESCODE. Exiting program"

@@ -23,7 +23,7 @@ import dk.netarkivet.common.utils.DomainUtils;
 
 /**
  * Tool for ingesting domains into the webdanica system.
- * Usage java LoadDomains domainfile [--accept] 
+ * Usage java LoadDomains domainfile [--accepted] 
  * 
  * If --accept is used, the domains are marked as danica
  * Otherwise their state is Unknown
@@ -50,7 +50,7 @@ public class LoadDomains {
 		}
 		boolean acceptAsDanica = false;
 		if (args.length == 2){
-			if (args[1].equalsIgnoreCase("--accept")) {
+			if (args[1].equalsIgnoreCase("--accepted")) {
 				acceptAsDanica = true;
 			} else {
 				System.err.println("Unknown argument '" + args[1] + "' ignored.");
@@ -160,7 +160,7 @@ public class LoadDomains {
 	}
   
 	private static void PrintUsage() {
-		System.err.println("Usage: java LoadDomains domainsfile [--accept]");
+		System.err.println("Usage: java LoadDomains domainsfile [--accepted]");
 	    
     }
 }

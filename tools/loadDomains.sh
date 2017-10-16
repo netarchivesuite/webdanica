@@ -15,13 +15,12 @@ fi
 
 
 OPTS1=-Ddk.netarkivet.settings.file=$TOOLS_HOME/conf/settings_NAS_Webdanica.xml
-OPTS2=-Dwebdanica.settings.file=$TOOLS_HOME/conf/$WEBDANICA_SETTINGSFILE 
+OPTS2=-Dwebdanica.settings.file=$WEBDANICA_SETTINGSFILE 
 OPTS3=-Dlogback.configurationFile=$TOOLS_HOME/conf/silent_logback.xml 
 
 NAS_VERSION=5.2.2
 VERSION=2.0
-PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
-#PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
+PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
 
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
 
