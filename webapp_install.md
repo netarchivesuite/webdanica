@@ -107,7 +107,7 @@ The loadSeeds filters away any url which either
  * is not a valid Url (new URI(seed) throws URISyntaxException)
  * does not contain a correct hostname(url.getHost()==null) and a corect domainname (DomainUtils.domainNameFromHostname(host) == null)
  * is already in a seeds table (DUPLICATE)
- * has a URL protocol, which should be ignored (defined by the setting seeds.ignoredProtocols) - currently loadSeeds accepts only urls with the following schemes ftp,http, https and does not use setting seeds.ignoredProtocols
+ * doesn't have an accepted URL protocol (schema) - defined by the setting seeds.acceptedProtocols). 
  * fails to be inserted in the database
 
 The rejects of this filtering ends up in the ingestlog table for the specific seeds-ingest, plus some statistics, and both an accept.log and a reject.log is written to disk.
@@ -178,11 +178,10 @@ A sample setup could look like this in the settingsfile
                 <suffix>.css</suffix>
                 <suffix>.js</suffix>
         </ignoredSuffixes>
-        <ignoredProtocols>
-        <protocol>mailto</protocol>
-        <protocol>vimeo</protocol>
-        <protocol>data</protocol>
-        </ignoredProtocols>
+        <acceptedProtocols>
+        <protocol>http</protocol>
+        <protocol>https</protocol>
+        </acceptedProtocols>
 </seeds>
 ```
 ## Harvesting-workflow configuration

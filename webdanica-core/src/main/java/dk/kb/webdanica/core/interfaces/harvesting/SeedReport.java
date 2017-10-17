@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class SeedReport { 
 	
-	private static final Logger logger = Logger.getLogger(NasReports.class.getName());
+	private static final Logger logger = Logger.getLogger(SeedReport.class.getName());
 	
 	public static String SEEDS_HEADER_PATTERN = "[code] [status] [seed] [redirect]";
 	

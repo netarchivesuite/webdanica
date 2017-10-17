@@ -282,10 +282,10 @@ public class Environment {
         logger.info("Using NetarchiveSuite 'settings.common.tempDir':" + tmpdir.getAbsolutePath());
         
         theconfig = Configuration.getInstance();
-        logger.info("Following suffixes are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
+        logger.info("Following suffixes are currently ignored by the webdanica-project:" + StringUtils.conjoin(",", 
                 theconfig.getIgnoredSuffixes()));
-        logger.info("Following protocols are currently ignored by webdanica-project:" + StringUtils.conjoin(",", 
-                theconfig.getIgnoredProtocols()));
+        logger.info("Following protocols (schemas) are currently by the webdanica-project:" + StringUtils.conjoin(",", 
+                theconfig.getAcceptedProtocols()));
 
         /*
          * Templates.

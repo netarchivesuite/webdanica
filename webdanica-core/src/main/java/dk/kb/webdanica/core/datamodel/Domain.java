@@ -54,6 +54,18 @@ public class Domain {
 		return new Domain(domain, notes, DanicaStatus.UNDECIDED, null, danicaReason, tld, parts);
 	}
 	
+	public static Domain createNewRejectedDomain(String domain) {
+	    String tld = null;
+        try {
+            tld = UrlUtils.findTld(domain);
+        } catch(Throwable e) {
+            tld = "N/A";
+        }
+        String notes = "[" +  new Date() + "]: Domain rejected as Danica domain by user";
+        String danicaReason = "Domain rejected as Danica domain by user";
+        List<String> parts = new ArrayList<String>();
+        return new Domain(domain, notes, DanicaStatus.NO, null, danicaReason, tld, parts);
+    }
 
 	public String getDomain() {
 	   return domain;

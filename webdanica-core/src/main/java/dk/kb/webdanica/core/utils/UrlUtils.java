@@ -4,17 +4,22 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
-import dk.kb.webdanica.core.seeds.filtering.IgnoredProtocols;
+import dk.kb.webdanica.core.seeds.filtering.AcceptedProtocols;
 import dk.kb.webdanica.core.utils.UrlInfo;
 import dk.netarkivet.common.utils.DomainUtils;
 
+
 public class UrlUtils {
-    
+    private static final Logger logger = Logger.getLogger(UrlUtils.class.getName());
+
     private static Pattern VALID_IPV4_PATTERN = null;
     private static Pattern VALID_IPV6_PATTERN = null;
     private static final String ipv4Pattern = "(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])";
@@ -63,9 +68,9 @@ public class UrlUtils {
 			    return URL_REJECT_REASON.IP_URL;
 			}
 		} catch (URISyntaxException e) {
-			//LOG.
-			//e.printStackTrace();
-			return URL_REJECT_REASON.BAD_URL; // Bad URL
+			logger.warning("UriSyntaxException thrown for seed '" + seed + "'. Seed considered bad: " 
+			        + ExceptionUtils.getFullStackTrace(e));
+			return URL_REJECT_REASON.BAD_URL;
 		}
 		return URL_REJECT_REASON.NONE;
 	}	
@@ -98,11 +103,12 @@ public class UrlUtils {
 	}
 
     /**
-	 * @param scheme
-	 * @return
+     * check, if the given scheme is a valid scheme.
+	 * @param scheme A given scheme
+	 * @return true, if the given scheme is valid, otherwise false;
 	 */
 	public static boolean isValidScheme(String scheme) {
-	    return scheme != null && IgnoredProtocols.schemaMatchesIgnoredProtocol(scheme) == null;  
+	    return scheme != null && AcceptedProtocols.schemaMatchesAcceptedProtocol(scheme) != null;  
     }
 
 	public static UrlInfo getInfo(String url) {
@@ -115,7 +121,8 @@ public class UrlUtils {
 	        domain = DomainUtils.domainNameFromHostname(hostname);
 	        tld = findTld(domain);
         } catch (Throwable e) {
-        	// TODO add logging
+            logger.warning(e.getClass().getName() + " thrown for url '" + url + "': " 
+                    + ExceptionUtils.getFullStackTrace(e));
         }
 		
 		return new UrlInfo(hostname, domain, tld);

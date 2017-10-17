@@ -35,11 +35,11 @@
 		<suffix>.wps</suffix>
 		<suffix>.xls</suffix>
 	</ignoredSuffixes>
-        <ignoredProtocols>
+        <acceptedProtocols>
         <protocol>mailto</protocol>
         <protocol>vimeo</protocol>
         <protocol>data</protocol>
-	</ignoredProtocols>	             
+	</acceptedProtocols>	             
 </seeds>
 
 <webapp><resources>

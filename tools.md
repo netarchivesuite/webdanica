@@ -49,6 +49,7 @@ The source code looks like this: [webdanica-core/src/main/java/dk/kb/webdanica/c
 ## tools/loadDomains.sh
 Loads a domain-list into webdanica, inserting them into the domains table.<br/>
 If the option --accepted is used, the domains are assumed to be fully danica domains, and no further processing is to occur on these domains.<br/>
+If the option --rejected is used, the domains are assumed to be not danica, and no further processing is to occur on these domains.<br/>
 Else the domains are ingested with danicastate UNDECIDED.
 
 The template currently looks like this: [tools/loadDomains.sh](tools/loadDomains.sh)<br/>

@@ -19,7 +19,7 @@ public class Configuration {
     private String smtpHost;
     private String mailAdmin;
     private String[] ignoredSuffixes;
-    private String[] ignoredProtocols;
+    private String[] acceptedProtocols;
 
     private DAOFactory daoFactory;
 
@@ -64,7 +64,7 @@ public class Configuration {
                 WebdanicaSettings.MAIL_ADMIN,
                 dk.kb.webdanica.core.Constants.DEFAULT_MAIL_ADMIN);
         ignoredSuffixes = Settings.getAll(WebdanicaSettings.IGNORED_SUFFIXES);
-        ignoredProtocols = Settings.getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
+        acceptedProtocols = Settings.getAll(WebdanicaSettings.ACCEPTED_PROTOCOLS);
 
         maxUrlLengthToShow = SettingsUtilities.getIntegerSetting(WebdanicaSettings.WEBAPP_MAX_URL_LENGTH_TO_SHOW, Constants.DEFAULT_MAX_URL_LENGTH_TO_SHOW);
         maxUrlsToFetch = SettingsUtilities.getIntegerSetting(WebdanicaSettings.WEBAPP_MAX_URLS_TO_FETCH, Constants.DEFAULT_MAX_URLS_TO_FETCH);
@@ -110,8 +110,8 @@ public class Configuration {
         return this.ignoredSuffixes;
     }
 
-    public String[] getIgnoredProtocols() {
-        return this.ignoredProtocols;
+    public String[] getAcceptedProtocols() {
+        return this.acceptedProtocols;
     }
 
     public Emailer getEmailer() {

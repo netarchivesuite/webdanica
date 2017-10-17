@@ -7,14 +7,17 @@ import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.dao.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.IngestLog;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
+import dk.kb.webdanica.core.seeds.filtering.AcceptedProtocols;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.utils.UrlUtils;
 
@@ -93,7 +96,9 @@ public static void main(String[] args) throws Exception {
         }
     }
     String datestamp = "[" + new Date() + "] ";
-    System.out.println(datestamp + "Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+    System.out.print(datestamp + "Processing seeds from file '" + seedsfile.getAbsolutePath() + "'");
+    System.out.println(" with the following schemas accepted: " 
+            + StringUtils.join(AcceptedProtocols.getAcceptedProtocols(), ","));
     if (acceptSeedsAsDanica) {
         System.out.println("Ingesting all seeds as danica!");
     }
@@ -163,7 +168,7 @@ public IngestLog processSeeds() throws IOException {
     long lines = 0;
     SeedsDAO sdao = daoFactory.getSeedsDAO();
     DomainsDAO ddao = daoFactory.getDomainsDAO();
-    
+
     try (BufferedReader fr = new BufferedReader(new FileReader(seedsfile))) {
 
         String line;
@@ -299,7 +304,14 @@ public IngestLog processSeeds() throws IOException {
         ddao.close();
         sdao.close();
     }
-    
+    // trying to update the cache
+    try {
+        Cache.getCache(daoFactory);
+    } catch (Exception e1) {
+        System.err.println("WARNING: failed to update the statecache: " 
+                + ExceptionUtils.getFullStackTrace(e1));
+    }
+
     try {
         writeStatsToLogs(insertedcount, rejectedcount, duplicatecount, errorcount, lines, logentries, onlysavestats, domainsAddedCount, updatecount);        
     } catch (Exception e) {

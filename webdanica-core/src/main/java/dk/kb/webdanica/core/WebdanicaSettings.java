@@ -12,7 +12,7 @@ public class WebdanicaSettings {
 	public static String MAIL_ADMIN = "settings.mail.admin";
 
 	/** seeds settings. */
-	public static String IGNORED_PROTOCOLS = "settings.seeds.ignoredProtocols.protocol";
+	public static String ACCEPTED_PROTOCOLS = "settings.seeds.acceptedProtocols.protocol";
 	public static String IGNORED_SUFFIXES = "settings.seeds.ignoredSuffixes.suffix";
 	public static String REJECT_DK_URLS = "settings.seeds.rejectDkUrls"; // default is true
 	

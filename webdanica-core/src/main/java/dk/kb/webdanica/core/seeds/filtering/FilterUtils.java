@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 import dk.kb.webdanica.core.datamodel.BlackList;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Domain;
@@ -37,12 +39,12 @@ public class FilterUtils {
             urlInvestigated = redUrl;
         }
         
-        // Test 0: test for ignored protocols (if not already rejected at Ingest)
-        String ignoredProtocol = IgnoredProtocols.matchesIgnoredProtocol(urlInvestigated);
-        if (ignoredProtocol != null) {
+        // Test 0: test for seed having an accepted scheme (if not already rejected at Ingest)
+        String ignoredProtocol = AcceptedProtocols.matchesAcceptedProtocol(urlInvestigated);
+        if (ignoredProtocol == null) {
             s.setStatus(Status.REJECTED);
-            s.setStatusReason("REJECTED because it matches ignored protocol '"
-                    + ignoredProtocol + "'");
+            s.setStatusReason("REJECTED because it has a scheme not belonging to the list of accepted schemas: " + StringUtils.join(AcceptedProtocols.getAcceptedProtocols(), ","));
+                   
             return true;
         }
         

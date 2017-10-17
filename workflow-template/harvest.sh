@@ -22,12 +22,9 @@ OPTS2=-Dwebdanica.settings.file=$WEBDANICA_SETTINGSFILE
 OPTS3=-Dlogback.configurationFile=$WORKFLOW_HOME/conf/silent_logback.xml 
 
 NAS_VERSION=5.2.2
-VERSION=2.0-RC3
-PHOENIX_JAR=lib/phoenix-4.7.0-HBase-1.1-client.jar
-#PHOENIX_JAR=/usr/hdp/current/phoenix-client/phoenix-client.jar
+VERSION=2.0
 
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
-
 if [ ! -f "$WEBDANICA_JAR" ]; then
  echo ERROR: The Webdanica-core.jar file \"$WEBDANICA_JAR\" does not exist. The version might be incorrect, or the lib folder is missing.
  exit

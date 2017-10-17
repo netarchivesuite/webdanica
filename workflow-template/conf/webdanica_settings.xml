@@ -58,12 +58,10 @@
                 <suffix>.css</suffix>
                 <suffix>.js</suffix>
     </ignoredSuffixes>
-    <ignoredProtocols>
-      <protocol>mailto</protocol>
-      <protocol>vimeo</protocol>
-      <protocol>data</protocol>
-      <protocol>ftp</protocol>
-    </ignoredProtocols>                  
+    <acceptedProtocols>
+    <protocol>http</protocol>
+    <protocol>https</protocol>
+    </acceptedProtocols>                  
   </seeds>
   <webapp>
     <crontab>

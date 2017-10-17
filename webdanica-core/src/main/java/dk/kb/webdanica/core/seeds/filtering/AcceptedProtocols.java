@@ -6,24 +6,24 @@ import java.net.URISyntaxException;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.utils.Settings;
 
-public class IgnoredProtocols {
+public class AcceptedProtocols {
     
-    private static String[] ignoredProtocols = Settings
-            .getAll(WebdanicaSettings.IGNORED_PROTOCOLS);
+    private static String[] protocols = Settings
+            .getAll(WebdanicaSettings.ACCEPTED_PROTOCOLS);
 
     /**
-     * Test whether a seed has a protocol that matches the list of ignored
+     * Test whether a seed has a protocol that matches the list of accepted
      * protocols.
      * 
      * @param seed
      *            a given seed
-     * @return the matched protocol, if it matches an ignored protocol, null
+     * @return the matched protocol, if it matches an accepted protocol, null
      *         otherwise (null is also returned if the schema is not found)
      */
-    public static String matchesIgnoredProtocol(String seed) {
+    public static String matchesAcceptedProtocol(String seed) {
         String schema = getSchema(seed);
         if (schema != null) {
-            for (String ign : ignoredProtocols) {
+            for (String ign : protocols) {
                 if (schema.equalsIgnoreCase(ign)) {
                     return ign;
                 }
@@ -33,9 +33,9 @@ public class IgnoredProtocols {
         return null;
     }
     
-    public static String schemaMatchesIgnoredProtocol(String schema) {
+    public static String schemaMatchesAcceptedProtocol(String schema) {
         if (schema != null) {
-            for (String ign : ignoredProtocols) {
+            for (String ign : protocols) {
                 if (schema.equalsIgnoreCase(ign)) {
                     return ign;
                 }
@@ -59,9 +59,9 @@ public class IgnoredProtocols {
     }
 
     /**
-     * @return the list read from settingsfile of the ignored Suffixes
+     * @return the list read from settingsfile of the accepted protocols
      */
-    public static String[] getIgnoredProtocols() {
-        return ignoredProtocols;
+    public static String[] getAcceptedProtocols() {
+        return protocols;
     }
 }
