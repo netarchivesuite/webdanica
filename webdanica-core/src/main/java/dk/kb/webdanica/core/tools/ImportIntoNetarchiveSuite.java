@@ -182,16 +182,31 @@ public class ImportIntoNetarchiveSuite {
 	 */
 	private static void insertSeeds(DomainDAO dao, String domain,
 			List<String> newseeds) {
+	    String defaultSeedListName = Settings.get(HarvesterSettings.DEFAULT_SEEDLIST);
 		if (dao.exists(domain)) {
 			// Domain exists and has default config
 			String config = dao.getDefaultDomainConfigurationName(domain);
 			Domain d = dao.readKnown(domain);
+			//Assume existing of defaultSeedlist
+			SeedList defaultSeedlist = d.getSeedList(defaultSeedListName);
+			// for each newseed see if it exists already in the defaultseedlist, If yes, it is prepended with a hashtag  
+			List<String> seedsInDefaultSeedList = defaultSeedlist.getSeeds();
+			List<String> newseedsCorrected = new ArrayList<String>();
+			for (String s: newseeds) {
+			    if (seedsInDefaultSeedList.contains(s)) {
+			        System.out.println("Seed '" + s + "' exists already in defaultseedlist. Adding to " + SEEDLIST_NAME_TO_ADD_TO + " with a #");
+			        newseedsCorrected.add("#" +  s);
+			    } else {
+			        newseedsCorrected.add(s);
+			    }
+			}
+			
 			boolean hasWebdanicaSeeds = d.hasSeedList(SEEDLIST_NAME_TO_ADD_TO);
-			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseeds);
+			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseedsCorrected);
 			if (hasWebdanicaSeeds) {
 				SeedList slOld = d.getSeedList(SEEDLIST_NAME_TO_ADD_TO);
 				Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
-				combinedSeeds.addAll(newseeds);
+				combinedSeeds.addAll(newseedsCorrected);
 				List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
 				sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, combinedSeedsWithoutDuplicates);
 				String existingComments = sl.getComments();
@@ -224,7 +239,6 @@ public class ImportIntoNetarchiveSuite {
 			String logentry = "[" + new Date() + "] Domain added by webdanica-import program, but default seedlist disabled";
 			d.setComments(logentry);
 			// disable the automatic seeds 
-			String defaultSeedListName = Settings.get(HarvesterSettings.DEFAULT_SEEDLIST);
 			SeedList defaultSeedList = d.getSeedList(defaultSeedListName);
 			String comments = defaultSeedList.getComments().trim();
 			List<String> newDisabledList = new ArrayList<String>();
