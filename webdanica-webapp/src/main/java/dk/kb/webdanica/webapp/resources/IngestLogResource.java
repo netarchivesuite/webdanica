@@ -52,7 +52,6 @@ public class IngestLogResource implements ResourceAbstract {
 
     @Override
     public void resources_add(ResourceManagerAbstract resourceManager) {
-        //R_BLACKLIST = resourceManager.resource_add(this, "/blacklist/<string>/", true);
     	R_INGESTLOG_LIST = resourceManager.resource_add(this, INGESTLOGS_PATH, 
         		environment.getResourcesMap().getResourceByPath(INGESTLOGS_PATH).isSecure());
     	R_INGESTLOG = resourceManager.resource_add(this, INGESTLOG_PATH, 
@@ -98,75 +97,74 @@ public class IngestLogResource implements ResourceAbstract {
 	    return result;
     }
 
-	private void ingestlogs_show(User dab_user, HttpServletRequest req,
+    private void ingestlogs_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
-	    //CommonResource.show_error("ingestlogs_show page not yet implemented", resp, environment);
-	        ServletOutputStream out = resp.getOutputStream();
-	        resp.setContentType("text/html; charset=utf-8");
+        ServletOutputStream out = resp.getOutputStream();
+        resp.setContentType("text/html; charset=utf-8");
 
-	        Caching.caching_disable_headers(resp);
-	        String templateName = "ingestlog_list.html";
-	        Template template = environment.getTemplateMaster().getTemplate(templateName);
+        Caching.caching_disable_headers(resp);
+        String templateName = "ingestlog_list.html";
+        Template template = environment.getTemplateMaster().getTemplate(templateName);
 
-	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
-	        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
-	        TemplatePlaceHolder navbarPlace = TemplatePlaceBase.getTemplatePlaceHolder("navbar");
-	        TemplatePlaceHolder userPlace = TemplatePlaceBase.getTemplatePlaceHolder("user");
-	        TemplatePlaceHolder menuPlace = TemplatePlaceBase.getTemplatePlaceHolder("menu");
-	        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
-	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
-	        TemplatePlaceHolder usersPlace = TemplatePlaceBase.getTemplatePlaceHolder("users");
+        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
+        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
+        TemplatePlaceHolder navbarPlace = TemplatePlaceBase.getTemplatePlaceHolder("navbar");
+        TemplatePlaceHolder userPlace = TemplatePlaceBase.getTemplatePlaceHolder("user");
+        TemplatePlaceHolder menuPlace = TemplatePlaceBase.getTemplatePlaceHolder("menu");
+        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
+        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
+        TemplatePlaceHolder usersPlace = TemplatePlaceBase.getTemplatePlaceHolder("users");
 
-	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
-	        placeHolders.add(titlePlace);
-	        placeHolders.add(appnamePlace);
-	        placeHolders.add(navbarPlace);
-	        placeHolders.add(userPlace);
-	        placeHolders.add(menuPlace);
-	        placeHolders.add(headingPlace);
-	        placeHolders.add(contentPlace);
-	        placeHolders.add(usersPlace);
+        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
+        placeHolders.add(titlePlace);
+        placeHolders.add(appnamePlace);
+        placeHolders.add(navbarPlace);
+        placeHolders.add(userPlace);
+        placeHolders.add(menuPlace);
+        placeHolders.add(headingPlace);
+        placeHolders.add(contentPlace);
+        placeHolders.add(usersPlace);
 
-	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-	        
-	        // Primary textarea
-	        StringBuffer sb = new StringBuffer();
-	        
-            List<Long> logList = null;
-            try {
-                logList = environment.getConfig().getDAOFactory().getIngestLogDAO().getIngestDates();
-            } catch (Exception e) {
-            	String logMsg = "Exception occurred during the retrieval of the available ingestlogs";
-            	CommonResource.show_error(logMsg, resp, environment, e);
-            	return;
-            }
-            for (Long b: logList) {
-                sb.append("<tr>");
-                sb.append("<td>");
-                sb.append("<a href=\"");
-                sb.append(Servlet.environment.getIngestLogPath());
-                sb.append(b);
-                sb.append("/\">");
-                sb.append(new Date(b));
-                sb.append("</a>");
-                sb.append("</td>");
-                sb.append("</tr>\n");
-            }
+        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 
-	        /*
-	         * Menu.
-	         */
+        // Primary textarea
+        StringBuffer sb = new StringBuffer();
 
-	        StringBuilder menuSb = new StringBuilder();
+        List<Long> logList = null;
+        try {
+            logList = environment.getConfig().getDAOFactory().getIngestLogDAO().getIngestDates();
+        } catch (Exception e) {
+            String logMsg = "Exception occurred during the retrieval of the available ingestlogs";
+            CommonResource.show_error(logMsg, resp, environment, e);
+            return;
+        }
+        for (Long b: logList) {
+            sb.append("<tr>");
+            sb.append("<td>");
+            sb.append("<a href=\"");
+            sb.append(Servlet.environment.getIngestLogPath());
+            sb.append(b);
+            sb.append("/\">");
+            sb.append(new Date(b));
+            sb.append("</a>");
+            sb.append("</td>");
+            sb.append("</tr>\n");
+        }
 
-	        menuSb.append("<li id=\"state_0\"");
-	        menuSb.append(" class=\"active\"");
-	        menuSb.append("><a href=\"");
-	        menuSb.append(Servlet.environment.getBlacklistsPath());
-	        menuSb.append("\">");
-	        menuSb.append("Liste over blacklister");
-	        menuSb.append("</a></li>\n");
-/*
+        /*
+         * Menu.
+         */
+
+        StringBuilder menuSb = new StringBuilder();
+
+        menuSb.append("<li id=\"state_0\"");
+        menuSb.append(" class=\"active\"");
+        menuSb.append("><a href=\"");
+        menuSb.append(Servlet.environment.getBlacklistsPath());
+        menuSb.append("\">");
+        menuSb.append("Liste over blacklister");
+        menuSb.append("</a></li>\n");
+        /*
 	        if (dab_user.hasAnyPermission(USER_ADD_PERMISSIONS)) {
 	            menuSb.append("<li id=\"state_1\"");
 	            menuSb.append("><a href=\"");
@@ -175,73 +173,73 @@ public class IngestLogResource implements ResourceAbstract {
 	            menuSb.append("Opret bruger");
 	            menuSb.append("</a></li>\n");
 	        }
-*/
-	        /*
-	         * Heading.
-	         */
+         */
+        /*
+         * Heading.
+         */
 
-	        String heading = "Liste over ingestlogs i systemet";
+        String heading = "Liste over ingestlogs i systemet";
 
-	        /*
-	         * Places.
-	         */
+        /*
+         * Places.
+         */
 
-	        if (titlePlace != null) {
-	            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
-	        }
+        if (titlePlace != null) {
+            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
+        }
 
-	        if (appnamePlace != null) {
-	            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME +  Constants.SPACE + environment.getVersion()).toString());
-	        }
+        if (appnamePlace != null) {
+            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME +  Constants.SPACE + environment.getVersion()).toString());
+        }
 
-	        if (navbarPlace != null) {
-	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
-	        }
+        if (navbarPlace != null) {
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
+        }
 
-	        if (userPlace != null) {
-	            userPlace.setText(Navbar.getUserHref(dab_user));
-	        }
+        if (userPlace != null) {
+            userPlace.setText(Navbar.getUserHref(dab_user));
+        }
 
-	        if (menuPlace != null) {
-	            menuPlace.setText(menuSb.toString());
-	        }
+        if (menuPlace != null) {
+            menuPlace.setText(menuSb.toString());
+        }
 
-	        if (headingPlace != null) {
-	            headingPlace.setText(heading);
-	        }
+        if (headingPlace != null) {
+            headingPlace.setText(heading);
+        }
 
-	        /*
-	         * if ( contentPlace != null ) { contentPlace.setText( sb.toString() );
-	         * }
-	         */
+        /*
+         * if ( contentPlace != null ) { contentPlace.setText( sb.toString() );
+         * }
+         */
 
-	        if (usersPlace != null) {
-	            usersPlace.setText(sb.toString());
-	        }
-	        
-	        // Write out the page requested by the client browser
-	        try {
-	            for (int i = 0; i < templateParts.parts.size(); ++i) {
-	                out.write(templateParts.parts.get(i).getBytes());
-	            }
-	            out.flush();
-	            out.close();
-	        } catch (IOException e) {
-	        	
-	        }
-	    }
-	
-	
-		public void ingestlog_show(User dab_user, HttpServletRequest req,
+        if (usersPlace != null) {
+            usersPlace.setText(sb.toString());
+        }
+
+        // Write out the page requested by the client browser
+        try {
+            for (int i = 0; i < templateParts.parts.size(); ++i) {
+                out.write(templateParts.parts.get(i).getBytes());
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+
+        }
+    }
+
+
+    public void ingestlog_show(User dab_user, HttpServletRequest req,
             HttpServletResponse resp, IngestLog b)
-            throws IOException {
+                    throws IOException {
         ServletOutputStream out = resp.getOutputStream();
         resp.setContentType("text/html; charset=utf-8");
         // TODO error text
         String errorStr = null;
         String successStr = null;
         Caching.caching_disable_headers(resp);
-        
+
         String templateName = INGESTLOG_SHOW_TEMPLATE;
         Template template = environment.getTemplateMaster().getTemplate(templateName);
 
@@ -254,7 +252,7 @@ public class IngestLogResource implements ResourceAbstract {
         TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
         TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
         TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
-        
+
         // my placeholders
         TemplatePlaceHolder insertionDatePlace = TemplatePlaceBase.getTemplatePlaceHolder("insertionDate"); //b.getDate()
         TemplatePlaceHolder filenamePlace = TemplatePlaceBase.getTemplatePlaceHolder("filename"); //b.getFilename()
@@ -263,9 +261,9 @@ public class IngestLogResource implements ResourceAbstract {
         TemplatePlaceHolder duplicatecountPlace = TemplatePlaceBase.getTemplatePlaceHolder("duplicatecount"); //b.getDuplicatecount()
         TemplatePlaceHolder rejectedcountPlace = TemplatePlaceBase.getTemplatePlaceHolder("rejectedcount"); //b.getRejectedcount()
         TemplatePlaceHolder errorcountPlace = TemplatePlaceBase.getTemplatePlaceHolder("errorcount"); //b.getErrorcount()
-             
+
         TemplatePlaceHolder logsizePlace = TemplatePlaceBase.getTemplatePlaceHolder("logsize");
-        
+
         List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
         placeHolders.add(titlePlace);
         placeHolders.add(appnamePlace);
@@ -287,18 +285,18 @@ public class IngestLogResource implements ResourceAbstract {
         placeHolders.add(logsizePlace);
 
         TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-        
+
         List<String> logEntries = b.getLogEntries();
         if (logEntries == null) {
-        	logEntries = new ArrayList<String>();
+            logEntries = new ArrayList<String>();
         }
         long logSize = logEntries.size();
-        
+
         /*
          * Heading.
          */
         String heading = "Information about ingestlog from ingest at date: '" + b.getDate() + "' of logsize " + logSize + " :";
-        
+
         /*
          * Places.
          */
@@ -320,22 +318,22 @@ public class IngestLogResource implements ResourceAbstract {
         } 
 
         if (backPlace != null) {
-        	backPlace.setText("<a href=\"" 
-        			+ Servlet.environment.getBlacklistsPath() 
-        			+ "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
+            backPlace.setText("<a href=\"" 
+                    + Servlet.environment.getBlacklistsPath() 
+                    + "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
         } else {
-        	logger.warning("No back´placeholder found in template '" + templateName + "'" );
+            logger.warning("No back´placeholder found in template '" + templateName + "'" );
         }
 
         if (headingPlace != null) {
             headingPlace.setText(heading);
         } else {
-        	logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
+            logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
         }
-        
+
         ResourceUtils.insertText(insertionDatePlace, "insertionDate", b.getDate().toString(), templateName, logger);
         ResourceUtils.insertText(filenamePlace, "filename", b.getFilename() + "", templateName, logger);
- 
+
         ResourceUtils.insertText(linecountPlace, "linecount",  b.getLinecount() + "", templateName, logger);
         ResourceUtils.insertText(insertedcountPlace, "insertedcount",  b.getInsertedcount() + "", templateName, logger);
         ResourceUtils.insertText(duplicatecountPlace, "duplicatecount",  b.getDuplicatecount() + "", templateName, logger);
@@ -345,12 +343,12 @@ public class IngestLogResource implements ResourceAbstract {
         Set<String> sortedSet = new TreeSet<String>(logEntries); 
         StringBuilder sb = new StringBuilder();
         sb.append("<pre>\r\n");
-    	for (String listElement: sortedSet) {
-    		sb.append(listElement);
-    		sb.append("\r\n");
-    	}	
-    	
-    	ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
+        for (String listElement: sortedSet) {
+            sb.append(listElement);
+            sb.append("\r\n");
+        }	
+
+        ResourceUtils.insertText(contentPlace, "content",  sb.toString(), templateName, logger);
         CommonResource.insertInAlertPlace(alertPlace, errorStr, successStr, templateName, logger);
         try {
             for (int i = 0; i < templateParts.parts.size(); ++i) {
@@ -359,7 +357,7 @@ public class IngestLogResource implements ResourceAbstract {
             out.flush();
             out.close();
         } catch (IOException e) {
-        	logger.warning("IOException thrown, but ignored: " + e);        
+            logger.warning("IOException thrown, but ignored: " + e);        
         }
     }
         

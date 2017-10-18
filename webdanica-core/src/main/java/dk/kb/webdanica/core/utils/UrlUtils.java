@@ -75,13 +75,6 @@ public class UrlUtils {
 		return URL_REJECT_REASON.NONE;
 	}	
 	
-	public static boolean ignoredSchema(String url) {
-	    boolean ignored=false;
-	    return ignored;
-	}
-	
-	
-	
 	/**
 	 * Determine if the given string is a valid IPv4 or IPv6 address.  This method
 	 * uses pattern matching to see if the given string could be a valid IP address.

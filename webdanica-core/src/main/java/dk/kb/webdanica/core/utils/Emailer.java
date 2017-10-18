@@ -1,5 +1,6 @@
 package dk.kb.webdanica.core.utils;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,6 +100,8 @@ public class Emailer {
     }
     
     public void sendAdminEmail(String subject, String body) {
+        String dateFooter = "\r\nMail sent at: " + new Date(); 
+        body = body + dateFooter;
 		emailer.send(this.mailAdmin, subject, body);
     }
     

@@ -25,7 +25,7 @@ public class CommonResource {
 	private static final Logger logger = Logger.getLogger(CommonResource.class.getName());
 	
 	private static final String ERROR_TEMPLATE = "error_master.html";
-	
+	private static final String NOTICE_TEMPLATE = "notice_master.html";
 	
 	public static void show_error(String logMsg, HttpServletResponse resp,
             Environment environment) throws IOException {
@@ -34,16 +34,22 @@ public class CommonResource {
 	
 	
 	public static void show_error(String error, HttpServletResponse resp, Environment env, Throwable t) throws IOException {
+	    String heading = "Error showing a page: ";
+	    String errorStr = error;
+        if (t != null) {
+            StringBuilder sb = new StringBuilder();
+            SystemUtils.writeToStringBuilder(sb, t);
+            errorStr = error + " " + sb.toString(); 
+        }
+        String templateName = ERROR_TEMPLATE;
+        show(errorStr, resp, env, templateName, heading);
+	}
+	
+	public static void show(String message, HttpServletResponse resp, Environment env, String templateName, String heading) throws IOException {
 		ServletOutputStream out = resp.getOutputStream();
 		resp.setContentType("text/html; charset=utf-8");
-		String errorStr = error;
-		if (t != null) {
-			StringBuilder sb = new StringBuilder();
-			SystemUtils.writeToStringBuilder(sb, t);
-			errorStr = error + " " + sb.toString(); 
-		}
+		
 		Caching.caching_disable_headers(resp);
-		String templateName = ERROR_TEMPLATE;
 		Template template = env.getTemplateMaster().getTemplate(templateName);
 
 		TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
@@ -68,12 +74,6 @@ public class CommonResource {
 		placeHolders.add(contentPlace);
 
 		TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
-
-
-		/*
-		 * Heading.
-		 */
-		String heading = "Error showing a page: ";
 
 		/*
 		 * Places.
@@ -112,12 +112,12 @@ public class CommonResource {
 
 		if (alertPlace != null) {
 			StringBuilder alertSb = new StringBuilder();
-			if (errorStr != null) {
+			if (message != null) {
 				alertSb.append("<div class=\"row-fluid\">");
 				alertSb.append("<div class=\"span12 bgcolor\">");
 				alertSb.append("<div class=\"alert alert-error\">");
 				alertSb.append("<a href=\"#\" class=\"close\" data-dismiss=\"alert\">x</a>");
-				alertSb.append(errorStr);
+				alertSb.append(message);
 				alertSb.append("</div>");
 				alertSb.append("</div>");
 				alertSb.append("</div>");
@@ -170,6 +170,14 @@ public class CommonResource {
             	logger.warning("No success placeholder found in template '" + templateName + "'" );
             }
         }
+    }
+
+    public static void show_message(String string, HttpServletResponse resp,
+            Environment environment) throws IOException {
+        String heading = "Result of operation was: ";
+        String errorStr = string;
+        String templateName = NOTICE_TEMPLATE;
+        show(errorStr, resp, environment, templateName, heading);
     }
 
 }

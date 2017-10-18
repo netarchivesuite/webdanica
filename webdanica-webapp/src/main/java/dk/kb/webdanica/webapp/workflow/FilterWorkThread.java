@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.BlackList;
+import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.BlackListDAO;
+import dk.kb.webdanica.core.datamodel.dao.CacheDAO;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.FilterUtils;
@@ -89,6 +91,7 @@ public class FilterWorkThread extends WorkThreadAbstract {
         seeddao = configuration.getDAOFactory().getSeedsDAO();
         blacklistDao = configuration.getDAOFactory().getBlackListDAO();
         domainDAO = configuration.getDAOFactory().getDomainsDAO();
+        
         resolveRedirects = new ResolveRedirects(configuration.getWgetSettings());
         rejectDKUrls = SettingsUtilities.getBooleanSetting(
                 WebdanicaSettings.REJECT_DK_URLS,
@@ -138,6 +141,8 @@ public class FilterWorkThread extends WorkThreadAbstract {
                 stopProgress();
                 workList.clear();
             }
+            // Update cache
+            Cache.updateCache(configuration.getDAOFactory());
         } catch (Throwable e) {
             logger.log(Level.SEVERE, e.toString(), e);
         } finally {

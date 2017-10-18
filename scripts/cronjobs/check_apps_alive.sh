@@ -1,8 +1,9 @@
 ## checks if the two webdanica websites on port 8080 and 8074 are answering.
 ## argument: the HOST of the webdanica system, e.g. http://kb-test-webdanica-001.kb.dk
 ## Also checks that the 3 WEBDANICA apps are running on the server
-NAS_APPS_COUNT_REQUIRED=3
-NAS_ENV=WEBDANICA
+## one dk.netarkivet.harvester.heritrix3.HarvestControllerApplication
+## one dk.netarkivet.harvester.scheduler.HarvestJobManagerApplication
+## one dk.netarkivet.common.webinterface.GUIApplication
 
 ME=`basename $0`
 HOST=$1
@@ -19,14 +20,27 @@ WEBDANICA_APP_CHECK=`echo $?`
 wget -HEAD $NAS_APP_HISTORY_PAGE -a /tmp/wgetlog --delete-after
 NAS_APP_CHECK=`echo $?`
 if [ $NAS_APP_CHECK -ne 0 ]; then
-	echo "Page $NAS_APP_HISTORY_PAGE was down at $TIME!"	
+  echo "Page $NAS_APP_HISTORY_PAGE was down at $TIME!"	
 fi
 if [ $WEBDANICA_APP_CHECK -ne 0 ]; then
-        echo "Page $WEBDANICA_APP_STATUS_PAGE was down at $TIME!" 
+  echo "Page $WEBDANICA_APP_STATUS_PAGE was down at $TIME!" 
 fi
-## Finally, check the number of NAS WEBDANICA apps on the machine
-NAS_APPS_COUNT_FOUND=`ps auxwwww | grep $NAS_ENV | grep java | wc -l`
+HarvestControllerApplication_CLASS=dk.netarkivet.harvester.heritrix3.HarvestControllerApplication
+HarvestJobManagerApplication_CLASS=dk.netarkivet.harvester.scheduler.HarvestJobManagerApplication
+GUIApplication_CLASS=dk.netarkivet.common.webinterface.GUIApplication
 
-if [ $NAS_APPS_COUNT_FOUND != $NAS_APPS_COUNT_REQUIRED ]; then
-        echo "Only found $NAS_APPS_COUNT_FOUND NetarchiveSuite apps, required is $NAS_APPS_COUNT_REQUIRED"
+FOUND1=`ps auxwwww | grep $HarvestControllerApplication_CLASS | grep java | wc -l`
+FOUND2=`ps auxwwww | grep $HarvestJobManagerApplication_CLASS | grep java | wc -l`
+FOUND3=`ps auxwwww | grep $GUIApplication_CLASS | grep java | wc -l`
+
+if [ $FOUND1 != "1" ]; then
+    echo The $HarvestControllerApplication_CLASS program is not running on $HOST at $TIME	
+fi
+
+if [ $FOUND2 != "1" ]; then 
+    echo The $HarvestJobManagerApplication_CLASS program is not running on $HOST at $TIME	
+fi
+
+if [ $FOUND3 != "1" ]; then
+    echo The $GUIApplication_CLASS program is not running on $HOST at $TIME	
 fi

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import dk.kb.webdanica.core.WebdanicaSettings;
+import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.datamodel.dao.HarvestDAO;
@@ -321,6 +322,8 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                 harvest(workList);
                 stopProgress();
                 workList.clear();
+                // Update cache
+                Cache.updateCache(configuration.getDAOFactory());
             }
         } catch (Throwable e) {
             logger.log(Level.SEVERE, e.toString(), e);
@@ -416,16 +419,16 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                     if (savedException != null) {
                         s.setStatusReason("Harvesting of seed (harvestname='"
                                 + eventHarvestName
-                                + "' failed due to exception: "
-                                + savedException);
+                                + "') failed due to exception: "
+                                + ExceptionUtils.getFullStackTrace(savedException));
                     } else if (!failureReason.isEmpty()) {
                         s.setStatusReason("Harvesting of seed (harvestname='"
-                                + eventHarvestName + "' failed. Reason: "
+                                + eventHarvestName + "') failed. Reason: "
                                 + failureReason);
                     } else {
                         s.setStatusReason("Harvesting of seed (harvestname='"
                                 + eventHarvestName
-                                + "' failed -  reason is unknown");
+                                + "') failed -  reason is unknown");
                     }
                 } else {
                     s.setStatus(Status.READY_FOR_ANALYSIS);
@@ -436,7 +439,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                     seeddao.updateSeed(s);
                 } catch (Exception e) {
                     String errMsg = "Unable to save state of seed: "
-                            + e.toString();
+                            + ExceptionUtils.getFullStackTrace(e);
                     logger.log(Level.SEVERE, errMsg, e);
                     configuration
                             .getEmailer()
@@ -458,7 +461,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             }
         } catch (Throwable e) {
             String errMsg = "Unable to write a harvestlog to directory '"
-                    + configuration.getHarvestLogDir() + "': " + e.toString();
+                    + configuration.getHarvestLogDir() + "': " + ExceptionUtils.getFullStackTrace(e);
             logger.log(Level.SEVERE, errMsg, e);
             configuration
                     .getEmailer()

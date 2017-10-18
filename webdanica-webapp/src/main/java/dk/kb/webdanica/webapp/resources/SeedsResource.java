@@ -112,7 +112,7 @@ public class SeedsResource implements ResourceAbstract {
         if (resource_id == R_STATUS_LIST || resource_id == R_STATUS_LIST_ID) {
         	SeedsRequest seedsRequest = SeedsRequest.getUrlFromPathinfo(pathInfo, SEEDS_PATH);
         	if (seedsRequest.isChangeStateRequest()) {
-        		 SeedsDAO dao = environment.getConfig().getDAOFactory().getSeedsDAO();	
+        		 DAOFactory dao = environment.getConfig().getDAOFactory();	
         		 changeStateForAll(seedsRequest, dao, resp);
         	} else {
         		urls_list(dab_user, req, resp, numerics, seedsRequest);
@@ -129,29 +129,29 @@ public class SeedsResource implements ResourceAbstract {
         } 
     }
 
-    private void changeStateForAll(SeedsRequest seedsRequest, SeedsDAO dao, HttpServletResponse resp) throws IOException {
+    private void changeStateForAll(SeedsRequest seedsRequest, DAOFactory dao, HttpServletResponse resp) throws IOException {
     	Status old = Status.fromOrdinal(seedsRequest.getCurrentState());
-    	HarvestDAO hdao = environment.getConfig().getDAOFactory().getHarvestDAO();
-    	DAOFactory dfactory = environment.getConfig().getDAOFactory();
+    	HarvestDAO hdao = dao.getHarvestDAO();
+    	SeedsDAO sdao = dao.getSeedsDAO();
     	
     	StringBuilder log = new StringBuilder();
     	Long items = Constants.MAX_SEEDS_TO_FETCH; 
     	int succeeded = 0;
     	try {
-    		long count = dao.getSeedsCount(old);
+    		long count = sdao.getSeedsCount(old);
     		if (count < Constants.MAX_SEEDS_TO_FETCH) {
     			items = count;
     		}
     		log.append("Statechange for " + items + " seeds\n");
-    		List<Seed> seeds = dao.getSeeds(old, items.intValue());
+    		List<Seed> seeds = sdao.getSeeds(old, items.intValue());
     		boolean unnormalStateChange = seedsRequest.isRetryAnalysisRequest();
     		
     		for (Seed s: seeds) {
     			try {
     				if (!unnormalStateChange) { // i.e not a retryanalysisrequest
-    					changeStateInDB(s, new SeedRequest(s.getUrl(), seedsRequest.getNewState(), seedsRequest.getPathInfo()), dao);
+    					changeStateInDB(s, new SeedRequest(s.getUrl(), seedsRequest.getNewState(), seedsRequest.getPathInfo()), sdao);
     				} else {
-    					retryAnalysis(s, dao, hdao, environment.getConfig());
+    					retryAnalysis(s, sdao, hdao, environment.getConfig());
     				}
     				succeeded++;
     			} catch (Throwable e) {
@@ -159,13 +159,13 @@ public class SeedsResource implements ResourceAbstract {
     	    		StatusResource.throwable_stacktrace_dump(e, log);
     			}
     		}
-    		Cache.updateCache(dfactory);
+    		Cache.updateCache(dao);
     	} catch (Throwable e) {
     		log.append("Unable to change state for the " + items + " seeds in state '" + old + "'. The exception follows:\n");
     		StatusResource.throwable_stacktrace_dump(e, log);
     	}
     	log.append("The statechange was successful for " + succeeded + " out of " +  items + " seeds"); 
-    	CommonResource.show_error(log.toString(), resp, environment);
+    	CommonResource.show_message(log.toString(), resp, environment);
     }
 
 	private void changeState(SeedRequest seedRequest, SeedsDAO dao) throws Exception {
@@ -419,7 +419,12 @@ public class SeedsResource implements ResourceAbstract {
         ResourceUtils.insertText(statusPlace, "status",  seedToShow.getStatus() + "", templateName, logger);
         ResourceUtils.insertText(statusReasonPlace, "status_reason",  seedToShow.getStatusReason() + "", templateName, logger);
         ResourceUtils.insertText(danicastatusPlace, "danica_status",  seedToShow.getDanicaStatus() + "", templateName, logger);
-        ResourceUtils.insertText(danicastatusReasonPlace, "danica_status_reason",  seedToShow.getDanicaStatusReason() + "", templateName, logger);
+        
+        String danicaStatusReasonToShow = seedToShow.getDanicaStatusReason();
+        if (danicaStatusReasonToShow == null) {
+            danicaStatusReasonToShow = "N/A";
+        }
+        ResourceUtils.insertText(danicastatusReasonPlace, "danica_status_reason", danicaStatusReasonToShow, templateName, logger);
         ResourceUtils.insertText(insertedTimePlace, "inserted_time",  ResourceUtils.printDate(seedToShow.getInsertedTime()), templateName, logger);
         ResourceUtils.insertText(updatedTimePlace, "updated_time",  ResourceUtils.printDate(seedToShow.getUpdatedTime()), templateName, logger);
         ResourceUtils.insertText(exportedPlace, "exported",  "" + seedToShow.showExportedState(), templateName, logger);
@@ -427,7 +432,6 @@ public class SeedsResource implements ResourceAbstract {
         String criteriaString = "N/A";
         StringBuilder sbCriteriaResults = new StringBuilder();
         try {
-        	//HarvestDAO hdao = this.environment.getConfig().getDAOFactory().getHarvestDAO();
         	long hcount = hdao.getCountWithSeedurl(seedToShow.getUrl());
         	if (hcount > 0) {
         		String link = environment.getHarvestsPath() + HTMLUtils.encode(CriteriaUtils.toBase64(seedToShow.getUrl())) + "/";
@@ -995,23 +999,6 @@ public class SeedsResource implements ResourceAbstract {
         return heading;
     }
     
-    // make the statemenu using counts read directly from hbase
-    /*
-	private static List<MenuItem> makemenuArray(SeedsDAO dao) throws Exception {
-		List<MenuItem> result = new ArrayList<MenuItem>();
-		I18n i18n = new I18n(dk.kb.webdanica.core.Constants.WEBDANICA_TRANSLATION_BUNDLE);
-		Locale locDa = new Locale("da"); // TODO Shouldn't we read the locale from somewhere???
-		for (int i=0; i <= Status.getMaxValidOrdinal(); i++) {
-			if (!Status.ignoredState(i)) {
-				Long count = dao.getSeedsCount(Status.fromOrdinal(i));
-				result.add(new MenuItem(i, count, locDa, i18n));
-			}
-			
-		}
-	    return result;
-    }
-    */
-	
 	// make the statemenu using cached values
 	private static List<MenuItem> makemenuArrayCache(Cache cache) throws Exception {
 		List<MenuItem> result = new ArrayList<MenuItem>();
