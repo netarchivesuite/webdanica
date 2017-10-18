@@ -100,7 +100,7 @@ public class Emailer {
     }
     
     public void sendAdminEmail(String subject, String body) {
-        String dateFooter = "\r\nMail sent at: " + new Date(); 
+        String dateFooter = "\r\n\r\nMail sent at: " + new Date(); 
         body = body + dateFooter;
 		emailer.send(this.mailAdmin, subject, body);
     }

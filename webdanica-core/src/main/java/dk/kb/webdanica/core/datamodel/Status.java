@@ -120,7 +120,7 @@ public enum Status {
 	}
 
 	public static boolean isValidNewState(Integer newState) {
-	    if (newState < 1 || newState > MAX_VALID_ORDINAL) {
+	    if (newState < 0 || newState > MAX_VALID_ORDINAL) {
 	    	return false;
 	    } 
 	    return true;
