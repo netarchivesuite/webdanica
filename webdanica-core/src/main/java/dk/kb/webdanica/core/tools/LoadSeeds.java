@@ -173,6 +173,9 @@ public IngestLog processSeeds() throws IOException {
 
         String line;
         while ((line = fr.readLine()) != null) {
+            if (line.trim().isEmpty()) { // Silently ignore empty lines
+                continue;
+            }
             ++lines;
             if (lines % 10000 == 0) {
                 String datestamp = "[" + new Date() + "]";
@@ -198,10 +201,17 @@ public IngestLog processSeeds() throws IOException {
 
             String errMsg = "";
             String url = removeAnnotationsIfNecessary(line.trim());
-
             URL_REJECT_REASON rejectreason = UrlUtils.isRejectableURL(url);
-
-            if (rejectreason == URL_REJECT_REASON.NONE) {
+            
+            if (!rejectreason.equals(URL_REJECT_REASON.NONE)){
+                String logEntry = rejectreason + ": " + url + " " + errMsg;
+                if (!onlysavestats) {
+                    logentries.add(logEntry);
+                }
+                rejectedcount++;
+                writeTo(logEntry, rejectLog);
+                continue;
+            } else {
                 Seed singleSeed = new Seed(url);
                 if (ingestAsDanica) {
                     singleSeed.setDanicaStatus(DanicaStatus.YES);
@@ -230,15 +240,12 @@ public IngestLog processSeeds() throws IOException {
                             if (!onlysavestats) {
                                 logentries.add("DOMAINS: " + domainLogEntry); 
                             }
-
                             writeTo("DOMAINS: " + domainLogEntry, updateLog);
-
                         }
                         insertedcount++;
                         if (!onlysavestats) {
                             acceptedList.add(url);
                         }
-
                         writeTo(url, acceptLog);
 
                     } else {
@@ -284,10 +291,8 @@ public IngestLog processSeeds() throws IOException {
 
                     String datestamp="[" + new Date() + "] ";
                     writeTo(datestamp + errMsg, errorsLog);
-
                 }
-
-                if (rejectreason != URL_REJECT_REASON.NONE && rejectreason != URL_REJECT_REASON.UNKNOWN ) {
+                if (!rejectreason.equals(URL_REJECT_REASON.UNKNOWN)) {
                     String logEntry = rejectreason + ": " + url + " " + errMsg;
                     if (!onlysavestats) {
                         logentries.add(logEntry);
