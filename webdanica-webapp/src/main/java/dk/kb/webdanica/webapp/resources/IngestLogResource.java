@@ -193,7 +193,7 @@ public class IngestLogResource implements ResourceAbstract {
         }
 
         if (navbarPlace != null) {
-            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_INGESTLOGS));
         }
 
         if (userPlace != null) {
@@ -310,7 +310,7 @@ public class IngestLogResource implements ResourceAbstract {
         }
 
         if (navbarPlace != null) {
-            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_INGESTLOGS));
         }
 
         if (userPlace != null) {

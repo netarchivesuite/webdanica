@@ -355,7 +355,7 @@ public class SeedsResource implements ResourceAbstract {
         }
 
         if (navbarPlace != null) {
-            navbarPlace.setText(Navbar.getNavbar(Navbar.N_URL_SHOW));
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_SEEDS));
         }
 
         if (userPlace != null) {
@@ -861,7 +861,7 @@ public class SeedsResource implements ResourceAbstract {
         }
 
         if (navbarPlace != null) {
-            navbarPlace.setText(Navbar.getNavbar(Navbar.N_URLS));
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_SEEDS));
         }
 
         if (userPlace != null) {

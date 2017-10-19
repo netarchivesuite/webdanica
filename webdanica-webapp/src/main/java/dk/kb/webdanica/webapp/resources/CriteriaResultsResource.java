@@ -193,7 +193,7 @@ public class CriteriaResultsResource implements ResourceAbstract {
 	        }
 
 	        if (navbarPlace != null) {
-	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
+	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_CRITERIA_RESULTS));
 	        }
 
 	        if (userPlace != null) {

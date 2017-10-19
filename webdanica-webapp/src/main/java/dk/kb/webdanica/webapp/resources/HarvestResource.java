@@ -203,7 +203,7 @@ public class HarvestResource implements ResourceAbstract {
         }
 
         if (navbarPlace != null) {
-            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS)); // FIXME
+            navbarPlace.setText(Navbar.getNavbar(Navbar.N_HARVESTS)); // FIXME
         }
 
         if (userPlace != null) {

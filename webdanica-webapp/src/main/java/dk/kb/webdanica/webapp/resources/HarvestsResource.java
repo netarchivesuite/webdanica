@@ -178,7 +178,7 @@ public class HarvestsResource implements ResourceAbstract {
 	        }
 
 	        if (navbarPlace != null) {
-	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_BLACKLISTS));
+	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_HARVESTS));
 	        }
 
 	        if (userPlace != null) {
