@@ -14,27 +14,20 @@ public class Navbar {
 
     public static final int N_INDEX = 0;
 
-    public static final int N_URLS_ADD = 1;
+    public static final int N_SEEDS = 1;
 
-    public static final int N_URLS_UPLOAD = 1;
+    public static final int N_BLACKLISTS = 2;
 
-    public static final int N_URLS = 1;
+    public static final int N_HARVESTS = 3;
 
-    public static final int N_URL_SHOW = 1;
+    public static final int N_CRITERIA_RESULTS = 4;
 
-    public static final int N_SEARCH = 2;
+    public static final int N_DOMAINS = 5;
 
-    public static final int N_DOMAINS_ADD = 2;
+    public static final int N_INGESTLOGS = 6;
 
-    public static final int N_DOMAINS_UPLOAD = 2;
+    public static final int N_STATUS = 7;
 
-    public static final int N_DOMAINS = 2;
-
-    public static final int N_USERS = 3;
-
-    public static final int N_BLACKLISTS = 3;
-    
-    
     private static Map<Integer, String> navbarMap = new TreeMap<Integer, String>();
 
     private static String[][] items  = new String[][] {
@@ -45,15 +38,8 @@ public class Navbar {
                 { Servlet.environment.getContextPath() + "/criteriaresults/", "Kriterie resultater" },
                 { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
                 { Servlet.environment.getContextPath() + "/ingestlogs/", "Ingestlogs" },
-                // { Servlet.environment.contextPath + "/search/", "Søg" },
-                // { Servlet.environment.getContextPath() + "/domains/", "Domæner" },
-                // { Servlet.environment.getContextPath() + "/users/", "Brugere" },
-                
-				//  Servlet.environment.getContextPath() + "/ingestlogs/", "Ingest logs" },
                 { Servlet.environment.getContextPath() + "/status/", "Status" }
-    	};
-
-	
+    };
 
     public static synchronized String getNavbar(int menu) {
     	String str = navbarMap.get(menu);

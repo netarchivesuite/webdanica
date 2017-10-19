@@ -89,7 +89,7 @@ public class CommonResource {
 		}
 
 		if (navbarPlace != null) {
-			navbarPlace.setText(Navbar.getNavbar(Navbar.N_URL_SHOW));
+			navbarPlace.setText(Navbar.getNavbar(Navbar.N_INDEX));
 		}
 		/*
           if (userPlace != null) {
