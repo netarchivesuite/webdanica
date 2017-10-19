@@ -40,7 +40,7 @@ import dk.netarkivet.harvester.datamodel.SeedList;
  */
 public class ImportIntoNetarchiveSuite {
 	
-	public static final String SEEDLIST_NAME_TO_ADD_TO = Constants.WEBDANICA_SEEDS_NAME;
+	public static final String WEBDANICA_SEEDS_LIST_NAME = Constants.WEBDANICA_SEEDS_NAME;
 	
 	// TODO any other options which template to use and so on, and #hops, javascript-extraction, and robots.txt status
 	public static void main(String[] args) {
@@ -194,26 +194,24 @@ public class ImportIntoNetarchiveSuite {
 			List<String> newseedsCorrected = new ArrayList<String>();
 			for (String s: newseeds) {
 			    if (seedsInDefaultSeedList.contains(s)) {
-			        System.out.println("Seed '" + s + "' exists already in defaultseedlist. Adding to " + SEEDLIST_NAME_TO_ADD_TO + " with a #");
+			        System.out.println("Seed '" + s + "' exists already in defaultseedlist. Adding to " + WEBDANICA_SEEDS_LIST_NAME + " with a #");
 			        newseedsCorrected.add("#" +  s);
 			    } else {
 			        newseedsCorrected.add(s);
 			    }
 			}
-			
-			boolean hasWebdanicaSeeds = d.hasSeedList(SEEDLIST_NAME_TO_ADD_TO);
-			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseedsCorrected);
+			SeedList sl;
+			boolean hasWebdanicaSeeds = d.hasSeedList(WEBDANICA_SEEDS_LIST_NAME);
 			if (hasWebdanicaSeeds) {
-				SeedList slOld = d.getSeedList(SEEDLIST_NAME_TO_ADD_TO);
-				Set<String> combinedSeeds = new TreeSet<String>(slOld.getSeeds()); // this removes any duplicates
-				combinedSeeds.addAll(newseedsCorrected);
-				List<String> combinedSeedsWithoutDuplicates = new ArrayList<String>(combinedSeeds);
-				sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, combinedSeedsWithoutDuplicates);
+			    sl = updateWebdanicaSeedList(d.getSeedList(WEBDANICA_SEEDS_LIST_NAME), defaultSeedlist, newseeds);
 				String existingComments = sl.getComments();
 				String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
 				sl.setComments(existingComments + addedComment);
 				d.updateSeedList(sl);
 			} else {
+			    sl = new SeedList(WEBDANICA_SEEDS_LIST_NAME, newseedsCorrected);
+			    String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
+                sl.setComments(addedComment);
 				d.addSeedList(sl);
 			}
 			dao.update(d);
@@ -222,7 +220,7 @@ public class ImportIntoNetarchiveSuite {
 			// Is seedlist s1 already part of configuration?
 			boolean existsWebdanicaSeedlistAsPartOfConfig = false;
 			for (SeedList s: IteratorUtils.toList(dc.getSeedLists())) {
-				if (s.getName().equalsIgnoreCase(SEEDLIST_NAME_TO_ADD_TO)) {
+				if (s.getName().equalsIgnoreCase(WEBDANICA_SEEDS_LIST_NAME)) {
 					existsWebdanicaSeedlistAsPartOfConfig = true;
 				}
 			}
@@ -260,7 +258,7 @@ public class ImportIntoNetarchiveSuite {
 			}
 			d.updateSeedList(newDefaultSeedList);
 
-			SeedList sl = new SeedList(SEEDLIST_NAME_TO_ADD_TO, newseeds);
+			SeedList sl = new SeedList(WEBDANICA_SEEDS_LIST_NAME, newseeds);
 			d.addSeedList(sl);
 			dao.create(d);
 
@@ -271,5 +269,31 @@ public class ImportIntoNetarchiveSuite {
 			dc.addSeedList(d, sl);
 			dao.update(d);
 		}
+    }
+	
+	/** Update webdanicaSeedslist based upon existing content of webdanica-seedlist and the content of defaultseedlist. 
+	*/
+    private static SeedList updateWebdanicaSeedList(SeedList webdanicaSeedList,
+            SeedList defaultSeedlist, List<String> newseeds) {
+        List<String> existingWebdanicaSeeds = webdanicaSeedList.getSeeds();
+        List<String> defaultSeeds = defaultSeedlist.getSeeds();
+         Set<String> newWebdanicaSeeds = new TreeSet<String>();// Use of TreeSet removes any duplicates
+        // uncomment seeds in existingWebdanicaSeeds if in defaultSeedlist else just add them to newWebdanicaSeeds
+        for (String s: existingWebdanicaSeeds) {
+            if (defaultSeeds.contains(s)) {
+                newWebdanicaSeeds.add("#" + s);
+            } else {
+                newWebdanicaSeeds.add(s);
+            }
+        }
+        // uncomment seeds in newseeds if in defaultSeedlist else just add them to newWebdanicaSeeds
+        for (String s: newseeds) {
+            if (defaultSeeds.contains(s)) {
+                newWebdanicaSeeds.add("#" + s);
+            } else {
+                newWebdanicaSeeds.add(s);
+            }
+        }
+        return new SeedList(WEBDANICA_SEEDS_LIST_NAME, new ArrayList<String>(newWebdanicaSeeds));
     }
 }
