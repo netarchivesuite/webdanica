@@ -280,10 +280,12 @@ public class ImportIntoNetarchiveSuite {
          Set<String> newWebdanicaSeeds = new TreeSet<String>();// Use of TreeSet removes any duplicates
         // uncomment seeds in existingWebdanicaSeeds if in defaultSeedlist else just add them to newWebdanicaSeeds
         for (String s: existingWebdanicaSeeds) {
-            if (defaultSeeds.contains(s)) {
-                newWebdanicaSeeds.add("#" + s);
-            } else {
-                newWebdanicaSeeds.add(s);
+            if (!s.startsWith("#")) {
+                if (defaultSeeds.contains(s)) {
+                    newWebdanicaSeeds.add("#" + s);
+                } else {
+                    newWebdanicaSeeds.add(s);
+                }
             }
         }
         // uncomment seeds in newseeds if in defaultSeedlist else just add them to newWebdanicaSeeds
