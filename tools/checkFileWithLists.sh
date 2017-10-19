@@ -21,7 +21,7 @@ if [ ! -f "$WEBDANICA_SETTINGSFILE" ]; then
 fi
 
 NAS_VERSION=5.2.2
-VERSION=2.0-RC3
+VERSION=2.0
 WEBDANICA_JAR=lib/webdanica-core-$VERSION.jar
 
 if [ ! -f "$WEBDANICA_JAR" ]; then

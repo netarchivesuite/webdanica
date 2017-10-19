@@ -205,7 +205,7 @@ public class ImportIntoNetarchiveSuite {
 			if (hasWebdanicaSeeds) {
 			    sl = updateWebdanicaSeedList(d.getSeedList(WEBDANICA_SEEDS_LIST_NAME), defaultSeedlist, newseeds);
 				String existingComments = sl.getComments();
-				String addedComment = "\n\r[" + new Date() + "] Added " + newseeds.size() + " seeds from webdanica to this list.";
+				String addedComment = "\n\r[" + new Date() + "] Updated with " + newseeds.size() + " seeds from webdanica.";
 				sl.setComments(existingComments + addedComment);
 				d.updateSeedList(sl);
 			} else {
