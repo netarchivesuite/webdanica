@@ -38,10 +38,11 @@ public class CriteriaIngestTester {
 	    }
 	    boolean rejectDKURLS = true;
 	    boolean addToDatabase = false;
+	    boolean rejectSeedsIfnotExplicitlyDanica = false;
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
 		DAOFactory daofactory = new CassandraDAOFactory();
-		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS );
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);
 	}
 }

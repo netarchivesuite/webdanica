@@ -168,12 +168,13 @@ public static void main(String[] args) throws Exception {
         JobStatus finalState = JobStatus.DONE;
         int filecount = 0;
         final long TOTAL = criteriaresultmultiples;
+        boolean rejectSeedsIfnotExplicitlyDanica = false;
         for (File f: resultdirs) {
            filecount++;
              
             File ingest = new File(f, "part-m-00000.gz");
             System.out.println("Part " + filecount + "/" + resultdirs.length + ": Starting ingest of " + criteriaresultmultiples + " times records based on file '" + f.getAbsolutePath() + "' at " + new Date());
-            ProcessResult pr = CriteriaIngest.processFile(ingest, seedurlTemplate, harvestNameTemplate, false, daoFactory, rejectDKURLs);
+            ProcessResult pr = CriteriaIngest.processFile(ingest, seedurlTemplate, harvestNameTemplate, false, daoFactory, rejectDKURLs, rejectSeedsIfnotExplicitlyDanica);
             List<SingleCriteriaResult> critResults = pr.results;
             System.out.println(".. using the " + critResults.size() + " record(s) in " + ingest.getAbsolutePath() + " as template");
             for (int count=0; count < TOTAL; count++) {

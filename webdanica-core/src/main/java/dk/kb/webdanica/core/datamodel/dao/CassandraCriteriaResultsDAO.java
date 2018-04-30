@@ -93,9 +93,10 @@ public class CassandraCriteriaResultsDAO implements CriteriaResultsDAO {
 		DAOFactory daofactory = new CassandraDAOFactory();
 		boolean rejectDKURLS = false;
 		boolean addToDatabase = false;
+		boolean rejectSeedsIfnotExplicitlyDanica = false;
 		List<SingleCriteriaResult> results 
 			= CriteriaIngest.processFile(ingestFile, "Theseed", "harvestName", addToDatabase, 
-			        daofactory, rejectDKURLS).results;
+			        daofactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica).results;
 		System.out.println("Found records: " + results.size());
 		for (SingleCriteriaResult s: results) {
 			boolean inserted = dao.insertRecord(s);

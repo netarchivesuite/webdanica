@@ -35,7 +35,7 @@ import dk.netarkivet.common.exceptions.ArgumentNotValid;
 import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.common.utils.Settings;
-import dk.kb.webdanica.core.utils.StreamUtils;
+import dk.netarkivet.common.utils.StreamUtils;
 import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.netarkivet.common.utils.TimeUtils;
 import dk.netarkivet.common.utils.batch.BatchLocalFiles;
@@ -393,8 +393,7 @@ public class SingleSeedHarvest {
 	
 	
 	/**
-	 * Fetch all the harvest reports for the given job.
-	 * FIXME currently, we have difficulty fetching the Heritrix3 template (WEBDAN-165) 
+	 * Fetch all the harvest reports for the given job. 
 	 * 
 	 * This includes a patch to remedy bug WEBDAN-262 (also https://sbforge.org/jira/browse/NAS-2676) 
 	 *  
@@ -696,5 +695,4 @@ public class SingleSeedHarvest {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-");
         return sdf.format(new Date()) + System.currentTimeMillis();
     }
-
 }

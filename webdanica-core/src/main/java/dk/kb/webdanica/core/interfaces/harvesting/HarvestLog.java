@@ -9,20 +9,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import dk.kb.webdanica.core.WebdanicaSettings;
-import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
-import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
-import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
-import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
@@ -196,60 +189,7 @@ public class HarvestLog {
 		resfile.flush();
 	}
 	
-	/**
-	 * Process the criteria-results for a list of harvests.
-	 * During processing of each harvest, the found criteriaresults is added to the  
-	 * @param harvests a list of harvests 
-	 * @param baseCriteriaDir The base criteria-directory where to look for the analysises of the harvested materiale.
-	 * @param addToDatabase Add the results to the database Yes or No.
-	 * @param daofactory factoryClass to connect to hbase
-	 * @return a list of HarvestError objects for any errors encountered during processing
-	 * @throws Exception
-	 */
-	public static List<HarvestError> processCriteriaResults(List<SingleSeedHarvest> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
-		List<HarvestError> errorReports = new ArrayList<HarvestError>();
-		boolean rejectDKURLs = SettingsUtilities.getBooleanSetting(
-                WebdanicaSettings.REJECT_DK_URLS, false);
-		for (SingleSeedHarvest h: harvests) {
-			Set<String> errs = new HashSet<String>();
-			if (h.getHeritrixWarcs().size() != 0){
-				List<SingleCriteriaResult> results = new ArrayList<SingleCriteriaResult>();
-				
-				for (String filename: h.getHeritrixWarcs()) {
-					File ingestDir = new File(baseCriteriaDir, filename);
-					// Find all part-m-?????.gz files
-					List<String> partfiles = findPartFiles(ingestDir);
-					if (partfiles.isEmpty()) {
-						errs.add("No partfiles found for file '" + filename + "' in folder '" 
-								+ ingestDir.getAbsolutePath() + "'");
-					} else {
-						for (String partfile: partfiles) {
-							File ingest = new File(ingestDir, partfile);
-							ProcessResult pr = CriteriaIngest.processFile(ingest, h.seed, h.harvestName, addToDatabase, daofactory, rejectDKURLs );
-							if (pr.results.isEmpty()) {
-								errs.add("Partfile '" + ingest.getAbsolutePath() 
-										+ "' contained no results.original warc: " + filename);
-							} 
-							results.addAll(pr.results);
-						}
-						
-					}
-				}
-				if (results.isEmpty()) {
-					HarvestError he = new HarvestError(h, "no Criteria-results found: " + StringUtils.join(errs, ",")); 
-					errorReports.add(he);
-				}
-				h.setCriteriaResults(results);
-			} else { // no data harvested
-				HarvestError he = new HarvestError(h, "no data harvested for seed: " +  StringUtils.join(errs, ","));
-				errorReports.add(he);
-			}
-			h.setErrMsg(StringUtils.join(errs, ","));
-			
-		}
-		return errorReports;
-	}
-
+	
 	/**
 	 * Look for files starting with "part-m-" e.g. part-m-00000.gz in the result-folder.
 	 * @param resultDir the directory where the result of the criteria analysis is written

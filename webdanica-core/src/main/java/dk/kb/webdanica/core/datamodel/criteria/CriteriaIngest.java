@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
+
+import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
@@ -20,6 +23,7 @@ import dk.kb.webdanica.core.interfaces.harvesting.HarvestError;
 import dk.kb.webdanica.core.interfaces.harvesting.HarvestLog;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
 import dk.kb.webdanica.core.seeds.filtering.FilterUtils;
+import dk.kb.webdanica.core.utils.SettingsUtilities;
 import dk.kb.webdanica.core.utils.StreamUtils;
 import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.kb.webdanica.core.utils.TextUtils;
@@ -32,12 +36,12 @@ import dk.kb.webdanica.core.utils.TextUtils;
 public class CriteriaIngest {
 
     /**
-     * Reads 
-     * @param harvestLog
-     * @param baseCriteriaDir
-     * @param addHarvestToDatabase
-     * @param addCriteriaResultsToDatabase
-     * @param daofactory
+     * Reads a harvestlog, and process the data referenced by this file.
+     * @param harvestLog A given harvestlog
+     * @param baseCriteriaDir The baseDir where the criteria-data resides
+     * @param addHarvestToDatabase should we save the data about the harvests in the database?
+     * @param addCriteriaResultsToDatabase should we save the criteriaresults in the database? 
+     * @param daofactory A given dao class to access the database
      * @throws Exception
      */
     public static void ingest(File harvestLog, File baseCriteriaDir,
@@ -60,7 +64,7 @@ public class CriteriaIngest {
                 }
             }
         }
-        List<HarvestError> errors = HarvestLog.processCriteriaResults(harvests,
+        List<HarvestError> errors = processCriteriaResults(harvests,
                 baseCriteriaDir, addCriteriaResultsToDatabase, daofactory);
         if (addCriteriaResultsToDatabase) {
             SeedsDAO sdao = daofactory.getSeedsDAO();
@@ -111,11 +115,12 @@ public class CriteriaIngest {
      * @param addToDatabase Should we add the result of the analysis to hbase?
      * @param daofactory Factoryclass to access hbase
      * @param rejectDKURLs Are we rejecting DK urls?
+     * @param rejectIfNotExplicitlyDanica Should we reject seed as not danica if not explicitly found to be danica?
      * @return ProcessResult object
      * @throws Exception If anything bad happens
      */
     public static ProcessResult processFile(File ingestFile, String seed,
-            String harvestName, boolean addToDatabase, DAOFactory daofactory, boolean rejectDKURLs)
+            String harvestName, boolean addToDatabase, DAOFactory daofactory, boolean rejectDKURLs, boolean rejectIfNotExplicitlyDanica)
             throws Exception {
         long linecount = 0L;
         long skippedCount = 0L;
@@ -243,7 +248,7 @@ public class CriteriaIngest {
                             s = sdao.getSeed(res.url);
                         }
                         if (!rejected) {
-                            Classification.decideDanicaStatusFromResult(res, s);
+                            Classification.decideDanicaStatusFromResult(res, s, rejectIfNotExplicitlyDanica);
                         }
                         if (insertUrl) {
                             sdao.insertSeed(s);
@@ -294,5 +299,65 @@ public class CriteriaIngest {
         pr.results = results;
         pr.ignored = ignoredSet;
         return pr;
-    }   
+    }  
+    
+    /**
+     * Process the criteria-results for a list of harvests.
+     * During processing of each harvest, the found criteriaresults is added to the  
+     * @param harvests a list of harvests 
+     * @param baseCriteriaDir The base criteria-directory where to look for the analysises of the harvested materiale.
+     * @param addToDatabase Add the results to the database Yes or No.
+     * @param daofactory factoryClass to connect to hbase
+     * @return a list of HarvestError objects for any errors encountered during processing
+     * @throws Exception
+     */
+    public static List<HarvestError> processCriteriaResults(List<SingleSeedHarvest> harvests, File baseCriteriaDir, boolean addToDatabase, DAOFactory daofactory) throws Exception {
+        List<HarvestError> errorReports = new ArrayList<HarvestError>();
+        boolean rejectDKURLs = SettingsUtilities.getBooleanSetting(
+                WebdanicaSettings.REJECT_DK_URLS, false);
+        boolean rejectIfNotExplicitlyDanica = SettingsUtilities.getBooleanSetting(
+                WebdanicaSettings.CONSIDER_SEED_NOT_DANICA_IF_NOT_EXPLICITLY_DANICA,
+                dk.kb.webdanica.core.Constants.DEFAULT_CONSIDER_SEED_NOT_DANICA_IF_NOT_EXPLICITLY_DANICA);
+        for (SingleSeedHarvest h: harvests) {
+            Set<String> errs = new HashSet<String>();
+            if (h.getHeritrixWarcs().size() != 0){
+                List<SingleCriteriaResult> results = new ArrayList<SingleCriteriaResult>();
+                
+                for (String filename: h.getHeritrixWarcs()) {
+                    File ingestDir = new File(baseCriteriaDir, filename);
+                    // Find all part-m-?????.gz files
+                    List<String> partfiles = HarvestLog.findPartFiles(ingestDir);
+                    if (partfiles.isEmpty()) {
+                        errs.add("No partfiles found for file '" + filename + "' in folder '" 
+                                + ingestDir.getAbsolutePath() + "'");
+                    } else {
+                        for (String partfile: partfiles) {
+                            File ingest = new File(ingestDir, partfile);
+                            ProcessResult pr = CriteriaIngest.processFile(ingest, h.getSeed(), 
+                                    h.getHarvestName(), addToDatabase, daofactory, rejectDKURLs, rejectIfNotExplicitlyDanica);
+                            if (pr.results.isEmpty()) {
+                                errs.add("Partfile '" + ingest.getAbsolutePath() 
+                                        + "' contained no results.original warc: " + filename);
+                            } 
+                            results.addAll(pr.results);
+                        }
+                        
+                    }
+                }
+                if (results.isEmpty()) {
+                    HarvestError he = new HarvestError(h, "no Criteria-results found: " + StringUtils.join(errs, ",")); 
+                    errorReports.add(he);
+                }
+                h.setCriteriaResults(results);
+            } else { // no data harvested
+                HarvestError he = new HarvestError(h, "no data harvested for seed: " +  StringUtils.join(errs, ","));
+                errorReports.add(he);
+            }
+            h.setErrMsg(StringUtils.join(errs, ","));
+            
+        }
+        return errorReports;
+    }
+
+    
 }

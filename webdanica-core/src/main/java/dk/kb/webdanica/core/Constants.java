@@ -17,5 +17,6 @@ public class Constants {
 	public static final int DEFAULT_MAIL_PORT = 25;
 	public static final String DEFAULT_MAIL_HOST = "localhost";
 	public static final String DEFAULT_MAIL_ADMIN = "test@localhost";
-	public static final String WEBDANICA_SEEDS_NAME = "webdanicaseeds";	
+	public static final String WEBDANICA_SEEDS_NAME = "webdanicaseeds";
+    public static final boolean DEFAULT_CONSIDER_SEED_NOT_DANICA_IF_NOT_EXPLICITLY_DANICA = false;	
 } 

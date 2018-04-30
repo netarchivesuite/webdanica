@@ -16,6 +16,9 @@ public class WebdanicaSettings {
 	public static String IGNORED_SUFFIXES = "settings.seeds.ignoredSuffixes.suffix";
 	public static String REJECT_DK_URLS = "settings.seeds.rejectDkUrls"; // default is true
 	
+	
+	/** analysis settings. */
+	public static String CONSIDER_SEED_NOT_DANICA_IF_NOT_EXPLICITLY_DANICA = "settings.analysis.considerSeedNotDanicaIfNotExplicitlyDanica";// default is false 
 
 	/** harvesting settings. */
 	public static String HARVESTING_TEMPLATE = "settings.harvesting.template";

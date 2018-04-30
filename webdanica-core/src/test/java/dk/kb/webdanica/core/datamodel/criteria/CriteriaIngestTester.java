@@ -94,8 +94,9 @@ public class CriteriaIngestTester {
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
 		boolean rejectDKURLS = false;
 		boolean addToDatabase = false;
-		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS);
+		boolean rejectSeedsIfnotExplicitlyDanica = false;
+		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);
 		ingestFile = getTestResourceFile(COMBO_RESULT);
-		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS);
+		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daoFactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);
 	}
 }

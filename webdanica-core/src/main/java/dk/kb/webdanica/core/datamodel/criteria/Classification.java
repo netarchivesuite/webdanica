@@ -22,8 +22,9 @@ public class Classification {
      *  
      * @param res SingleCriteriaResult for the given Seed 
      * @param s The Seed object for which the given SingleCriteriaResult is calculated   
+     * @param rejectIfNotExplicitlyDanica Should seed be rejected if not explicitly found to be danica
      */
-    public static void decideDanicaStatusFromResult(SingleCriteriaResult res, Seed s) {
+    public static void decideDanicaStatusFromResult(SingleCriteriaResult res, Seed s, boolean rejectIfNotExplicitlyDanica) {
         String statusReasonPrefix = "Harvested by harvest '"
                 + res.harvestName
                 + "' and now successfully analyzed. ";
@@ -45,13 +46,23 @@ public class Classification {
             s.setStatusReason(statusReasonPrefix
                     + "Processing finished as we now consider this seed not-Danica");
         } else {
-            s.setDanicaStatus(DanicaStatus.UNDECIDED);
-            s.setDanicaStatusReason("Still UNDECIDED, as the danishcode '"
-                    + danishcode
-                    + "'doesn't give us any safe indications of danicastatus");
-            s.setStatus(Status.AWAITS_CURATOR_DECISION);
-            s.setStatusReason(statusReasonPrefix
-                    + "Now awaiting a curatorial decision");
+            if (rejectIfNotExplicitlyDanica) {
+                s.setDanicaStatus(DanicaStatus.NO);
+                s.setDanicaStatusReason("Rejected, as the danishcode '"
+                        + danishcode
+                        + "'doesn't give us any safe indications of danicastatus");
+                s.setStatus(Status.DONE);
+                s.setStatusReason(statusReasonPrefix
+                        + "Processing finished as we now consider this seed not-Danica, because it is not explicitly found to be danica");
+            } else {
+                s.setDanicaStatus(DanicaStatus.UNDECIDED);
+                s.setDanicaStatusReason("Still UNDECIDED, as the danishcode '"
+                        + danishcode
+                        + "'doesn't give us any safe indications of danicastatus");
+                s.setStatus(Status.AWAITS_CURATOR_DECISION);
+                s.setStatusReason(statusReasonPrefix
+                        + "Now awaiting a curatorial decision");
+            }
         }
     }
     
@@ -348,7 +359,9 @@ public class Classification {
             res.calcDanishCode = 3; // I think we should test in more depth
             return;
         }
-
+        
+        
+        
         // /////////////////////////////////
         // set calcDanishCode-codes for which fields are set
         res.calcDanishCode = CodesResult.findNegativBitmapCalcCode(res);
