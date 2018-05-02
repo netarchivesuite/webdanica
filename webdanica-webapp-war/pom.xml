@@ -31,7 +31,11 @@
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
         </exclusion>
-      </exclusions> 
+        <exclusion>
+           <groupId>berkeleydb</groupId>
+           <artifactId>je</artifactId>
+        </exclusion>
+     </exclusions> 
     </dependency>
   </dependencies>
 
