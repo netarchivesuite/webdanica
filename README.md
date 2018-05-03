@@ -52,3 +52,6 @@ e.g. psql.py kb-test-hadoop-01.kb.dk:2181:/hbase create_blacklists.sql
 
 [Tools manual](tools.md)
 
+[Analysis manual](analysis.md)
+
+
