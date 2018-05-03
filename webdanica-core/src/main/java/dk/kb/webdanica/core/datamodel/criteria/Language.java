@@ -58,4 +58,13 @@ public class Language {
         return ("Language code: " + code + ", confidence = " + confidence);
     }
 
+    public static boolean isLanguage(String languagesFound, String languageCode) {
+        List<Language> languages = Language.findLanguages(languagesFound);
+        for (Language l : languages) {
+            if (l.getCode().equalsIgnoreCase(languageCode)) {
+                return true;
+            }
+        }
+        return false;
+    } 
 }

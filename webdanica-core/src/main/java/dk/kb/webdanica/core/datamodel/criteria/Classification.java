@@ -360,8 +360,6 @@ public class Classification {
             return;
         }
         
-        
-        
         // /////////////////////////////////
         // set calcDanishCode-codes for which fields are set
         res.calcDanishCode = CodesResult.findNegativBitmapCalcCode(res);
@@ -375,24 +373,22 @@ public class Classification {
      * res.calcDanishCode = SOMECODE; 
      * And the rest of the rules will not be checked
      * 
-     * Note: rules for criteria C7b, C7c, C10a, and C10c are currently disabled 
-     * 
      * @param res a given CriteriaResult
      * 
-     * 400 C1A> 0 DK mail-adresses found   
-     * 401 C2A> 0 DK tlf numbers found
+     * 400 C1a> 0 DK mail-adresses found   
+     * 401 C2a> 0 DK tlf numbers found
      * 402 C6a: >20    hyppige danske ord
      * 403 C6b: >1 typiske danske ord 
-     * (disabled) 404 C7b: >0 danske bynavne i URLen
-     * (disabled) 405 C7c: >0 danske stednavne i teksten  Finder stadig delord
+     * 404 C7b: >0 danske bynavne i URLen
+     * 405 C7c: >0 danske stednavne i teksten  Finder stadig delord
      * 406 C7e: >0 fremmedsprog af ordene København og Danmark
      * 407 C7g: >0 større danske byer i teksten
      * 408 C7h: >0 fremmedsprog af ordene København og Danmark
      * 409 C9e: >0 danske virksomheder
      * 410 C9d: >0 cvr      
      * 411 C9a: >0 a/s, aps
-     * (disabled) 412 C10a: >2 finder -sen-navne i teksten.    Finder andre -sen-ord men den holder
-     * (disabled) 413 C10c: >2 hyppige for- og efternavne  Finder stadig delord 
+     * 412 C10a >2 && C4B != "de": finder -sen-navne i teksten og sproget er ikke tysk  
+     * 413 C10c: >2 hyppige for- og efternavne  Finder stadig delord 
      * 414 C17a: >0 outlinks peger på websider i .dk
     */
     private static void checkCuratorSuppliedRules(SingleCriteriaResult res) {
@@ -421,21 +417,19 @@ public class Classification {
             return;
         }
         //C7b: >0 danske bynavne i URLen
-        /*if (valueGreaterThan(res.C.get("C7b"), 0)) {
+        if (valueGreaterThan(res.C.get("C7b"), 0)) {
             res.intDanish = 1;
             res.calcDanishCode = 404;
             return;
         }
-        */
+        
         
         //C7c: >0 danske stednavne i teksten  Finder stadig delord
-        /*
         if (valueGreaterThan(res.C.get("C7c"), 0)) {
             res.intDanish = 1;
             res.calcDanishCode = 405;
             return;
         }
-        */
         
         //C7e: >0 fremmedsprog af ordene København og Danmark
         if (valueGreaterThan(res.C.get("C7e"), 0)) {
@@ -474,23 +468,20 @@ public class Classification {
             return;
         }
         
-        //C10a: >2    finder -sen-navne i teksten.    Finder andre -sen-ord men den holder
-        /*
-        if (valueGreaterThan(res.C.get("C10a"), 2)) {
+        //C10a >2 && Cb4b != "de"    finder -sen-navne i teksten.    Finder andre -sen-ord men den holder. Check at sproget ikke er tysk 
+        if (valueGreaterThan(res.C.get("C10a"), 2) && !Language.isLanguage(res.C.get("C4b"), "de")) {
             res.intDanish = 1;
             res.calcDanishCode = 412;
             return;
         } 
-        */
         
         //C10c: >2    hyppige for- og efternavne  Finder stadig delord
-        /*
         if (valueGreaterThan(res.C.get("C10c"), 2)) {
             res.intDanish = 1;
             res.calcDanishCode = 413;
             return;
         }
-        */
+        
         
         //C17a: >0    outlinks peger på websider i .dk
         if (valueGreaterThan(res.C.get("C17a"), 0)) {
@@ -499,6 +490,8 @@ public class Classification {
             return;
         }
     }
+    
+
     /**
      * Helper method to test the resultValue of a given criteria.
      * 

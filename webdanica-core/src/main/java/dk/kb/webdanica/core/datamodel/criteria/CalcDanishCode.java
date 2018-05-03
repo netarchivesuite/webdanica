@@ -465,8 +465,8 @@ public class CalcDanishCode {
                 if (code == 409) s = s + (viaFields ? " - C9e>0" : "Names of Danish companies found");
                 if (code == 410) s = s + (viaFields ? " - C9d>0" : "CVR found");
                 if (code == 411) s = s + (viaFields ? " - C9a>0" : "a/s and aps found");
-                if (code == 412) s = s + (viaFields ? " - C10a>0" : "-sen names found in the text");
-                if (code == 413) s = s + (viaFields ? " - C10c>0" : "Frequent Danish personnames found");
+                if (code == 412) s = s + (viaFields ? " - C10a>2 && c4b != 'de'" : "-sen names found in the text. language is not german");
+                if (code == 413) s = s + (viaFields ? " - C10c>2" : "Frequent Danish personnames found");
                 if (code == 414) s = s + (viaFields ? " - C17a>0" : "Outlinks points to pages in .dk domain");
                 
             } else if (code == Codes.cat_ERROR_dk) {
@@ -521,7 +521,7 @@ public class CalcDanishCode {
             String languagesFound) {
         List<Language> languages = Language.findLanguages(languagesFound);
         for (Language l : languages) {
-            if (l.getCode().equals("da") && l.getConfidence() > 0.99F) {
+            if (l.getCode().equalsIgnoreCase("da") && l.getConfidence() > 0.99F) {
                 res.intDanish = 1;
                 res.calcDanishCode = 4;
                 return true;
