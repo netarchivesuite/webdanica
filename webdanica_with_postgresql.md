@@ -51,19 +51,12 @@ The last command tells Postgresql to reload its configuration.
 This should enable us full access over database test_harvestdb as any system-user.
 
 3) Creation of Netarchivesuite tables in the test_harvestdb database as user 'test'
-This uses the scripts/sql/createHarvestDB.pgsql bundled with netarchivesuite 5.2.2. If the postgresql user is different from 'netarchivesuite',
+This uses the scripts/postgresql/createHarvestDB.pgsql bundled with netarchivesuite 5.4 If the postgresql user is different from 'netarchivesuite',
 you need to replace all instances of 'netarchivesuite' in that script 
 
 ```
-unzip distribution-5.2.2.zip -d 5.2.2
-psql test_harvestdb -U netarchivesuite < 5.2.2/scripts/sql/createHarvestDB.pgsql
-
-psql test_harvestdb -U netarchivesuite
-
-drop table harvestchannel;
-delete from schemaversions where tablename='harvestchannel';
-update schemaversions set version='3' where tablename='harvestdefinitions';
-\q
+unzip distribution-5.4.zip -d 5.4
+psql test_harvestdb -U netarchivesuite < 5.4/scripts/postgresql/createHarvestDB.pgsql
 ```
 Now we are ready to deploy netarchivesuite.
 
@@ -71,11 +64,10 @@ Now we are ready to deploy netarchivesuite.
 Now we can deploy netarchivesuite (Note that java in the path must be a JDK8, otherwise the deployment will fail)
 Note: Another requirement is passwordless ssh-logon from the deploy server to the installation-server, otherwise you will be typing the password several times.
 ```
-bash RunNetarchiveSuite.sh  distribution-5.2.2.zip deploy_webdanica_netarchivesuite_pgsql.xml USER heritrix3-bundler-5.2.2.zip 
+bash RunNetarchiveSuite.sh  distribution-5.4.zip deploy_webdanica_netarchivesuite_pgsql.xml USER heritrix3-bundler-5.2.2.zip 
 ```
 This will script should install netarchivesuite correctly, but applications will fail to start of several times:
  * No default_orderxml template exists in the templates table
- * The tables 'harvestdefinitions' and 'harvestchannel' needs to be updated/created
 This is done with
 ```
 ssh test@localhost

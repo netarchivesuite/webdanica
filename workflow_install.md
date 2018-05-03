@@ -10,13 +10,13 @@ takes one harvestlog, and does the analysis on that harvestlog alone.
 Both these scripts both include a common file 'setenv.sh' which must be configured correctly before enabling the harvesting workflow and the cronjobs: 
 ``` 
 WORKFLOW_USER_HOME=/home/test
-WEBDANICA_VERSION=1.0.0
+WEBDANICA_VERSION=2.1
 WORKFLOW_HOME=$WORKFLOW_USER_HOME/automatic-workflow
 WEBDATADIR=$WORKFLOW_USER_HOME/ARKIV
 HADOOP_HOME=$WORKFLOW_USER_HOME/hadoop-1.2.1/
 PIG_HOME=$WORKFLOW_USER_HOME/pig-0.16.0/
 JAVA_HOME=/usr/java/jdk1.8.0_92_x64
-NAS_VERSION=5.2.2
+NAS_VERSION=5.4
 ## the below settings should not be altered
 BUSYFILE=$WORKFLOW_HOME/.busy
 WORKDIR=$WORKFLOW_HOME/working

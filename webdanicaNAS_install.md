@@ -1,8 +1,8 @@
 # Installation and configuration of the NetarchiveSuite used by webdanica
 
-The webdanica system uses a quickstart based Netarchivesuite 5.2.2 instance running on the same machine as the webapp.
+The webdanica system uses a quickstart based Netarchivesuite 5.4 instance running on the same machine as the webapp.
 
-The recipe used is as written on the page https://sbforge.org/display/NASDOC52/Installation+of+the+Quickstart+system
+The recipe used is as written on the page https://sbforge.org/display/NASDOC54/Installation+of+the+Quickstart+system
 
 By default, this uses derby as the backend database system. See [this page](webdanica_with_postgresql.md) for how to use Postgresql instead.
 

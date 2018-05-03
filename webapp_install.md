@@ -42,7 +42,7 @@ shared.loader="${catalina.base}/shared","${catalina.base}/shared/*.jar","${catal
 ```
 Remember to restart tomcat after doing that.
 
-The installation as such is done by copying the webdanica-webapp-war-$RELEASE.war (e.g. webdanica-webapp-war-2.0-RC1.war) to the tomcat/webapps/ folder while renaming it ROOT.war:
+The installation as such is done by copying the webdanica-webapp-war-$RELEASE.war (e.g. webdanica-webapp-war-2.1.war) to the tomcat/webapps/ folder while renaming it ROOT.war:
 This is done as root or the owner of tomcat application (e.g. tomcat)).
 ```
 cp -p webdanica-webapp-war-$RELEASE.war /full/path/to/tomcat/webapps/ROOT.war
