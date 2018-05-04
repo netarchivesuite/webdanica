@@ -78,6 +78,27 @@ In this the criteria-analysis of each harvested seed is evaluated, and the seed 
 If the setting *settings.analysis.considerSeedNotDanicaIfNotExplicitlyDanica* is enabled, we declare the seed NOT_DANICA instead of UNDECIDED
 
 
+#### Rules for qualifying as DANICA
+Each of the rules below is deemed a satisfactory test that the url is Danica-
 
+Rule | DanicaCode | Description
+-----| -----------| ------------------------------------
+C4b contains "da" with confidence level > 0.99 | 4 | Language is Danish with a very high probability
+C1a > 0 | 400 	| Finds a Danish mail-address (mail-address on the .dk domain
+C2a > 0	| 401   | Finds a Danish telephone-number (a number with +45 prefix )
+C6a > 20 | 402   | Finds a number of frequently found words in Danish
+C6b > 1  | 403   | Finds at least one word frequently found in Danish
+C7b > 0  | 404   | Finds at least one Danish cityname in the URL
+C7c > 0  | 405   | Finds at least one Danish placename in the text
+C7e > 0  | 406   | Finds the Words København and Danmark in various translations
+C7g > 0  | 407   | Finds at least one larger Danish cityname in the text.
+C7h > 0  | 408   | Finds the Words København and Danmark in various translations
+C9e > 0  | 409   | Finds at least one name of a Danish company in the text???
+C9d > 0  | 410   | Find the word cvr in the text?
+C9a > 0  | 411   | a/s and aps found in the text??
+(C10a > 2) + (C4b ≠ de) | 412 | Finds more than 2 names ending on -sen and the language is not German
+C10c > 2 | 413 | Frequent Danish personnames found in the text
+C17a > 0 | 414 | Outlinks from the page points to webpages in the .dk domain
+C9b > 0  | XXX | Finds at least one name of a Danish company in the text???
 
 
