@@ -35,7 +35,7 @@ public class DanishCodeTester {
 	@Test 
 	public void testNewCuratorLikelyDanishCodes() {
 	// have introduced new Curatorcodes
-	for (int code=400; code<= 414; code++) {
+	for (int code=400; code<= 415; code++) {
 	    assertTrue("code " + code + " should belong to  Category.LIKELY_DK", 
 	            Codes.getCategory(code) == Category.LIKELY_DK);
 	    String desc = CalcDanishCode.getCalcDkCodeText(code, Display.noCodes, Level.none, false);

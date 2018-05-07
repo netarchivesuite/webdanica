@@ -73,10 +73,9 @@ Liste over kriterie-analyser:
 
 ### Step 3 - Evaluating the output from the criteria-analysis
 
-In this the criteria-analysis of each harvested seed is evaluated, and the seed is either declared as DANICA, NOT_DANICA, or UNDECIDED
+In this the criteria-analysis of each harvested seed is evaluated, and the seed is either declared as DANICA, NOT_DANICA, or UNDECIDED.
 
-If the setting *settings.analysis.considerSeedNotDanicaIfNotExplicitlyDanica* is enabled, we declare the seed NOT_DANICA instead of UNDECIDED
-
+If the setting *settings.analysis.considerSeedNotDanicaIfNotExplicitlyDanica* is enabled, we declare the seed NOT_DANICA instead of UNDECIDED.
 
 #### Rules for qualifying as DANICA
 Each of the rules below is deemed a satisfactory test that the url is Danica-

@@ -451,7 +451,7 @@ public class CalcDanishCode {
                 } else if (code == 324) {
                     s = s + (viaFields ? " - C7g=0 - resten" : " - resten");
                 }
-            } else if ((code >= 400 && code <= 414)) {
+            } else if ((code >= 400 && code <= 415)) {
                 // Description for the curator defined IsLikelyDanica codes
                 if (code == 400) s = s + (viaFields ? " - C1a>0" : "DK mail addresses found");
                 if (code == 401) s = s + (viaFields ? " - C2A>0" : "DK telephone numbers found");
@@ -468,6 +468,8 @@ public class CalcDanishCode {
                 if (code == 412) s = s + (viaFields ? " - C10a>2 && c4b != 'de'" : "-sen names found in the text. language is not german");
                 if (code == 413) s = s + (viaFields ? " - C10c>2" : "Frequent Danish personnames found");
                 if (code == 414) s = s + (viaFields ? " - C17a>0" : "Outlinks points to pages in .dk domain");
+                if (code == 415) s = s + (viaFields ? " - C9b>0" : "Names of Danish companies found");
+                
                 
             } else if (code == Codes.cat_ERROR_dk) {
                 s = "error";

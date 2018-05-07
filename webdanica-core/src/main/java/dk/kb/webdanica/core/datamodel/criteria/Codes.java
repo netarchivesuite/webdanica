@@ -46,7 +46,7 @@ public class Codes {
         codeSet.add(315);
         codeSet.add(320);
         // New curator codes
-        for (int code=400; code <= 414; code++) {
+        for (int code=400; code <= 415; code++) {
             codeSet.add(code);
         }
         return codeSet;

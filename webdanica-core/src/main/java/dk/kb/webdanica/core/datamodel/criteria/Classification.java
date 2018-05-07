@@ -489,6 +489,13 @@ public class Classification {
             res.calcDanishCode = 414;
             return;
         }
+        //C9b: >0 danske virksomheder 
+        if (valueGreaterThan(res.C.get("C9b"), 0)) {
+            res.intDanish = 1;
+            res.calcDanishCode = 415;
+            return;
+        }
+        
     }
     
 
