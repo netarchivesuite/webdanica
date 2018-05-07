@@ -99,6 +99,6 @@ C9a > 0  | 411   | a/s and aps found in the text??
 (C10a > 2) + (C4b ≠ de) | 412 | Finds more than 2 names ending on -sen and the language is not German
 C10c > 2 | 413 | Frequent Danish personnames found in the text
 C17a > 0 | 414 | Outlinks from the page points to webpages in the .dk domain
-C9b > 0  | XXX | Finds at least one name of a Danish company in the text???
+C9b > 0  | 415 | Finds at least one name of a Danish company in the text???
 
 
