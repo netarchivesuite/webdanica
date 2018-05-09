@@ -13,7 +13,7 @@ REGISTER lib/tika-langdetect-1.13.jar
 --REGISTER lib/language-detector-0.5.jar
 REGISTER lib-pig/language-detector-0.6a-SNAPSHOT.jar
 --REGISTER lib-extra/guava-19.0.jar
---REGISTER lib/slf4j-api-1.7.7.jar
+REGISTER lib/slf4j-api-1.7.7.jar
 -- new libraries I think
 REGISTER lib/jwat-common-1.0.4.jar
 REGISTER lib/json-simple-1.1.1.jar
