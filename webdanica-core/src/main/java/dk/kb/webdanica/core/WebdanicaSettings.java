@@ -32,6 +32,7 @@ public class WebdanicaSettings {
 	public static String HARVESTING_HARVEST_LOG_READY_SUFFIX = "settings.harvesting.harvestlogReadySuffix";
 	public static String HARVESTING_HARVEST_LOG_NOTREADY_SUFFIX = "settings.harvesting.harvestlogNotreadySuffix";
 	public static String HARVESTING_MAX_TIMEINMILLIS = "settings.harvesting.harvestMaxTimeInMillis";
+    public static String HARVESTING_MAX_HARVESTLOGS_PROCESSED_EACH_TIME = "settings.harvesting.maxHarvestlogsProcessedEachTime";
 	
 	/** crawlertraps settings. */
 	public static String CRAWLERTRAPS_MAX_TRAP_SIZE = "settings.crawlertraps.maxTrapSize";
@@ -51,6 +52,7 @@ public class WebdanicaSettings {
 	public static final String WEBAPP_MAX_FILTERING_RECORDS_PER_RUN = "settings.webapp.filtering.maxRecordsProcessedPerRun";
 	public static final String WEBAPP_MAX_URL_LENGTH_TO_SHOW = "settings.webapp.maxUrlLengthToShow";
 	public static final String WEBAPP_MAX_URLS_TO_FETCH = "settings.webapp.maxUrlsToFetch";
+
 	
 	
 	/** Pig related settings */

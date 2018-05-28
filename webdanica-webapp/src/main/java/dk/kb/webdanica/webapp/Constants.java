@@ -25,4 +25,6 @@ public class Constants {
     public static final long DEFAULT_HARVEST_MAX_TIMEINMILLIS = 60 * 60 * 1000L;
     public static final int DEFAULT_MAX_URL_LENGTH_TO_SHOW = 40;
     public static final int DEFAULT_MAX_URLS_TO_FETCH = 2000;
+    /** Only process 15 harvestlogs at a time in the automatic workflow. */
+    public static final int DEFAULT_MAX_HARVESTLOGS_PROCESSED = 15;
 }
