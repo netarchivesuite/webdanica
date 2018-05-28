@@ -36,6 +36,7 @@ import dk.netarkivet.common.utils.ApplicationUtils;
 import dk.netarkivet.common.utils.FileUtils;
 import dk.netarkivet.common.utils.Settings;
 import dk.netarkivet.common.utils.StreamUtils;
+import dk.kb.webdanica.core.utils.XmlUtils;
 import dk.kb.webdanica.core.utils.SystemUtils;
 import dk.netarkivet.common.utils.TimeUtils;
 import dk.netarkivet.common.utils.batch.BatchLocalFiles;
@@ -118,7 +119,7 @@ public class SingleSeedHarvest {
 		}
 		
 		Schedule s = ScheduleDAO.getInstance().read(scheduleName);
-		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed= " + seed, "Webdanica Curators");
+		HarvestDefinition hd = new PartialHarvest(noDcs, s, eventHarvestName, "Event harvest created by webdanica system at " + new Date() + ". seed (cleaned): " + XmlUtils.cleanString(seed), "Webdanica Curators");
 		HarvestDefinitionDAO dao = HarvestDefinitionDAO.getInstance();
 		hid = dao.create(hd);
 		
