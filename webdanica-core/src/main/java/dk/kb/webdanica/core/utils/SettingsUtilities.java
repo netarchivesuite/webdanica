@@ -60,24 +60,28 @@ public class SettingsUtilities {
     }
     
 	public static int getIntegerSetting(String settingsName, int default_int_value) {
+	    return getIntegerSetting(settingsName, default_int_value, true);
+	}
+	
+	public static int getIntegerSetting(String settingsName, int default_int_value, boolean logging) {
 	 	int returnValue = default_int_value;
 	    if (Settings.hasKey(settingsName)) {
 	    	String settingsValueAsString = Settings.get(settingsName);  
 	    	if (settingsValueAsString == null || settingsValueAsString.isEmpty()) {
-	    		logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
+	    	    if (logging) logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value in the settings is null or empty");
 	    	} else { // Try to parse the settingsValueAsString as a valid Integer
 	    		int intValue;
 	    		try {
 	            	intValue = Integer.parseInt(settingsValueAsString);
 	            	returnValue = intValue;
-	            	logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
+	            	if (logging) logger.info("Using value '" + returnValue + "' for setting '" + settingsName + "'.");
 	            } catch (NumberFormatException e) {
-	            	logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value '" + settingsValueAsString 
+	                if (logging) logger.warning("Using default value '" + default_int_value + "' for setting '" + settingsName + "', as the value '" + settingsValueAsString 
 	            			+ "'  in the settings is not a valid integer");
 	            }
 	    	}
 	    } else {
-	    	logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_int_value + "'");
+	        if (logging) logger.warning("The setting '" + settingsName + "' is not defined in the settingsfile. Using the default value: '" + default_int_value + "'");
 	    }
 	    return returnValue;
     }
@@ -187,7 +191,5 @@ public class SettingsUtilities {
         }
         return returnValue;
     }
-	
-	
 }
 

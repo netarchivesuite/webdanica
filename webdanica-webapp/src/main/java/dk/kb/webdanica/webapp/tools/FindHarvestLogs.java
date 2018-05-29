@@ -24,10 +24,11 @@ public class FindHarvestLogs {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR, false);
-		final String harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX, false);
-		final String harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX, Constants.DEFAULT_HARVESTLOG_READY_SUFFIX, false);
-		final int maxNumberOfHarvestLogsReturned = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_HARVESTLOGS_PROCESSED_EACH_TIME, Constants.DEFAULT_MAX_HARVESTLOGS_PROCESSED);
+	    boolean LOGGING_ENABLED = false;
+		String harvestLogDirName = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVESTLOGDIR, Constants.DEFAULT_HARVESTLOGDIR, LOGGING_ENABLED);
+		final String harvestLogPrefix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_PREFIX, Constants.DEFAULT_HARVESTLOG_PREFIX, LOGGING_ENABLED);
+		final String harvestLogReadySuffix = SettingsUtilities.getStringSetting(WebdanicaSettings.HARVESTING_HARVEST_LOG_READY_SUFFIX, Constants.DEFAULT_HARVESTLOG_READY_SUFFIX, LOGGING_ENABLED);
+		final int maxNumberOfHarvestLogsReturned = SettingsUtilities.getIntegerSetting(WebdanicaSettings.HARVESTING_MAX_HARVESTLOGS_PROCESSED_EACH_TIME, Constants.DEFAULT_MAX_HARVESTLOGS_PROCESSED, LOGGING_ENABLED);
 		
 		File harvestLogDir = new File(harvestLogDirName);
 		
