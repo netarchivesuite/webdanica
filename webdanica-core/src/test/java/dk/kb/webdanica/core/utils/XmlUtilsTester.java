@@ -24,6 +24,9 @@ public class XmlUtilsTester {
         if (!valid) {
             fail("seed should be valid after manipulation");
         }
+        if (cleaned.length() < seed.length()) {
+            fail("cleaned string should be longer than the original string");
+        }
     }
 
 }
