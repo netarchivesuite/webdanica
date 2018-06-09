@@ -1,16 +1,8 @@
 package dk.kb.webdanica.core.datamodel.criteria;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
-import dk.kb.webdanica.core.criteria.FrequentWords;
 import dk.kb.webdanica.core.datamodel.DanicaStatus;
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
-import dk.kb.webdanica.core.utils.SystemUtils;
-import dk.kb.webdanica.core.utils.TextUtils;
 
 public class Classification {
     
@@ -65,129 +57,7 @@ public class Classification {
             }
         }
     }
-    
-    /**
-     * Some extra processing on the SingleCriteriaResult.
-     * 
-     * @param res a given SingleCriteriaResult
-     * @deprecated "Not needed anymore, I think"
-     */
-    private static void someUpdateCode(SingleCriteriaResult res) {
-        // update 3g
-        update3g(res);
-        // update 8c foreninger
-        update8c(res);
-
-        // update 9e firmaer on the basis on
-        update9e(res);
-
-        // update 10c
-        String C10c = res.C.get("C10c");
-        if (C10c != null && (!C10c.isEmpty() && !C10c.startsWith("0"))) {
-            res.C.put("C10c", CriteriaUtils.findC10cval(C10c));
-        }
-
-        Set<Integer> codeSet = Codes.getCodesForNOTDanishResults();
-        codeSet.addAll(Codes.getCodesForMaybees());
-        /*** calculate C2b phone numbers ***/
-        if (res.calcDanishCode <= 0 || codeSet.contains(res.calcDanishCode)) {
-            CodesResult cr = CodesResult.setcodes_newPhone(res.C.get("C2b"),
-                    res.C.get("C5a"), res.C.get("C5b"), res.C.get("C15b"));
-            if (cr.calcDanishCode > 0) {
-                res.calcDanishCode = cr.calcDanishCode;
-                res.intDanish = cr.intDanish;
-            }
-        }
-
-        /** town names */
-        if (res.calcDanishCode <= 0 || codeSet.contains(res.calcDanishCode)) {
-            String C7g = res.C.get("C7g");
-            if (!((C7g == null) || (C7g.isEmpty()) || (C7g.startsWith("0")))) {
-                CodesResult cr = CodesResult.setcodes_mail(res.C.get("C1a"),
-                        res.C.get("C5a"), res.C.get("C5b"), res.C.get("C15b"),
-                        C7g);
-                if (cr.calcDanishCode > 0) {
-                    res.calcDanishCode = cr.calcDanishCode;
-                    res.intDanish = cr.intDanish;
-                } else {
-                    res.calcDanishCode = 230;
-                    res.intDanish = 75 / 100;
-                }
-            }
-        }
-
-        for (CodesResult.NotDkExceptions ex : CodesResult.NotDkExceptions
-                .values()) {
-            if (res.calcDanishCode <= 0 || codeSet.contains(res.calcDanishCode)) {
-                // get calcDanishCode and IntDanish
-                // and check in depth
-                CodesResult cr = CodesResult
-                        .setcodes_notDkLanguageVeryLikelyNewFields(res, ex); 
-                if (cr.calcDanishCode > 0) {
-                    res.calcDanishCode = cr.calcDanishCode;
-                    res.intDanish = cr.intDanish;
-                }
-            }
-        }
-
-        // update bits if already negativeBitmapCalcCode
-        if (res.calcDanishCode <= 0) {
-            res.calcDanishCode = CodesResult.findNegativBitmapCalcCode(res);
-        }
-
-    }
-    
-    /**
-     * Update the value of criteria C9e using existing values of criteria C9b and C9e.   
-     * @param res the given SingleCriteriaResult to update
-     */
-    private static void update9e(SingleCriteriaResult res) {
-        String C9b = res.C.get("C9b");
-        String C9e = res.C.get("C9e");
-        if (C9b != null && (!C9b.isEmpty() && !C9b.startsWith("0"))) {
-            res.C.put("C9e", CriteriaUtils.findC9eval(C9b, C9e));
-        }
-
-    }
-
-    /**
-     * Update the value of criteria C8c using existing values of criteria C8a and C8c.   
-     * @param res the given SingleCriteriaResult to update
-     */
-    private static void update8c(SingleCriteriaResult res) {
-        String C8a = res.C.get("C8a");
-        String C8c = res.C.get("C8c");
-        if (C8a != null && (!C8a.isEmpty() && !C8a.startsWith("0"))) {
-            String oldC8c = C8c;
-            C8c = CriteriaUtils.findC8cval(C8a, C8c);
-            SystemUtils.log("Updating criteria C8c. Changed from '" + oldC8c + "' to '"
-                    + C8c + "' using the C8a value '" + C8a + "'", Level.INFO, false);
-            res.C.put("C8c", C8c);
-        }
-
-    }
-
-    /**
-     * Update the value of criteria C3g using existing values of criteria C3g.   
-     * @param res the given SingleCriteriaResult to update
-     */
-    private static void update3g(SingleCriteriaResult res) {
-        String C3g = res.C.get("C3g");
-        if (C3g != null && (!C3g.isEmpty() && !C3g.startsWith("0"))) {
-            String oldC3g = C3g;
-            Set<String> tokens = TextUtils
-                    .tokenizeText(C3g.substring(1).trim());
-            List<String> words = Arrays
-                    .asList(FrequentWords.frequentwordsWithDanishLettersCodedNew);
-            tokens.retainAll(words);
-            C3g = tokens.size() + " " + TextUtils.conjoin("#", tokens);
-            SystemUtils.log("Updating criteria C3g. Changed from '" + oldC3g + "' to '"
-                    + C3g + "'", Level.INFO, false);
-            res.C.put("C3g", C3g);
-        }
-
-    }
-    
+        
     /**
      * This sets some extra criteria not included in the CombinedCombo.
      * See CalcDanishCode.getCalcDkCodeText for explanations.
