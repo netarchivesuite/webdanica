@@ -1,4 +1,113 @@
-<@master file="users_master.html">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="WEBDANICA!">
+    <meta name="keywords" content="WEBDANICA,WEBDANICA,WEBDANICA">
+    <meta name="author" content="WEBDANICA">
+    <meta name="robots" content="noindex,nofollow">
+<placeholder id="headers" />
+    <title><placeholder id="title"/></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap-responsive.css" />
+    <style type="text/css">
+<placeholder id="styles" />
 
-<place placeholder="content">
- </place>
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+.sidebar-nav {
+  padding: 9px 0;
+}
+
+@media (max-width: 980px) {
+  /* Enable use of floated navbar text */
+  .navbar-text.pull-right {
+	float: none;
+	padding-left: 5px;
+	padding-right: 5px;
+  }
+}
+
+a {
+  display: inline-block;
+  witdh: 100px;
+}
+
+    </style>
+
+<placeholder id="scripts" />
+  </head>
+<body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="/"><placeholder id="appname" /></a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <placeholder id="navbar" />
+            </ul>
+<!--
+            <p class="navbar-text pull-right">
+              Logget ind som <placeholder id="user" /> (<a href="?action=logout">Log ud</a>)
+            </p>
+-->
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+<h3><placeholder id="heading" /></h3>
+
+<h4>Danica Status: <placeholder id="danicaState" /><br>
+Danica Status Reason: <placeholder id="danicaStateReason" /><br>
+SeedCount: <placeholder id="seedCount" /><br>
+DomainParts: <placeholder id="domainParts" /><br>
+UpdatedTime: <placeholder id="domainUpdatedTime" /></br>
+
+Notes: <placeholder id="domainNotes" /><br>
+</h4>
+    <div class="container-fluid">
+      <div class="row-fluid">
+
+<placeholder id="content" />
+
+      </div><!--/row-->
+      <hr />
+      <footer>
+        <p>Copyright &copy; 2013-2017 Det Kongelige Bibliotek</p>
+      </footer>
+    </div><!--/.fluid-container-->
+
+<!--div>
+  <ul class="nav nav-tabs">
+    <li><a href="#">Oprettet</a></li>
+    <li><a href="#">PID registreret</a></li>
+    <li><a href="#">Arkiv tilstand ukendt</a></li>
+    <li><a href="#">Ikke høstet</a></li>
+    <li><a href="#">Høstet</a></li>
+    <li><a href="#">Arkiveret</a></li>
+  </ul>
+
+</div-->
+
+  <script src="/js/bootstrap.js"></script>
+<!--
+  <script src="js/bootstrap-transition.js"></script>
+  <script src="js/bootstrap-alert.js"></script>
+  <script src="js/bootstrap-modal.js"></script>
+  <script src="js/bootstrap-dropdown.js"></script>
+  <script src="js/bootstrap-scrollspy.js"></script>
+  <script src="js/bootstrap-tab.js"></script>
+  <script src="js/bootstrap-tooltip.js"></script>
+  <script src="js/bootstrap-popover.js"></script>
+  <script src="js/bootstrap-button.js"></script>
+  <script src="js/bootstrap-collapse.js"></script>
+  <script src="js/bootstrap-carousel.js"></script>
+  <script src="js/bootstrap-typeahead.js"></script>
+-->
+</body>
+</html>

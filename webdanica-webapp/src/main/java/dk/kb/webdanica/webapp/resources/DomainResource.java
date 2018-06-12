@@ -2,6 +2,7 @@ package dk.kb.webdanica.webapp.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import com.antiaction.common.filter.Caching;
@@ -58,7 +60,6 @@ public class DomainResource implements ResourceAbstract {
 	    public void resources_init(Environment environment) {
 	        this.environment = environment;
 	        this.daofactory = environment.getConfig().getDAOFactory();
-	        
 	    }
 
 	    @Override
@@ -121,6 +122,7 @@ public class DomainResource implements ResourceAbstract {
 	        	return;
 	        }
 	    }
+	    
 	    private Domain getDomainFromPathinfo(String pathInfo, String domainPath) throws DaoException {
 	        Domain domain = null;
 	    	DomainsDAO ddao = daofactory.getDomainsDAO();
@@ -131,8 +133,20 @@ public class DomainResource implements ResourceAbstract {
 	        return domain;
         }
 
+	    /**
+	     * Show the following information about any domain in the domains table
+	     * using the template webdanica-webapp/src/main/webapp/domain_show.html.
+	     * 
+	     * Danica Status: <placeholder id="danicaState" /><br>
+           Danica Status Reason: <placeholder id="danicaStateReason" /><br>
+           SeedCount: <placeholder id="seedCount" /><br>
+           DomainParts: <placeholder id="domainParts" /><br>
+           Notes: <placeholder id="domainNotes" /><br>
+           UpdatedTime: <placeholder id="domainUpdatedTime" /></br>
+	     * 
+	     */
 		private void domain_show(User dab_user, HttpServletRequest req,
-                HttpServletResponse resp, Domain b, Long seedsCount) throws IOException {
+                HttpServletResponse resp, Domain d, Long seedsCount) throws IOException {
 	    	ServletOutputStream out = resp.getOutputStream();
 	        resp.setContentType("text/html; charset=utf-8");
 	        // TODO error text
@@ -152,12 +166,14 @@ public class DomainResource implements ResourceAbstract {
 	        TemplatePlaceHolder alertPlace = TemplatePlaceBase.getTemplatePlaceHolder("alert");
 	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
 	        
-	        TemplatePlaceHolder tldPlace = TemplatePlaceBase.getTemplatePlaceHolder("tld");
-	        TemplatePlaceHolder namePlace = TemplatePlaceBase.getTemplatePlaceHolder("name");
-	        TemplatePlaceHolder descriptionPlace = TemplatePlaceBase.getTemplatePlaceHolder("description");
-	        TemplatePlaceHolder lastupdatetimePlace = TemplatePlaceBase.getTemplatePlaceHolder("last_update_time");
-	        TemplatePlaceHolder listsizePlace = TemplatePlaceBase.getTemplatePlaceHolder("list_size");
-	        TemplatePlaceHolder activePlace = TemplatePlaceBase.getTemplatePlaceHolder("activeStatus");
+	        TemplatePlaceHolder danicaStatePlace = TemplatePlaceBase.getTemplatePlaceHolder("danicaState");
+	        TemplatePlaceHolder danicaStateReasonPlace = TemplatePlaceBase.getTemplatePlaceHolder("danicaStateReason");
+	        // links here to the seeds in the database from that domain
+	        TemplatePlaceHolder seedCountPlace = TemplatePlaceBase.getTemplatePlaceHolder("seedCount");
+	        
+	        TemplatePlaceHolder danicaPartsPlace = TemplatePlaceBase.getTemplatePlaceHolder("danicaParts");
+	        TemplatePlaceHolder domainNotesPlace = TemplatePlaceBase.getTemplatePlaceHolder("domainNotes");
+	        TemplatePlaceHolder domainUpdatedTimePlace = TemplatePlaceBase.getTemplatePlaceHolder("domainUpdatedTime");
 	        
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
@@ -170,19 +186,18 @@ public class DomainResource implements ResourceAbstract {
 	        placeHolders.add(alertPlace);
 	        placeHolders.add(contentPlace);
 	        // add the new placeholders
-	        placeHolders.add(tldPlace);
-	        placeHolders.add(namePlace);
-	        placeHolders.add(descriptionPlace);
-	        placeHolders.add(lastupdatetimePlace);
-	        placeHolders.add(listsizePlace);
-	        placeHolders.add(activePlace);
-
+	        placeHolders.add(danicaStatePlace);
+	        placeHolders.add(seedCountPlace);
+	        placeHolders.add(danicaPartsPlace);
+	        placeHolders.add(domainNotesPlace);
+	        placeHolders.add(domainUpdatedTimePlace);
+	            
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 	        
 	        /*
 	         * Heading.
 	         */
-	        String heading = "Information about domain '" + b.getDomain() + "' from tld " +  b.getTld() + " :";
+	        String heading = "Information about domain '" + d.getDomain() + "' from tld " +  d.getTld() + " :";  
 	        
 	        /*
 	         * Places.
@@ -218,14 +233,17 @@ public class DomainResource implements ResourceAbstract {
 	        	logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
 	        }
 
-	        /*
-	        ResourceUtils.insertText(uidPlace, "uid",  b.getUid().toString(), BLACKLIST_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(namePlace, "name",  b.getName(), BLACKLIST_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(descriptionPlace, "description",  b.getDescription() + "", BLACKLIST_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(lastupdatetimePlace, "last_update_time",  blackListLastUpdatedTime + "", BLACKLIST_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(listsizePlace, "list_size",  blackListSize + "", BLACKLIST_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(activePlace, "activeStatus",  b.isActive() + "", BLACKLIST_SHOW_TEMPLATE, logger);
-	        */
+	        ResourceUtils.insertText(danicaStatePlace, "danicaState",  d.getDanicaStatus().toString(), DOMAIN_SHOW_TEMPLATE, logger);
+	        String reason = d.getDanicaStatusReason();
+	        if (reason.isEmpty()) {
+	            reason = "None";
+	        }
+	        ResourceUtils.insertText(danicaStateReasonPlace, "danicaStateReason",  reason, DOMAIN_SHOW_TEMPLATE, logger);
+	        ResourceUtils.insertText(seedCountPlace, "seedCount", seedsCount + "", DOMAIN_SHOW_TEMPLATE, logger);
+	        String danicaParts = StringUtils.join(d.getDanicaParts(), ",");
+	        ResourceUtils.insertText(danicaPartsPlace, "danicaParts",  danicaParts, DOMAIN_SHOW_TEMPLATE, logger);
+	        ResourceUtils.insertText(domainNotesPlace, "domainNotes",  d.getNotes(), DOMAIN_SHOW_TEMPLATE, logger);
+	        ResourceUtils.insertText(domainUpdatedTimePlace, "domainUpdatedTime",  new Date(d.getUpdatedTime()) + "", DOMAIN_SHOW_TEMPLATE, logger);
 	
 	        /*
 	        StringBuilder sb = new StringBuilder();
@@ -250,7 +268,15 @@ public class DomainResource implements ResourceAbstract {
 	        	logger.warning("IOException thrown, but ignored: " + e);        
 	        }
 	    }
-	        
+	    /**
+	     * List all the domains matching the given DomainsRequest
+	     * using templates 
+	     *  webdanica-webapp/src/main/webapp/tld_list.html
+	     *  webdanica-webapp/src/main/webapp/domain_list.html
+	     * 
+	     * The first template is used for presenting all known tlds 
+	     * The second template is used for presenting all known domains for a specific tld
+	     */
 		public void domains_list(User dab_user, HttpServletRequest req,
 	            HttpServletResponse resp, DomainsRequest dr) throws IOException {
 	        ServletOutputStream out = resp.getOutputStream();
@@ -422,11 +448,6 @@ public class DomainResource implements ResourceAbstract {
 	        	
 	        }
 	    }
-		
-		public static String createDomainLink() {
-			return null;
-		}
-		
 	}
 
 
