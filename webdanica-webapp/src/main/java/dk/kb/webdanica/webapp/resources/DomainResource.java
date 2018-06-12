@@ -140,9 +140,11 @@ public class DomainResource implements ResourceAbstract {
 	     * Danica Status: <placeholder id="danicaState" /><br>
            Danica Status Reason: <placeholder id="danicaStateReason" /><br>
            SeedCount: <placeholder id="seedCount" /><br>
-           DomainParts: <placeholder id="domainParts" /><br>
-           Notes: <placeholder id="domainNotes" /><br>
+           DanicaParts: <placeholder id="danicaParts" /><br>
            UpdatedTime: <placeholder id="domainUpdatedTime" /></br>
+           
+           Notes: <placeholder id="domainNotes" /><br>
+           
 	     * 
 	     */
 		private void domain_show(User dab_user, HttpServletRequest req,
@@ -240,11 +242,26 @@ public class DomainResource implements ResourceAbstract {
 	        }
 	        ResourceUtils.insertText(danicaStateReasonPlace, "danicaStateReason",  reason, DOMAIN_SHOW_TEMPLATE, logger);
 	        ResourceUtils.insertText(seedCountPlace, "seedCount", seedsCount + "", DOMAIN_SHOW_TEMPLATE, logger);
-	        String danicaParts = StringUtils.join(d.getDanicaParts(), ",");
+	        
+	        String danicaParts = "N/A";
+	        if (d.getDanicaParts() != null) {
+	            danicaParts = StringUtils.join(d.getDanicaParts(), ",");
+	        }
 	        ResourceUtils.insertText(danicaPartsPlace, "danicaParts",  danicaParts, DOMAIN_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(domainNotesPlace, "domainNotes",  d.getNotes(), DOMAIN_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(domainUpdatedTimePlace, "domainUpdatedTime",  new Date(d.getUpdatedTime()) + "", DOMAIN_SHOW_TEMPLATE, logger);
-	
+	        String notes = "";
+	        if (d.getNotes() != null) {
+	            notes = d.getNotes();
+	        }
+	        ResourceUtils.insertText(domainNotesPlace, "domainNotes", notes , DOMAIN_SHOW_TEMPLATE, logger);
+	        
+	        Long updatedTime = d.getUpdatedTime();
+	        String updatedTimeString = "No updatedTime value stored in database"; 
+	        if (updatedTime != null) {
+	            updatedTimeString = new Date(updatedTime).toString();
+	        }
+	       
+	        ResourceUtils.insertText(domainUpdatedTimePlace, "domainUpdatedTime", updatedTimeString, DOMAIN_SHOW_TEMPLATE, logger);
+	        
 	        /*
 	        StringBuilder sb = new StringBuilder();
 	        
