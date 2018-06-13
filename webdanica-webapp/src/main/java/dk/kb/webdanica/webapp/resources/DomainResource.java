@@ -25,6 +25,7 @@ import com.antiaction.common.templateengine.TemplatePlaceBase;
 import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.Domain;
+import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DaoException;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
@@ -43,7 +44,9 @@ public class DomainResource implements ResourceAbstract {
 	    protected int R_DOMAINS_LIST = -1;
 	    
 	    protected int R_DOMAIN_SHOW = -1;
-
+	    
+	    protected int R_DOMAIN_SEEDS_SHOW = -1;
+	    
 	    private String TLD_LIST_TEMPLATE = "tld_list.html";
 	    
 		private String DOMAIN_SHOW_TEMPLATE = "domain_show.html";
@@ -55,6 +58,8 @@ public class DomainResource implements ResourceAbstract {
 		public static final String DOMAIN_LIST_PATH = "/domains/";
 
 		public static final String DOMAIN_PATH = "/domain/";
+		
+		public static final String DOMAIN_SEEDS_PATH = "/domainseeds/"; // usage: /domainseeds/$domain/ or /domainseeds/$domain/$danicastatus/
 		
 	    @Override
 	    public void resources_init(Environment environment) {
@@ -68,6 +73,8 @@ public class DomainResource implements ResourceAbstract {
 	        		   		environment.getResourcesMap().getResourceByPath(DOMAIN_LIST_PATH).isSecure());
 	        R_DOMAIN_SHOW = resourceManager.resource_add(this, DOMAIN_PATH, 
     		   		environment.getResourcesMap().getResourceByPath(DOMAIN_PATH).isSecure());
+	        R_DOMAIN_SEEDS_SHOW = resourceManager.resource_add(this, DOMAIN_SEEDS_PATH, 
+                    environment.getResourcesMap().getResourceByPath(DOMAIN_SEEDS_PATH).isSecure());
 	    }
 
 	    @Override
@@ -76,46 +83,11 @@ public class DomainResource implements ResourceAbstract {
 	    		int resource_id, List<Integer> numerics, String pathInfo) throws IOException {
 	        
 	        if (resource_id == R_DOMAINS_LIST) {
-	            DomainsRequest dr = DomainsRequest.getDomainsRequest(pathInfo);
-	            if (dr.getValid()) {
-	                domains_list(dab_user, req, resp, dr);
-	            } else {
-	                String error = "Invalid request: " + pathInfo;
-	                CommonResource.show_error(error, resp, environment);
-                    return;
-	            }
+	            executeDomainsListRequest(pathInfo, dab_user, req, resp);
 	        } else if (resource_id == R_DOMAIN_SHOW) {
-	            DomainRequest dr = DomainRequest.getDomainRequest(pathInfo);
-	            if (dr.getValid()) {
-	                Domain domain = null;
-	                try {
-	                    domain = getDomainFromPathinfo(pathInfo, DOMAIN_PATH);
-	                } catch (DaoException e)  {
-	                    String error = "Impossible to retrieve domain from database in resource '" +  this.getClass().getName() + "': " +  ExceptionUtils.getFullStackTrace(e);
-	                    CommonResource.show_error(error, resp, environment);
-	                    return;
-	                }
-	                if (domain != null) {
-	                    Long seedscount = 0L;
-                        try {
-                            seedscount = daofactory.getSeedsDAO().getDomainSeedsCount(domain.getDomain());
-                        } catch (DaoException e) {
-                            String error = "Impossible to extract seedscount for domain '" +  domain.getDomain() + "': " + ExceptionUtils.getFullStackTrace(e);
-                            CommonResource.show_error(error, resp, environment);
-                            return;
-                        }
-	                    domain_show(dab_user, req, resp, domain, seedscount);
-	                } else {
-	                    String error = "Impossible to find valid domain from pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
-	                    CommonResource.show_error(error, resp, environment);
-	                    return;
-	                } 
-	            } else {
-	                String error = "Invalid request: " + pathInfo;
-                    CommonResource.show_error(error, resp, environment);
-                    return;
-	            }
-
+	            executeDomainShowRequest(pathInfo, dab_user, req, resp);
+	        } else if (resource_id == R_DOMAIN_SEEDS_SHOW) {
+                executeDomainSeedsShowRequest(pathInfo, dab_user, req, resp);
 	        } else {
 	        	String error = "No resource matching pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
 	        	CommonResource.show_error(error, resp, environment);
@@ -123,7 +95,80 @@ public class DomainResource implements ResourceAbstract {
 	        }
 	    }
 	    
-	    private Domain getDomainFromPathinfo(String pathInfo, String domainPath) throws DaoException {
+	    private void executeDomainSeedsShowRequest(String pathInfo,
+                User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            DomainSeedsRequest dsr = DomainSeedsRequest.getDomainSeedsRequest(pathInfo);
+            if (dsr.getValid()) {
+                String domain = dsr.getDomain();
+                try {
+                    int maxfetched = environment.getConfig().getMaxUrlsToFetch();
+                    List<Seed> seeds = daofactory.getSeedsDAO().getSeeds(domain, maxfetched);
+                    String error = "DomainSeedsShowFunctionality is not yet implemented by this class: '" +  this.getClass().getName();
+                    error += "But request is considered valid. domain="
+                            + domain + ",danicaState=" + dsr.getDanicaStatus() + ", seedscount = " + seeds.size() + "(max = " +  maxfetched + ")";
+                    for (Seed s: seeds) {
+                        error += "s = " +  s.getUrl() + ", danica=" + s.getDanicaStatus() + ", status=" + s.getStatus() + ", tld=" + s.getTld();
+                    }
+                    CommonResource.show_error(error, resp, environment);
+                    return;
+                } catch (DaoException e) {
+                    CommonResource.show_error(e.getMessage(), resp, environment);
+                    return; 
+                }
+                    
+            } else {
+                CommonResource.show_error("Invalid request, domain = " +  dsr.getDomain() + ", danicastate=" +  dsr.getDanicaStatus(), resp, environment);
+                return;
+            }
+        }
+
+        private void executeDomainShowRequest(String pathInfo, User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException{
+	        DomainRequest dr = DomainRequest.getDomainRequest(pathInfo);
+            if (dr.getValid()) {
+                Domain domain = null;
+                try {
+                    domain = getDomainFromPathinfo(pathInfo, DOMAIN_PATH);
+                } catch (DaoException e)  {
+                    String error = "Impossible to retrieve domain from database in resource '" +  this.getClass().getName() + "': " +  ExceptionUtils.getFullStackTrace(e);
+                    CommonResource.show_error(error, resp, environment);
+                    return;
+                }
+                if (domain != null) {
+                    Long seedscount = 0L;
+                    try {
+                        seedscount = daofactory.getSeedsDAO().getDomainSeedsCount(domain.getDomain());
+                    } catch (DaoException e) {
+                        String error = "Impossible to extract seedscount for domain '" +  domain.getDomain() + "': " + ExceptionUtils.getFullStackTrace(e);
+                        CommonResource.show_error(error, resp, environment);
+                        return;
+                    }
+                    domain_show(dab_user, req, resp, domain, seedscount);
+                } else {
+                    String error = "Impossible to find valid domain from pathinfo'" +  pathInfo + "' in resource '" +  this.getClass().getName() + "'";
+                    CommonResource.show_error(error, resp, environment);
+                    return;
+                } 
+            } else {
+                String error = "Invalid request: " + pathInfo;
+                CommonResource.show_error(error, resp, environment);
+                return;
+            }
+            
+        }
+
+        private void executeDomainsListRequest(String pathInfo, User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            DomainsRequest dr = DomainsRequest.getDomainsRequest(pathInfo);
+            if (dr.getValid()) {
+                domains_list(dab_user, req, resp, dr);
+            } else {
+                String error = "Invalid request: " + pathInfo;
+                CommonResource.show_error(error, resp, environment);
+                return;
+            }
+            
+        }
+
+        private Domain getDomainFromPathinfo(String pathInfo, String domainPath) throws DaoException {
 	        Domain domain = null;
 	    	DomainsDAO ddao = daofactory.getDomainsDAO();
 	        String[] pathParts = pathInfo.split(domainPath);
@@ -241,7 +286,8 @@ public class DomainResource implements ResourceAbstract {
 	            reason = "None";
 	        }
 	        ResourceUtils.insertText(danicaStateReasonPlace, "danicaStateReason",  reason, DOMAIN_SHOW_TEMPLATE, logger);
-	        ResourceUtils.insertText(seedCountPlace, "seedCount", seedsCount + "", DOMAIN_SHOW_TEMPLATE, logger);
+	        String seedCountText = "<A href=\"" + environment.getDomainSeedsPath() + d.getDomain() + "/\">" + seedsCount + "</A>"; 
+	        ResourceUtils.insertText(seedCountPlace, "seedCount", seedCountText, DOMAIN_SHOW_TEMPLATE, logger);
 	        
 	        String danicaParts = "N/A";
 	        if (d.getDanicaParts() != null) {

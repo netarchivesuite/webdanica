@@ -80,6 +80,7 @@ public class Environment {
     private String harvestPath;
     private String domainsPath;
     private String domainPath;
+    private String domainSeedsPath;
 
     /*
      * Templates.
@@ -329,8 +330,10 @@ public class Environment {
         this.criteriaResultsPath = getContextPath() + CriteriaResultsResource.CRITERIA_RESULTS_PATH;
         this.domainPath = getContextPath() + DomainResource.DOMAIN_PATH;
         this.domainsPath = getContextPath() + DomainResource.DOMAIN_LIST_PATH;
+        this.domainSeedsPath = getContextPath() + DomainResource.DOMAIN_SEEDS_PATH;
         this.ingestlogPath = getContextPath() + IngestLogResource.INGESTLOG_PATH;
         this.ingestlogsPath = getContextPath() + IngestLogResource.INGESTLOGS_PATH;
+        
         /*
          * Initialize template master.
          */
@@ -520,6 +523,10 @@ public class Environment {
         return this.domainPath;
     }
 
+    public String getDomainSeedsPath() {
+        return this.domainSeedsPath;
+    }
+    
     public Configuration getConfig() {
         return this.theconfig;
     }

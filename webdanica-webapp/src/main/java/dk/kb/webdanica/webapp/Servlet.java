@@ -252,6 +252,12 @@ public class Servlet extends HttpServlet implements ResourceManagerAbstract,
                             numerics);
                 }
                 if (resource == null
+                        && pathInfo.startsWith(DomainResource.DOMAIN_SEEDS_PATH)) {
+                    resource = pathMap.get(DomainResource.DOMAIN_SEEDS_PATH,
+                            numerics);
+                }
+                
+                if (resource == null
                         && pathInfo
                                 .startsWith(IngestLogResource.INGESTLOG_PATH)) {
                     resource = pathMap.get(IngestLogResource.INGESTLOG_PATH,
