@@ -103,6 +103,7 @@ public class DomainResource implements ResourceAbstract {
                 try {
                     int maxfetched = environment.getConfig().getMaxUrlsToFetch();
                     List<Seed> seeds = daofactory.getSeedsDAO().getSeeds(domain, maxfetched);
+                    daofactory.getSeedsDAO().getSeeds(domain, null, dsr.getDanicaStatus(), maxfetched);
                     String error = "DomainSeedsShowFunctionality is not yet implemented by this class: '" +  this.getClass().getName();
                     error += "But request is considered valid. domain="
                             + domain + ",danicaState=" + dsr.getDanicaStatus() + ", seedscount = " + seeds.size() + "(max = " +  maxfetched + ")";
@@ -120,8 +121,16 @@ public class DomainResource implements ResourceAbstract {
                 CommonResource.show_error("Invalid request, domain = " +  dsr.getDomain() + ", danicastate=" +  dsr.getDanicaStatus(), resp, environment);
                 return;
             }
-        }
-
+	    }
+	    
+	    /**
+	     * Show the seeds from a given domain with possibly a given DanicaStatus and State 
+	     * @param pathInfo
+	     * @param dab_user
+	     * @param req
+	     * @param resp
+	     * @throws IOException
+	     */
         private void executeDomainShowRequest(String pathInfo, User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException{
 	        DomainRequest dr = DomainRequest.getDomainRequest(pathInfo);
             if (dr.getValid()) {

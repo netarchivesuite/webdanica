@@ -20,6 +20,8 @@ public interface SeedsDAO extends AutoCloseable{
 	
 	Long getDomainSeedsCount(String domain) throws DaoException;
 	
+	Long getDomainSeedsCount(String domain, Status status, DanicaStatus dstatus) throws DaoException;
+	
 	List<Seed> getSeedsReadyToExport(boolean includeAlreadyExportedSeeds) throws DaoException;
 
 	boolean existsUrl(String url) throws DaoException;
@@ -30,8 +32,9 @@ public interface SeedsDAO extends AutoCloseable{
 
     List<Seed> getSeeds(String domain, int limit) throws DaoException;
 
-    List<Seed> getSeeds(Status status, String domain, int limit) throws DaoException;
-    
+    List<Seed> getSeeds(String domain, Status status, int limit) throws DaoException;
+
+    List<Seed> getSeeds(String domain, Status status, DanicaStatus danicaStatus, int maxfetched) throws DaoException;
 }
 	
 	

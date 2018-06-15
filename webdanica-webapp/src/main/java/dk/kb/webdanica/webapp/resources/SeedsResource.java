@@ -752,7 +752,7 @@ public class SeedsResource implements ResourceAbstract {
             }   
         } else if (showSeedsFromDomainWithState) {
             try {
-                urlRecords = sdao.getSeeds(wantedStatus, domain, maxUrlsToFetch);
+                urlRecords = sdao.getSeeds(domain, wantedStatus, maxUrlsToFetch);
             } catch (Exception e) {
                 String errMsg = "Exception on retrieving max " + maxUrlsToFetch + " seeds from domain '" + domain + "' with state '" +  wantedStatus + "': " +  ExceptionUtils.getFullStackTrace(e);
                 logger.log(Level.WARNING, errMsg, e);

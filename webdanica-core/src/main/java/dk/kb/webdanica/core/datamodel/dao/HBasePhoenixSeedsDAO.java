@@ -26,7 +26,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
             tld VARCHAR(64) // Top level domain for this seed
             inserted_time TIMESTAMP,
             updated_time TIMESTAMP,
-               danica INTEGER, // see dk.kb.webdanica.datamodel.DanicaStatus enum class
+            danica INTEGER, // see dk.kb.webdanica.datamodel.DanicaStatus enum class
             status INTEGER, // see dk.kb.webdanica.datamodel.Status enum class
             status_reason VARCHAR, // textual explanation behind its state
             exported boolean,
@@ -135,6 +135,9 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     private static final String SEEDS_COUNT_BY_STATUS_SQL;
     private static final String SEEDS_COUNT_ALL_SQL;
     private static final String SEEDS_COUNT_BY_DOMAIN_SQL;
+    private static final String SEEDS_COUNT_BY_DOMAIN_AND_STATE_SQL;
+    private static final String SEEDS_COUNT_BY_DOMAIN_AND_DANICASTATE_SQL;
+    private static final String SEEDS_COUNT_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL;
 
     static {
         SEEDS_COUNT_BY_STATUS_SQL = ""
@@ -148,6 +151,21 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 + "SELECT count(*) "
                 + "FROM seeds "
                 + "WHERE domain=? ";
+        SEEDS_COUNT_BY_DOMAIN_AND_STATE_SQL = ""
+                + "SELECT count(*) "
+                + "FROM seeds "
+                + "WHERE domain=? AND status=?";
+        SEEDS_COUNT_BY_DOMAIN_AND_DANICASTATE_SQL = ""
+                + "SELECT count(*) "
+                + "FROM seeds "
+                + "WHERE domain=? AND danica=?";
+        SEEDS_COUNT_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL = ""
+                + "SELECT count(*) "
+                + "FROM seeds "
+                + "WHERE domain=? AND status=? AND danica=?";
+        
+        
+        
     }
 
 	@Override
@@ -181,6 +199,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     private static final String SEEDS_BY_STATUS_SQL;
     private static final String SEEDS_BY_DOMAIN_SQL;
     private static final String SEEDS_BY_DOMAIN_AND_STATE_SQL;
+    private static final String SEEDS_BY_DOMAIN_AND_DANICASTATE_SQL;
+    private static final String SEEDS_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL;
 
     static {
         SEEDS_BY_STATUS_SQL = "SELECT * "
@@ -192,6 +212,18 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         SEEDS_BY_DOMAIN_AND_STATE_SQL = "SELECT * "
                 + "FROM seeds "
                 + "WHERE domain=? AND status=? LIMIT ?";
+        SEEDS_BY_DOMAIN_AND_DANICASTATE_SQL = "SELECT * "
+                + "FROM seeds "
+                + "WHERE domain=? AND danica=? LIMIT ?";
+        SEEDS_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL = "SELECT * "
+                        + "FROM seeds "
+                        + "WHERE domain=? AND status=? AND danica=? LIMIT ?";
+        
+        
+    }
+    @Override
+    public List<Seed> getSeeds(String domain, Status status, int limit) throws DaoException {
+        return getSeeds(domain,status, null, limit);
     }
 
     @Override
@@ -218,23 +250,48 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     }
     
     @Override
-    public List<Seed> getSeeds(Status status, String domain, int limit) throws DaoException {
+    public List<Seed> getSeeds(String domain, Status status, DanicaStatus dstatus, int limit) throws DaoException {
         List<Seed> seedList = new LinkedList<Seed>();
+        if (domain == null || domain.isEmpty()) {
+            return null;
+        }
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_SQL);) {
+            PreparedStatement stm = null;
+            if (status != null && dstatus == null) {
+                stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_SQL);
                 stm.clearParameters();
                 stm.setString(1, domain);
                 stm.setInt(2, status.ordinal());
                 stm.setInt(3, limit);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null) {
-                        while (rs.next()) {
-                            seedList.add(getSeedFromResultSet(rs));
-                        }
+            } else if (status == null && dstatus != null) {
+                stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_DANICASTATE_SQL);
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2, dstatus.ordinal());
+                stm.setInt(3, limit);
+            } else if (status != null && dstatus != null) {
+                stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL);
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2, status.ordinal());
+                stm.setInt(3, dstatus.ordinal());
+                stm.setInt(4, limit);
+            } else {
+                stm = conn.prepareStatement(SEEDS_BY_DOMAIN_SQL);
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2, limit);
+            }
+
+            try (ResultSet rs = stm.executeQuery();) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        seedList.add(getSeedFromResultSet(rs));
                     }
                 }
             }
+
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -243,28 +300,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     
     @Override
     public List<Seed> getSeeds(String domain, int limit) throws DaoException {
-        List<Seed> seedList = new LinkedList<Seed>();
-        try {
-            Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_DOMAIN_SQL);) {
-                stm.clearParameters();
-                stm.setString(1, domain);
-                stm.setInt(2, limit);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null) {
-                        while (rs.next()) {
-                            seedList.add(getSeedFromResultSet(rs));
-                        }
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-        return seedList;
+        return getSeeds(domain, null, null, limit);
     }
-    
-    
 
     private Seed getSeedFromResultSet(ResultSet rs) throws SQLException {
         Timestamp t = rs.getTimestamp("exported_time");
@@ -382,7 +419,6 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 + "WHERE url=?";
     }
 
-
     @Override
     public Seed getSeed(String url) throws DaoException {
         if (!existsUrl(url)) {
@@ -405,22 +441,38 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         }
         return result;
     }
-
     @Override
     public Long getDomainSeedsCount(String domain) throws DaoException {
+        return getDomainSeedsCount(domain, null, null);
+    }
+    
+    @Override
+    public Long getDomainSeedsCount(String domain, Status status, DanicaStatus dstatus) throws DaoException {
         if (domain == null || domain.isEmpty()) {
             return 0L;
         }
         long res = 0;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_SQL);) {
+            PreparedStatement stm = null;
+            if (status != null && dstatus == null) {
+                stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_AND_STATE_SQL);
                 stm.clearParameters();
                 stm.setString(1, domain);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null && rs.next()) {
-                        res = rs.getLong(1);
-                    }
+                stm.setInt(2,  status.ordinal());
+            } else if (status == null && dstatus != null) {
+                stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_AND_DANICASTATE_SQL);
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2,  dstatus.ordinal());
+            } else {
+                stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_SQL);
+                stm.clearParameters();
+                stm.setString(1, domain);
+            }   
+            try (ResultSet rs = stm.executeQuery();) {
+                if (rs != null && rs.next()) {
+                    res = rs.getLong(1);
                 }
             }
         } catch (SQLException e) {
@@ -430,3 +482,4 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         return res;
     }
 }
+
