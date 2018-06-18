@@ -26,6 +26,7 @@ import com.antiaction.common.templateengine.TemplatePlaceHolder;
 
 import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.datamodel.Seed;
+import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DaoException;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
@@ -121,8 +122,6 @@ public class DomainResource implements ResourceAbstract {
 	            HttpServletRequest req, HttpServletResponse resp, List<Seed> seeds, DomainSeedsRequest dsr) throws IOException {
 	        ServletOutputStream out = resp.getOutputStream();
 	        resp.setContentType("text/html; charset=utf-8");
-	        String errorStr = null;
-	        String successStr = null;
 	        Caching.caching_disable_headers(resp);
 	        String templateName = SEEDS_LIST_TEMPLATE;
 	        Template template = environment.getTemplateMaster().getTemplate(templateName);
@@ -170,16 +169,16 @@ public class DomainResource implements ResourceAbstract {
 	            logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
 	        }
 	        for (Seed s: seeds) {
-	            String showDetails = "<a href=\"" + Servlet.environment.getSeedPath() + "/" + s.getUrl() + "> Show details </A>";
+	            
+	            String showDetails = "<A href=\"" + Servlet.environment.getSeedPath() + "/" + CriteriaUtils.toBase64(s.getUrl()) + "\"> Show details </A>";
 	            sb.append("<tr>");
 	            sb.append("<td>");    
 	            sb.append("<a href=\"");
-	            sb.append(Servlet.environment.getDomainPath());
 	            sb.append(s.getUrl());
-	            sb.append("/\">");
+	            sb.append("\">");
 	            sb.append(s.getUrl());
 	            sb.append("</a>");
-	            sb.append(showDetails);
+	            sb.append("( " + showDetails + ")");
 	            sb.append("</td>");
 	            sb.append("<td>");
 	            sb.append(s.getDomain());
