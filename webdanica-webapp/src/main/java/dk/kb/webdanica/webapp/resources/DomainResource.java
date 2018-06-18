@@ -52,6 +52,8 @@ public class DomainResource implements ResourceAbstract {
 		private String DOMAIN_SHOW_TEMPLATE = "domain_show.html";
 		
 		private String DOMAIN_LIST_TEMPLATE = "domain_list.html";
+		
+		private String SEEDS_LIST_TEMPLATE = "domain_seeds_list.html";
 
 		private DAOFactory daofactory;
 
@@ -96,34 +98,119 @@ public class DomainResource implements ResourceAbstract {
 	    }
 	    
 	    private void executeDomainSeedsShowRequest(String pathInfo,
-                User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            DomainSeedsRequest dsr = DomainSeedsRequest.getDomainSeedsRequest(pathInfo);
-            if (dsr.getValid()) {
-                String domain = dsr.getDomain();
+	            User dab_user, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	        DomainSeedsRequest dsr = DomainSeedsRequest.getDomainSeedsRequest(pathInfo);
+	        if (dsr.getValid()) {
+	            String domain = dsr.getDomain();
+	            int maxfetched = environment.getConfig().getMaxUrlsToFetch();
+	            List<Seed> seeds;
                 try {
-                    int maxfetched = environment.getConfig().getMaxUrlsToFetch();
-                    List<Seed> seeds = daofactory.getSeedsDAO().getSeeds(domain, maxfetched);
-                    daofactory.getSeedsDAO().getSeeds(domain, null, dsr.getDanicaStatus(), maxfetched);
-                    String error = "DomainSeedsShowFunctionality is not yet implemented by this class: '" +  this.getClass().getName();
-                    error += "But request is considered valid. domain="
-                            + domain + ",danicaState=" + dsr.getDanicaStatus() + ", seedscount = " + seeds.size() + "(max = " +  maxfetched + ")";
-                    for (Seed s: seeds) {
-                        error += "s = " +  s.getUrl() + ", danica=" + s.getDanicaStatus() + ", status=" + s.getStatus() + ", tld=" + s.getTld();
-                    }
-                    CommonResource.show_error(error, resp, environment);
-                    return;
+                    seeds = daofactory.getSeedsDAO().getSeeds(domain, dsr.getStatus(), dsr.getDanicaStatus(), maxfetched);
+                    domainSeedsShow(pathInfo, dab_user, req, resp, seeds, dsr);
                 } catch (DaoException e) {
-                    CommonResource.show_error(e.getMessage(), resp, environment);
-                    return; 
+                    CommonResource.show_error("Error showing seeds for domain = " +  dsr.getDomain() + ", danicastate=" +  dsr.getDanicaStatus(), resp, environment);
+                    return;
                 }
-                    
-            } else {
-                CommonResource.show_error("Invalid request, domain = " +  dsr.getDomain() + ", danicastate=" +  dsr.getDanicaStatus(), resp, environment);
-                return;
-            }
+	        } else {
+	            CommonResource.show_error("Invalid request, domain = " +  dsr.getDomain() + ", danicastate=" +  dsr.getDanicaStatus(), resp, environment);
+	            return;
+	        }
 	    }
 	    
-	    /**
+	    private void domainSeedsShow(String pathInfo, User dab_user,
+	            HttpServletRequest req, HttpServletResponse resp, List<Seed> seeds, DomainSeedsRequest dsr) throws IOException {
+	        ServletOutputStream out = resp.getOutputStream();
+	        resp.setContentType("text/html; charset=utf-8");
+	        String errorStr = null;
+	        String successStr = null;
+	        Caching.caching_disable_headers(resp);
+	        String templateName = SEEDS_LIST_TEMPLATE;
+	        Template template = environment.getTemplateMaster().getTemplate(templateName);
+
+	        TemplatePlaceHolder titlePlace = TemplatePlaceBase.getTemplatePlaceHolder("title");
+	        TemplatePlaceHolder appnamePlace = TemplatePlaceBase.getTemplatePlaceHolder("appname");
+	        TemplatePlaceHolder navbarPlace = TemplatePlaceBase.getTemplatePlaceHolder("navbar");
+	        TemplatePlaceHolder userPlace = TemplatePlaceBase.getTemplatePlaceHolder("user");
+	        TemplatePlaceHolder menuPlace = TemplatePlaceBase.getTemplatePlaceHolder("menu");
+	        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
+	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
+	        TemplatePlaceHolder usersPlace = TemplatePlaceBase.getTemplatePlaceHolder("users");
+
+	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
+	        placeHolders.add(titlePlace);
+	        placeHolders.add(appnamePlace);
+	        placeHolders.add(navbarPlace);
+	        placeHolders.add(userPlace);
+	        placeHolders.add(menuPlace);
+	        placeHolders.add(headingPlace);
+	        placeHolders.add(contentPlace);
+	        placeHolders.add(usersPlace);
+
+	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
+
+	        // Primary textarea
+	        StringBuffer sb = new StringBuffer();
+
+
+	        String all = " ";
+	        if (dsr.getDanicaStatus() == null && dsr.getStatus() == null) {
+	            all= "all ";
+	        }
+	        String heading = "Showing " + all + seeds.size() + " seeds from domain '" + dsr.getDomain() + "'";
+	        if (dsr.getStatus() != null) {
+	            heading += ", with state '" + dsr.getStatus() + "'";
+	        }
+	        if (dsr.getDanicaStatus() != null) {
+	            heading += ", with danica-state '" + dsr.getDanicaStatus() + "'";
+	        }
+
+	        if (headingPlace != null) {
+	            headingPlace.setText(heading);
+	        } else {
+	            logger.warning("No heading´ placeholder found in template '" + templateName + "'" );
+	        }
+	        for (Seed s: seeds) {
+	            String showDetails = "<a href=\"" + Servlet.environment.getSeedPath() + "/" + s.getUrl() + "> Show details </A>";
+	            sb.append("<tr>");
+	            sb.append("<td>");    
+	            sb.append("<a href=\"");
+	            sb.append(Servlet.environment.getDomainPath());
+	            sb.append(s.getUrl());
+	            sb.append("/\">");
+	            sb.append(s.getUrl());
+	            sb.append("</a>");
+	            sb.append(showDetails);
+	            sb.append("</td>");
+	            sb.append("<td>");
+	            sb.append(s.getDomain());
+	            sb.append("</td>");
+	            sb.append("<td>");
+	            sb.append(s.getDanicaStatus());
+	            sb.append("</td>");
+	            sb.append("<td>");
+	            sb.append(s.getStatus()); 
+	            sb.append("</td>");
+	            sb.append("</tr>\n");
+	        }
+	        
+	        if (usersPlace != null) {
+                usersPlace.setText(sb.toString());
+            }
+	        
+	        try {
+                for (int i = 0; i < templateParts.parts.size(); ++i) {
+                    out.write(templateParts.parts.get(i).getBytes());
+                }
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                logger.warning("IOException thrown, but ignored: " + e);        
+            }
+
+	    }
+        
+
+        /**
 	     * Show the seeds from a given domain with possibly a given DanicaStatus and State 
 	     * @param pathInfo
 	     * @param dab_user
@@ -340,7 +427,8 @@ public class DomainResource implements ResourceAbstract {
 	        	logger.warning("IOException thrown, but ignored: " + e);        
 	        }
 	    }
-	    /**
+
+		/**
 	     * List all the domains matching the given DomainsRequest
 	     * using templates 
 	     *  webdanica-webapp/src/main/webapp/tld_list.html
@@ -399,14 +487,14 @@ public class DomainResource implements ResourceAbstract {
 	                CommonResource.show_error(errMsg, resp, environment);
 	                return;
 	            } 
-	            for (String s: tldList) {
+	            for (String t: tldList) {
                     sb.append("<tr>");
                     sb.append("<td>");    
                     sb.append("<a href=\"");
                     sb.append(Servlet.environment.getDomainsPath());
-                    sb.append(s);
+                    sb.append(t);
                     sb.append("/\">");
-                    sb.append(s);
+                    sb.append(t);
                     sb.append("</a>");
                     sb.append("</td>");
                     sb.append("<td>");
@@ -431,7 +519,14 @@ public class DomainResource implements ResourceAbstract {
                    
                 }
 	            header = "Listing all " + domainsCount + " domains in top level domain '" +  tld + "':";
+	            String domainLinkPrefix = "<A href=\"" + environment.getDomainSeedsPath() + "/";
 	            for (Domain d: domains) {
+	                Long seedscount = 0L;
+                    try {
+                        seedscount = daofactory.getSeedsDAO().getDomainSeedsCount(d.getDomain());
+                    } catch (DaoException e) {
+                        logger.log(Level.WARNING, "Error while retrieving seedscount for domain '" + d.getDomain() + "':", e);
+                    }
 	                sb.append("<tr>");
 	                sb.append("<td>");    
 	                sb.append("<a href=\"");
@@ -446,6 +541,9 @@ public class DomainResource implements ResourceAbstract {
 	                sb.append("</td>");
 	                sb.append("<td>");
 	                sb.append(d.getDanicaStatus());
+	                sb.append("</td>");
+	                sb.append("<td>");
+	                sb.append(domainLinkPrefix + d.getDomain() + "/\">" + seedscount + "</A>"); 
 	                sb.append("</td>");
 	                sb.append("</tr>\n");
 	            }
