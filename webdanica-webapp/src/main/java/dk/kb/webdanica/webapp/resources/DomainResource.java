@@ -30,7 +30,6 @@ import dk.kb.webdanica.core.datamodel.criteria.CriteriaUtils;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DaoException;
 import dk.kb.webdanica.core.datamodel.dao.DomainsDAO;
-import dk.kb.webdanica.webapp.Constants;
 import dk.kb.webdanica.webapp.Environment;
 import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Servlet;
@@ -62,7 +61,8 @@ public class DomainResource implements ResourceAbstract {
 
 		public static final String DOMAIN_PATH = "/domain/";
 		
-		public static final String DOMAIN_SEEDS_PATH = "/domainseeds/"; // usage: /domainseeds/$domain/ or /domainseeds/$domain/$danicastatus/
+		// usage: /domainseeds/$domain/ or /domainseeds/$domain/$danicastatus/
+		public static final String DOMAIN_SEEDS_PATH = "/domainseeds/"; 
 		
 	    @Override
 	    public void resources_init(Environment environment) {
@@ -118,6 +118,12 @@ public class DomainResource implements ResourceAbstract {
 	        }
 	    }
 	    
+	    /**
+	     * This method  handles the requests
+	     * /domainseeds/$domain/ or /domainseeds/$domain/$danicastatus/
+	     * 
+	     * @throws IOException
+	     */
 	    private void domainSeedsShow(String pathInfo, User dab_user,
 	            HttpServletRequest req, HttpServletResponse resp, List<Seed> seeds, DomainSeedsRequest dsr) throws IOException {
 	        ServletOutputStream out = resp.getOutputStream();
@@ -134,6 +140,7 @@ public class DomainResource implements ResourceAbstract {
 	        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
 	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
 	        TemplatePlaceHolder usersPlace = TemplatePlaceBase.getTemplatePlaceHolder("users");
+	        TemplatePlaceHolder backPlace = TemplatePlaceBase.getTemplatePlaceHolder("back");
 
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
@@ -191,6 +198,8 @@ public class DomainResource implements ResourceAbstract {
 	            sb.append("</td>");
 	            sb.append("</tr>\n");
 	        }
+	        
+	        setDomainsNavigationPlaces(titlePlace, appnamePlace, navbarPlace, userPlace, backPlace, dab_user, templateName);
 	        
 	        if (usersPlace != null) {
                 usersPlace.setText(sb.toString());
@@ -284,7 +293,6 @@ public class DomainResource implements ResourceAbstract {
            UpdatedTime: <placeholder id="domainUpdatedTime" /></br>
            
            Notes: <placeholder id="domainNotes" /><br>
-           
 	     * 
 	     */
 		private void domain_show(User dab_user, HttpServletRequest req,
@@ -344,31 +352,8 @@ public class DomainResource implements ResourceAbstract {
 	        /*
 	         * Places.
 	         */
-
-	        if (titlePlace != null) {
-	            titlePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME).toString());
-	        }
-
-	        if (appnamePlace != null) {
-	            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME + dk.kb.webdanica.webapp.Constants.SPACE + environment.getVersion()).toString());
-	        }
-
-	        if (navbarPlace != null) {
-	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_DOMAINS));
-	        }
-
-	        if (userPlace != null) {
-	            userPlace.setText(Navbar.getUserHref(dab_user));
-	        } 
-
-	        if (backPlace != null) {
-	        	backPlace.setText("<a href=\"" 
-	        			+ Servlet.environment.getDomainsPath() 
-	        			+ "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
-	        } else {
-	        	logger.warning("No back´placeholder found in template '" + templateName + "'" );
-	        }
-
+	        setDomainsNavigationPlaces(titlePlace, appnamePlace, navbarPlace, userPlace, backPlace, dab_user, templateName);
+	       
 	        if (headingPlace != null) {
 	            headingPlace.setText(heading);
 	        } else {
@@ -458,6 +443,7 @@ public class DomainResource implements ResourceAbstract {
 	        TemplatePlaceHolder headingPlace = TemplatePlaceBase.getTemplatePlaceHolder("heading");
 	        TemplatePlaceHolder contentPlace = TemplatePlaceBase.getTemplatePlaceHolder("content");
 	        TemplatePlaceHolder usersPlace = TemplatePlaceBase.getTemplatePlaceHolder("users");
+	        TemplatePlaceHolder backPlace = TemplatePlaceBase.getTemplatePlaceHolder("back");
 
 	        List<TemplatePlaceBase> placeHolders = new ArrayList<TemplatePlaceBase>();
 	        placeHolders.add(titlePlace);
@@ -468,6 +454,7 @@ public class DomainResource implements ResourceAbstract {
 	        placeHolders.add(headingPlace);
 	        placeHolders.add(contentPlace);
 	        placeHolders.add(usersPlace);
+	        placeHolders.add(backPlace);
 
 	        TemplateParts templateParts = template.filterTemplate(placeHolders, resp.getCharacterEncoding());
 	        
@@ -497,10 +484,10 @@ public class DomainResource implements ResourceAbstract {
                     sb.append("</a>");
                     sb.append("</td>");
                     sb.append("<td>");
-                    sb.append("N/A");
+                    sb.append("&nbsp;");
                     sb.append("</td>");
                     sb.append("<td>");
-                    sb.append("N/A");
+                    sb.append("&nbsp;");
                     sb.append("</td>");
                     sb.append("</tr>\n");
                 }
@@ -572,23 +559,8 @@ public class DomainResource implements ResourceAbstract {
 	        /*
 	         * Places.
 	         */
-
-	        if (titlePlace != null) {
-	            titlePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME).toString());
-	        }
-
-	        if (appnamePlace != null) {
-	            appnamePlace.setText(HtmlEntity.encodeHtmlEntities(Constants.WEBAPP_NAME +  Constants.SPACE + environment.getVersion()).toString());
-	        }
-
-	        if (navbarPlace != null) {
-	            navbarPlace.setText(Navbar.getNavbar(Navbar.N_DOMAINS));
-	        }
-
-	        if (userPlace != null) {
-	            userPlace.setText(Navbar.getUserHref(dab_user));
-	        }
-
+	        setDomainsNavigationPlaces(titlePlace, appnamePlace, navbarPlace, userPlace, backPlace, dab_user, templatename); 
+	        
 	        if (menuPlace != null) {
 	            menuPlace.setText(menuSb.toString());
 	        }
@@ -617,6 +589,39 @@ public class DomainResource implements ResourceAbstract {
 	        	
 	        }
 	    }
+		
+		private void setDomainsNavigationPlaces(
+		        TemplatePlaceHolder titlePlace,
+		        TemplatePlaceHolder appnamePlace,
+		        TemplatePlaceHolder navbarPlace,
+		        TemplatePlaceHolder userPlace, 
+		        TemplatePlaceHolder backPlace,
+		        User dab_user,
+		        String templateName) {
+		    if (titlePlace != null) {
+		        titlePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME).toString());
+		    }
+
+		    if (appnamePlace != null) {
+		        appnamePlace.setText(HtmlEntity.encodeHtmlEntities(dk.kb.webdanica.webapp.Constants.WEBAPP_NAME + dk.kb.webdanica.webapp.Constants.SPACE + environment.getVersion()).toString());
+		    }
+
+		    if (navbarPlace != null) {
+		        navbarPlace.setText(Navbar.getNavbar(Navbar.N_DOMAINS));
+		    }
+
+		    if (userPlace != null) {
+		        userPlace.setText(Navbar.getUserHref(dab_user));
+		    } 
+
+		    if (backPlace != null) {
+		        backPlace.setText("<a href=\"" 
+		                + Servlet.environment.getDomainsPath() 
+		                + "\" class=\"btn btn-primary\"><i class=\"icon-white icon-list\"></i> Tilbage til oversigten</a>");
+		    } else {
+		        logger.warning("No back´placeholder found in template '" + templateName + "'" );
+		    }
+		}
+		
+		
 	}
-
-
