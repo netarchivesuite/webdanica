@@ -16,17 +16,6 @@ import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixDomainsDAO implements DomainsDAO {
-/*
-	CREATE TABLE domains (
-		    domain VARCHAR PRIMARY KEY,
-		    notes VARCHAR,
-		    danicastatus INTEGER,
-		    updated_time TIMESTAMP,
-		    danicastatus_reason VARCHAR(256),
-		    tld VARCHAR(64),
-		    danica_parts VARCHAR[]
-		);
-*/
 	
 	private static final String INSERT_SQL;
 
@@ -47,6 +36,7 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	    if (existsDomain(domain.getDomain())) {
 	        return false;
 	    }
+	    PreparedStatement stm = null;
 		int res = 0;
 		try {
 			Long updatedTime = System.currentTimeMillis(); 
@@ -54,49 +44,52 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 				updatedTime = domain.getUpdatedTime();
 			}
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			try (PreparedStatement stm = conn.prepareStatement(INSERT_SQL)) {
-				stm.clearParameters();
-				stm.setString(1, domain.getDomain());
-				stm.setString(2, domain.getNotes());
-				stm.setInt(3, domain.getDanicaStatus().ordinal());
-				stm.setString(4, domain.getDanicaStatusReason());
-				stm.setTimestamp(5, new Timestamp(updatedTime));
-				stm.setString(6, domain.getTld());
-
-
-				res = stm.executeUpdate();
-				conn.commit();
-			}
+			stm = conn.prepareStatement(INSERT_SQL);
+			stm.clearParameters();
+			stm.setString(1, domain.getDomain());
+			stm.setString(2, domain.getNotes());
+			stm.setInt(3, domain.getDanicaStatus().ordinal());
+			stm.setString(4, domain.getDanicaStatusReason());
+			stm.setTimestamp(5, new Timestamp(updatedTime));
+			stm.setString(6, domain.getTld());
+			res = stm.executeUpdate();
+			conn.commit();
 		} catch (SQLException e) {
 			throw new DaoException(e);
-		}
+		} finally {
+        	CloseUtils.closeQuietly(stm);
+        }
 		return res != 0;
 	}
+
 	@Override
 	public boolean existsDomain(String domain) throws DaoException {
+        PreparedStatement stm = null;
+		ResultSet rs = null;
         long res = 0;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(EXISTS_SQL);) {
-				stm.clearParameters();
-				stm.setString(1, domain);
-				try (ResultSet rs = stm.executeQuery();) {
-					if (rs != null && rs.next()) {
-						res = rs.getLong(1);
-					}
-				}
+            stm = conn.prepareStatement(EXISTS_SQL);
+			stm.clearParameters();
+			stm.setString(1, domain);
+			rs = stm.executeQuery();
+			if (rs != null && rs.next()) {
+				res = rs.getLong(1);
 			}
         } catch (SQLException e) {
 			throw new DaoException(e);
-		}
+		} finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
+        }
 		return res != 0L;
 	}
-	
-	
+
 	private static final String DOMAINS_COUNT_BY_STATUS_SQL;
 	private static final String DOMAINS_COUNT_BY_TLD_SQL;
 	private static final String DOMAINS_COUNT_BY_TLD_AND_STATUS_SQL;
 	private static final String  DOMAINS_COUNT_ALL_SQL;
+
 	static {
 		DOMAINS_COUNT_BY_STATUS_SQL = ""
 				+ "SELECT count(*) "
@@ -110,7 +103,6 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 				+ "SELECT count(*) "
 				+ "FROM domains "
 				+ "WHERE danicastatus=? AND tld=? ";
-		
 		DOMAINS_COUNT_ALL_SQL = ""
                 + "SELECT count(*) "
                 + "FROM domains ";
@@ -118,7 +110,6 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 
 	@Override
 	public Long getDomainsCount(DanicaStatus status, String tld) throws DaoException {
-		
 		PreparedStatement stm = null;
 		ResultSet rs = null;
 		long res = 0;
@@ -243,6 +234,7 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	}
 	
 	private static final String SINGLE_DOMAIN_SELECT_SQL;
+
 	static {
 		SINGLE_DOMAIN_SELECT_SQL = "SELECT * "
 				+ "FROM domains "
@@ -251,53 +243,55 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 
 	@Override
 	public Domain getDomain(String domainName) throws DaoException {
+		PreparedStatement stm = null;
+		ResultSet rs = null;
 		Domain domain = null;
 		try {
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			try (PreparedStatement stm = conn.prepareStatement(SINGLE_DOMAIN_SELECT_SQL)){
-				stm.clearParameters();
-				stm.setString(1, domainName);
-				try (ResultSet rs = stm.executeQuery()) {
-					if (rs != null && rs.next()) {
-						domain = getDomain(rs);
-					}
-				}
+			stm = conn.prepareStatement(SINGLE_DOMAIN_SELECT_SQL);
+			stm.clearParameters();
+			stm.setString(1, domainName);
+			rs = stm.executeQuery();
+			if (rs != null && rs.next()) {
+				domain = getDomain(rs);
 			}
 		} catch (SQLException e){
 			throw new DaoException(e);
-		}
+		} finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
+        }
 		return domain;
 	}
-	
-	
+
 	@Override
     public boolean update(Domain domain) throws DaoException {
 		if (!existsDomain(domain.getDomain())) {
 			//TODO log
 	        return false;
 	    }
+		PreparedStatement stm = null;
 		int res = 0;
 		try {
 			Long updatedTime = System.currentTimeMillis(); 
-			
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			try (PreparedStatement stm = conn.prepareStatement(INSERT_SQL)) {
-				stm.clearParameters();
-				stm.setString(1, domain.getDomain());
-				stm.setString(2, domain.getNotes());
-				stm.setInt(3, domain.getDanicaStatus().ordinal());
-				stm.setString(4, domain.getDanicaStatusReason());
-				stm.setTimestamp(5, new Timestamp(updatedTime));
-				stm.setString(6, domain.getTld());
-				res = stm.executeUpdate();
-				conn.commit();
-			}
+			stm = conn.prepareStatement(INSERT_SQL);
+			stm.clearParameters();
+			stm.setString(1, domain.getDomain());
+			stm.setString(2, domain.getNotes());
+			stm.setInt(3, domain.getDanicaStatus().ordinal());
+			stm.setString(4, domain.getDanicaStatusReason());
+			stm.setTimestamp(5, new Timestamp(updatedTime));
+			stm.setString(6, domain.getTld());
+			res = stm.executeUpdate();
+			conn.commit();
 		} catch (SQLException e){
 			throw new DaoException(e);
-		}
+		} finally {
+        	CloseUtils.closeQuietly(stm);
+        }
 		return res != 0;
 	}
-	
 	
 	private static final String DISTINCT_TLD_SQL;
 	static {
@@ -306,22 +300,26 @@ public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	
 	@Override
 	public Set<String> getTlds() throws DaoException {
+		PreparedStatement stm = null;
+		ResultSet rs = null;
 		Set<String> tldList = new TreeSet<String>();
 		try {
 			Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-			try (PreparedStatement stm = conn.prepareStatement(DISTINCT_TLD_SQL)) {
-				stm.clearParameters();
-				try (ResultSet rs = stm.executeQuery()) {
-					if (rs != null) {
-						while (rs.next()) {
-							tldList.add(rs.getString(1));
-						}
-					}
+			stm = conn.prepareStatement(DISTINCT_TLD_SQL);
+			stm.clearParameters();
+			rs = stm.executeQuery();
+			if (rs != null) {
+				while (rs.next()) {
+					tldList.add(rs.getString(1));
 				}
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e);
-		}
+		} finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
+        }
 		return tldList; 
 	}
+
 }

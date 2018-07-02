@@ -1,6 +1,10 @@
 package dk.kb.webdanica.core.datamodel.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -18,22 +22,6 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     
     private static final Logger logger = Logger.getLogger(HBasePhoenixSeedsDAO.class.getName());
 
-    /*
-            url VARCHAR PRIMARY KEY,
-            redirected_url VARCHAR,
-            host VARCHAR(256),
-            domain VARCHAR(256),
-            tld VARCHAR(64) // Top level domain for this seed
-            inserted_time TIMESTAMP,
-            updated_time TIMESTAMP,
-            danica INTEGER, // see dk.kb.webdanica.datamodel.DanicaStatus enum class
-            status INTEGER, // see dk.kb.webdanica.datamodel.Status enum class
-            status_reason VARCHAR, // textual explanation behind its state
-            exported boolean,
-            exported_time TIMESTAMP,
-            danica_reason VARCHAR
-
-    */
     static {
         UPSERT_SQL = ""
                 + "UPSERT INTO seeds (url, redirected_url, host, domain, tld, inserted_time, updated_time, danica, status, status_reason, exported, exported_time, danica_reason) "
@@ -55,6 +43,7 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     }
 
     private boolean upsertSeed(Seed singleSeed, boolean isInsert) throws DaoException {
+        PreparedStatement stm = null;
         int res = 0;
         Long now = System.currentTimeMillis();
         Long updatedTime = now;
@@ -77,29 +66,29 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 insertedTime=now;
             }
         }
-
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(UPSERT_SQL);) {
-                stm.clearParameters();
-                stm.setString(1, singleSeed.getUrl());
-                stm.setString(2, singleSeed.getRedirectedUrl());
-                stm.setString(3, singleSeed.getHostname());
-                stm.setString(4, singleSeed.getDomain());
-                stm.setString(5, singleSeed.getTld());
-                stm.setTimestamp(6, new Timestamp(insertedTime));
-                stm.setTimestamp(7, new Timestamp(updatedTime));
-                stm.setInt(8, singleSeed.getDanicaStatus().ordinal());
-                stm.setInt(9, singleSeed.getStatus().ordinal());
-                stm.setString(10, singleSeed.getStatusReason());
-                stm.setBoolean(11, singleSeed.getExportedState());
-                stm.setTimestamp(12, exportedTimeAsTimestamp);
-                stm.setString(13, singleSeed.getDanicaStatusReason());
-                res = stm.executeUpdate();
-                conn.commit();
-            }
+            stm = conn.prepareStatement(UPSERT_SQL);
+            stm.clearParameters();
+            stm.setString(1, singleSeed.getUrl());
+            stm.setString(2, singleSeed.getRedirectedUrl());
+            stm.setString(3, singleSeed.getHostname());
+            stm.setString(4, singleSeed.getDomain());
+            stm.setString(5, singleSeed.getTld());
+            stm.setTimestamp(6, new Timestamp(insertedTime));
+            stm.setTimestamp(7, new Timestamp(updatedTime));
+            stm.setInt(8, singleSeed.getDanicaStatus().ordinal());
+            stm.setInt(9, singleSeed.getStatus().ordinal());
+            stm.setString(10, singleSeed.getStatusReason());
+            stm.setBoolean(11, singleSeed.getExportedState());
+            stm.setTimestamp(12, exportedTimeAsTimestamp);
+            stm.setString(13, singleSeed.getDanicaStatusReason());
+            res = stm.executeUpdate();
+            conn.commit();
         } catch (SQLException e) {
             throw new DaoException(e);
+        } finally {
+        	CloseUtils.closeQuietly(stm);
         }
         return res != 0;
     }
@@ -107,20 +96,23 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     @Override
     public boolean existsUrl(String url) throws DaoException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         long res = 0;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(EXISTS_SQL);) {
-                stm.clearParameters();
-                stm.setString(1, url);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null && rs.next()) {
-                        res = rs.getLong(1);
-                    }
-                }
+            stm = conn.prepareStatement(EXISTS_SQL);
+            stm.clearParameters();
+            stm.setString(1, url);
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
             }
         } catch (SQLException e) {
             throw new DaoException(e);
+        } finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
         return res != 0L;
     }
@@ -130,7 +122,6 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
     public boolean updateSeed(Seed singleSeed) throws DaoException {
         return upsertSeed(singleSeed, false);
     }
-
 
     private static final String SEEDS_COUNT_BY_STATUS_SQL;
     private static final String SEEDS_COUNT_ALL_SQL;
@@ -163,9 +154,6 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 + "SELECT count(*) "
                 + "FROM seeds "
                 + "WHERE domain=? AND status=? AND danica=?";
-        
-        
-        
     }
 
 	@Override
@@ -218,9 +206,8 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         SEEDS_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL = "SELECT * "
                         + "FROM seeds "
                         + "WHERE domain=? AND status=? AND danica=? LIMIT ?";
-        
-        
     }
+
     @Override
     public List<Seed> getSeeds(String domain, Status status, int limit) throws DaoException {
         return getSeeds(domain,status, null, limit);
@@ -228,36 +215,40 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     @Override
     public List<Seed> getSeeds(Status status, int limit) throws DaoException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         List<Seed> seedList = new LinkedList<Seed>();
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);) {
-                stm.clearParameters();
-                stm.setInt(1, status.ordinal());
-                stm.setInt(2, limit);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null) {
-                        while (rs.next()) {
-                            seedList.add(getSeedFromResultSet(rs));
-                        }
-                    }
+            stm = conn.prepareStatement(SEEDS_BY_STATUS_SQL);
+            stm.clearParameters();
+            stm.setInt(1, status.ordinal());
+            stm.setInt(2, limit);
+            rs = stm.executeQuery();
+            if (rs != null) {
+                while (rs.next()) {
+                    seedList.add(getSeedFromResultSet(rs));
                 }
             }
         } catch (SQLException e) {
             throw new DaoException(e);
+        } finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
         return seedList;
     }
     
     @Override
     public List<Seed> getSeeds(String domain, Status status, DanicaStatus dstatus, int limit) throws DaoException {
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         List<Seed> seedList = new LinkedList<Seed>();
         if (domain == null || domain.isEmpty()) {
             return null;
         }
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            PreparedStatement stm = null;
             if (status != null && dstatus == null) {
                 stm = conn.prepareStatement(SEEDS_BY_DOMAIN_AND_STATE_SQL);
                 stm.clearParameters();
@@ -283,17 +274,17 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 stm.setString(1, domain);
                 stm.setInt(2, limit);
             }
-
-            try (ResultSet rs = stm.executeQuery();) {
-                if (rs != null) {
-                    while (rs.next()) {
-                        seedList.add(getSeedFromResultSet(rs));
-                    }
+            rs = stm.executeQuery();
+            if (rs != null) {
+                while (rs.next()) {
+                    seedList.add(getSeedFromResultSet(rs));
                 }
             }
-
         } catch (SQLException e) {
             throw new DaoException(e);
+        } finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
         return seedList;
     }
@@ -339,30 +330,33 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     @Override
     public Long getSeedsDanicaCount(DanicaStatus s) throws DaoException {
+    	PreparedStatement stm = null;
+        ResultSet rs = null;
         if (s == null) {
             return 0L;
         }
         long res = 0;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SELECT_COUNT_DANICA_SQL);) {
-                stm.clearParameters();
-                stm.setInt(1, s.ordinal());
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null && rs.next()) {
-                        res = rs.getLong(1);
-                    }
-                }
+            stm = conn.prepareStatement(SELECT_COUNT_DANICA_SQL);
+            stm.clearParameters();
+            stm.setInt(1, s.ordinal());
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
             }
         } catch (SQLException e) {
             throw new DaoException(e);
+        } finally {
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
-
         return res;
     }
 
 	private static final String SEEDS_READY_TO_EXPORT_SQL;
 	private static final String SEEDS_DANICA_SQL;
+
 	static {
 		SEEDS_READY_TO_EXPORT_SQL = "SELECT * "
 				+ "FROM seeds "
@@ -375,9 +369,9 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 	@Override
     public List<Seed> getSeedsReadyToExport(boolean includeAlreadyExported) throws DaoException {
 		//DanicaStatus==YES && exported==false && status==DONE  // Seed kan også have DanicaStatus=YES, men have Status REJECTED, hvis domænet allerede er danica
-		List<Seed> seedList = new LinkedList<Seed>();
 		PreparedStatement stm = null;
 		ResultSet rs = null;
+		List<Seed> seedList = new LinkedList<Seed>();
 		DanicaStatus yes = DanicaStatus.YES;
 		Status done = Status.DONE;
 		boolean exportedValue = false; // Don't export seeds more than once
@@ -421,27 +415,31 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     @Override
     public Seed getSeed(String url) throws DaoException {
-        if (!existsUrl(url)) {
+    	PreparedStatement stm = null;
+    	ResultSet rs = null;
+    	if (!existsUrl(url)) {
             return null;
         }
         Seed result = null;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            try (PreparedStatement stm = conn.prepareStatement(SEED_SELECT_SQL);) {
-                stm.clearParameters();
-                stm.setString(1, url);
-                try (ResultSet rs = stm.executeQuery();) {
-                    if (rs != null && rs.next()) {
-                        result = getSeedFromResultSet(rs);
-                    }
-                }
+        	stm = conn.prepareStatement(SEED_SELECT_SQL);
+            stm.clearParameters();
+            stm.setString(1, url);
+        	rs = stm.executeQuery();
+        	if (rs != null && rs.next()) {
+                result = getSeedFromResultSet(rs);
             }
         } catch (SQLException e) {
             throw new DaoException(e);
-        }
+        } finally {
+    	    CloseUtils.closeQuietly(rs);
+    	    CloseUtils.closeQuietly(stm);
+    	}
         return result;
     }
-    @Override
+
+@Override
     public Long getDomainSeedsCount(String domain) throws DaoException {
         return getDomainSeedsCount(domain, null, null);
     }
@@ -451,10 +449,11 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
         if (domain == null || domain.isEmpty()) {
             return 0L;
         }
+        PreparedStatement stm = null;
+        ResultSet rs = null;
         long res = 0;
         try {
             Connection conn = HBasePhoenixConnectionManager.getThreadLocalConnection();
-            PreparedStatement stm = null;
             if (status != null && dstatus == null) {
                 stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_AND_STATE_SQL);
                 stm.clearParameters();
@@ -469,17 +468,18 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_SQL);
                 stm.clearParameters();
                 stm.setString(1, domain);
-            }   
-            try (ResultSet rs = stm.executeQuery();) {
-                if (rs != null && rs.next()) {
-                    res = rs.getLong(1);
-                }
+            }
+            rs = stm.executeQuery();
+            if (rs != null && rs.next()) {
+                res = rs.getLong(1);
             }
         } catch (SQLException e) {
             throw new DaoException(e);
-        }
-
+        } finally {
+    	    CloseUtils.closeQuietly(rs);
+    	    CloseUtils.closeQuietly(stm);
+    	}
         return res;
     }
-}
 
+}

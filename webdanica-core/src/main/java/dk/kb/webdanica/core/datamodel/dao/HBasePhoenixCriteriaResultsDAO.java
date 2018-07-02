@@ -11,12 +11,13 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
+import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
-	
+
 	private static final Logger logger = Logger.getLogger(HBasePhoenixCriteriaResultsDAO.class.getName());
 
 	private SingleCriteriaResult getResultFromResultSet(ResultSet rs) throws Exception {
@@ -55,7 +56,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 		}
 		return resultList;
 	}
-	
+
 	public static final String INSERT_SQL;
 
 	static {
@@ -81,14 +82,13 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 		boolean result = upsertRecord(singleAnalysis, false);
 		return result;
 	}
-	
+
 	@Override
 	public boolean updateRecord(SingleCriteriaResult singleAnalysis) throws Exception {
 		boolean result = upsertRecord(singleAnalysis, true);
 		return result;
 	}
-		
-	
+
 	private boolean upsertRecord(SingleCriteriaResult singleAnalysis, boolean isUpdate) throws Exception {
 		Long insertedTime = null;
 		Long updatedTime = null;
@@ -155,12 +155,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
-			if (sqlArr != null) {
-				sqlArr.free();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+			CloseUtils.freeQuietly(sqlArr);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return res != 0;
 	}
@@ -186,12 +182,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			rs = stm.executeQuery();
 			resultList = getResultsFromResultSet(rs);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return resultList; 
 	}
@@ -217,12 +209,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			rs = stm.executeQuery();
 			seedList = getResultsFromResultSet(rs);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return seedList; 
 	}
@@ -248,12 +236,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			rs = stm.executeQuery();
 			seedList = getResultsFromResultSet(rs);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return seedList; 
 	}
@@ -284,12 +268,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 				}
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return urlList; 
 	}
@@ -320,9 +300,7 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			stm.setString(2, url);
 			stm.executeUpdate();
 		} finally {
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(stm);
 		}
     }
 
@@ -354,12 +332,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 		} catch (Throwable e) {
 			logger.severe("Failure retrieving a CriteriaResult found for url '" + url + "' and harvest '" + harvest + "': " + e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 	    return s;
     }
@@ -378,12 +352,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 			rs = stm.executeQuery();
 			list = getResultsFromResultSet(rs);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return list; 
     }
@@ -420,12 +390,8 @@ public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
                 count = rs.getLong(1);
             }
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return count;
 	}

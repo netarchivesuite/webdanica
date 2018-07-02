@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import dk.kb.webdanica.core.datamodel.BlackList;
+import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixBlackListDAO implements BlackListDAO {
@@ -44,12 +45,8 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
-			if (sqlArr != null) {
-				sqlArr.free();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+			CloseUtils.freeQuietly(sqlArr);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return res != 0;
 	}
@@ -84,12 +81,8 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 				}
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return retrievedBlacklist;
 	}
@@ -136,12 +129,8 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
 				}
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return blacklistList; 
 	}
@@ -149,7 +138,6 @@ public class HBasePhoenixBlackListDAO implements BlackListDAO {
     @Override
     public void close() {
         // TODO Auto-generated method stub
-        
     }	
 
 }

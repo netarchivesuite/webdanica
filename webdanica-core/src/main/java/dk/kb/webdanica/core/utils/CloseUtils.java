@@ -1,5 +1,7 @@
  package dk.kb.webdanica.core.utils;
 
+import java.sql.SQLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,4 +21,15 @@ public class CloseUtils {
             }
         }
     }
+
+    public static void freeQuietly(java.sql.Array sqlArr) {
+    	if (sqlArr != null) {
+    		try {
+    			sqlArr.free();
+    		} catch (SQLException e) {
+                logger.warn("Caught Exception when freeing {}", sqlArr, e);
+    		}
+    	}
+    }
+
 }

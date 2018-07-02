@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dk.kb.webdanica.core.datamodel.Cache;
+import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 /**
@@ -67,14 +68,9 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 				return null;
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
-	
 		return cache;
 	}
 
@@ -95,7 +91,6 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 		return countList;
 	}
 	
-
 	@Override
 	public boolean updateCache(Cache cache) throws Exception {
 		long uid = System.currentTimeMillis();
@@ -136,17 +131,11 @@ public class HBasePhoenixCacheDAO implements CacheDAO {
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
-			if (sqlArrA != null) {
-				sqlArrA.free();
-			}
-			if (sqlArrB != null) {
-				sqlArrB.free();
-			}
-			
-			if (stm != null) {
-				stm.close();
-			}
+			CloseUtils.freeQuietly(sqlArrA);
+			CloseUtils.freeQuietly(sqlArrB);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return res != 0;
 	}
+
 }

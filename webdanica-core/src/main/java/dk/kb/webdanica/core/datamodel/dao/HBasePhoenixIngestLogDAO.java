@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.IngestLog;
+import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
@@ -48,12 +49,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
-			if (sqlArr != null) {
-				sqlArr.free();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+			CloseUtils.freeQuietly(sqlArr);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return res != 0;
 	}
@@ -83,12 +80,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 				}
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return ingestDates;
 	}
@@ -128,12 +121,8 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 				}
 			}
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return retrievedLog;
 	}
@@ -141,7 +130,6 @@ public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
     @Override
     public void close() {
         // TODO Auto-generated method stub
-        
     }
 	
 }

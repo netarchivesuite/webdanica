@@ -8,11 +8,11 @@ public class HbaseSettings {
 		this.connectionString = connectionString;
 	}
 	
-	
 	public String getConnectionString() {
 	    return this.connectionString;
     }
 	public static HbaseSettings getDefaultSettings() {
 	    return new HbaseSettings("jdbc:phoenix:localhost:2181:/hbase");
     }
+
 }

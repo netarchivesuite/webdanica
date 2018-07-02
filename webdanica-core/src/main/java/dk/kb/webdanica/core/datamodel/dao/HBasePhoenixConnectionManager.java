@@ -125,7 +125,6 @@ public class HBasePhoenixConnectionManager {
 	    	driverP = null;
 	    }
 	    driver = null;
-	    
 	}
 
 }

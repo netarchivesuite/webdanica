@@ -9,9 +9,12 @@ import java.util.List;
 import dk.kb.webdanica.core.datamodel.AnalysisStatus;
 import dk.kb.webdanica.core.interfaces.harvesting.NasReports;
 import dk.kb.webdanica.core.interfaces.harvesting.SingleSeedHarvest;
+import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.netarkivet.harvester.datamodel.JobStatus;
-/*
+
+/**
+<pre>
 ------------+--------------+-------------+------------------------+------------+----------------+--------------+----------------+-----------------+-----------------+-----------+----------+------------+
 | TABLE_CAT  | TABLE_SCHEM  | TABLE_NAME  |      COLUMN_NAME       | DATA_TYPE  |   TYPE_NAME    | COLUMN_SIZE  | BUFFER_LENGTH  | DECIMAL_DIGITS  | NUM_PREC_RADIX  | NULLABLE  | REMARKS  | COLUMN_DEF |
 +------------+--------------+-------------+------------------------+------------+----------------+--------------+----------------+-----------------+-----------------+-----------+----------+------------+
@@ -26,6 +29,7 @@ import dk.netarkivet.harvester.datamodel.JobStatus;
 |            |              | HARVESTS    | ANALYSIS_STATE         | 4          | INTEGER        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | ANALYSIS_STATE_REASON  | 12         | VARCHAR        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | REPORTS                | 2003  
+</pre>
 */
 public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
@@ -143,12 +147,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			res = stm.executeUpdate();
 			conn.commit();
 		} finally {
-			if (sqlArr != null) {
-				sqlArr.free();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+			CloseUtils.freeQuietly(sqlArr);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return res != 0;
 	}	
@@ -174,12 +174,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			rs = stm.executeQuery();
 			report = getHarvestFromResultSet(rs);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return report; 
 	}
@@ -198,12 +194,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			rs = stm.executeQuery();
 			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return harvestsFound; 
 	}
@@ -225,12 +217,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			rs = stm.executeQuery();
 			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return harvestsFound; 
 	}
@@ -250,12 +238,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 			rs = stm.executeQuery();
 			getHarvestsFromResultSet(rs, harvestsFound);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (stm != null) {
-				stm.close();
-			}
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
 		}
 		return harvestsFound; 
 	}
@@ -278,12 +262,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
                 res = rs.getLong(1);
             }
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (stm != null) {
-                stm.close();
-            }
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
         return res;
     }
@@ -301,12 +281,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
             rs = stm.executeQuery();
             getHarvestNamesFromResultSet(rs, harvests);
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (stm != null) {
-                stm.close();
-            }
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
         return harvests; 
     }
@@ -337,12 +313,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
                 res = rs.getLong(1);
             }
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (stm != null) {
-                stm.close();
-            }
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
 	    return res != 0;
     }
@@ -364,12 +336,8 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
                 res = rs.getLong(1);
             }
         } finally {
-            if (rs != null) {
-                rs.close();
-            }
-            if (stm != null) {
-                stm.close();
-            }
+        	CloseUtils.closeQuietly(rs);
+        	CloseUtils.closeQuietly(stm);
         }
 	    return res;
     }

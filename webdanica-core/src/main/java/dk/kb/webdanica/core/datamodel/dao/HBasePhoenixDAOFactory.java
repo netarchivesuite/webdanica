@@ -2,7 +2,6 @@ package dk.kb.webdanica.core.datamodel.dao;
 
 import java.sql.SQLException;
 
-
 public class HBasePhoenixDAOFactory implements DAOFactory {
 
 	private BlackListDAO blacklistDao;
