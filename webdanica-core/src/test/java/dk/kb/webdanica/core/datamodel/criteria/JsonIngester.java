@@ -3,8 +3,8 @@ package dk.kb.webdanica.core.datamodel.criteria;
 import java.io.BufferedReader;
 import java.io.File;
 
-import dk.kb.webdanica.core.datamodel.dao.CassandraCriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
+import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixCriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 import dk.kb.webdanica.core.utils.StreamUtils;
 
@@ -22,7 +22,7 @@ public class JsonIngester {
 		String line = "";
 		String trimmedLine = null;
 		//read file and ingest
-		CriteriaResultsDAO dao = CassandraCriteriaResultsDAO.getInstance();
+		CriteriaResultsDAO dao = new HBasePhoenixCriteriaResultsDAO();
 		while ((line = fr.readLine()) != null) {
 			trimmedLine = line.trim();
 			if (!trimmedLine.isEmpty()) {

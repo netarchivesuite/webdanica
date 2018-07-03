@@ -13,7 +13,6 @@ import java.util.Map;
 import dk.kb.webdanica.core.Constants;
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.Status;
-import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
@@ -74,9 +73,7 @@ public class DatabaseUtils {
 	public static DAOFactory getDao() {
 		String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, 
 				Constants.DEFAULT_DATABASE_SYSTEM);
-		if ("cassandra".equalsIgnoreCase(databaseSystem)) {
-			return new CassandraDAOFactory();
-		} else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+		if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
 			return new HBasePhoenixDAOFactory();
 		} else {
 			return new HBasePhoenixDAOFactory();

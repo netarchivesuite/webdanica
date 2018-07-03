@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
-import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
 
@@ -40,7 +39,7 @@ public class CriteriaIngestTester {
 	    boolean addToDatabase = false;
 	    boolean rejectSeedsIfnotExplicitlyDanica = false;
 		File ingestFile = getTestResourceFile(COMBINEDCOMBO_RESULT);
-		DAOFactory daofactory = new CassandraDAOFactory();
+		DAOFactory daofactory = new HBasePhoenixDAOFactory();
 		ProcessResult pr = CriteriaIngest.processFile(ingestFile,"http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);
 		ingestFile = getTestResourceFile(COMBO_RESULT);
 		pr = CriteriaIngest.processFile(ingestFile, "http://netarkivet.dk", "unknown", addToDatabase, daofactory, rejectDKURLS, rejectSeedsIfnotExplicitlyDanica);

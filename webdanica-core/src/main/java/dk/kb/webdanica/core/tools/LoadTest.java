@@ -14,7 +14,6 @@ import dk.kb.webdanica.core.datamodel.URL_REJECT_REASON;
 import dk.kb.webdanica.core.datamodel.criteria.CriteriaIngest;
 import dk.kb.webdanica.core.datamodel.criteria.ProcessResult;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
-import dk.kb.webdanica.core.datamodel.dao.CassandraDAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.CriteriaResultsDAO;
 import dk.kb.webdanica.core.datamodel.dao.DAOFactory;
 import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixDAOFactory;
@@ -278,9 +277,7 @@ public static void main(String[] args) throws Exception {
 	   
 	   final String DEFAULT_DATABASE_SYSTEM = "cassandra";
 	   String databaseSystem = SettingsUtilities.getStringSetting(WebdanicaSettings.DATABASE_SYSTEM, DEFAULT_DATABASE_SYSTEM);
-       if ("cassandra".equalsIgnoreCase(databaseSystem)) {
-           daoFactory = new CassandraDAOFactory();
-       } else if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
+       if ("hbase-phoenix".equalsIgnoreCase(databaseSystem)) {
            daoFactory = new HBasePhoenixDAOFactory();
        }
     }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
-import dk.kb.webdanica.core.datamodel.dao.CassandraSeedDAO;
+import dk.kb.webdanica.core.datamodel.dao.HBasePhoenixSeedsDAO;
 import dk.kb.webdanica.core.datamodel.dao.SeedsDAO;
 import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 
@@ -16,7 +16,7 @@ import dk.kb.webdanica.core.seeds.filtering.IgnoredSuffixes;
 public class SeedsDaoTester {
 
 	public static void main(String[] args) throws Exception {
-		SeedsDAO dao = CassandraSeedDAO.getInstance();
+		SeedsDAO dao = new HBasePhoenixSeedsDAO();
 		List<Seed> seeds = dao.getSeeds(Status.NEW,100000);
 		System.out.println("Found '" +  seeds.size() + "' size with status NEW before filtering out urls with ignored suffixes");
 		for (Seed s: seeds) {
