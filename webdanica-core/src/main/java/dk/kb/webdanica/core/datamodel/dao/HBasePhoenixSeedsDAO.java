@@ -14,6 +14,10 @@ import dk.kb.webdanica.core.datamodel.Seed;
 import dk.kb.webdanica.core.datamodel.Status;
 import dk.kb.webdanica.core.utils.CloseUtils;
 
+/**
+ * See 
+ * <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_seeds.sql">create-script for table seeds</a>
+ */  
 public class HBasePhoenixSeedsDAO implements SeedsDAO {
 
     private static final String UPSERT_SQL;
@@ -464,6 +468,13 @@ public class HBasePhoenixSeedsDAO implements SeedsDAO {
                 stm.clearParameters();
                 stm.setString(1, domain);
                 stm.setInt(2,  dstatus.ordinal());
+            } else if (status != null && dstatus != null) {
+                stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_AND_STATE_AND_DANICASTATE_SQL);
+                stm.clearParameters();
+                stm.clearParameters();
+                stm.setString(1, domain);
+                stm.setInt(2, status.ordinal());
+                stm.setInt(3, dstatus.ordinal());
             } else {
                 stm = conn.prepareStatement(SEEDS_COUNT_BY_DOMAIN_SQL);
                 stm.clearParameters();

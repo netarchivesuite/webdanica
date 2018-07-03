@@ -16,6 +16,10 @@ import dk.kb.webdanica.core.utils.DatabaseUtils;
 import dk.kb.webdanica.core.datamodel.criteria.DataSource;
 import dk.kb.webdanica.core.datamodel.criteria.SingleCriteriaResult;
 
+/** 
+ * See 
+ * <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_criteria_results.sql">create-script for table criteria_results</a>
+ */  
 public class HBasePhoenixCriteriaResultsDAO implements CriteriaResultsDAO {
 
 	private static final Logger logger = Logger.getLogger(HBasePhoenixCriteriaResultsDAO.class.getName());

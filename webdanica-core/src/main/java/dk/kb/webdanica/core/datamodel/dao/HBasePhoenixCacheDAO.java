@@ -17,16 +17,8 @@ import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
 /**
- * CREATE TABLE statecache (
- *   uuid BIGINT PRIMARY KEY,
- *   totalSeedsCount BIGINT,
- *   harvestCount BIGINT,
- *   totalCritResults BIGINT,
- *   seedStatusCounts VARCHAR[],
- *   seedDanicaStatusCounts VARCHAR[],
- *   last_updated TIMESTAMP
- * );
- *
+ * See <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_statecache.sql">create-script for table statecache</a
+ * 
  */
 public class HBasePhoenixCacheDAO implements CacheDAO {
 	

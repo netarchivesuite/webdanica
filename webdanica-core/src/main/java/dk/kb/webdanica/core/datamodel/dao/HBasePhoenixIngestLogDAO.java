@@ -11,6 +11,11 @@ import dk.kb.webdanica.core.datamodel.IngestLog;
 import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
+/**
+ * 
+ * <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_ingestlog.sql">create-script for table ingestlog</a
+ *
+ */
 public class HBasePhoenixIngestLogDAO implements IngestLogDAO {
 
 	private static final String INSERT_SQL;

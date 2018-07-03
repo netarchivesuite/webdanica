@@ -11,6 +11,12 @@ import dk.kb.webdanica.core.datamodel.BlackList;
 import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
+/**
+ * 
+ * See 
+ * <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_blacklists.sql">create-script for table blacklists</a>
+ *   
+ */
 public class HBasePhoenixBlackListDAO implements BlackListDAO {
 
 	private static final String INSERT_SQL;

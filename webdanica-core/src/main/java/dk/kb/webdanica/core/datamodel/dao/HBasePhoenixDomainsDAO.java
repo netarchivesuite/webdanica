@@ -15,6 +15,10 @@ import dk.kb.webdanica.core.datamodel.Domain;
 import dk.kb.webdanica.core.utils.CloseUtils;
 import dk.kb.webdanica.core.utils.DatabaseUtils;
 
+/**
+ * See <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_domains.sql">create-script for table domains</a
+ * 
+ */
 public class HBasePhoenixDomainsDAO implements DomainsDAO {
 	
 	private static final String INSERT_SQL;

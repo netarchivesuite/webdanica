@@ -30,6 +30,8 @@ import dk.netarkivet.harvester.datamodel.JobStatus;
 |            |              | HARVESTS    | ANALYSIS_STATE_REASON  | 12         | VARCHAR        | null         | null           | null            | null            | 1         |          |            |
 |            |              | HARVESTS    | REPORTS                | 2003  
 </pre>
+* Should be identical with 
+* <a href="https://raw.githubusercontent.com/netarchivesuite/webdanica/master/scripts/hbase-phoenix/create_harvests.sql">create-script for table harvests</a
 */
 public class HBasePhoenixHarvestDAO implements HarvestDAO {
 
