@@ -268,7 +268,7 @@ public class HarvestWorkThread extends WorkThreadAbstract {
             return;
         }
         // Check the harvest schedule 
-        if (!environment.bScheduleHarvesting) {
+        if (!environment.bScheduleHarvestingInit) {
             return;
         }
         logger.log(Level.INFO, "Running process of thread '" + threadName
