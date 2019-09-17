@@ -1,19 +1,5 @@
 package dk.kb.webdanica.webapp.workflow;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-
 import dk.kb.webdanica.core.WebdanicaSettings;
 import dk.kb.webdanica.core.datamodel.Cache;
 import dk.kb.webdanica.core.datamodel.Seed;
@@ -30,6 +16,14 @@ import dk.kb.webdanica.webapp.Environment;
 import dk.netarkivet.common.distribute.arcrepository.ArcRepositoryClientFactory;
 import dk.netarkivet.common.utils.StringUtils;
 import dk.netarkivet.harvester.datamodel.DBSpecifics;
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The workthread responsible for initiating harvests in NetarchiveSuite, waiting for them to finish, and
@@ -40,10 +34,10 @@ import dk.netarkivet.harvester.datamodel.DBSpecifics;
  * information about the finished harvests. See WEBDAN-239 
  *
  */
-public class HarvestWorkThread extends WorkThreadAbstract {
+public class HarvestFinishWorkThread extends WorkThreadAbstract {
 
     static {
-        logger = Logger.getLogger(HarvestWorkThread.class.getName());
+        logger = Logger.getLogger(HarvestFinishWorkThread.class.getName());
     }
 
     private List<Seed> queueList = new LinkedList<Seed>();
@@ -73,16 +67,16 @@ public class HarvestWorkThread extends WorkThreadAbstract {
     private int harvestMaxObjects;
 
     private long harvestMaxBytes;
-    
+
     private long harvestMaxTimeInMillis;
 
     /**
      * Constructor for the Harvester thread worker object.
-     * 
+     *
      * @param environment The Webdanica webapp environment object
      * @param threadName The name of the thread
      */
-    public HarvestWorkThread(Environment environment, String threadName) {
+    public HarvestFinishWorkThread(Environment environment, String threadName) {
         this.environment = environment;
         this.threadName = threadName;
     }
@@ -196,7 +190,6 @@ public class HarvestWorkThread extends WorkThreadAbstract {
      * @return true, if the given harvestLogDir exists and is writable, else false
      */
     private boolean existsLogdirAndIsWritable(File harvestLogDir) {
-        boolean deleteTestFile = true;
         if (!harvestLogDir.isDirectory()) {
             String errMsg = "HarvestWorkFlow will not be enabled as the given directory '"
                     + harvestLogDir.getAbsolutePath()
@@ -235,12 +228,11 @@ public class HarvestWorkThread extends WorkThreadAbstract {
                                 + "] HarvestWorkFlow not enabled", errMsg);
                 return false;
             } else {
-                if (deleteTestFile) {
-                    if (!testFile.delete()) {
-                        logger.log(Level.WARNING, "Unable to delete testfile '"
+                if (!testFile.delete()) {
+                    logger.log(Level.WARNING, "Unable to delete testfile '"
                                 + testFile.getAbsolutePath() + "'");
-                    }
                 }
+
                 return true;
             }
         } catch (IOException e) {

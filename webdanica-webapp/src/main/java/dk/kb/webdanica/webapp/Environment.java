@@ -35,7 +35,8 @@ import dk.kb.webdanica.webapp.resources.IngestLogResource;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
-import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestInitWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestFinishWorkThread;
 import dk.kb.webdanica.webapp.workflow.StateCacheUpdateWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
@@ -100,9 +101,9 @@ public class Environment {
 
     private FilterWorkThread filterThread;
 
-    private HarvestWorkThread harvesterInitThread;
+    private HarvestInitWorkThread harvesterInitThread;
 
-    private HarvestWorkThread harvesterFinishThread;
+    private HarvestFinishWorkThread harvesterFinishThread;
 
     private StateCacheUpdateWorkThread statecacheThread;
 
@@ -144,9 +145,13 @@ public class Environment {
     private Configuration theconfig;
 
     /**
-     * @param theServletContext
-     * @param theServletConfig
-     * @throws ServletException
+     * Constructor.
+     * Throws ServletException if
+     *   - environment variable WEBDANICA_HOME is not set, or doesn't point to an existing directory
+     *   -
+     * @param theServletContext the ServletContext
+     * @param theServletConfig the ServletConfig
+     * @throws ServletException if the environment can't be set up properly
      */
     public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
         this.setServletConfig(theServletConfig);
@@ -354,9 +359,9 @@ public class Environment {
         workflow.start();
         filterThread = new FilterWorkThread(this, "Seeds filtering");
         filterThread.start();
-        harvesterInitThread = new HarvestWorkThread(this, "Harvest Init worker"); // FIXME change HarvestWorkThread to HarvestInitWorkThread
+        harvesterInitThread = new HarvestInitWorkThread(this, "Harvest Init worker");
         harvesterInitThread.start();
-        harvesterFinishThread = new HarvestWorkThread(this, "Harvest Finish worker");  // FIXME change HarvestWorkThread to HarvestFinishWorkThread
+        harvesterFinishThread = new HarvestFinishWorkThread(this, "Harvest Finish worker");
         harvesterFinishThread.start();
         statecacheThread = new StateCacheUpdateWorkThread(this, "StateCache Update worker"); 
         statecacheThread.start();

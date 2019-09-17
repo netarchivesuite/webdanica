@@ -46,7 +46,7 @@ import dk.kb.webdanica.webapp.Navbar;
 import dk.kb.webdanica.webapp.Pagination;
 import dk.kb.webdanica.webapp.Servlet;
 import dk.kb.webdanica.webapp.User;
-import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestInitWorkThread;
 import dk.netarkivet.common.utils.I18n;
 import dk.netarkivet.common.webinterface.HTMLUtils;
 
@@ -543,7 +543,7 @@ public class SeedsResource implements ResourceAbstract {
 				try {
 					List<SingleSeedHarvest> harvests = new ArrayList<SingleSeedHarvest>();
 					harvests.add(ssh);
-					HarvestWorkThread.writeHarvestLog(harvests, conf);
+					HarvestInitWorkThread.writeHarvestLog(harvests, conf);
 				} catch (Throwable e) {
 					logger.log(Level.WARNING, "Failed to harvestlog for harvest '" + harvestName + "' to harvestlogsdir", e);
 					return;
