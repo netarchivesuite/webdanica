@@ -215,7 +215,7 @@ public class Environment {
         // Test, if we run java 8 
         final int MIN_JAVA_VERSION = 8;
         final String java_version_used = System.getProperty("java.version"); 
-        if (!isValidJavaVersion(MIN_JAVA_VERSION)) {
+        if (!isValidJavaVersion(java_version_used, MIN_JAVA_VERSION)) {
             throw new ServletException("The java version used by tomcat is too old. We now require a java " + MIN_JAVA_VERSION 
                     + ". The version used by tomcat is " + java_version_used);
         }
@@ -553,13 +553,13 @@ public class Environment {
         return this.resourcesMap;	    
     }
     
-    public static boolean isValidJavaVersion(int minVersion) {
-        String[] version = System.getProperty("java.version").split("\\.");
+    public static boolean isValidJavaVersion(String javaVersionProperty,  int minVersion) {
+        String[] version =javaVersionProperty.split("\\.");
         if (version.length != 3) {
             // Don't verify the version any more. But return true
             return true;
         } else {  // sample version: 1.8.0_141
-            int thisVersion = Integer.valueOf(version[1]);
+            int thisVersion = Integer.parseInt(version[1]);
             return thisVersion >= minVersion;
         }
     }

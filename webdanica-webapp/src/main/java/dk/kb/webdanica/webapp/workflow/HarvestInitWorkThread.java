@@ -37,7 +37,25 @@ import dk.netarkivet.harvester.datamodel.DBSpecifics;
  * and the warc files produced by the harvests.
  * TODO split up this workflow in two threads, one to initiate the harvests, 
  * and one to wait for the harvests to finish, and then fetching the important 
- * information about the finished harvests. See WEBDAN-239 
+ * information about the finished harvests. See WEBDAN-239
+ *
+ *
+ * TODO to be able to do the harvest process in two steps, an init and finish step we neeed to
+ * store the information about the harvest (harvestname, seedurl, in the harvest table when the harvest is created with an undefined harvested_time if possible, or to a constant-time like epoch
+ * so we can fetch all harvests in progress from the harvest table in webdanica  in the finish step
+ *
+ *
+ * In the finish step, we then read all seed objects with state Status.HARVESTING_IN_PROGRESS
+ *  for each seed:
+ *    find the associated harvest table entry for the seedurl where harvested_time is epoch or undefined (you need to make changes in classes HarvestDAO and HBasePhoenixHarvestDAO)
+ *    this gives us the name of the harvestdefinition in NAS
+ *    get the harvestdefinition with this name, and check its status, and if it has generated any jobs
+ *    Find the status of the job in NAS and get the metadata if possible
+ *    Update the harvest table entry with this information ((you need to make changes in classes HarvestDAO and HBasePhoenixHarvestDAO to allow for updating the record)
+ *    Update the status of the seed in the seeds table
+ *  When all this has been done for all seeds with Status.HARVESTING_IN_PROGRESS
+ *    Add the result to the harvestlog, so it is ready for the analysis phase
+ *
  *
  */
 public class HarvestInitWorkThread extends WorkThreadAbstract {
