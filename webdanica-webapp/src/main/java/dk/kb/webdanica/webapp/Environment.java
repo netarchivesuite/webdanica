@@ -2,7 +2,6 @@ package dk.kb.webdanica.webapp;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
@@ -36,7 +35,8 @@ import dk.kb.webdanica.webapp.resources.IngestLogResource;
 import dk.kb.webdanica.webapp.resources.ResourcesMap;
 import dk.kb.webdanica.webapp.resources.SeedsResource;
 import dk.kb.webdanica.webapp.workflow.FilterWorkThread;
-import dk.kb.webdanica.webapp.workflow.HarvestWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestInitWorkThread;
+import dk.kb.webdanica.webapp.workflow.HarvestFinishWorkThread;
 import dk.kb.webdanica.webapp.workflow.StateCacheUpdateWorkThread;
 import dk.kb.webdanica.webapp.workflow.WorkThreadAbstract;
 import dk.kb.webdanica.webapp.workflow.WorkflowWorkThread;
@@ -86,11 +86,11 @@ public class Environment {
      * Templates.
      */
 
-    private TemplateMaster templateMaster = null;
+    private TemplateMaster templateMaster;
 
-    private String login_template_name = null;
+    private String login_template_name;
 
-    private LoginTemplateHandler<User> loginHandler = null;
+    private LoginTemplateHandler<User> loginHandler;
 
 
     /*
@@ -101,10 +101,11 @@ public class Environment {
 
     private FilterWorkThread filterThread;
 
-    private HarvestWorkThread harvesterThread;
+    private HarvestInitWorkThread harvesterInitThread;
+
+    private HarvestFinishWorkThread harvesterFinishThread;
 
     private StateCacheUpdateWorkThread statecacheThread;
-
 
     /*
      * Schedules.
@@ -112,11 +113,14 @@ public class Environment {
 
     public ScheduleAbstract filterSchedule;
 
-    public ScheduleAbstract harvestSchedule;
+    public ScheduleAbstract harvestInitSchedule;
+
+    public ScheduleAbstract harvestFinishSchedule;
 
     public ScheduleAbstract cacheUpdatingSchedule;
 
-    public boolean bScheduleHarvesting = false;
+    public boolean bScheduleHarvestingInit = false;
+    public boolean bScheduleHarvestingFinish = false;
     public boolean bScheduleFiltering = false;
     public boolean bScheduleCacheUpdating = false;
 
@@ -141,9 +145,13 @@ public class Environment {
     private Configuration theconfig;
 
     /**
-     * @param servletContext
-     * @param theServletConfig
-     * @throws ServletException
+     * Constructor.
+     * Throws ServletException if
+     *   - environment variable WEBDANICA_HOME is not set, or doesn't point to an existing directory
+     *   -
+     * @param theServletContext the ServletContext
+     * @param theServletConfig the ServletConfig
+     * @throws ServletException if the environment can't be set up properly
      */
     public Environment(ServletContext theServletContext, ServletConfig theServletConfig) throws ServletException {
         this.setServletConfig(theServletConfig);
@@ -167,17 +175,11 @@ public class Environment {
 
         String loggingPropertiesFilename = servletContext.getRealPath("/WEB-INF/logging.properties");
         File loggingPropertiesFile = new File(loggingPropertiesFilename);
-        if (loggingPropertiesFile != null && loggingPropertiesFile.exists() && loggingPropertiesFile.isFile()) {
+        if (loggingPropertiesFile.exists() && loggingPropertiesFile.isFile()) {
             try {
                 LogManager.getLogManager().readConfiguration(new FileInputStream(loggingPropertiesFile));
                 logger.log(Level.INFO, "java.util.logging reconfigured using: " + loggingPropertiesFilename);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-                logger.log(Level.SEVERE, e.toString(), e);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                logger.log(Level.SEVERE, e.toString(), e);
-            } catch (IOException e) {
+            } catch (SecurityException | IOException e) {
                 e.printStackTrace();
                 logger.log(Level.SEVERE, e.toString(), e);
             }
@@ -213,7 +215,7 @@ public class Environment {
         // Test, if we run java 8 
         final int MIN_JAVA_VERSION = 8;
         final String java_version_used = System.getProperty("java.version"); 
-        if (!isValidJavaVersion(MIN_JAVA_VERSION)) {
+        if (!isValidJavaVersion(java_version_used, MIN_JAVA_VERSION)) {
             throw new ServletException("The java version used by tomcat is too old. We now require a java " + MIN_JAVA_VERSION 
                     + ". The version used by tomcat is " + java_version_used);
         }
@@ -304,11 +306,13 @@ public class Environment {
          * Crontabs.
          */
         String filteringCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_FILTERING, dk.kb.webdanica.webapp.Constants.DEFAULT_FILTERING_CRONTAB); 
-        String harvestingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
+        String harvestingInitCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING_INIT, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
+        String harvestingFinishCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_HARVESTING_FINISH, dk.kb.webdanica.webapp.Constants.DEFAULT_HARVESTING_CRONTAB);
         String statecachingCrontab = SettingsUtilities.getStringSetting(WebdanicaSettings.WEBAPP_CRONTAB_STATECACHING, dk.kb.webdanica.webapp.Constants.DEFAULT_STATECACHING_CRONTAB);
 
         filterSchedule = CrontabSchedule.crontabFactory(filteringCrontab);
-        harvestSchedule = CrontabSchedule.crontabFactory(harvestingCrontab);
+        harvestInitSchedule = CrontabSchedule.crontabFactory(harvestingInitCrontab);
+        harvestFinishSchedule = CrontabSchedule.crontabFactory(harvestingFinishCrontab);
         cacheUpdatingSchedule = CrontabSchedule.crontabFactory(statecachingCrontab);
 
 
@@ -355,14 +359,16 @@ public class Environment {
         workflow.start();
         filterThread = new FilterWorkThread(this, "Seeds filtering");
         filterThread.start();
-        harvesterThread = new HarvestWorkThread(this, "Harvest worker");
-        harvesterThread.start();
+        harvesterInitThread = new HarvestInitWorkThread(this, "Harvest Init worker");
+        harvesterInitThread.start();
+        harvesterFinishThread = new HarvestFinishWorkThread(this, "Harvest Finish worker");
+        harvesterFinishThread.start();
         statecacheThread = new StateCacheUpdateWorkThread(this, "StateCache Update worker"); 
         statecacheThread.start();
 
-        workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterThread, statecacheThread};
+        workthreads = new WorkThreadAbstract[]{workflow,filterThread, harvesterInitThread, harvesterFinishThread, statecacheThread};
 
-        /** Send a mail to the mailAdmin that the system has started */
+        // Send a mail to the mailAdmin that the system has started.
         String subject = "[Webdanica-"  + theconfig.getEnv() + "] started";
         theconfig.getEmailer().sendAdminEmail(subject, getStartMailContents(subject));
     }
@@ -397,26 +403,30 @@ public class Environment {
         if (filterThread != null) {
             filterThread.stop();
         }		
-        if (harvesterThread != null) {
-            harvesterThread.stop();
+        if (harvesterInitThread != null) {
+            harvesterInitThread.stop();
         }
+        if (harvesterFinishThread != null) {
+            harvesterFinishThread.stop();
+        }
+
         if (statecacheThread != null) {
             statecacheThread.stop();
         }
-
 
         if (workflow != null) {
             workflow.stop();
         }
 
-        // Closing down working threads
+        // Closing down working threads.
 
-        while (workflow.bRunning || filterThread.bRunning || harvesterThread.bRunning) {
+        while (workflow.bRunning || filterThread.bRunning || harvesterInitThread.bRunning || harvesterFinishThread.bRunning || statecacheThread.bRunning) {
             String threads = (
                     //monitoring.bRunning? " Monitoring": "") + 
                     (workflow.bRunning? " Workflow": "")
                     + (filterThread.bRunning? " FilterThread": "")
-                    + (harvesterThread.bRunning? " HarvesterThread": "")
+                    + (harvesterInitThread.bRunning? " HarvesterInitThread": "")
+                    + (harvesterFinishThread.bRunning? " HarvesterFinishThread": "")
                     + (statecacheThread.bRunning? " StateCacheThread": ""))
                     ;
             logger.log(Level.INFO, "Waiting for threads(" + threads + ") to exit.");
@@ -427,7 +437,8 @@ public class Environment {
             }
         }
         statecacheThread = null;
-        harvesterThread = null;
+        harvesterInitThread = null;
+        harvesterFinishThread = null;
         filterThread = null;
         workflow = null;
         loginHandler = null;
@@ -542,13 +553,13 @@ public class Environment {
         return this.resourcesMap;	    
     }
     
-    public static boolean isValidJavaVersion(int minVersion) {
-        String[] version = System.getProperty("java.version").split("\\.");
+    public static boolean isValidJavaVersion(String javaVersionProperty,  int minVersion) {
+        String[] version =javaVersionProperty.split("\\.");
         if (version.length != 3) {
             // Don't verify the version any more. But return true
             return true;
         } else {  // sample version: 1.8.0_141
-            int thisVersion = Integer.valueOf(version[1]);
+            int thisVersion = Integer.parseInt(version[1]);
             return thisVersion >= minVersion;
         }
     }

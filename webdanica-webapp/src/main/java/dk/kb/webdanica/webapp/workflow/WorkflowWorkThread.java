@@ -22,10 +22,10 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
     private GregorianCalendar dayCal;
 	private Date dayDate;
 	private long nextReschedule = System.currentTimeMillis();
-	private List<Long> harvestingSchedules = new LinkedList<Long>();
+	private List<Long> harvestingInitSchedules = new LinkedList<Long>();
+	private List<Long> harvestingFinishSchedules = new LinkedList<Long>();
     private List<Long> filteringSchedules = new LinkedList<Long>();
     private List<Long> cacheUpdatingSchedules = new LinkedList<Long>();
-    
 
     /**
      * Constructor for the workflow thread worker object.
@@ -55,7 +55,8 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
 
     @SuppressWarnings("unchecked")
     protected void schedule_day(long ctm) {
-        harvestingSchedules = (List<Long>)environment.harvestSchedule.getScheduleList(nextReschedule);
+        harvestingInitSchedules = (List<Long>)environment.harvestInitSchedule.getScheduleList(nextReschedule);
+		harvestingFinishSchedules = (List<Long>)environment.harvestFinishSchedule.getScheduleList(nextReschedule);
         filteringSchedules = (List<Long>)environment.filterSchedule.getScheduleList(nextReschedule);
         cacheUpdatingSchedules = (List<Long>)environment.cacheUpdatingSchedule.getScheduleList(nextReschedule);
 
@@ -70,7 +71,8 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
     }
 
     protected void schedule_trim_overdue(long ctm) {
-    	trimSchedule(harvestingSchedules, ctm);
+    	trimSchedule(harvestingInitSchedules, ctm);
+    	trimSchedule(harvestingFinishSchedules, ctm);
     	trimSchedule(filteringSchedules, ctm);
     	trimSchedule(cacheUpdatingSchedules, ctm);
     }
@@ -84,6 +86,17 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
 		
 	}
 
+	private boolean setSchedulingIfneeded(List<Long> scheduledTimes, long ctm) {
+		if (scheduledTimes != null && scheduledTimes.size() > 0 && ctm > scheduledTimes.get(0)) {
+			while (scheduledTimes.size() > 0 && ctm > scheduledTimes.get(0)) {
+				scheduledTimes.remove(0);
+			}
+			return true;
+		}
+    	return false;
+	}
+
+
 	@Override
 	protected void process_run() {
 	    long ctm = System.currentTimeMillis();
@@ -91,29 +104,10 @@ public class WorkflowWorkThread extends WorkThreadAbstract {
 	        logger.log(Level.INFO, "Generating new daily schedules.");
 	        schedule_day(ctm);
 	    }
-	    environment.bScheduleHarvesting = false;
-	    if (harvestingSchedules != null && harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
-	        while (harvestingSchedules.size() > 0 && ctm > harvestingSchedules.get(0)) {
-	            harvestingSchedules.remove(0);
-	        }
-	        environment.bScheduleHarvesting = true;
-	    }
-
-	    environment.bScheduleFiltering = false;
-	    if (filteringSchedules != null && filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
-	        while (filteringSchedules.size() > 0 && ctm > filteringSchedules.get(0)) {
-	            filteringSchedules.remove(0);
-	        }
-	        environment.bScheduleFiltering = true;
-	    }
-
-	    environment.bScheduleCacheUpdating = false;
-	    if (cacheUpdatingSchedules != null && cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
-	        while (cacheUpdatingSchedules.size() > 0 && ctm > cacheUpdatingSchedules.get(0)) {
-	            cacheUpdatingSchedules.remove(0);
-	        }
-	        environment.bScheduleCacheUpdating = true;
-	    }        
+	    environment.bScheduleHarvestingInit = setSchedulingIfneeded(harvestingInitSchedules, ctm);
+		environment.bScheduleHarvestingFinish = setSchedulingIfneeded(harvestingFinishSchedules, ctm);
+	    environment.bScheduleFiltering = setSchedulingIfneeded(filteringSchedules, ctm);
+	    environment.bScheduleCacheUpdating = setSchedulingIfneeded(cacheUpdatingSchedules, ctm);
 	}
     
     @Override

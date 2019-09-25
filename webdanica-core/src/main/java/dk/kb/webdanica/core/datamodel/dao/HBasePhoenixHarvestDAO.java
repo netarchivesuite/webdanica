@@ -87,7 +87,7 @@ public class HBasePhoenixHarvestDAO implements HarvestDAO {
 	public boolean insertHarvest(SingleSeedHarvest report) throws Exception {
 		java.sql.Array sqlArr = null;
 		PreparedStatement stm = null;
-		int res = 0;
+		int res;
 		try {
 			long harvestedTime = report.getHarvestedTime();
 			if (!(harvestedTime > 0)) {

@@ -135,7 +135,7 @@ public class SingleSeedHarvest {
 		    String error = "Unable to add seed '" + seed + "' to eventharvest: " + ExceptionUtils.getFullStackTrace(e);
 		    logger.warning("Failed to construct harvest for seed '" + seed + "': " +  error);
 		    errMsg.append(error);
-		    
+
 		}
 		if (constructionOK) {
 		    eventHarvest.setActive(true);
@@ -150,7 +150,16 @@ public class SingleSeedHarvest {
 		SingleSeedHarvest s = new SingleSeedHarvest(seed, harvestName, error, exception);
 		return s;
 	}
-	
+
+	public void setHarvestedTime(long harvestedTime) {
+		this.harvestedTime = harvestedTime;
+	}
+
+	public void setHarvestdefinitionID(long harvestdefinitionID) {
+		this.hid = harvestdefinitionID;
+	}
+
+
 	/**
 	 * Special SingleSeedHarvest constructor used by the getErrorObject() method.
 	 * @param seed The seed to be harvested

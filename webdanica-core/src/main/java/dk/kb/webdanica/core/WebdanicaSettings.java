@@ -44,8 +44,12 @@ public class WebdanicaSettings {
 
 	/** schedule for how often to start the filtering thread. */ 
 	public static final String WEBAPP_CRONTAB_FILTERING = "settings.webapp.crontab.filtering";
+
 	/** schedule for how often to start the harvesting thread. */
-	public static final String WEBAPP_CRONTAB_HARVESTING = "settings.webapp.crontab.harvesting";
+	public static final String WEBAPP_CRONTAB_HARVESTING_INIT = "settings.webapp.crontab.harvestingInit";
+
+	public static final String WEBAPP_CRONTAB_HARVESTING_FINISH = "settings.webapp.crontab.harvestingFinish";
+
 	/** schedule for how often to start the statecaching thread. */
 	public static final String WEBAPP_CRONTAB_STATECACHING = "settings.webapp.crontab.statecaching";
 	
@@ -53,8 +57,6 @@ public class WebdanicaSettings {
 	public static final String WEBAPP_MAX_URL_LENGTH_TO_SHOW = "settings.webapp.maxUrlLengthToShow";
 	public static final String WEBAPP_MAX_URLS_TO_FETCH = "settings.webapp.maxUrlsToFetch";
 
-	
-	
 	/** Pig related settings */
 	public static String PIG_CITYNAMES_FILEPATH = "settings.pig.citynames.path";
 }
