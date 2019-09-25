@@ -221,9 +221,9 @@ public class HarvestLog {
      * @param results the list of SingleSeedHarvest results.
      * @param writeToStdout write to System.out/System.err (true or false)
      * @return the number of harvests written to the file.
-     * @throws Exception
+     * @throws IOException if unable to write to the harvestlog
      */
-    public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean includeOnlySuccessFulHarvests, List<SingleSeedHarvest> results, boolean writeToStdout) throws Exception {
+    public static int writeHarvestLog(File harvestLog, String harvestLogHeader, boolean includeOnlySuccessFulHarvests, List<SingleSeedHarvest> results, boolean writeToStdout) throws IOException {
         // Initialize harvestLogWriter
         PrintWriter harvestLogWriter = new PrintWriter(new BufferedWriter(new FileWriter(harvestLog)));
         int harvestsWritten = 0;

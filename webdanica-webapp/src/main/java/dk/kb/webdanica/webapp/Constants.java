@@ -27,4 +27,7 @@ public class Constants {
     public static final int DEFAULT_MAX_URLS_TO_FETCH = 2000;
     /** Only process 15 harvestlogs at a time in the automatic workflow. */
     public static final int DEFAULT_MAX_HARVESTLOGS_PROCESSED = 15;
+
+    public static final long DUMMY_HARVESTED_TIME_MEANING_IN_PROGRESS = 1000L;
+	public static final long DUMMY_HARVESTED_TIME_MEANING_FAILED = 2000L;
 }
